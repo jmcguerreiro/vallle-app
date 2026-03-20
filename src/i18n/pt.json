@@ -1,0 +1,234 @@
+{
+  "common": {
+    "appName": "Vallle",
+    "loading": "A carregar...",
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "confirm": "Confirmar",
+    "back": "Voltar",
+    "expand": "Expandir",
+    "collapse": "Recolher",
+    "noResults": "Sem resultados.",
+    "error": "Algo correu mal. Tenta novamente.",
+    "search": "Pesquisar...",
+    "pagination": {
+      "previous": "Anterior",
+      "next": "Seguinte",
+      "page": "Página {{current}} de {{total}}"
+    }
+  },
+  "features": {
+    "login": {
+      "heading": "Entrar no Vallle",
+      "forgotPassword": "Esqueceste a palavra-passe?",
+      "form": {
+        "email": "Email",
+        "password": "Palavra-passe",
+        "submit": "Entrar",
+        "error": {
+          "invalidEmail": "Introduz um email válido.",
+          "invalidCredentials": "Email ou palavra-passe incorretos.",
+          "generic": "Não foi possível iniciar sessão. Tenta novamente."
+        }
+      }
+    },
+    "forgotPassword": {
+      "heading": "Esqueceste a palavra-passe?",
+      "description": "Introduz o teu email e enviamos-te um link para repor a palavra-passe.",
+      "backToLogin": "Voltar ao login",
+      "form": {
+        "submit": "Enviar link",
+        "error": {
+          "generic": "Não foi possível enviar o link. Tenta novamente."
+        }
+      },
+      "successState": {
+        "heading": "Verifica o teu email",
+        "message": "Se existir uma conta com esse email, enviámos um link para repor a palavra-passe.",
+        "backToLogin": "Voltar ao login"
+      }
+    },
+    "resetPassword": {
+      "heading": "Definir nova palavra-passe",
+      "form": {
+        "password": "Nova palavra-passe",
+        "submit": "Repor palavra-passe",
+        "error": {
+          "passwordRequired": "Introduz uma nova palavra-passe.",
+          "invalidToken": "Este link é inválido ou expirou.",
+          "generic": "Não foi possível repor a palavra-passe. Tenta novamente."
+        }
+      },
+      "successState": {
+        "heading": "Palavra-passe atualizada",
+        "message": "A tua palavra-passe foi reposta. Já podes iniciar sessão.",
+        "backToLogin": "Entrar"
+      },
+      "errorState": {
+        "heading": "Link inválido",
+        "invalidLink": "Este link está em falta ou mal formado.",
+        "requestNewLink": "Pedir novo link"
+      }
+    },
+    "selectStore": {
+      "heading": "Escolhe uma loja",
+      "description": "Tens acesso a várias lojas. Seleciona com qual queres trabalhar."
+    },
+    "dashboard": {
+      "heading": "Painel",
+      "welcome": "Olá, {{name}}",
+      "stats": {
+        "activeVouchers": "Vouchers ativos",
+        "totalRedeemed": "Total resgatado",
+        "pendingCommissions": "Comissões pendentes"
+      }
+    },
+    "vouchers": {
+      "heading": "Vouchers",
+      "create": {
+        "heading": "Criar voucher",
+        "comingSoon": "Formulário de criação de voucher em breve.",
+        "amount": "Valor (€)",
+        "buyer": "Nome do comprador",
+        "submit": "Criar voucher",
+        "success": "Voucher criado com sucesso!",
+        "error": {
+          "generic": "Não foi possível criar o voucher."
+        }
+      },
+      "view": {
+        "heading": "Detalhes do voucher",
+        "comingSoon": "Detalhes do voucher em breve."
+      },
+      "edit": {
+        "heading": "Editar voucher",
+        "comingSoon": "Formulário de edição em breve."
+      },
+      "redeem": {
+        "heading": "Resgatar voucher",
+        "code": "Código do voucher",
+        "amount": "Valor a resgatar (€)",
+        "description": "Descrição",
+        "submit": "Resgatar",
+        "success": "Voucher resgatado com sucesso!",
+        "error": {
+          "notFound": "Voucher não encontrado.",
+          "expired": "Este voucher expirou.",
+          "insufficientBalance": "Saldo insuficiente.",
+          "generic": "Não foi possível resgatar o voucher."
+        }
+      },
+      "list": {
+        "code": "Código",
+        "amount": "Valor",
+        "balance": "Saldo",
+        "buyer": "Comprador",
+        "status": "Estado",
+        "createdAt": "Criado em",
+        "expiresAt": "Expira em",
+        "active": "Ativo",
+        "used": "Usado",
+        "expired": "Expirado",
+        "comingSoon": "Lista de vouchers em breve."
+      }
+    },
+    "stats": {
+      "heading": "Estatísticas",
+      "comingSoon": "Estatísticas em breve."
+    },
+    "profile": {
+      "heading": "Perfil",
+      "form": {
+        "name": "Nome",
+        "email": "Email",
+        "language": "Idioma",
+        "error": {
+          "nameRequired": "O nome é obrigatório.",
+          "emailRequired": "O email é obrigatório."
+        }
+      },
+      "password": {
+        "heading": "Alterar palavra-passe",
+        "description": "Atualiza a tua palavra-passe para manter a conta segura.",
+        "requirements": "A nova palavra-passe deve ter pelo menos 8 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.",
+        "currentPassword": "Palavra-passe atual",
+        "newPassword": "Nova palavra-passe",
+        "submit": "Alterar palavra-passe",
+        "success": "Palavra-passe alterada com sucesso!",
+        "error": {
+          "currentRequired": "A palavra-passe atual é obrigatória.",
+          "newRequired": "A nova palavra-passe é obrigatória.",
+          "wrongPassword": "A palavra-passe atual está incorreta.",
+          "generic": "Não foi possível alterar a palavra-passe. Tenta novamente."
+        }
+      },
+      "success": "Perfil atualizado com sucesso!",
+      "error": {
+        "loadFailed": "Não foi possível carregar o perfil.",
+        "emailTaken": "Este email já está a ser utilizado.",
+        "generic": "Não foi possível atualizar o perfil. Tenta novamente."
+      }
+    },
+    "company": {
+      "heading": "Empresa",
+      "sections": {
+        "general": "Geral",
+        "contact": "Contacto",
+        "address": "Morada"
+      },
+      "form": {
+        "name": "Nome da empresa",
+        "category": "Categoria",
+        "email": "Email",
+        "phone": "Telefone",
+        "vatId": "NIF",
+        "address1": "Morada linha 1",
+        "address2": "Morada linha 2",
+        "city": "Cidade",
+        "postalCode": "Código postal",
+        "region": "Distrito",
+        "country": "País",
+        "error": {
+          "nameRequired": "O nome da empresa é obrigatório."
+        }
+      },
+      "success": "Dados da empresa atualizados com sucesso!",
+      "error": {
+        "loadFailed": "Não foi possível carregar os dados da empresa.",
+        "generic": "Não foi possível atualizar os dados da empresa. Tenta novamente."
+      }
+    },
+    "commissions": {
+      "heading": "Comissões",
+      "markPaid": "Marcar como paga",
+      "unpaid": "Por pagar",
+      "paid": "Paga",
+      "store": "Loja",
+      "amount": "Valor",
+      "date": "Data"
+    }
+  },
+  "validation": {
+    "password": {
+      "minLength": "Deve ter pelo menos 8 caracteres.",
+      "uppercase": "Deve incluir uma letra maiúscula.",
+      "lowercase": "Deve incluir uma letra minúscula.",
+      "number": "Deve incluir um número.",
+      "special": "Deve incluir um caractere especial."
+    }
+  },
+  "nav": {
+    "dashboard": "Painel",
+    "vouchers": "Vouchers",
+    "stats": "Estatísticas",
+    "profile": "Perfil",
+    "company": "Empresa",
+    "commissions": "Comissões",
+    "switchStore": "Trocar de loja",
+    "switchStoreModal": {
+      "heading": "Trocar de loja",
+      "current": "(atual)"
+    },
+    "logout": "Sair"
+  }
+}

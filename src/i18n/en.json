@@ -1,0 +1,234 @@
+{
+  "common": {
+    "appName": "Vallle",
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "confirm": "Confirm",
+    "back": "Back",
+    "expand": "Expand",
+    "collapse": "Collapse",
+    "noResults": "No results.",
+    "error": "Something went wrong. Please try again.",
+    "search": "Search...",
+    "pagination": {
+      "previous": "Previous",
+      "next": "Next",
+      "page": "Page {{current}} of {{total}}"
+    }
+  },
+  "features": {
+    "login": {
+      "heading": "Sign in to Vallle",
+      "forgotPassword": "Forgot your password?",
+      "form": {
+        "email": "Email",
+        "password": "Password",
+        "submit": "Sign in",
+        "error": {
+          "invalidEmail": "Please enter a valid email.",
+          "invalidCredentials": "Invalid email or password.",
+          "generic": "Could not sign in. Please try again."
+        }
+      }
+    },
+    "forgotPassword": {
+      "heading": "Forgot your password?",
+      "description": "Enter your email and we'll send you a link to reset your password.",
+      "backToLogin": "Back to sign in",
+      "form": {
+        "submit": "Send reset link",
+        "error": {
+          "generic": "Could not send the reset link. Please try again."
+        }
+      },
+      "successState": {
+        "heading": "Check your email",
+        "message": "If an account exists with that email, we've sent you a reset link.",
+        "backToLogin": "Back to sign in"
+      }
+    },
+    "resetPassword": {
+      "heading": "Set a new password",
+      "form": {
+        "password": "New password",
+        "submit": "Reset password",
+        "error": {
+          "passwordRequired": "Please enter a new password.",
+          "invalidToken": "This reset link is invalid or has expired.",
+          "generic": "Could not reset your password. Please try again."
+        }
+      },
+      "successState": {
+        "heading": "Password updated",
+        "message": "Your password has been reset. You can now sign in.",
+        "backToLogin": "Sign in"
+      },
+      "errorState": {
+        "heading": "Invalid link",
+        "invalidLink": "This reset link is missing or malformed.",
+        "requestNewLink": "Request a new reset link"
+      }
+    },
+    "selectStore": {
+      "heading": "Choose a store",
+      "description": "You have access to multiple stores. Select which one you'd like to work with."
+    },
+    "dashboard": {
+      "heading": "Dashboard",
+      "welcome": "Hello, {{name}}",
+      "stats": {
+        "activeVouchers": "Active vouchers",
+        "totalRedeemed": "Total redeemed",
+        "pendingCommissions": "Pending commissions"
+      }
+    },
+    "vouchers": {
+      "heading": "Vouchers",
+      "create": {
+        "heading": "Create voucher",
+        "comingSoon": "Create voucher form coming soon.",
+        "amount": "Amount (€)",
+        "buyer": "Buyer name",
+        "submit": "Create voucher",
+        "success": "Voucher created successfully!",
+        "error": {
+          "generic": "Could not create the voucher."
+        }
+      },
+      "view": {
+        "heading": "Voucher details",
+        "comingSoon": "Voucher details coming soon."
+      },
+      "edit": {
+        "heading": "Edit voucher",
+        "comingSoon": "Edit voucher form coming soon."
+      },
+      "redeem": {
+        "heading": "Redeem voucher",
+        "code": "Voucher code",
+        "amount": "Amount to redeem (€)",
+        "description": "Description",
+        "submit": "Redeem",
+        "success": "Voucher redeemed successfully!",
+        "error": {
+          "notFound": "Voucher not found.",
+          "expired": "This voucher has expired.",
+          "insufficientBalance": "Insufficient balance.",
+          "generic": "Could not redeem the voucher."
+        }
+      },
+      "list": {
+        "code": "Code",
+        "amount": "Amount",
+        "balance": "Balance",
+        "buyer": "Buyer",
+        "status": "Status",
+        "createdAt": "Created",
+        "expiresAt": "Expires",
+        "active": "Active",
+        "used": "Used",
+        "expired": "Expired",
+        "comingSoon": "Voucher list coming soon."
+      }
+    },
+    "stats": {
+      "heading": "Stats",
+      "comingSoon": "Statistics coming soon."
+    },
+    "profile": {
+      "heading": "Profile",
+      "form": {
+        "name": "Name",
+        "email": "Email",
+        "language": "Language",
+        "error": {
+          "nameRequired": "Name is required.",
+          "emailRequired": "Email is required."
+        }
+      },
+      "password": {
+        "heading": "Change password",
+        "description": "Update your password to keep your account secure.",
+        "requirements": "Your new password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.",
+        "currentPassword": "Current password",
+        "newPassword": "New password",
+        "submit": "Change password",
+        "success": "Password changed successfully!",
+        "error": {
+          "currentRequired": "Current password is required.",
+          "newRequired": "New password is required.",
+          "wrongPassword": "Current password is incorrect.",
+          "generic": "Could not change your password. Please try again."
+        }
+      },
+      "success": "Profile updated successfully!",
+      "error": {
+        "loadFailed": "Could not load your profile.",
+        "emailTaken": "This email is already in use.",
+        "generic": "Could not update your profile. Please try again."
+      }
+    },
+    "company": {
+      "heading": "Company",
+      "sections": {
+        "general": "General",
+        "contact": "Contact",
+        "address": "Address"
+      },
+      "form": {
+        "name": "Company name",
+        "category": "Category",
+        "email": "Email",
+        "phone": "Phone",
+        "vatId": "VAT number",
+        "address1": "Address line 1",
+        "address2": "Address line 2",
+        "city": "City",
+        "postalCode": "Postal code",
+        "region": "Region",
+        "country": "Country",
+        "error": {
+          "nameRequired": "Company name is required."
+        }
+      },
+      "success": "Company details updated successfully!",
+      "error": {
+        "loadFailed": "Could not load company details.",
+        "generic": "Could not update company details. Please try again."
+      }
+    },
+    "commissions": {
+      "heading": "Commissions",
+      "markPaid": "Mark as paid",
+      "unpaid": "Unpaid",
+      "paid": "Paid",
+      "store": "Store",
+      "amount": "Amount",
+      "date": "Date"
+    }
+  },
+  "validation": {
+    "password": {
+      "minLength": "Must be at least 8 characters.",
+      "uppercase": "Must include an uppercase letter.",
+      "lowercase": "Must include a lowercase letter.",
+      "number": "Must include a number.",
+      "special": "Must include a special character."
+    }
+  },
+  "nav": {
+    "dashboard": "Dashboard",
+    "vouchers": "Vouchers",
+    "stats": "Stats",
+    "profile": "Profile",
+    "company": "Company",
+    "commissions": "Commissions",
+    "switchStore": "Switch store",
+    "switchStoreModal": {
+      "heading": "Switch store",
+      "current": "(current)"
+    },
+    "logout": "Sign out"
+  }
+}
