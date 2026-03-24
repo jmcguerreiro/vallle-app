@@ -1,0 +1,97 @@
+$root-rem: 16;
+
+// Colours
+$color-black: #000000;
+$color-white: #ffffff;
+$color-terracota: #c4653a;
+$color-linen: #f5e6d8;
+$color-driftwood: #6b5e56;
+$color-ash: #a8988f;
+$color-espresso: #2c2520;
+$color-danger: #C0443A;
+$color-warning: #C49A3A;
+$color-success: #5A8A56;
+
+// Colours: General
+$text-color: $color-driftwood;
+$text-color-highlight: $color-espresso;
+$text-color-muted: $color-ash;
+
+$icon-color: var(--icon-color);
+$icon-color-highlight: var(--icon-color-highlight);
+$icon-color-muted: var(--icon-color-muted);
+
+$border-color: var(--border-color);
+$border-active-color: var(--border-active-color);
+
+// Colours: Components
+$button-oval-background: var(--button-oval-background);
+$button-oval-color: var(--button-oval-color);
+
+// Spacing
+$spacing-1: (4 / $root-rem) * 1rem;
+$spacing-2: (8 / $root-rem) * 1rem;
+$spacing-3: (12 / $root-rem) * 1rem;
+$spacing-4: (16 / $root-rem) * 1rem;
+$spacing-5: (20 / $root-rem) * 1rem;
+$spacing-6: (24 / $root-rem) * 1rem;
+$spacing-7: (28 / $root-rem) * 1rem;
+$spacing-8: (32 / $root-rem) * 1rem;
+$spacing-9: (36 / $root-rem) * 1rem;
+$spacing-10: (40 / $root-rem) * 1rem;
+$spacing-11: (44 / $root-rem) * 1rem;
+$spacing-12: (48 / $root-rem) * 1rem;
+$spacing-13: (52 / $root-rem) * 1rem;
+$spacing-14: (56 / $root-rem) * 1rem;
+$spacing-15: (60 / $root-rem) * 1rem;
+
+// Screen Sizes
+$screen-xs: 480px;
+$screen-sm: 640px;
+$screen-md: 768px;
+$screen-lg: 1024px;
+$screen-xl: 1280px;
+$screen-2xl: 1536px;
+
+// Border Radius
+$border-radius-xs: (2 / $root-rem) * 1rem;
+$border-radius-sm: (4 / $root-rem) * 1rem;
+$border-radius-md: (8 / $root-rem) * 1rem;
+$border-radius-lg: (12 / $root-rem) * 1rem;
+$border-radius-xl: (16 / $root-rem) * 1rem;
+$border-radius-2xl: (20 / $root-rem) * 1rem;
+$border-radius-3xl: (24 / $root-rem) * 1rem;
+
+// Font Families
+$font-family-one: "Karl", sans-serif;
+
+// Font Sizes
+$font-sizes: (
+  1xs: (size: (12 / $root-rem) * 1rem, line-height: (16 / $root-rem) * 1rem),
+  xs:  (size: (13 / $root-rem) * 1rem, line-height: (16 / $root-rem) * 1rem),
+  sm:  (size: (14 / $root-rem) * 1rem, line-height: (24 / $root-rem) * 1rem),
+  md:  (size: (16 / $root-rem) * 1rem, line-height: (24 / $root-rem) * 1rem),
+  lg:  (size: (18 / $root-rem) * 1rem, line-height: (24 / $root-rem) * 1rem),
+  xl:  (size: (20 / $root-rem) * 1rem, line-height: (32 / $root-rem) * 1rem),
+  2xl: (size: (24 / $root-rem) * 1rem, line-height: (32 / $root-rem) * 1rem),
+  3xl: (size: (30 / $root-rem) * 1rem, line-height: (40 / $root-rem) * 1rem),
+  4xl: (size: (36 / $root-rem) * 1rem, line-height: (48 / $root-rem) * 1rem),
+  5xl: (size: (40 / $root-rem) * 1rem, line-height: (48 / $root-rem) * 1rem),
+  6xl: (size: (48 / $root-rem) * 1rem, line-height: (56 / $root-rem) * 1rem),
+  7xl: (size: (60 / $root-rem) * 1rem, line-height: (72 / $root-rem) * 1rem),
+  8xl: (size: (72 / $root-rem) * 1rem, line-height: (88 / $root-rem) * 1rem),
+  9xl: (size: (96 / $root-rem) * 1rem, line-height: (112 / $root-rem) * 1rem),
+);
+
+// Font Weights
+$font-weight-regular: 300;
+$font-weight-bold: 700;
+
+// Transitions
+$transition-normal: 400ms;
+$transition-slow: 800ms;
+
+// Blur
+$blur-sm: 4px;
+$blur-md: 8px;
+$blur-lg: 12px;

@@ -1,29 +1,59 @@
+@import "./global/reset";
+@import "./global/variables";
+@import "./global/mixins";
+@import "./global/utilities";
+@import "./global/animations";
+
+@import "./components/buttons";
+@import "./components/forms";
+
+@import "./structure/main";
+@import "./structure/background";
+
+@import "./features/auth/pages/auth-login";
+
+html,
+body {
+  @include font-size(md);
+  background: $color-linen;
+  font-family: $font-family-one;
+  font-weight: $font-weight-regular;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+.app {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+}
+
 /* ─── Vallle Design Tokens ─────────────────────────────────────── */
 
-@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap");
 
 :root {
   /* Brand palette */
-  --color-primary: #C4653A;
+  --color-primary: #c4653a;
   --color-primary-hover: #a8532e;
-  --color-linen: #F5E6D8;
-  --color-espresso: #2C2520;
-  --color-sage: #7A9B76;
-  --color-parchment: #E8DDD3;
-  --color-honey: #D4A574;
+  --color-linen: #f5e6d8;
+  --color-espresso: #2c2520;
+  --color-sage: #7a9b76;
+  --color-parchment: #e8ddd3;
+  --color-honey: #d4a574;
 
   /* Semantic colours */
-  --color-bg: #F5E6D8;
-  --color-surface: #FFFFFF;
-  --color-text: #2C2520;
-  --color-text-muted: #6B5E56;
-  --color-border: #E8DDD3;
-  --color-error: #C4653A;
-  --color-success: #7A9B76;
+  --color-bg: #f5e6d8;
+  --color-surface: #ffffff;
+  --color-text: #2c2520;
+  --color-text-muted: #6b5e56;
+  --color-border: #e8ddd3;
+  --color-error: #c4653a;
+  --color-success: #7a9b76;
 
   /* Typography */
-  --font-display: 'DM Serif Display', serif;
-  --font-body: 'DM Sans', sans-serif;
+  --font-display: "Karl", serif;
+  --font-body: "Karl", sans-serif;
 
   /* Spacing */
   --space-xs: 4px;
@@ -56,26 +86,25 @@
   padding: 0;
 }
 
-body {
-  font-family: var(--font-body);
-  font-weight: 300;
-  font-size: 16px;
-  line-height: 1.5;
-  color: var(--color-text);
-  background: var(--color-bg);
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-}
 
-h1, h2, h3 {
+
+h1,
+h2,
+h3 {
   font-family: var(--font-display);
   font-weight: 400;
   line-height: 1.2;
 }
 
-h1 { font-size: 2rem }
-h2 { font-size: 1.5rem }
-h3 { font-size: 1.125rem }
+h1 {
+  font-size: 2rem;
+}
+h2 {
+  font-size: 1.5rem;
+}
+h3 {
+  font-size: 1.125rem;
+}
 
 a {
   color: var(--color-primary);
@@ -129,7 +158,9 @@ a:hover {
   border-radius: var(--radius-md);
   color: var(--color-parchment);
   font-weight: 400;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .c-layout__nav-link:hover {
@@ -177,141 +208,6 @@ a:hover {
   flex: 1;
   padding: var(--space-xl);
   min-height: 100vh;
-}
-
-/* ─── Login ───────────────────────────────────────────────────── */
-
-.c-login {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 100vh;
-  padding: var(--space-lg);
-}
-
-.c-login__card {
-  background: var(--color-surface);
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: var(--space-2xl);
-  width: 100%;
-  max-width: 400px;
-}
-
-.c-login__heading {
-  text-align: center;
-  color: var(--color-espresso);
-  margin-bottom: var(--space-xl);
-}
-
-.c-login__form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.c-login__label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-  margin-top: var(--space-sm);
-}
-
-.c-login__input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--color-text);
-  background: var(--color-surface);
-  transition: border-color 0.15s;
-}
-
-.c-login__input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.c-login__error {
-  color: var(--color-error);
-  font-size: 0.875rem;
-  margin-top: var(--space-sm);
-}
-
-.c-login__submit {
-  margin-top: var(--space-md);
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--color-primary);
-  color: white;
-  border: none;
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
-}
-
-.c-login__submit:hover {
-  background: var(--color-primary-hover);
-}
-
-.c-login__submit:disabled {
-  opacity: 0.6;
-  cursor: not-allowed;
-}
-
-/* ─── Form ───────────────────────────────────────────────────── */
-
-.c-form {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.c-form__error {
-  color: var(--color-error);
-  font-size: 0.875rem;
-  margin-top: var(--space-sm);
-}
-
-.c-form__field {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  margin-top: var(--space-sm);
-}
-
-.c-form__field-label {
-  font-size: 0.875rem;
-  font-weight: 500;
-  color: var(--color-text-muted);
-}
-
-.c-form__field-input {
-  padding: var(--space-sm) var(--space-md);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  font-family: var(--font-body);
-  font-size: 1rem;
-  color: var(--color-text);
-  background: var(--color-surface);
-  transition: border-color 0.15s;
-}
-
-.c-form__field-input:focus {
-  outline: none;
-  border-color: var(--color-primary);
-}
-
-.c-form__field-input--error {
-  border-color: var(--color-error);
-}
-
-.c-form__field-error {
-  color: var(--color-error);
-  font-size: 0.8125rem;
 }
 
 /* ─── Modal ──────────────────────────────────────────────────── */

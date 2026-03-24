@@ -4,7 +4,8 @@
  * @component
  * @param {Object} props
  * @param {string} props.name - Field name (used for register + htmlFor)
- * @param {string} [props.label] - Label text
+ * @param {string} [props.label] - Visible label text. When hidden, pass hideLabel to visually hide it while keeping it accessible for screen readers.
+ * @param {boolean} [props.hideLabel=false] - Visually hides the label (sr-only) while keeping it accessible
  * @param {string} [props.placeholder] - Input placeholder
  * @param {string} [props.type='text'] - Input type (text, email, password, etc.)
  * @param {Function} props.register - react-hook-form's register function
@@ -17,6 +18,7 @@
 const Input = ({
   name,
   label,
+  hideLabel = false,
   placeholder,
   type = 'text',
   register,
@@ -42,7 +44,10 @@ const Input = ({
   return (
     <div className="c-form__field">
       {label && (
-        <label className="c-form__field-label" htmlFor={name}>
+        <label
+          className={`c-form__field-label${hideLabel ? ' u-sr-only' : ''}`}
+          htmlFor={name}
+        >
           {label}
         </label>
       )}

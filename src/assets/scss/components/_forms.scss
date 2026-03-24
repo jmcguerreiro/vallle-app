@@ -1,0 +1,32 @@
+.c-form {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-6;
+}
+
+.c-form__fields {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-4;
+}
+
+.c-form__field-input {
+  background: $color-white;
+  border-radius: $border-radius-lg;
+	color: $color-espresso;
+  padding: $spacing-3 $spacing-4;
+	width: 100%;
+
+	&:focus {
+		outline: solid 1px $color-ash;
+	}
+
+	&::placeholder {
+		color: $text-color-muted;
+	}
+}
+
+.c-form__field-error {
+	@include font-size(sm);
+	color: $color-danger;
+}

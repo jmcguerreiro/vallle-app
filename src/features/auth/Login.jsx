@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
+import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
+import FormActions from "@/components/forms/FormActions";
+import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
@@ -65,48 +68,60 @@ const Login = () => {
   }
 
   return (
-    <div className="c-login">
-      <div className="c-login__card">
-        <h1 className="c-login__heading">{t("features.login.heading")}</h1>
-
-        <Form
-          className="c-login__form"
-          error={serverError}
-          handleSubmit={handleSubmit}
-          onSubmit={onSubmit}
-        >
-          <Input
-            autoComplete="email"
-            error={errors.email}
-            label={t("features.login.form.email")}
-            name="email"
-            register={register}
-            required={t("features.login.form.error.invalidEmail")}
-            type="email"
-          />
-
-          <Input
-            autoComplete="current-password"
-            error={errors.password}
-            label={t("features.login.form.password")}
-            name="password"
-            register={register}
-            required
-            type="password"
-          />
-
-          <button
-            className="c-login__submit"
-            disabled={submitting}
-            type="submit"
+    <div className="p-auth-login">
+      <div className="p-auth-login__logo">
+        <img alt="" src="/images/logo.svg" />
+      </div>
+      <div className="p-auth-login__body">
+        <div className="p-auth-login__body-form">
+          <Form
+            error={serverError}
+            handleSubmit={handleSubmit}
+            onSubmit={onSubmit}
           >
-            {submitting ? t("common.loading") : t("features.login.form.submit")}
-          </button>
-        </Form>
+            <FormFields>
+              <Input
+                autoComplete="email"
+                error={errors.email}
+                hideLabel
+                label={t("features.login.form.email")}
+                name="email"
+                placeholder={t("features.login.form.email")}
+                register={register}
+                required={t("features.login.form.error.invalidEmail")}
+                type="email"
+              />
 
-        <Link className="c-login__link" to={ROUTES.FORGOT_PASSWORD}>
-          {t("features.login.forgotPassword")}
-        </Link>
+              <Input
+                autoComplete="current-password"
+                error={errors.password}
+                hideLabel
+                label={t("features.login.form.password")}
+                name="password"
+                placeholder={t("features.login.form.password")}
+                register={register}
+                required
+                type="password"
+              />
+            </FormFields>
+
+            <FormActions>
+              <Button
+                className="p-auth-login__submit"
+                display="block"
+                isProcessing={submitting}
+                type="submit"
+              >
+                {t("features.login.form.submit")}
+              </Button>
+            </FormActions>
+          </Form>
+        </div>
+        <div className="p-auth-login__body-forgotten">
+          <Link className="p-auth-login__link" to={ROUTES.FORGOT_PASSWORD}>
+            {t("features.login.forgotPassword")}
+          </Link>
+        </div>
       </div>
     </div>
   );

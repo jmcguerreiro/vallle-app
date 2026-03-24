@@ -1,5 +1,7 @@
 import { Outlet } from 'react-router-dom'
 
+import Background from '@/layouts/components/Background'
+
 /**
  * Layout: Blank
  * Minimal wrapper with no chrome — used for unauthenticated routes
@@ -9,7 +11,14 @@ import { Outlet } from 'react-router-dom'
  */
 const BlankLayout = () => {
   // Render
-  return <Outlet />
+  return (
+    <>
+      <main className="s-main">
+        <Outlet />
+      </main>
+      <Background />
+    </>
+  )
 }
 
 export default BlankLayout

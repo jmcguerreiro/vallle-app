@@ -1,0 +1,19 @@
+@function to-rem($px, $base: 16) {
+  @return ($px / $base) * 1rem;
+}
+
+@mixin font-size($key) {
+  $settings: map-get($font-sizes, $key);
+  @if $settings {
+    font-size: map-get($settings, size);
+    line-height: map-get($settings, line-height);
+  } @else {
+    @warn "Font size `#{$key}` not found in `$font-sizes` map.";
+  }
+}
+
+@mixin no-user-select {
+  -ms-user-select: none;
+  -webkit-user-select: none;
+  user-select: none;
+}

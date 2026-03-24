@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+import Button from "@/components/Button";
 import { useModal } from "@/hooks/useModal";
 
 /**
@@ -58,16 +59,15 @@ const Modal = ({ children, className = "" }) => {
           {header.actions.length > 0 && (
             <div className="c-modal__actions">
               {header.actions.map(
-                ({ label, icon: Icon, onClick, variant = "secondary" }) => (
-                  <button
+                ({ label, icon, onClick, variant = "ghost" }) => (
+                  <Button
                     key={label}
-                    className={`c-btn c-btn--${variant}`}
+                    iconLeft={icon}
                     onClick={onClick}
-                    type="button"
+                    variant={variant}
                   >
-                    {Icon && <Icon className="c-btn__icon" size={16} />}
                     {label}
-                  </button>
+                  </Button>
                 ),
               )}
             </div>
