@@ -70,7 +70,11 @@ const Login = () => {
   return (
     <div className="p-auth-login">
       <div className="p-auth-login__logo">
-        <img alt="" src="/images/logo.svg" />
+        <img
+          alt=""
+          className="p-auth-login__logo-image"
+          src="/images/logo.svg"
+        />
       </div>
       <div className="p-auth-login__body">
         <div className="p-auth-login__body-form">
@@ -118,7 +122,10 @@ const Login = () => {
           </Form>
         </div>
         <div className="p-auth-login__body-forgotten">
-          <Link className="p-auth-login__link" to={ROUTES.FORGOT_PASSWORD}>
+          <Link
+            className="p-auth-login__body-forgotten-link"
+            to={ROUTES.FORGOT_PASSWORD}
+          >
             {t("features.login.forgotPassword")}
           </Link>
         </div>

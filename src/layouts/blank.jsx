@@ -1,6 +1,6 @@
-import { Outlet } from 'react-router-dom'
+import { Outlet } from "react-router-dom";
 
-import Background from '@/layouts/components/Background'
+import Background from "@/layouts/components/Background";
 
 /**
  * Layout: Blank
@@ -13,12 +13,13 @@ const BlankLayout = () => {
   // Render
   return (
     <>
+      <div className="s-back-to">Back to Website</div>
       <main className="s-main">
         <Outlet />
       </main>
       <Background />
     </>
-  )
-}
+  );
+};
 
-export default BlankLayout
+export default BlankLayout;

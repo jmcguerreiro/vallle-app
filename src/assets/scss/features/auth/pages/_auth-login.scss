@@ -11,11 +11,20 @@
   margin-bottom: $spacing-9;
 }
 
+.p-auth-login__logo-image {
+  width: to-rem(120);
+}
+
 .p-auth-login__body-form {
   margin-bottom: $spacing-9;
 }
 
 .p-auth-login__body-forgotten {
-  @include font-size(sm);
   text-align: center;
+}
+
+.p-auth-login__body-forgotten-link {
+  @include font-size(sm);
+  text-decoration: underline wavy $color-terracota 1px;
+  text-underline-offset: $spacing-2;
 }

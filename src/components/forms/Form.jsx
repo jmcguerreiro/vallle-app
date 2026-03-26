@@ -1,3 +1,5 @@
+import { CircleAlert as IconCircleAlert } from "lucide-react";
+
 /**
  * Component: Form
  * Thin wrapper around <form> that connects to react-hook-form's handleSubmit.
@@ -11,15 +13,15 @@
  * @param {string} [props.className] - Additional CSS class
  * @returns {JSX.Element}
  */
-const Form = ({ children, onSubmit, handleSubmit, error, className = '' }) => (
+const Form = ({ children, onSubmit, handleSubmit, error, className = "" }) => (
   <form
-    className={`c-form${className ? ` ${className}` : ''}`}
+    className={`c-form${className ? ` ${className}` : ""}`}
     noValidate
     onSubmit={handleSubmit(onSubmit)}
   >
+    {error && <div className="c-form__error">{error}</div>}
     {children}
-    {error && <p className="c-form__error">{error}</p>}
   </form>
-)
+);
 
-export default Form
+export default Form;

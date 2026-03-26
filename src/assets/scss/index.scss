@@ -11,6 +11,7 @@
 @import "./structure/background";
 
 @import "./features/auth/pages/auth-login";
+@import "./features/auth/pages/auth-forgot-password";
 
 html,
 body {
@@ -74,45 +75,6 @@ body {
 
   /* Layout */
   --sidebar-width: 240px;
-}
-
-/* ─── Reset & Base ────────────────────────────────────────────── */
-
-*,
-*::before,
-*::after {
-  box-sizing: border-box;
-  margin: 0;
-  padding: 0;
-}
-
-
-
-h1,
-h2,
-h3 {
-  font-family: var(--font-display);
-  font-weight: 400;
-  line-height: 1.2;
-}
-
-h1 {
-  font-size: 2rem;
-}
-h2 {
-  font-size: 1.5rem;
-}
-h3 {
-  font-size: 1.125rem;
-}
-
-a {
-  color: var(--color-primary);
-  text-decoration: none;
-}
-
-a:hover {
-  text-decoration: underline;
 }
 
 /* ─── Layout ──────────────────────────────────────────────────── */
