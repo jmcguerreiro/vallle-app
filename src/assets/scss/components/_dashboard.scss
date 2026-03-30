@@ -1,0 +1,62 @@
+.c-dashboard {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	min-height: 50vh;
+	text-align: center;
+}
+
+.c-dashboard__welcome {
+	margin-bottom: $spacing-8;
+}
+
+.c-dashboard__heading {
+	@include font-size(2xl);
+
+	color: $color-espresso;
+	font-family: $font-family-one;
+	margin-bottom: $spacing-2;
+}
+
+.c-dashboard__subtitle {
+	@include font-size(md);
+
+	color: $text-color-muted;
+}
+
+.c-dashboard__actions {
+	display: flex;
+	gap: $spacing-4;
+}
+
+.c-dashboard__action {
+	align-items: center;
+	background: $color-white;
+	border: 1px solid rgba($color-ash, 0.2);
+	border-radius: $border-radius-lg;
+	cursor: pointer;
+	display: flex;
+	flex-direction: column;
+	font-family: $font-family-one;
+	gap: $spacing-3;
+	min-width: 120px;
+	padding: $spacing-6 $spacing-8;
+	transition: border-color $transition-normal, box-shadow $transition-normal;
+
+	&:hover {
+		border-color: $color-terracota;
+		box-shadow: 0 2px 8px rgba($color-espresso, 0.08);
+	}
+}
+
+.c-dashboard__action-icon {
+	color: $color-terracota;
+}
+
+.c-dashboard__action-label {
+	@include font-size(sm);
+
+	color: $text-color;
+	font-weight: $font-weight-bold;
+}

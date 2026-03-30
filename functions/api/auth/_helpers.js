@@ -4,7 +4,7 @@
  * Passwords are hashed with PBKDF2-SHA256.
  */
 
-const JWT_EXPIRY = 7 * 24 * 60 * 60 // 7 days in seconds
+const JWT_EXPIRY = 3 * 24 * 60 * 60 // 3 days in seconds
 const PBKDF2_ITERATIONS = 100_000
 
 /**
@@ -157,7 +157,23 @@ export async function hashPassword(password, salt) {
 export async function verifyPassword(password, storedHash) {
   const [salt] = storedHash.split(':')
   const rehashed = await hashPassword(password, salt)
-  return rehashed === storedHash
+
+  const encoder = new TextEncoder()
+  const a = encoder.encode(rehashed)
+  const b = encoder.encode(storedHash)
+  if (a.byteLength !== b.byteLength) return false
+
+  const keyA = await crypto.subtle.importKey('raw', a, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const sigA = new Uint8Array(await crypto.subtle.sign('HMAC', keyA, b))
+  const keyB = await crypto.subtle.importKey('raw', b, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
+  const sigB = new Uint8Array(await crypto.subtle.sign('HMAC', keyB, b))
+
+  if (sigA.byteLength !== sigB.byteLength) return false
+  let result = 0
+  for (let i = 0; i < sigA.byteLength; i++) {
+    result |= sigA[i] ^ sigB[i]
+  }
+  return result === 0
 }
 
 /**

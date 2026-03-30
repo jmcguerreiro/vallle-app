@@ -1,25 +1,34 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { Plus } from 'lucide-react'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { voucherCreatePath } from '@/constants/routes'
-import { useMain } from '@/hooks/useMain'
-import VoucherDatatable from '@/features/vouchers/components/VoucherDatatable'
+import { Plus } from 'lucide-react'
 
-// TODO: Replace with API call
-const MOCK_VOUCHERS = [
-  { id: '01J5A1B2C3D4E5F6G7H8J9K0', code: 'XTU-TER-T61', amount: 5000, balance: 5000, buyer: 'Maria Silva', status: 'active', created_at: '2026-01-15T10:30:00Z', expires_at: '2031-01-15T10:30:00Z' },
-  { id: '01J5A2B3C4D5E6F7G8H9J0K1', code: 'KLP-MNO-P23', amount: 10000, balance: 7500, buyer: 'João Santos', status: 'active', created_at: '2026-02-01T14:00:00Z', expires_at: '2031-02-01T14:00:00Z' },
-  { id: '01J5A3B4C5D6E7F8G9H0J1K2', code: 'QRS-TUV-W45', amount: 2500, balance: 0, buyer: 'Ana Costa', status: 'used', created_at: '2025-06-20T09:15:00Z', expires_at: '2030-06-20T09:15:00Z' },
-  { id: '01J5A4B5C6D7E8F9G0H1J2K3', code: 'BCD-EFG-H67', amount: 7500, balance: 7500, buyer: null, status: 'expired', created_at: '2024-03-10T16:45:00Z', expires_at: '2025-03-10T16:45:00Z' },
-  { id: '01J5A5B6C7D8E9F0G1H2J3K4', code: 'IJK-LMN-O89', amount: 15000, balance: 3200, buyer: 'Pedro Ferreira', status: 'active', created_at: '2026-03-01T11:00:00Z', expires_at: '2031-03-01T11:00:00Z' },
-]
+import { voucherCreatePath } from '@/constants/routes'
+import VoucherDatatable from '@/features/vouchers/components/VoucherDatatable'
+import { isVoucherExpired } from '@/features/vouchers/utils'
+import { useAuth } from '@/hooks/useAuth'
+import { useMain } from '@/hooks/useMain'
+import { get } from '@/services/api'
+
+const STATUS_ALL = 'all'
+
+/**
+ * Derives the display status for a voucher based on its data.
+ * @param {Object} voucher
+ * @returns {'active'|'used'|'expired'}
+ */
+function deriveStatus(voucher) {
+  if (isVoucherExpired(voucher.expires_at)) return 'expired'
+  if (voucher.balance === 0) return 'used'
+  return 'active'
+}
 
 /**
  * Component: VouchersIndex
- * Displays the voucher list in a datatable. Sets the page header title
- * and actions via MainContext.
+ * Displays the voucher list in a datatable with status filtering.
+ * Fetches vouchers from the API on mount and sets the page header
+ * title and actions via MainContext.
  * @component
  * @returns {JSX.Element}
  */
@@ -28,37 +37,115 @@ const VouchersIndex = () => {
   const { t } = useTranslation()
   const location = useLocation()
   const navigate = useNavigate()
+  const { isStoreSuspended } = useAuth()
   const { setHeader } = useMain()
 
   // State
-  const [vouchers] = useState(MOCK_VOUCHERS)
+  const [vouchers, setVouchers] = useState([])
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState(null)
+  const [statusFilter, setStatusFilter] = useState(STATUS_ALL)
+  const [pageIndex, setPageIndex] = useState(0)
+  const [totalCount, setTotalCount] = useState(0)
+
+  // Constants
+  const PAGE_SIZE = 50
+
+  // Derived State
+  const filteredVouchers = useMemo(() => {
+    if (statusFilter === STATUS_ALL) return vouchers
+    return vouchers.filter((v) => deriveStatus(v) === statusFilter)
+  }, [vouchers, statusFilter])
 
   // Handlers
   const handleCreate = useCallback(() => {
     navigate(voucherCreatePath(), { state: { backgroundLocation: location } })
   }, [navigate, location])
 
+  const fetchVouchers = useCallback(async (page = 0) => {
+    setIsLoading(true)
+    setError(null)
+
+    try {
+      const offset = page * PAGE_SIZE
+      const { data, meta } = await get(`/api/vouchers?limit=${PAGE_SIZE}&offset=${offset}`)
+      setVouchers(data)
+      setTotalCount(meta.total)
+    } catch (error_) {
+      setError(error_.message || t('common.error'))
+    } finally {
+      setIsLoading(false)
+    }
+  }, [t])
+
+  const handleStatusFilter = useCallback((event) => {
+    setStatusFilter(event.target.value)
+  }, [])
+
   // Effects
   useEffect(() => {
-    setHeader({
-      title: t('features.vouchers.heading'),
-      actions: [
-        {
+    const actions = isStoreSuspended
+      ? []
+      : [{
           label: t('features.vouchers.create.heading'),
           icon: Plus,
           onClick: handleCreate,
           variant: 'primary',
-        },
-      ],
-    })
+        }]
 
+    setHeader({ title: t('features.vouchers.heading'), actions })
     return () => setHeader()
-  }, [t, setHeader, handleCreate])
+  }, [t, setHeader, handleCreate, isStoreSuspended])
+
+  const handlePageChange = useCallback((newPageIndex) => {
+    setPageIndex(newPageIndex)
+    fetchVouchers(newPageIndex)
+  }, [fetchVouchers])
+
+  useEffect(() => {
+    fetchVouchers(pageIndex)
+  }, [fetchVouchers, location.key])
 
   // Render
+  if (isLoading) {
+    return (
+      <div className="c-voucher-list">
+        <p>{t('common.loading')}</p>
+      </div>
+    )
+  }
+
+  if (error) {
+    return (
+      <div className="c-voucher-list">
+        <p>{t('common.error')}</p>
+      </div>
+    )
+  }
+
+  const statusFilters = (
+    <div className="c-datatable__filter-group">
+      <select
+        className="c-datatable__filter-select"
+        onChange={handleStatusFilter}
+        value={statusFilter}
+      >
+        <option value={STATUS_ALL}>{t('common.filters.allStatuses')}</option>
+        <option value="active">{t('features.vouchers.list.active')}</option>
+        <option value="used">{t('features.vouchers.list.used')}</option>
+        <option value="expired">{t('features.vouchers.list.expired')}</option>
+      </select>
+    </div>
+  )
+
   return (
     <div className="c-voucher-list">
-      <VoucherDatatable vouchers={vouchers} />
+      <VoucherDatatable
+        filters={statusFilters}
+        pageSize={PAGE_SIZE}
+        serverPagination={{ total: totalCount, pageIndex, onPageChange: handlePageChange }}
+        vouchers={filteredVouchers}
+      />
     </div>
   )
 }

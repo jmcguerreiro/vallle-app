@@ -1,0 +1,275 @@
+/* ─── Admin nav section label ──────────────────────────────────── */
+
+.c-layout__nav-section-label {
+  display: block;
+  padding: var(--space-md) var(--space-md) var(--space-xs);
+  font-size: 0.6875rem;
+  font-weight: 600;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+  color: rgba(255, 255, 255, 0.35);
+  margin-top: var(--space-sm);
+}
+
+/* ─── Admin badge ──────────────────────────────────────────────── */
+
+.c-admin-badge {
+  display: inline-block;
+  padding: 2px var(--space-sm);
+  border-radius: var(--radius-sm);
+  font-size: 0.75rem;
+  font-weight: 500;
+}
+
+.c-admin-badge--active {
+  background: rgba(122, 155, 118, 0.15);
+  color: var(--color-sage);
+}
+
+.c-admin-badge--inactive {
+  background: rgba(196, 101, 58, 0.1);
+  color: var(--color-primary);
+}
+
+.c-admin-badge--suspended {
+  background: rgba(212, 165, 116, 0.2);
+  color: #8a6520;
+}
+
+.c-admin-badge--paid {
+  background: rgba(122, 155, 118, 0.15);
+  color: var(--color-sage);
+}
+
+.c-admin-badge--unpaid {
+  background: rgba(212, 165, 116, 0.2);
+  color: #b07d3a;
+}
+
+.c-admin-badge--role-admin {
+  background: rgba(44, 37, 32, 0.08);
+  color: var(--color-text-muted);
+}
+
+.c-admin-badge--role-super_admin {
+  background: rgba(196, 101, 58, 0.12);
+  color: var(--color-primary);
+}
+
+/* ─── Admin stat cards ─────────────────────────────────────────── */
+
+.c-admin-stats-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: var(--space-md);
+  margin-bottom: var(--space-xl);
+}
+
+.c-admin-stats-grid--3 {
+  grid-template-columns: repeat(3, 1fr);
+}
+
+.c-admin-stat {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  padding: var(--space-md) var(--space-lg);
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.c-admin-stat--highlight {
+  border-color: var(--color-honey);
+  background: rgba(212, 165, 116, 0.06);
+}
+
+.c-admin-stat__label {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+}
+
+.c-admin-stat__value {
+  font-size: 1.375rem;
+  font-weight: 500;
+  color: var(--color-text);
+}
+
+/* ─── Admin detail rows ────────────────────────────────────────── */
+
+.c-admin-detail-grid {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  margin-bottom: var(--space-xl);
+}
+
+.c-admin-detail__row {
+  display: flex;
+  align-items: baseline;
+  gap: var(--space-md);
+  padding: var(--space-sm) 0;
+  border-bottom: 1px solid var(--color-border);
+}
+
+.c-admin-detail__row:last-child {
+  border-bottom: none;
+}
+
+.c-admin-detail__label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  min-width: 140px;
+  flex-shrink: 0;
+}
+
+.c-admin-detail__value {
+  color: var(--color-text);
+  font-size: 0.9375rem;
+}
+
+/* ─── Admin company users list ─────────────────────────────────── */
+
+.c-admin-company-users__heading {
+  font-size: 0.875rem;
+  font-weight: 600;
+  color: var(--color-text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  margin-bottom: var(--space-sm);
+}
+
+.c-admin-company-users__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.c-admin-company-users__item {
+  background: var(--color-bg);
+  border-radius: var(--radius-sm);
+}
+
+.c-admin-company-users__link {
+  display: flex;
+  align-items: center;
+  gap: var(--space-md);
+  padding: var(--space-sm) var(--space-md);
+  color: inherit;
+  text-decoration: none;
+  border-radius: var(--radius-sm);
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: var(--color-surface);
+  }
+}
+
+.c-admin-company-users__name {
+  font-weight: 500;
+  flex: 1;
+}
+
+.c-admin-company-users__email {
+  font-size: 0.875rem;
+  color: var(--color-text-muted);
+}
+
+/* ─── Admin user stores list ───────────────────────────────────── */
+
+.c-admin-user-stores {
+  margin: var(--space-md) 0;
+  padding: var(--space-md);
+  background: var(--color-bg);
+  border-radius: var(--radius-md);
+}
+
+.c-admin-user-stores__label {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-bottom: var(--space-sm);
+}
+
+.c-admin-user-stores__list {
+  list-style: none;
+  display: flex;
+  flex-wrap: wrap;
+  gap: var(--space-sm);
+}
+
+.c-admin-user-stores__item {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-sm);
+  padding: var(--space-xs) var(--space-sm);
+  font-size: 0.875rem;
+}
+
+/* ─── Admin commission amounts ─────────────────────────────────── */
+
+.c-admin-amount--unpaid {
+  color: #b07d3a;
+  font-weight: 500;
+}
+
+.c-admin-amount--paid {
+  color: var(--color-text-muted);
+}
+
+/* ─── Admin commission detail table ───────────────────────────── */
+
+.c-admin-commissions-detail {
+  min-width: 0;
+}
+
+.c-admin-commissions-detail__empty {
+  color: var(--color-text-muted);
+  font-size: 0.9375rem;
+  padding: var(--space-xl) 0;
+  text-align: center;
+}
+
+.c-admin-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9375rem;
+}
+
+.c-admin-table th {
+  text-align: left;
+  padding: var(--space-sm) var(--space-md);
+  font-size: 0.75rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.05em;
+  color: var(--color-text-muted);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.c-admin-table td {
+  padding: var(--space-md);
+  border-bottom: 1px solid var(--color-border);
+  vertical-align: middle;
+}
+
+.c-admin-table tbody tr:last-child td {
+  border-bottom: none;
+}
+
+.c-admin-table__row--paid td {
+  opacity: 0.6;
+}
+
+.c-admin-table__actions {
+  text-align: right;
+  white-space: nowrap;
+}
+
+/* ─── Wide modal ───────────────────────────────────────────────── */
+
+.c-modal--wide {
+  max-width: 800px;
+}

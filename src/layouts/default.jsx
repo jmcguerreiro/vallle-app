@@ -5,6 +5,7 @@ import { NavLink, Outlet, useNavigate } from 'react-router-dom'
 import { ArrowLeftRight as IconSwitch } from 'lucide-react'
 
 import { ROUTES } from '@/constants/routes'
+import { USER_ROLES } from '@/constants/user-roles'
 import { useAuth } from '@/hooks/useAuth'
 import { useMain } from '@/hooks/useMain'
 
@@ -18,7 +19,7 @@ import { useMain } from '@/hooks/useMain'
 const DefaultLayout = () => {
   // Hooks
   const { t } = useTranslation()
-  const { user, logout, isSuperAdmin, activeStore, selectStore } = useAuth()
+  const { user, logout, isSuperAdmin, activeStore, selectStore, isStoreSuspended } = useAuth()
   const navigate = useNavigate()
   const { header } = useMain()
 
@@ -67,7 +68,7 @@ const DefaultLayout = () => {
           <h1 className="c-layout__logo">{t('common.appName')}</h1>
         </div>
 
-        {activeStore && (
+        {activeStore && !isSuperAdmin && (
           <div className="c-layout__store">
             <span className="c-layout__store-name">
               {activeStore.store_name}
@@ -86,25 +87,42 @@ const DefaultLayout = () => {
         )}
 
         <nav className="c-layout__nav">
-          <NavLink className="c-layout__nav-link" to={ROUTES.HOME}>
-            {t('nav.dashboard')}
-          </NavLink>
-          <NavLink className="c-layout__nav-link" to={ROUTES.VOUCHERS}>
-            {t('nav.vouchers')}
-          </NavLink>
-          <NavLink className="c-layout__nav-link" to={ROUTES.STATS}>
-            {t('nav.stats')}
-          </NavLink>
-          <NavLink className="c-layout__nav-link" to={ROUTES.PROFILE}>
-            {t('nav.profile')}
-          </NavLink>
-          <NavLink className="c-layout__nav-link" to={ROUTES.COMPANY}>
-            {t('nav.company')}
-          </NavLink>
-          {isSuperAdmin && (
-            <NavLink className="c-layout__nav-link" to={ROUTES.COMMISSIONS}>
-              {t('nav.commissions')}
-            </NavLink>
+          {isSuperAdmin ? (
+            <>
+              <NavLink className="c-layout__nav-link" to={ROUTES.HOME}>
+                {t('nav.dashboard')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.ADMIN_COMPANIES}>
+                {t('nav.adminCompanies')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.ADMIN_USERS}>
+                {t('nav.adminUsers')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.ADMIN_COMMISSIONS}>
+                {t('nav.adminCommissions')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.PROFILE}>
+                {t('nav.profile')}
+              </NavLink>
+            </>
+          ) : (
+            <>
+              <NavLink className="c-layout__nav-link" to={ROUTES.HOME}>
+                {t('nav.dashboard')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.VOUCHERS}>
+                {t('nav.vouchers')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.STATS}>
+                {t('nav.stats')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.PROFILE}>
+                {t('nav.profile')}
+              </NavLink>
+              <NavLink className="c-layout__nav-link" to={ROUTES.COMPANY}>
+                {t('nav.company')}
+              </NavLink>
+            </>
           )}
         </nav>
 
@@ -172,6 +190,11 @@ const DefaultLayout = () => {
       )}
 
       <main className="c-layout__main">
+        {isStoreSuspended && (
+          <div className="c-layout__suspended-banner" role="alert">
+            {t('features.storeSuspended.banner')}
+          </div>
+        )}
         {(header.title || header.actions.length > 0) && (
           <div className="c-layout__main-header">
             {header.title && <h1 className="c-layout__main-header-title">{header.title}</h1>}

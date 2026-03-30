@@ -28,6 +28,19 @@ export async function verifyStoreAccess(env, userId, storeId) {
 }
 
 /**
+ * Returns the store status for a given store ID.
+ * @param {Object} env - Cloudflare env bindings
+ * @param {string} storeId - Store ID
+ * @returns {Promise<string|null>} Store status or null if not found
+ */
+export async function getStoreStatus(env, storeId) {
+  const store = await env.DB.prepare(
+    'SELECT status FROM stores WHERE id = ?',
+  ).bind(storeId).first()
+  return store?.status || null
+}
+
+/**
  * Reads the store ID from the request header and verifies user access.
  * Returns a Response if validation fails, or the store ID if successful.
  * @param {Request} request

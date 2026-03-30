@@ -11,6 +11,10 @@
     "noResults": "Sem resultados.",
     "error": "Algo correu mal. Tenta novamente.",
     "search": "Pesquisar...",
+    "filters": {
+      "allStatuses": "Todos os estados",
+      "allStores": "Todas as lojas"
+    },
     "pagination": {
       "previous": "Anterior",
       "next": "Seguinte",
@@ -76,33 +80,69 @@
     },
     "dashboard": {
       "heading": "Painel",
-      "welcome": "Olá, {{name}}",
+      "welcome": "Olá, {{name}}!",
+      "subtitle": "Tens {{count}} vouchers ativos. Como posso ajudar?",
+      "subtitleNone": "Ainda não tens vouchers ativos. Como posso ajudar?",
+      "actions": {
+        "create": "Emitir",
+        "redeem": "Redimir",
+        "lookup": "Consultar"
+      }
+    },
+    "adminDashboard": {
+      "heading": "Painel",
+      "welcome": "Olá, {{name}}!",
+      "subtitle": "Aqui está uma visão geral da plataforma.",
       "stats": {
-        "activeVouchers": "Vouchers ativos",
-        "totalRedeemed": "Total resgatado",
-        "pendingCommissions": "Comissões pendentes"
+        "clients": "Empresas",
+        "voucherAmount": "Total em vouchers",
+        "commission": "Total de comissões"
+      },
+      "chart": {
+        "title": "Visão mensal",
+        "vouchers": "Vouchers",
+        "commissions": "Comissões"
       }
     },
     "vouchers": {
       "heading": "Vouchers",
       "create": {
         "heading": "Criar voucher",
-        "comingSoon": "Formulário de criação de voucher em breve.",
         "amount": "Valor (€)",
         "buyer": "Nome do comprador",
+        "expiresAt": "Data de expiração",
         "submit": "Criar voucher",
         "success": "Voucher criado com sucesso!",
         "error": {
+          "amountRequired": "O valor é obrigatório.",
+          "amountPositive": "O valor deve ser superior a zero.",
+          "expiresAtRequired": "A data de expiração é obrigatória.",
+          "expiresAtFuture": "A data de expiração deve ser no futuro.",
           "generic": "Não foi possível criar o voucher."
         }
       },
       "view": {
         "heading": "Detalhes do voucher",
-        "comingSoon": "Detalhes do voucher em breve."
+        "code": "Código",
+        "amount": "Valor",
+        "balance": "Saldo",
+        "buyer": "Comprador",
+        "status": "Estado",
+        "createdAt": "Criado em",
+        "expiresAt": "Expira em",
+        "edit": "Editar"
       },
       "edit": {
         "heading": "Editar voucher",
-        "comingSoon": "Formulário de edição em breve."
+        "buyer": "Nome do comprador",
+        "expiresAt": "Data de expiração",
+        "currentAmount": "Valor",
+        "submit": "Guardar alterações",
+        "success": "Voucher atualizado com sucesso!",
+        "error": {
+          "generic": "Não foi possível atualizar o voucher.",
+          "loadFailed": "Não foi possível carregar o voucher."
+        }
       },
       "redeem": {
         "heading": "Resgatar voucher",
@@ -118,6 +158,15 @@
           "generic": "Não foi possível resgatar o voucher."
         }
       },
+      "redemptions": {
+        "heading": "Histórico de resgates",
+        "date": "Data",
+        "amount": "Valor",
+        "description": "Descrição",
+        "redeemedBy": "Resgatado por",
+        "balanceAfter": "Saldo após",
+        "empty": "Sem resgates."
+      },
       "list": {
         "code": "Código",
         "amount": "Valor",
@@ -128,13 +177,19 @@
         "expiresAt": "Expira em",
         "active": "Ativo",
         "used": "Usado",
-        "expired": "Expirado",
-        "comingSoon": "Lista de vouchers em breve."
+        "expired": "Expirado"
       }
     },
     "stats": {
       "heading": "Estatísticas",
-      "comingSoon": "Estatísticas em breve."
+      "totalVouchers": "Total de vouchers",
+      "activeVouchers": "Vouchers ativos",
+      "totalAmount": "Valor total",
+      "totalRedeemed": "Total resgatado",
+      "chart": {
+        "title": "Vouchers criados",
+        "vouchers": "Vouchers"
+      }
     },
     "profile": {
       "heading": "Perfil",
@@ -205,7 +260,182 @@
       "paid": "Paga",
       "store": "Loja",
       "amount": "Valor",
-      "date": "Data"
+      "date": "Data",
+      "voucherCode": "Voucher",
+      "status": "Estado",
+      "paidAt": "Paga em",
+      "success": "Comissão marcada como paga.",
+      "error": {
+        "generic": "Não foi possível atualizar a comissão."
+      }
+    },
+    "storeSuspended": {
+      "banner": "A sua conta foi suspensa. Pode continuar a consultar e resgatar vouchers, mas a criação de novos vouchers está desativada. Contacte o suporte para mais informações."
+    },
+    "admin": {
+      "companies": {
+        "heading": "Empresas",
+        "list": {
+          "name": "Empresa",
+          "category": "Categoria",
+          "email": "Email",
+          "vouchers": "Vouchers",
+          "revenue": "Receita",
+          "commission": "Comissão",
+          "commissionStatus": "Comissões",
+          "status": "Estado",
+          "createdAt": "Criado em",
+          "updatedAt": "Última atualização",
+          "active": "Ativo",
+          "suspended": "Suspenso",
+          "inactive": "Inativo",
+          "paid": "Tudo pago",
+          "unpaid": "Por pagar"
+        },
+        "form": {
+          "name": "Nome da empresa",
+          "category": "Categoria",
+          "email": "Email",
+          "phone": "Telefone",
+          "vatId": "NIF",
+          "address1": "Morada linha 1",
+          "address2": "Morada linha 2",
+          "city": "Cidade",
+          "postalCode": "Código postal",
+          "region": "Distrito",
+          "country": "País",
+          "status": "Estado",
+          "error": {
+            "nameRequired": "O nome da empresa é obrigatório."
+          }
+        },
+        "create": {
+          "heading": "Adicionar empresa",
+          "submit": "Criar empresa",
+          "success": "Empresa criada com sucesso!",
+          "error": {
+            "generic": "Não foi possível criar a empresa."
+          }
+        },
+        "view": {
+          "heading": "Detalhes da empresa",
+          "edit": "Editar",
+          "vouchers": "Vouchers emitidos",
+          "totalSales": "Total de vendas",
+          "totalCommission": "Total de comissões",
+          "unpaidCommission": "Por pagar",
+          "users": "Utilizadores"
+        },
+        "edit": {
+          "heading": "Editar empresa",
+          "submit": "Guardar alterações",
+          "success": "Empresa atualizada com sucesso!",
+          "error": {
+            "generic": "Não foi possível atualizar a empresa."
+          }
+        },
+        "error": {
+          "generic": "Não foi possível carregar as empresas.",
+          "loadFailed": "Não foi possível carregar os dados da empresa."
+        }
+      },
+      "users": {
+        "heading": "Utilizadores",
+        "list": {
+          "name": "Nome",
+          "email": "Email",
+          "role": "Papel",
+          "companies": "Empresas",
+          "status": "Estado",
+          "createdAt": "Criado em",
+          "updatedAt": "Última atualização",
+          "active": "Ativo",
+          "inactive": "Inativo",
+          "role_admin": "Admin",
+          "role_super_admin": "Super Admin"
+        },
+        "form": {
+          "name": "Nome",
+          "email": "Email",
+          "password": "Palavra-passe",
+          "role": "Papel",
+          "company": "Atribuir a empresa",
+          "noCompany": "Sem empresa",
+          "error": {
+            "nameRequired": "O nome é obrigatório.",
+            "emailRequired": "O email é obrigatório.",
+            "passwordRequired": "A palavra-passe é obrigatória."
+          }
+        },
+        "create": {
+          "heading": "Adicionar utilizador",
+          "submit": "Criar utilizador",
+          "success": "Utilizador criado com sucesso!",
+          "error": {
+            "generic": "Não foi possível criar o utilizador."
+          }
+        },
+        "view": {
+          "heading": "Detalhes do utilizador",
+          "edit": "Editar",
+          "disable": "Desativar conta",
+          "enable": "Ativar conta",
+          "statusUpdated": "Estado da conta atualizado.",
+          "companies": "Empresas atribuídas"
+        },
+        "edit": {
+          "heading": "Editar utilizador",
+          "submit": "Guardar alterações",
+          "success": "Utilizador atualizado com sucesso!",
+          "assignedTo": "Atribuído a",
+          "error": {
+            "generic": "Não foi possível atualizar o utilizador."
+          }
+        },
+        "error": {
+          "generic": "Não foi possível carregar os utilizadores.",
+          "loadFailed": "Não foi possível carregar os dados do utilizador.",
+          "emailTaken": "Este email já está a ser utilizado."
+        }
+      },
+      "commissions": {
+        "heading": "Comissões",
+        "company": "Empresa",
+        "voucherSales": "Vendas de vouchers",
+        "totalCommission": "Comissão",
+        "totalPaid": "Pago",
+        "outstanding": "Por pagar",
+        "lastPaid": "Último pagamento",
+        "month": "Mês",
+        "commissions": "Comissões",
+        "amount": "Valor",
+        "status": "Estado",
+        "paid": "Pago",
+        "unpaid": "Por pagar",
+        "markPaid": "Marcar como pago",
+        "markPaidSuccess": "Mês marcado como pago!",
+        "noMonths": "Sem comissões.",
+        "error": {
+          "generic": "Não foi possível carregar as comissões."
+        }
+      }
+    }
+  },
+  "constants": {
+    "companyCategories": {
+      "restaurant": "Restaurante",
+      "cafe": "Café",
+      "bar": "Bar",
+      "bakery": "Padaria / Pastelaria",
+      "hotel": "Hotel",
+      "spa": "Spa & Bem-estar",
+      "salon": "Cabeleireiro & Beleza",
+      "retail": "Comércio",
+      "fitness": "Ginásio & Fitness",
+      "other": "Outro"
+    },
+    "countries": {
+      "PT": "Portugal"
     }
   },
   "validation": {
@@ -224,6 +454,10 @@
     "profile": "Perfil",
     "company": "Empresa",
     "commissions": "Comissões",
+    "admin": "Admin",
+    "adminCompanies": "Empresas",
+    "adminUsers": "Utilizadores",
+    "adminCommissions": "Comissões",
     "switchStore": "Trocar de loja",
     "switchStoreModal": {
       "heading": "Trocar de loja",

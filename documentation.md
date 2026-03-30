@@ -19,8 +19,8 @@ Vallle earns 5% commission on every voucher created (min €0.50, max €2.00), 
 
 - 5% of every voucher created
 - Minimum commission: €0.50
-- Maximum commission: €2.00
-- Collected directly from stores — you select which commissions to mark as paid
+- Maximum commission: €2.50
+- Collected monthly from stores — you select which commissions to mark as paid
 
 ### Onboarding
 

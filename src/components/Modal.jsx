@@ -13,9 +13,10 @@ import { useModal } from "@/hooks/useModal";
  * @param {Object} props
  * @param {React.ReactNode} props.children - Modal content
  * @param {string} [props.className] - Additional CSS class
+ * @param {'default'|'wide'} [props.size='default'] - Modal width variant
  * @returns {JSX.Element}
  */
-const Modal = ({ children, className = "" }) => {
+const Modal = ({ children, className = "", size = "default" }) => {
   // Hooks
   const navigate = useNavigate();
   const { header } = useModal();
@@ -49,7 +50,7 @@ const Modal = ({ children, className = "" }) => {
   return (
     <dialog
       ref={dialogRef}
-      className={`c-modal${className ? ` ${className}` : ""}`}
+      className={`c-modal${size === "wide" ? " c-modal--wide" : ""}${className ? ` ${className}` : ""}`}
       onClick={handleBackdropClick}
       onClose={handleClose}
     >

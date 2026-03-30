@@ -11,6 +11,10 @@
     "noResults": "No results.",
     "error": "Something went wrong. Please try again.",
     "search": "Search...",
+    "filters": {
+      "allStatuses": "All statuses",
+      "allStores": "All stores"
+    },
     "pagination": {
       "previous": "Previous",
       "next": "Next",
@@ -76,33 +80,69 @@
     },
     "dashboard": {
       "heading": "Dashboard",
-      "welcome": "Hello, {{name}}",
+      "welcome": "Hi, {{name}}!",
+      "subtitle": "You have {{count}} active vouchers. How can I help you?",
+      "subtitleNone": "You have no active vouchers yet. How can I help you?",
+      "actions": {
+        "create": "Create",
+        "redeem": "Redeem",
+        "lookup": "Look up"
+      }
+    },
+    "adminDashboard": {
+      "heading": "Dashboard",
+      "welcome": "Hi, {{name}}!",
+      "subtitle": "Here's a snapshot of the platform.",
       "stats": {
-        "activeVouchers": "Active vouchers",
-        "totalRedeemed": "Total redeemed",
-        "pendingCommissions": "Pending commissions"
+        "clients": "Companies",
+        "voucherAmount": "Total voucher amount",
+        "commission": "Total commissions"
+      },
+      "chart": {
+        "title": "Monthly overview",
+        "vouchers": "Vouchers",
+        "commissions": "Commissions"
       }
     },
     "vouchers": {
       "heading": "Vouchers",
       "create": {
         "heading": "Create voucher",
-        "comingSoon": "Create voucher form coming soon.",
         "amount": "Amount (€)",
         "buyer": "Buyer name",
+        "expiresAt": "Expiry date",
         "submit": "Create voucher",
         "success": "Voucher created successfully!",
         "error": {
+          "amountRequired": "Amount is required.",
+          "amountPositive": "Amount must be greater than zero.",
+          "expiresAtRequired": "Expiry date is required.",
+          "expiresAtFuture": "Expiry date must be in the future.",
           "generic": "Could not create the voucher."
         }
       },
       "view": {
         "heading": "Voucher details",
-        "comingSoon": "Voucher details coming soon."
+        "code": "Code",
+        "amount": "Amount",
+        "balance": "Balance",
+        "buyer": "Buyer",
+        "status": "Status",
+        "createdAt": "Created",
+        "expiresAt": "Expires",
+        "edit": "Edit"
       },
       "edit": {
         "heading": "Edit voucher",
-        "comingSoon": "Edit voucher form coming soon."
+        "buyer": "Buyer name",
+        "expiresAt": "Expiry date",
+        "currentAmount": "Amount",
+        "submit": "Save changes",
+        "success": "Voucher updated successfully!",
+        "error": {
+          "generic": "Could not update the voucher.",
+          "loadFailed": "Could not load the voucher."
+        }
       },
       "redeem": {
         "heading": "Redeem voucher",
@@ -118,6 +158,15 @@
           "generic": "Could not redeem the voucher."
         }
       },
+      "redemptions": {
+        "heading": "Redemption history",
+        "date": "Date",
+        "amount": "Amount",
+        "description": "Description",
+        "redeemedBy": "Redeemed by",
+        "balanceAfter": "Balance after",
+        "empty": "No redemptions yet."
+      },
       "list": {
         "code": "Code",
         "amount": "Amount",
@@ -128,13 +177,19 @@
         "expiresAt": "Expires",
         "active": "Active",
         "used": "Used",
-        "expired": "Expired",
-        "comingSoon": "Voucher list coming soon."
+        "expired": "Expired"
       }
     },
     "stats": {
       "heading": "Stats",
-      "comingSoon": "Statistics coming soon."
+      "totalVouchers": "Total vouchers",
+      "activeVouchers": "Active vouchers",
+      "totalAmount": "Total amount",
+      "totalRedeemed": "Total redeemed",
+      "chart": {
+        "title": "Vouchers created",
+        "vouchers": "Vouchers"
+      }
     },
     "profile": {
       "heading": "Profile",
@@ -205,7 +260,182 @@
       "paid": "Paid",
       "store": "Store",
       "amount": "Amount",
-      "date": "Date"
+      "date": "Date",
+      "voucherCode": "Voucher",
+      "status": "Status",
+      "paidAt": "Paid at",
+      "success": "Commission marked as paid.",
+      "error": {
+        "generic": "Could not update the commission."
+      }
+    },
+    "storeSuspended": {
+      "banner": "Your account has been suspended. You can still view and redeem vouchers, but creating new vouchers is disabled. Please contact support for more information."
+    },
+    "admin": {
+      "companies": {
+        "heading": "Companies",
+        "list": {
+          "name": "Company",
+          "category": "Category",
+          "email": "Email",
+          "vouchers": "Vouchers",
+          "revenue": "Revenue",
+          "commission": "Commission",
+          "commissionStatus": "Commissions",
+          "status": "Status",
+          "createdAt": "Created",
+          "updatedAt": "Last updated",
+          "active": "Active",
+          "suspended": "Suspended",
+          "inactive": "Inactive",
+          "paid": "All paid",
+          "unpaid": "Unpaid"
+        },
+        "form": {
+          "name": "Company name",
+          "category": "Category",
+          "email": "Email",
+          "phone": "Phone",
+          "vatId": "VAT number",
+          "address1": "Address line 1",
+          "address2": "Address line 2",
+          "city": "City",
+          "postalCode": "Postal code",
+          "region": "Region",
+          "country": "Country",
+          "status": "Status",
+          "error": {
+            "nameRequired": "Company name is required."
+          }
+        },
+        "create": {
+          "heading": "Add company",
+          "submit": "Create company",
+          "success": "Company created successfully!",
+          "error": {
+            "generic": "Could not create the company."
+          }
+        },
+        "view": {
+          "heading": "Company details",
+          "edit": "Edit",
+          "vouchers": "Vouchers issued",
+          "totalSales": "Total sales",
+          "totalCommission": "Total commission",
+          "unpaidCommission": "Outstanding",
+          "users": "Users"
+        },
+        "edit": {
+          "heading": "Edit company",
+          "submit": "Save changes",
+          "success": "Company updated successfully!",
+          "error": {
+            "generic": "Could not update the company."
+          }
+        },
+        "error": {
+          "generic": "Could not load companies.",
+          "loadFailed": "Could not load company details."
+        }
+      },
+      "users": {
+        "heading": "Users",
+        "list": {
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "companies": "Companies",
+          "status": "Status",
+          "createdAt": "Created",
+          "updatedAt": "Last updated",
+          "active": "Active",
+          "inactive": "Inactive",
+          "role_admin": "Admin",
+          "role_super_admin": "Super Admin"
+        },
+        "form": {
+          "name": "Name",
+          "email": "Email",
+          "password": "Password",
+          "role": "Role",
+          "company": "Assign to company",
+          "noCompany": "No company",
+          "error": {
+            "nameRequired": "Name is required.",
+            "emailRequired": "Email is required.",
+            "passwordRequired": "Password is required."
+          }
+        },
+        "create": {
+          "heading": "Add user",
+          "submit": "Create user",
+          "success": "User created successfully!",
+          "error": {
+            "generic": "Could not create the user."
+          }
+        },
+        "view": {
+          "heading": "User details",
+          "edit": "Edit",
+          "disable": "Disable account",
+          "enable": "Enable account",
+          "statusUpdated": "Account status updated.",
+          "companies": "Assigned companies"
+        },
+        "edit": {
+          "heading": "Edit user",
+          "submit": "Save changes",
+          "success": "User updated successfully!",
+          "assignedTo": "Assigned to",
+          "error": {
+            "generic": "Could not update the user."
+          }
+        },
+        "error": {
+          "generic": "Could not load users.",
+          "loadFailed": "Could not load user details.",
+          "emailTaken": "This email is already in use."
+        }
+      },
+      "commissions": {
+        "heading": "Commissions",
+        "company": "Company",
+        "voucherSales": "Voucher sales",
+        "totalCommission": "Commission",
+        "totalPaid": "Paid",
+        "outstanding": "Outstanding",
+        "lastPaid": "Last paid",
+        "month": "Month",
+        "commissions": "Commissions",
+        "amount": "Amount",
+        "status": "Status",
+        "paid": "Paid",
+        "unpaid": "Unpaid",
+        "markPaid": "Mark as paid",
+        "markPaidSuccess": "Month marked as paid!",
+        "noMonths": "No commissions yet.",
+        "error": {
+          "generic": "Could not load commissions."
+        }
+      }
+    }
+  },
+  "constants": {
+    "companyCategories": {
+      "restaurant": "Restaurant",
+      "cafe": "Café",
+      "bar": "Bar",
+      "bakery": "Bakery",
+      "hotel": "Hotel",
+      "spa": "Spa & Wellness",
+      "salon": "Hair & Beauty Salon",
+      "retail": "Retail",
+      "fitness": "Fitness & Gym",
+      "other": "Other"
+    },
+    "countries": {
+      "PT": "Portugal"
     }
   },
   "validation": {
@@ -224,6 +454,10 @@
     "profile": "Profile",
     "company": "Company",
     "commissions": "Commissions",
+    "admin": "Admin",
+    "adminCompanies": "Companies",
+    "adminUsers": "Users",
+    "adminCommissions": "Commissions",
     "switchStore": "Switch store",
     "switchStoreModal": {
       "heading": "Switch store",

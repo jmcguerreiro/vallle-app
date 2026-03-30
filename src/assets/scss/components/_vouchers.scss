@@ -1,0 +1,210 @@
+/* ─── Voucher status badge ────────────────────────────────────── */
+
+.c-voucher-status {
+	@include font-size(xs);
+
+	border-radius: $border-radius-xl;
+	display: inline-block;
+	font-weight: $font-weight-bold;
+	letter-spacing: 0.02em;
+	padding: $spacing-1 $spacing-3;
+
+	&--active {
+		background: rgba($color-success, 0.12);
+		color: $color-success;
+	}
+
+	&--used {
+		background: rgba($color-ash, 0.15);
+		color: $text-color-muted;
+	}
+
+	&--expired {
+		background: rgba($color-danger, 0.1);
+		color: $color-danger;
+	}
+}
+
+/* ─── Voucher detail (view modal) ────────────────────────────── */
+
+.c-voucher-detail {
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-4;
+}
+
+.c-voucher-detail__field {
+	display: flex;
+	align-items: baseline;
+	gap: $spacing-3;
+}
+
+.c-voucher-detail__label {
+	@include font-size(sm);
+
+	color: $text-color-muted;
+	flex-shrink: 0;
+	min-width: 100px;
+}
+
+.c-voucher-detail__value {
+	@include font-size(sm);
+
+	color: $text-color-highlight;
+	font-weight: $font-weight-bold;
+}
+
+/* ─── Voucher redeem ─────────────────────────────────────────── */
+
+.c-voucher-redeem__info {
+	align-items: center;
+	background: rgba($color-ash, 0.1);
+	border-radius: $border-radius-md;
+	display: flex;
+	gap: $spacing-4;
+	justify-content: space-between;
+	margin-bottom: $spacing-4;
+	padding: $spacing-3 $spacing-4;
+}
+
+.c-voucher-redeem__code {
+	@include font-size(sm);
+
+	color: $text-color-highlight;
+	font-weight: $font-weight-bold;
+	letter-spacing: 0.05em;
+}
+
+.c-voucher-redeem__balance {
+	@include font-size(sm);
+
+	color: $text-color-muted;
+}
+
+/* ─── Voucher code input (segmented) ────────────────────────── */
+
+.c-voucher-code-input {
+	display: flex;
+	gap: $spacing-2;
+	align-items: center;
+
+	&--error {
+		.c-voucher-code-input__box {
+			outline: solid 1px $color-danger;
+		}
+	}
+}
+
+.c-voucher-code-input__segment {
+	display: flex;
+	align-items: center;
+	gap: $spacing-2;
+}
+
+.c-voucher-code-input__box {
+	background: $color-white;
+	border-radius: $border-radius-lg;
+	color: $color-espresso;
+	font-family: 'DM Mono', 'Courier New', monospace;
+	font-size: 1.1rem;
+	font-weight: $font-weight-bold;
+	letter-spacing: 0.15em;
+	padding: $spacing-3 $spacing-3;
+	text-align: center;
+	text-transform: uppercase;
+	width: 5rem;
+
+	&:focus {
+		outline: solid 1px $color-ash;
+	}
+
+	&::placeholder {
+		color: $text-color-muted;
+		font-weight: $font-weight-regular;
+		letter-spacing: 0.05em;
+	}
+}
+
+.c-voucher-code-input__sep {
+	@include font-size(lg);
+
+	color: $text-color-muted;
+	user-select: none;
+}
+
+/* ─── Voucher lookup ─────────────────────────────────────────── */
+
+.c-voucher-lookup__loading {
+	@include font-size(sm);
+
+	color: $text-color-muted;
+	margin-top: $spacing-4;
+}
+
+.c-voucher-lookup__result {
+	margin-top: $spacing-5;
+}
+
+.c-voucher-lookup__actions {
+	display: flex;
+	gap: $spacing-3;
+	margin-top: $spacing-4;
+}
+
+/* ─── Voucher redemptions log ────────────────────────────────── */
+
+.c-voucher-redemptions {
+	border-top: 1px solid rgba($color-ash, 0.2);
+	margin-top: $spacing-6;
+	padding-top: $spacing-4;
+}
+
+.c-voucher-redemptions__heading {
+	@include font-size(sm);
+
+	color: $text-color-muted;
+	font-weight: $font-weight-bold;
+	letter-spacing: 0.03em;
+	margin-bottom: $spacing-3;
+	text-transform: uppercase;
+}
+
+.c-voucher-redemptions__empty {
+	@include font-size(sm);
+
+	color: $text-color-muted;
+}
+
+.c-voucher-redemptions__table {
+	border-collapse: collapse;
+	width: 100%;
+
+	th {
+		@include font-size(xs);
+
+		color: $text-color-muted;
+		font-weight: $font-weight-bold;
+		padding: $spacing-2 $spacing-3;
+		text-align: left;
+	}
+
+	td {
+		@include font-size(sm);
+
+		border-top: 1px solid rgba($color-ash, 0.15);
+		color: $text-color;
+		padding: $spacing-2 $spacing-3;
+	}
+}
+
+/* ─── Voucher edit ───────────────────────────────────────────── */
+
+.c-voucher-edit__amount {
+	@include font-size(sm);
+
+	background: rgba($color-ash, 0.1);
+	border-radius: $border-radius-md;
+	color: $text-color;
+	margin-bottom: $spacing-4;
+	padding: $spacing-3 $spacing-4;
+}

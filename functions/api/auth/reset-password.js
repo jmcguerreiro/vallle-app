@@ -33,9 +33,15 @@ export const onRequestPost = async (context) => {
       )
     }
 
-    if (password.length < 8) {
+    if (
+      password.length < 8
+      || !/[A-Z]/.test(password)
+      || !/[a-z]/.test(password)
+      || !/\d/.test(password)
+      || !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)
+    ) {
       return Response.json(
-        { error: { message: 'Password must be at least 8 characters', code: 'VALIDATION_FAILED' } },
+        { error: { message: 'Password does not meet security requirements', code: 'WEAK_PASSWORD' } },
         { status: 400 },
       )
     }

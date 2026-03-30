@@ -4,8 +4,15 @@
 @import "./global/utilities";
 @import "./global/animations";
 
+@import "./components/admin";
 @import "./components/buttons";
+@import "./components/commissions";
+@import "./components/dashboard";
+@import "./components/datatable";
 @import "./components/forms";
+@import "./components/stats";
+@import "./components/toast";
+@import "./components/vouchers";
 
 @import "./structure/main";
 @import "./structure/background";
@@ -230,29 +237,110 @@ body {
   margin-top: var(--space-sm);
 }
 
-/* ─── Voucher list ───────────────────────────────────────────── */
+/* ─── Main header ────────────────────────────────────────────── */
 
-.c-voucher-list__header {
+.c-layout__main-header {
   display: flex;
   align-items: center;
   justify-content: space-between;
-  margin-bottom: var(--space-lg);
+  margin-bottom: var(--space-xl);
 }
 
-.c-voucher-list__create-btn {
-  display: inline-block;
-  padding: var(--space-sm) var(--space-lg);
-  background: var(--color-primary);
-  color: white;
+.c-layout__main-header-title {
+  font-size: 1.5rem;
+  color: var(--color-text);
+}
+
+.c-layout__main-header-actions {
+  display: flex;
+  gap: var(--space-sm);
+}
+
+/* ─── Suspended banner ──────────────────────────────────────── */
+
+.c-layout__suspended-banner {
+  background: rgba(212, 165, 116, 0.15);
+  border: 1px solid var(--color-honey);
   border-radius: var(--radius-md);
-  font-weight: 500;
+  color: #8a6520;
   font-size: 0.875rem;
-  transition: background 0.15s;
+  font-weight: 500;
+  margin-bottom: var(--space-lg);
+  padding: var(--space-md) var(--space-lg);
+  text-align: center;
 }
 
-.c-voucher-list__create-btn:hover {
-  background: var(--color-primary-hover);
-  text-decoration: none;
+/* ─── Store switcher ─────────────────────────────────────────── */
+
+.c-layout__store {
+  display: flex;
+  align-items: center;
+  gap: var(--space-sm);
+  margin-bottom: var(--space-lg);
+  padding: var(--space-sm) var(--space-md);
+  border-radius: var(--radius-md);
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.c-layout__store-name {
+  font-size: 0.8125rem;
+  font-weight: 400;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.c-layout__store-switch {
+  background: none;
+  border: none;
+  color: var(--color-parchment);
+  cursor: pointer;
+  padding: var(--space-xs);
+  opacity: 0.6;
+  transition: opacity 0.15s;
+}
+
+.c-layout__store-switch:hover {
+  opacity: 1;
+}
+
+.c-store-switcher__list {
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.c-store-switcher__option {
+  background: none;
+  border: 1px solid var(--color-border);
+  border-radius: var(--radius-md);
+  color: var(--color-text);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  padding: var(--space-sm) var(--space-md);
+  transition: border-color 0.15s, background 0.15s;
+  width: 100%;
+}
+
+.c-store-switcher__option:hover:not(:disabled) {
+  border-color: var(--color-primary);
+  background: rgba(196, 101, 58, 0.04);
+}
+
+.c-store-switcher__option--current {
+  border-color: var(--color-primary);
+  cursor: default;
+}
+
+.c-store-switcher__option-badge {
+  font-size: 0.75rem;
+  color: var(--color-text-muted);
 }
 
 /* ─── Login extras ───────────────────────────────────────────── */

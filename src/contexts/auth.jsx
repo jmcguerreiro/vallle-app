@@ -116,6 +116,8 @@ export const AuthProvider = ({ children }) => {
   // Derived State
   const needsStoreSelection = !!user && (user.stores?.length ?? 0) > 1 && !activeStore
 
+  const isStoreSuspended = activeStore?.store_status === 'suspended'
+
   const value = useMemo(() => ({
     user,
     setUser,
@@ -127,7 +129,8 @@ export const AuthProvider = ({ children }) => {
     needsStoreSelection,
     isAuthenticated: !!user,
     isSuperAdmin: user?.role === USER_ROLES.SUPER_ADMIN,
-  }), [user, loading, login, logout, activeStore, selectStore, needsStoreSelection])
+    isStoreSuspended,
+  }), [user, loading, login, logout, activeStore, selectStore, needsStoreSelection, isStoreSuspended])
 
   // Render
   return (

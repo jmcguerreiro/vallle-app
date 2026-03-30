@@ -46,12 +46,12 @@ export async function onRequestPost(context) {
       )
     }
 
-    // Fetch the user's stores
+    // Fetch the user's stores (exclude inactive stores)
     const { results: storeLinks } = await env.DB.prepare(
-      `SELECT su.store_id, su.role, s.name AS store_name
+      `SELECT su.store_id, su.role, s.name AS store_name, s.status AS store_status
        FROM store_users su
        JOIN stores s ON s.id = su.store_id
-       WHERE su.user_id = ?`,
+       WHERE su.user_id = ? AND s.status != 'inactive'`,
     ).bind(user.id).all()
 
     const token = await signJwt(

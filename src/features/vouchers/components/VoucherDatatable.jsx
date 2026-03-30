@@ -2,8 +2,9 @@ import { useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import Button from '@/components/Button'
 import Datatable from '@/components/Datatable'
-import { voucherPath } from '@/constants/routes'
+import { voucherPath, voucherRedeemPath } from '@/constants/routes'
 import { formatCurrency } from '@/utils/currency'
 import { formatDate } from '@/utils/dates'
 
@@ -24,9 +25,12 @@ const STATUS_KEYS = {
  * @component
  * @param {Object} props
  * @param {Array} props.vouchers - Array of voucher objects from the API
+ * @param {React.ReactNode} [props.filters] - Optional filter controls
+ * @param {number} [props.pageSize] - Rows per page
+ * @param {Object} [props.serverPagination] - Server-side pagination config
  * @returns {JSX.Element}
  */
-const VoucherDatatable = ({ vouchers }) => {
+const VoucherDatatable = ({ vouchers, filters, pageSize, serverPagination }) => {
   // Hooks
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -75,7 +79,29 @@ const VoucherDatatable = ({ vouchers }) => {
       header: t('features.vouchers.list.expiresAt'),
       cell: ({ getValue }) => formatDate(getValue()),
     },
-  ], [t])
+    {
+      id: 'actions',
+      header: '',
+      enableSorting: false,
+      cell: ({ row }) => {
+        const v = row.original
+        if (v.status !== 'active' || v.balance === 0) return null
+        return (
+          <Button
+            onClick={(event) => {
+              event.stopPropagation()
+              navigate(voucherRedeemPath(v.id), { state: { backgroundLocation: location } })
+            }}
+            size="sm"
+            skin="primary"
+            variant="outline"
+          >
+            {t('features.vouchers.redeem.submit')}
+          </Button>
+        )
+      },
+    },
+  ], [t, navigate, location])
 
   // Handlers
   const handleRowClick = useCallback((voucher) => {
@@ -87,7 +113,10 @@ const VoucherDatatable = ({ vouchers }) => {
     <Datatable
       columns={columns}
       data={vouchers}
+      filters={filters}
       onRowClick={handleRowClick}
+      pageSize={pageSize}
+      serverPagination={serverPagination}
     />
   )
 }
