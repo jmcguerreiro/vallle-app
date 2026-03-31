@@ -5,8 +5,10 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Plus as IconPlus } from 'lucide-react'
 
 import Datatable from '@/components/Datatable'
+import { COMPANY_CATEGORIES } from '@/constants/company-categories'
 import { ROUTES, adminCompanyEditPath, adminCompanyPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -25,11 +27,14 @@ const AdminCompaniesIndex = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { setHeader } = useMain()
+  const { refreshKey } = useRefresh()
   const { addToast } = useToast()
 
   // State
   const [companies, setCompanies] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [categoryFilter, setCategoryFilter] = useState('all')
 
   // Handlers
   const fetchCompanies = useCallback(async () => {
@@ -56,7 +61,26 @@ const AdminCompaniesIndex = () => {
     })
   }, [navigate, location])
 
+  const handleStatusFilter = useCallback((event) => {
+    setStatusFilter(event.target.value)
+  }, [])
+
+  const handleCategoryFilter = useCallback((event) => {
+    setCategoryFilter(event.target.value)
+  }, [])
+
   // Derived State
+  const filteredCompanies = useMemo(() => {
+    let result = companies
+    if (statusFilter !== 'all') {
+      result = result.filter((c) => c.status === statusFilter)
+    }
+    if (categoryFilter !== 'all') {
+      result = result.filter((c) => c.category === categoryFilter)
+    }
+    return result
+  }, [companies, statusFilter, categoryFilter])
+
   const columns = useMemo(() => [
     {
       accessorKey: 'name',
@@ -131,18 +155,44 @@ const AdminCompaniesIndex = () => {
 
   useEffect(() => {
     fetchCompanies()
-  }, [fetchCompanies])
+  }, [fetchCompanies, refreshKey])
 
   // Render
   if (isLoading) {
     return <div className="c-admin-companies"><p>{t('common.loading')}</p></div>
   }
 
+  const companyFilters = (
+    <div className="c-datatable__filter-group">
+      <select
+        className="c-datatable__filter-select"
+        onChange={handleStatusFilter}
+        value={statusFilter}
+      >
+        <option value="all">{t('common.filters.allStatuses')}</option>
+        <option value="active">{t('features.admin.companies.list.active')}</option>
+        <option value="suspended">{t('features.admin.companies.list.suspended')}</option>
+        <option value="inactive">{t('features.admin.companies.list.inactive')}</option>
+      </select>
+      <select
+        className="c-datatable__filter-select"
+        onChange={handleCategoryFilter}
+        value={categoryFilter}
+      >
+        <option value="all">{t('common.filters.allCategories')}</option>
+        {COMPANY_CATEGORIES.map((key) => (
+          <option key={key} value={key}>{t(`constants.companyCategories.${key}`)}</option>
+        ))}
+      </select>
+    </div>
+  )
+
   return (
     <div className="c-admin-companies">
       <Datatable
         columns={columns}
-        data={companies}
+        data={filteredCompanies}
+        filters={companyFilters}
         onRowClick={handleRowClick}
       />
     </div>

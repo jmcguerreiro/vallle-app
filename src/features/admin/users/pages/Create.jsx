@@ -10,6 +10,7 @@ import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, post } from '@/services/api'
 import { validatePassword } from '@/utils/password'
@@ -28,6 +29,7 @@ const AdminUserCreate = () => {
   const location = useLocation()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors } } = useForm()
 
@@ -50,6 +52,7 @@ const AdminUserCreate = () => {
         ...values,
         store_id: values.store_id || null,
       })
+      triggerRefresh()
       addToast(t('features.admin.users.create.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -61,7 +64,7 @@ const AdminUserCreate = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, navigate, t])
+  }, [addToast, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {
@@ -119,6 +122,7 @@ const AdminUserCreate = () => {
             id="role"
             {...register('role')}
           >
+            <option value="user">{t('features.admin.users.list.role_user')}</option>
             <option value="admin">{t('features.admin.users.list.role_admin')}</option>
             <option value="super_admin">{t('features.admin.users.list.role_super_admin')}</option>
           </select>

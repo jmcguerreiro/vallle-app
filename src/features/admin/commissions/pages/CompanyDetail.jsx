@@ -5,6 +5,7 @@ import { useNavigate, useParams } from 'react-router-dom'
 import Button from '@/components/Button'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, patch } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -34,6 +35,7 @@ const AdminCommissionsCompanyDetail = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
 
   // State
@@ -60,6 +62,7 @@ const AdminCommissionsCompanyDetail = () => {
     setMarkingPaid(yearMonth)
     try {
       await patch(`/api/admin/commissions/${storeId}/${yearMonth}`)
+      triggerRefresh()
       addToast(t('features.admin.commissions.markPaidSuccess'), 'success')
       await fetchData()
     } catch {
@@ -67,7 +70,7 @@ const AdminCommissionsCompanyDetail = () => {
     } finally {
       setMarkingPaid(null)
     }
-  }, [storeId, addToast, fetchData, t])
+  }, [storeId, addToast, fetchData, t, triggerRefresh])
 
   // Effects
   useEffect(() => {

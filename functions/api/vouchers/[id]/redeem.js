@@ -115,6 +115,13 @@ export async function onRequestPost(context) {
     ).bind(id).first()
     const balanceAfter = updated.balance
 
+    // Mark voucher as 'used' when fully redeemed
+    if (balanceAfter === 0) {
+      await env.DB.prepare(
+        'UPDATE vouchers SET status = ? WHERE id = ?',
+      ).bind('used', id).run()
+    }
+
     await env.DB.prepare(
       'INSERT INTO redemptions (id, store_id, voucher_id, redeemed_by, description, amount, balance_after, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
     ).bind(redemptionId, storeId, id, user.sub, description || null, amount, balanceAfter, now).run()

@@ -359,6 +359,65 @@ body {
   font-size: 0.875rem;
 }
 
+/* ─── Company tabs ───────────────────────────────────────────── */
+
+.c-company {
+  display: flex;
+  gap: var(--space-xl);
+}
+
+.c-company__tabs {
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+  min-width: 160px;
+  flex-shrink: 0;
+}
+
+.c-company__tab {
+  background: none;
+  border: none;
+  border-radius: var(--radius-md);
+  color: var(--color-text-muted);
+  cursor: pointer;
+  font-family: var(--font-body);
+  font-size: 0.9375rem;
+  font-weight: 400;
+  padding: var(--space-sm) var(--space-md);
+  text-align: left;
+  transition: background 0.15s, color 0.15s;
+}
+
+.c-company__tab:hover {
+  background: rgba(44, 37, 32, 0.04);
+  color: var(--color-text);
+}
+
+.c-company__tab--active {
+  background: var(--color-surface);
+  box-shadow: var(--shadow-sm);
+  color: var(--color-primary);
+  font-weight: 500;
+}
+
+.c-company__tab--active:hover {
+  background: var(--color-surface);
+  color: var(--color-primary);
+}
+
+.c-company__content {
+  flex: 1;
+  min-width: 0;
+}
+
+/* ─── Company users ─────────────────────────────────────────── */
+
+.c-company-users__header {
+  display: flex;
+  justify-content: flex-end;
+  margin-bottom: var(--space-lg);
+}
+
 /* ─── Loading ─────────────────────────────────────────────────── */
 
 .c-loading {

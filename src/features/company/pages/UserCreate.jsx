@@ -1,50 +1,44 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { useLocation, useNavigate } from 'react-router-dom'
+import { useNavigate } from 'react-router-dom'
 
 import Button from '@/components/Button'
 import Form from '@/components/forms/Form'
 import FormActions from '@/components/forms/FormActions'
 import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
-import Select from '@/components/forms/Select'
-import { COMPANY_CATEGORIES } from '@/constants/company-categories'
-import { adminCompanyPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
 import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { post } from '@/services/api'
+import { validatePassword } from '@/utils/password'
 
 /**
- * Component: AdminCompanyCreate
- * Form for creating a new company (store). Super admin only.
+ * Component: CompanyUserCreate
+ * Modal form for creating a new user and assigning them to the active store.
+ * Available to admin role only.
  * @component
  * @returns {JSX.Element}
  */
-const AdminCompanyCreate = () => {
+const CompanyUserCreate = () => {
   // Hooks
   const { t } = useTranslation()
   const navigate = useNavigate()
-  const location = useLocation()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
   const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
-  const { register, handleSubmit, control, formState: { errors } } = useForm()
+  const { register, handleSubmit, formState: { errors } } = useForm()
 
   // State
   const [serverError, setServerError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   // Derived State
-  const title = t('features.admin.companies.create.heading')
+  const title = t('features.company.users.create.heading')
   const setHeader = isModal ? setModalHeader : setMainHeader
-  const categoryOptions = COMPANY_CATEGORIES.map((key) => ({
-    value: key,
-    label: t(`constants.companyCategories.${key}`),
-  }))
 
   // Handlers
   const onSubmit = useCallback(async (values) => {
@@ -52,20 +46,25 @@ const AdminCompanyCreate = () => {
     setIsSubmitting(true)
 
     try {
-      const { data: { store } } = await post('/api/admin/companies', values)
-      triggerRefresh()
-      addToast(t('features.admin.companies.create.success'), 'success')
-      const backgroundLocation = location.state?.backgroundLocation || location
-      navigate(adminCompanyPath(store.id), {
-        replace: true,
-        state: { backgroundLocation },
+      await post('/api/company/users', {
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        role: values.role,
       })
+      triggerRefresh()
+      addToast(t('features.company.users.create.success'), 'success')
+      navigate(-1)
     } catch (error) {
-      setServerError(error.message || t('features.admin.companies.create.error.generic'))
+      if (error.code === 'EMAIL_TAKEN') {
+        setServerError(t('features.company.users.error.emailTaken'))
+      } else {
+        setServerError(error.message || t('features.company.users.create.error.generic'))
+      }
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, location, navigate, t, triggerRefresh])
+  }, [addToast, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {
@@ -79,42 +78,45 @@ const AdminCompanyCreate = () => {
       <FormFields>
         <Input
           error={errors.name}
-          label={t('features.admin.companies.form.name')}
+          label={t('features.company.users.form.name')}
           name="name"
           register={register}
-          required={t('features.admin.companies.form.error.nameRequired')}
-        />
-        <Select
-          control={control}
-          error={errors.category}
-          label={t('features.admin.companies.form.category')}
-          name="category"
-          options={categoryOptions}
-          placeholder={t('features.admin.companies.form.category')}
+          required={t('features.company.users.form.error.nameRequired')}
         />
         <Input
           error={errors.email}
-          label={t('features.admin.companies.form.email')}
+          label={t('features.company.users.form.email')}
           name="email"
           register={register}
+          required={t('features.company.users.form.error.emailRequired')}
           type="email"
         />
         <Input
-          error={errors.phone}
-          label={t('features.admin.companies.form.phone')}
-          name="phone"
+          error={errors.password}
+          label={t('features.company.users.form.password')}
+          name="password"
           register={register}
+          required={t('features.company.users.form.error.passwordRequired')}
+          type="password"
+          validate={validatePassword(t)}
         />
-        <Input
-          error={errors.vat_id}
-          label={t('features.admin.companies.form.vatId')}
-          name="vat_id"
-          register={register}
-        />
+        <div className="c-form__field">
+          <label className="c-form__field-label" htmlFor="role">
+            {t('features.company.users.form.role')}
+          </label>
+          <select
+            className="c-form__field-input"
+            id="role"
+            {...register('role')}
+          >
+            <option value="user">{t('features.company.users.list.role_user')}</option>
+            <option value="admin">{t('features.company.users.list.role_admin')}</option>
+          </select>
+        </div>
       </FormFields>
       <FormActions>
         <Button isProcessing={isSubmitting} type="submit">
-          {t('features.admin.companies.create.submit')}
+          {t('features.company.users.create.submit')}
         </Button>
         <Button onClick={() => navigate(-1)} variant="ghost">
           {t('common.cancel')}
@@ -124,4 +126,4 @@ const AdminCompanyCreate = () => {
   )
 }
 
-export default AdminCompanyCreate
+export default CompanyUserCreate

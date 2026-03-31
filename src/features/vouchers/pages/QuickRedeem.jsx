@@ -11,6 +11,7 @@ import Input from '@/components/forms/Input'
 import VoucherCodeInput, { CODE_LENGTH } from '@/features/vouchers/components/VoucherCodeInput'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, post } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -28,6 +29,7 @@ const QuickRedeem = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors }, reset } = useForm()
 
@@ -91,6 +93,7 @@ const QuickRedeem = () => {
       }
 
       await post(`/api/vouchers/${voucher.id}/redeem`, payload)
+      triggerRefresh()
       addToast(t('features.vouchers.redeem.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -102,7 +105,7 @@ const QuickRedeem = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, navigate, t, voucher])
+  }, [addToast, navigate, t, triggerRefresh, voucher])
 
   const handleBack = useCallback(() => {
     setCode('')

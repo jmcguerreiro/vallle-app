@@ -13,6 +13,7 @@
  * @param {Object} [props.validate] - Custom validate rules for react-hook-form
  * @param {Object} [props.error] - Field error object from react-hook-form
  * @param {string} [props.autoComplete] - HTML autocomplete attribute
+ * @param {string} [props.hint] - Help text displayed below the input
  * @returns {JSX.Element}
  */
 const Input = ({
@@ -26,6 +27,7 @@ const Input = ({
   validate,
   error,
   autoComplete,
+  hint,
 }) => {
   // Derived State
   const rules = {}
@@ -59,6 +61,7 @@ const Input = ({
         type={type}
         {...register(name, rules)}
       />
+      {hint && !error && <p className="c-form__field-hint">{hint}</p>}
       {error && <p className="c-form__field-error">{error.message}</p>}
     </div>
   )

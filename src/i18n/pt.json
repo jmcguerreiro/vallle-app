@@ -13,7 +13,9 @@
     "search": "Pesquisar...",
     "filters": {
       "allStatuses": "Todos os estados",
-      "allStores": "Todas as lojas"
+      "allStores": "Todas as lojas",
+      "allCategories": "Todas as categorias",
+      "allRoles": "Todos os papéis"
     },
     "pagination": {
       "previous": "Anterior",
@@ -226,10 +228,15 @@
     },
     "company": {
       "heading": "Empresa",
+      "tabs": {
+        "details": "Detalhes",
+        "users": "Utilizadores"
+      },
       "sections": {
         "general": "Geral",
         "contact": "Contacto",
-        "address": "Morada"
+        "address": "Morada",
+        "vouchers": "Definições de vouchers"
       },
       "form": {
         "name": "Nome da empresa",
@@ -243,8 +250,57 @@
         "postalCode": "Código postal",
         "region": "Distrito",
         "country": "País",
+        "defaultVoucherExpiryDays": "Período de expiração por defeito (dias)",
+        "defaultVoucherExpiryDaysHint": "Os vouchers expiram após este número de dias desde a criação. Entre 1 e 1825 dias (5 anos).",
         "error": {
-          "nameRequired": "O nome da empresa é obrigatório."
+          "nameRequired": "O nome da empresa é obrigatório.",
+          "expiryDaysRequired": "O período de expiração é obrigatório.",
+          "expiryDaysRange": "Deve ser entre 1 e 1825 dias."
+        }
+      },
+      "users": {
+        "list": {
+          "name": "Nome",
+          "email": "Email",
+          "role": "Papel",
+          "status": "Estado",
+          "updatedAt": "Última atualização",
+          "active": "Ativo",
+          "inactive": "Inativo",
+          "role_user": "Utilizador",
+          "role_admin": "Admin"
+        },
+        "form": {
+          "name": "Nome",
+          "email": "Email",
+          "password": "Palavra-passe",
+          "role": "Papel",
+          "error": {
+            "nameRequired": "O nome é obrigatório.",
+            "emailRequired": "O email é obrigatório.",
+            "passwordRequired": "A palavra-passe é obrigatória."
+          }
+        },
+        "create": {
+          "heading": "Adicionar utilizador",
+          "submit": "Criar utilizador",
+          "success": "Utilizador criado com sucesso!",
+          "error": {
+            "generic": "Não foi possível criar o utilizador."
+          }
+        },
+        "edit": {
+          "heading": "Editar utilizador",
+          "submit": "Guardar alterações",
+          "success": "Utilizador atualizado com sucesso!",
+          "error": {
+            "generic": "Não foi possível atualizar o utilizador."
+          }
+        },
+        "error": {
+          "generic": "Não foi possível carregar os utilizadores.",
+          "loadFailed": "Não foi possível carregar os dados do utilizador.",
+          "emailTaken": "Este email já está a ser utilizado."
         }
       },
       "success": "Dados da empresa atualizados com sucesso!",
@@ -305,8 +361,11 @@
           "region": "Distrito",
           "country": "País",
           "status": "Estado",
+          "defaultVoucherExpiryDays": "Expiração de vouchers por defeito (dias)",
           "error": {
-            "nameRequired": "O nome da empresa é obrigatório."
+            "nameRequired": "O nome da empresa é obrigatório.",
+            "expiryDaysRequired": "O período de expiração é obrigatório.",
+            "expiryDaysRange": "Deve ser entre 1 e 1825 dias."
           }
         },
         "create": {
@@ -351,6 +410,7 @@
           "updatedAt": "Última atualização",
           "active": "Ativo",
           "inactive": "Inativo",
+          "role_user": "Utilizador",
           "role_admin": "Admin",
           "role_super_admin": "Super Admin"
         },

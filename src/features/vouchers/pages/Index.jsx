@@ -9,6 +9,7 @@ import VoucherDatatable from '@/features/vouchers/components/VoucherDatatable'
 import { isVoucherExpired } from '@/features/vouchers/utils'
 import { useAuth } from '@/hooks/useAuth'
 import { useMain } from '@/hooks/useMain'
+import { useRefresh } from '@/hooks/useRefresh'
 import { get } from '@/services/api'
 
 const STATUS_ALL = 'all'
@@ -39,6 +40,7 @@ const VouchersIndex = () => {
   const navigate = useNavigate()
   const { isStoreSuspended } = useAuth()
   const { setHeader } = useMain()
+  const { refreshKey } = useRefresh()
 
   // State
   const [vouchers, setVouchers] = useState([])
@@ -52,10 +54,14 @@ const VouchersIndex = () => {
   const PAGE_SIZE = 50
 
   // Derived State
+  const enrichedVouchers = useMemo(() =>
+    vouchers.map((v) => ({ ...v, status: deriveStatus(v) })),
+  [vouchers])
+
   const filteredVouchers = useMemo(() => {
-    if (statusFilter === STATUS_ALL) return vouchers
-    return vouchers.filter((v) => deriveStatus(v) === statusFilter)
-  }, [vouchers, statusFilter])
+    if (statusFilter === STATUS_ALL) return enrichedVouchers
+    return enrichedVouchers.filter((v) => v.status === statusFilter)
+  }, [enrichedVouchers, statusFilter])
 
   // Handlers
   const handleCreate = useCallback(() => {
@@ -104,7 +110,7 @@ const VouchersIndex = () => {
 
   useEffect(() => {
     fetchVouchers(pageIndex)
-  }, [fetchVouchers, location.key])
+  }, [fetchVouchers, refreshKey])
 
   // Render
   if (isLoading) {

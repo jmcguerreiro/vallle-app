@@ -31,6 +31,7 @@ const QuickLookup = () => {
   // State
   const [code, setCode] = useState('')
   const [voucher, setVoucher] = useState(null)
+  const [redemptions, setRedemptions] = useState([])
   const [lookupError, setLookupError] = useState(null)
   const [isLooking, setIsLooking] = useState(false)
 
@@ -55,6 +56,7 @@ const QuickLookup = () => {
   const handleCodeChange = useCallback((raw) => {
     setCode(raw)
     setVoucher(null)
+    setRedemptions([])
     setLookupError(null)
   }, [])
 
@@ -67,6 +69,7 @@ const QuickLookup = () => {
   const handleReset = useCallback(() => {
     setCode('')
     setVoucher(null)
+    setRedemptions([])
     setLookupError(null)
   }, [])
 
@@ -87,7 +90,15 @@ const QuickLookup = () => {
       try {
         const formatted = `${code.slice(0, 3)}-${code.slice(3, 6)}-${code.slice(6, 9)}`
         const { data } = await get(`/api/vouchers/lookup?code=${encodeURIComponent(formatted)}`)
-        if (!cancelled) setVoucher(data)
+        if (!cancelled) {
+          setVoucher(data)
+          try {
+            const { data: redemptionsData } = await get(`/api/vouchers/${data.id}/redemptions`)
+            if (!cancelled) setRedemptions(redemptionsData)
+          } catch {
+            // Redemptions are non-critical — silently ignore
+          }
+        }
       } catch (error) {
         if (!cancelled) {
           setLookupError(
@@ -140,6 +151,34 @@ const QuickLookup = () => {
               </div>
             ))}
           </dl>
+
+          {redemptions.length > 0 && (
+            <div className="c-voucher-redemptions">
+              <h3 className="c-voucher-redemptions__heading">
+                {t('features.vouchers.redemptions.heading')}
+              </h3>
+              <table className="c-voucher-redemptions__table">
+                <thead>
+                  <tr>
+                    <th>{t('features.vouchers.redemptions.date')}</th>
+                    <th>{t('features.vouchers.redemptions.amount')}</th>
+                    <th>{t('features.vouchers.redemptions.description')}</th>
+                    <th>{t('features.vouchers.redemptions.redeemedBy')}</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  {redemptions.map((r) => (
+                    <tr key={r.id}>
+                      <td>{formatDate(r.created_at)}</td>
+                      <td>{formatCurrency(r.amount)}</td>
+                      <td>{r.description || '\u2014'}</td>
+                      <td>{r.redeemed_by_name || '\u2014'}</td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
 
           <div className="c-voucher-lookup__actions">
             {canRedeem && (

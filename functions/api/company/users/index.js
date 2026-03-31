@@ -1,50 +1,45 @@
 import { generateUlid } from '../../_ulid.js'
+import { requireStore } from '../../_store.js'
 import { getAuthUser, hashPassword } from '../../auth/_helpers.js'
 
 /**
- * GET /api/admin/users — List all users with their store associations (super_admin only).
- * @param {Object} context - Cloudflare Pages Function context
- * @returns {Promise<Response>}
+ * GET /api/company/users — List users for the active store.
+ * Requires admin role (admin or super_admin).
  */
 export async function onRequestGet(context) {
   const { request, env } = context
 
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
+  const payload = await getAuthUser(request, env.JWT_SECRET)
+  if (!payload) {
     return Response.json(
       { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
       { status: 401 },
     )
   }
-  if (user.role !== 'super_admin') {
+
+  // Only admins can manage company users
+  if (payload.role !== 'admin' && payload.role !== 'super_admin') {
     return Response.json(
       { error: { message: 'Forbidden', code: 'AUTH_FORBIDDEN' } },
       { status: 403 },
     )
   }
 
+  const result = await requireStore(request, env, payload.sub)
+  if (result instanceof Response) return result
+
   try {
-    const { results: users } = await env.DB.prepare(
-      `SELECT id, name, email, role, status, created_at, updated_at FROM users ORDER BY name`,
-    ).all()
-
-    const { results: storeLinks } = await env.DB.prepare(
-      `SELECT su.user_id, su.store_id, s.name AS store_name
+    const { results } = await env.DB.prepare(
+      `SELECT u.id, u.name, u.email, u.role, u.status, u.created_at, u.updated_at
        FROM store_users su
-       JOIN stores s ON s.id = su.store_id`,
-    ).all()
+       JOIN users u ON u.id = su.user_id
+       WHERE su.store_id = ?
+       ORDER BY u.name`,
+    ).bind(result.storeId).all()
 
-    const storesByUser = {}
-    for (const link of storeLinks) {
-      if (!storesByUser[link.user_id]) storesByUser[link.user_id] = []
-      storesByUser[link.user_id].push({ store_id: link.store_id, store_name: link.store_name })
-    }
-
-    const result = users.map((u) => ({ ...u, stores: storesByUser[u.id] ?? [] }))
-
-    return Response.json({ data: result })
+    return Response.json({ data: results })
   } catch (error) {
-    const err = new Error('Admin: Failed to list users')
+    const err = new Error('Company: Failed to list users')
     err.code = 'DB_READ_FAILED'
     err.cause = error
     throw err
@@ -52,26 +47,29 @@ export async function onRequestGet(context) {
 }
 
 /**
- * POST /api/admin/users — Create a new user and optionally assign to a store (super_admin only).
- * @param {Object} context - Cloudflare Pages Function context
- * @returns {Promise<Response>}
+ * POST /api/company/users — Create a user and assign to the active store.
+ * Requires admin role (admin or super_admin).
  */
 export async function onRequestPost(context) {
   const { request, env } = context
 
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
+  const payload = await getAuthUser(request, env.JWT_SECRET)
+  if (!payload) {
     return Response.json(
       { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
       { status: 401 },
     )
   }
-  if (user.role !== 'super_admin') {
+
+  if (payload.role !== 'admin' && payload.role !== 'super_admin') {
     return Response.json(
       { error: { message: 'Forbidden', code: 'AUTH_FORBIDDEN' } },
       { status: 403 },
     )
   }
+
+  const result = await requireStore(request, env, payload.sub)
+  if (result instanceof Response) return result
 
   let body
   try {
@@ -116,29 +114,19 @@ export async function onRequestPost(context) {
 
     const id = generateUlid()
     const passwordHash = await hashPassword(body.password)
-    const allowedRoles = ['user', 'admin', 'super_admin']
-    const role = allowedRoles.includes(body.role) ? body.role : 'user'
+    // Company admins can only create user or admin roles, never super_admin
+    const role = body.role === 'admin' ? 'admin' : 'user'
     const now = new Date().toISOString()
 
-    await env.DB.prepare(
-      `INSERT INTO users (id, name, email, password, role, status, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 'active', ?, ?)`,
-    ).bind(id, body.name.trim(), body.email.trim().toLowerCase(), passwordHash, role, now, now).run()
-
-    if (body.store_id) {
-      // Verify the store exists before creating the association
-      const store = await env.DB.prepare('SELECT id FROM stores WHERE id = ?').bind(body.store_id).first()
-      if (!store) {
-        return Response.json(
-          { error: { message: 'Store not found', code: 'STORE_NOT_FOUND' } },
-          { status: 404 },
-        )
-      }
-
-      await env.DB.prepare(
-        `INSERT INTO store_users (store_id, user_id, role) VALUES (?, ?, 'admin')`,
-      ).bind(body.store_id, id).run()
-    }
+    await env.DB.batch([
+      env.DB.prepare(
+        `INSERT INTO users (id, name, email, password, role, status, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, 'active', ?, ?)`,
+      ).bind(id, body.name.trim(), body.email.trim().toLowerCase(), passwordHash, role, now, now),
+      env.DB.prepare(
+        `INSERT INTO store_users (store_id, user_id, role) VALUES (?, ?, ?)`,
+      ).bind(result.storeId, id, role),
+    ])
 
     const newUser = await env.DB.prepare(
       'SELECT id, name, email, role, status, created_at FROM users WHERE id = ?',
@@ -146,7 +134,7 @@ export async function onRequestPost(context) {
 
     return Response.json({ data: { user: newUser } }, { status: 201 })
   } catch (error) {
-    const err = new Error('Admin: Failed to create user')
+    const err = new Error('Company: Failed to create user')
     err.code = 'DB_WRITE_FAILED'
     err.cause = error
     throw err

@@ -12,6 +12,7 @@ import Select from '@/components/forms/Select'
 import { COMPANY_CATEGORIES } from '@/constants/company-categories'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 
@@ -28,6 +29,7 @@ const AdminCompanyEdit = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm()
 
@@ -53,6 +55,7 @@ const AdminCompanyEdit = () => {
 
     try {
       await put(`/api/admin/companies/${id}`, values)
+      triggerRefresh()
       addToast(t('features.admin.companies.edit.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -60,7 +63,7 @@ const AdminCompanyEdit = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [id, addToast, navigate, t])
+  }, [id, addToast, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {
@@ -86,6 +89,7 @@ const AdminCompanyEdit = () => {
           region: store.region,
           country: store.country,
           status: store.status,
+          default_voucher_expiry_days: store.default_voucher_expiry_days,
         })
       } catch {
         addToast(t('features.admin.companies.error.loadFailed'), 'error')
@@ -176,6 +180,20 @@ const AdminCompanyEdit = () => {
           name="country"
           options={countryOptions}
           placeholder={t('features.admin.companies.form.country')}
+        />
+        <Input
+          error={errors.default_voucher_expiry_days}
+          label={t('features.admin.companies.form.defaultVoucherExpiryDays')}
+          name="default_voucher_expiry_days"
+          register={register}
+          required={t('features.admin.companies.form.error.expiryDaysRequired')}
+          type="number"
+          validate={{
+            range: (v) => {
+              const n = parseInt(v, 10)
+              return (n >= 1 && n <= 1825) || t('features.admin.companies.form.error.expiryDaysRange')
+            },
+          }}
         />
         <div className="c-form__field">
           <label className="c-form__field-label" htmlFor="status">

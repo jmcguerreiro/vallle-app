@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import Datatable from '@/components/Datatable'
 import { adminCommissionsDetailPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -23,11 +24,13 @@ const AdminCommissionsIndex = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { setHeader } = useMain()
+  const { refreshKey } = useRefresh()
   const { addToast } = useToast()
 
   // State
   const [companies, setCompanies] = useState([])
   const [isLoading, setIsLoading] = useState(true)
+  const [paymentFilter, setPaymentFilter] = useState('all')
 
   // Handlers
   const fetchData = useCallback(async () => {
@@ -48,7 +51,17 @@ const AdminCommissionsIndex = () => {
     })
   }, [navigate, location])
 
+  const handlePaymentFilter = useCallback((event) => {
+    setPaymentFilter(event.target.value)
+  }, [])
+
   // Derived State
+  const filteredCompanies = useMemo(() => {
+    if (paymentFilter === 'all') return companies
+    if (paymentFilter === 'unpaid') return companies.filter((c) => c.total_unpaid > 0)
+    return companies.filter((c) => c.total_unpaid === 0)
+  }, [companies, paymentFilter])
+
   const columns = useMemo(() => [
     {
       accessorKey: 'store_name',
@@ -96,18 +109,33 @@ const AdminCommissionsIndex = () => {
 
   useEffect(() => {
     fetchData()
-  }, [fetchData])
+  }, [fetchData, refreshKey])
 
   // Render
   if (isLoading) {
     return <div className="c-admin-commissions"><p>{t('common.loading')}</p></div>
   }
 
+  const commissionFilters = (
+    <div className="c-datatable__filter-group">
+      <select
+        className="c-datatable__filter-select"
+        onChange={handlePaymentFilter}
+        value={paymentFilter}
+      >
+        <option value="all">{t('common.filters.allStatuses')}</option>
+        <option value="unpaid">{t('features.admin.commissions.unpaid')}</option>
+        <option value="paid">{t('features.admin.commissions.paid')}</option>
+      </select>
+    </div>
+  )
+
   return (
     <div className="c-admin-commissions">
       <Datatable
         columns={columns}
-        data={companies}
+        data={filteredCompanies}
+        filters={commissionFilters}
         onRowClick={handleRowClick}
       />
     </div>

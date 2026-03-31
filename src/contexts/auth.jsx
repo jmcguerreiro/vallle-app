@@ -129,6 +129,7 @@ export const AuthProvider = ({ children }) => {
     needsStoreSelection,
     isAuthenticated: !!user,
     isSuperAdmin: user?.role === USER_ROLES.SUPER_ADMIN,
+    isAdmin: user?.role === USER_ROLES.ADMIN || user?.role === USER_ROLES.SUPER_ADMIN,
     isStoreSuspended,
   }), [user, loading, login, logout, activeStore, selectStore, needsStoreSelection, isStoreSuspended])
 

@@ -10,6 +10,7 @@ import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -28,6 +29,7 @@ const VoucherEdit = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors }, reset } = useForm()
 
@@ -70,6 +72,7 @@ const VoucherEdit = () => {
         buyer: values.buyer || null,
         expires_at: new Date(values.expires_at).toISOString(),
       })
+      triggerRefresh()
       addToast(t('features.vouchers.edit.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -77,7 +80,7 @@ const VoucherEdit = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, id, navigate, t])
+  }, [addToast, id, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {

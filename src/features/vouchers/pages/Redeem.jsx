@@ -10,6 +10,7 @@ import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, post } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -29,6 +30,7 @@ const VoucherRedeem = () => {
   const { id } = useParams()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors } } = useForm()
 
@@ -66,6 +68,7 @@ const VoucherRedeem = () => {
       }
 
       await post(`/api/vouchers/${id}/redeem`, payload)
+      triggerRefresh()
       addToast(t('features.vouchers.redeem.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -77,7 +80,7 @@ const VoucherRedeem = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, id, navigate, t])
+  }, [addToast, id, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {

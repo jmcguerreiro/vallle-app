@@ -1,13 +1,13 @@
-import { useCallback, useRef, useState } from 'react'
-import { useTranslation } from 'react-i18next'
-import { NavLink, Outlet, useNavigate } from 'react-router-dom'
+import { useCallback, useRef, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { NavLink, Outlet, useNavigate } from "react-router-dom";
 
-import { ArrowLeftRight as IconSwitch } from 'lucide-react'
+import { ArrowLeftRight as IconSwitch } from "lucide-react";
 
-import { ROUTES } from '@/constants/routes'
-import { USER_ROLES } from '@/constants/user-roles'
-import { useAuth } from '@/hooks/useAuth'
-import { useMain } from '@/hooks/useMain'
+import { ROUTES } from "@/constants/routes";
+import { USER_ROLES } from "@/constants/user-roles";
+import { useAuth } from "@/hooks/useAuth";
+import { useMain } from "@/hooks/useMain";
 
 /**
  * Layout: Default
@@ -18,54 +18,67 @@ import { useMain } from '@/hooks/useMain'
  */
 const DefaultLayout = () => {
   // Hooks
-  const { t } = useTranslation()
-  const { user, logout, isSuperAdmin, activeStore, selectStore, isStoreSuspended } = useAuth()
-  const navigate = useNavigate()
-  const { header } = useMain()
+  const { t } = useTranslation();
+  const {
+    user,
+    logout,
+    isSuperAdmin,
+    activeStore,
+    selectStore,
+    isStoreSuspended,
+  } = useAuth();
+  const navigate = useNavigate();
+  const { header } = useMain();
 
   // State
-  const [switcherOpen, setSwitcherOpen] = useState(false)
+  const [switcherOpen, setSwitcherOpen] = useState(false);
 
   // Refs
-  const dialogRef = useRef(null)
+  const dialogRef = useRef(null);
 
   // Derived State
-  const hasMultipleStores = (user?.stores?.length ?? 0) > 1
+  const hasMultipleStores = (user?.stores?.length ?? 0) > 1;
 
   // Handlers
   const handleLogout = useCallback(async () => {
-    await logout()
-    navigate(ROUTES.LOGIN)
-  }, [logout, navigate])
+    await logout();
+    navigate(ROUTES.LOGIN);
+  }, [logout, navigate]);
 
   const handleOpenSwitcher = useCallback(() => {
-    setSwitcherOpen(true)
+    setSwitcherOpen(true);
     // Show modal after state update triggers render
-    setTimeout(() => dialogRef.current?.showModal(), 0)
-  }, [])
+    setTimeout(() => dialogRef.current?.showModal(), 0);
+  }, []);
 
   const handleCloseSwitcher = useCallback(() => {
-    dialogRef.current?.close()
-    setSwitcherOpen(false)
-  }, [])
+    dialogRef.current?.close();
+    setSwitcherOpen(false);
+  }, []);
 
-  const handleSelectStore = useCallback((store) => {
-    selectStore(store)
-    handleCloseSwitcher()
-  }, [selectStore, handleCloseSwitcher])
+  const handleSelectStore = useCallback(
+    (store) => {
+      selectStore(store);
+      handleCloseSwitcher();
+    },
+    [selectStore, handleCloseSwitcher],
+  );
 
-  const handleBackdropClick = useCallback((event) => {
-    if (event.target === dialogRef.current) {
-      handleCloseSwitcher()
-    }
-  }, [handleCloseSwitcher])
+  const handleBackdropClick = useCallback(
+    (event) => {
+      if (event.target === dialogRef.current) {
+        handleCloseSwitcher();
+      }
+    },
+    [handleCloseSwitcher],
+  );
 
   // Render
   return (
     <>
       <aside className="c-layout__sidebar">
         <div className="c-layout__brand">
-          <h1 className="c-layout__logo">{t('common.appName')}</h1>
+          <h1 className="c-layout__logo">{t("common.appName")}</h1>
         </div>
 
         {activeStore && !isSuperAdmin && (
@@ -75,7 +88,7 @@ const DefaultLayout = () => {
             </span>
             {hasMultipleStores && (
               <button
-                aria-label={t('nav.switchStore')}
+                aria-label={t("nav.switchStore")}
                 className="c-layout__store-switch"
                 onClick={handleOpenSwitcher}
                 type="button"
@@ -90,37 +103,43 @@ const DefaultLayout = () => {
           {isSuperAdmin ? (
             <>
               <NavLink className="c-layout__nav-link" to={ROUTES.HOME}>
-                {t('nav.dashboard')}
+                {t("nav.dashboard")}
               </NavLink>
-              <NavLink className="c-layout__nav-link" to={ROUTES.ADMIN_COMPANIES}>
-                {t('nav.adminCompanies')}
+              <NavLink
+                className="c-layout__nav-link"
+                to={ROUTES.ADMIN_COMPANIES}
+              >
+                {t("nav.adminCompanies")}
               </NavLink>
               <NavLink className="c-layout__nav-link" to={ROUTES.ADMIN_USERS}>
-                {t('nav.adminUsers')}
+                {t("nav.adminUsers")}
               </NavLink>
-              <NavLink className="c-layout__nav-link" to={ROUTES.ADMIN_COMMISSIONS}>
-                {t('nav.adminCommissions')}
+              <NavLink
+                className="c-layout__nav-link"
+                to={ROUTES.ADMIN_COMMISSIONS}
+              >
+                {t("nav.adminCommissions")}
               </NavLink>
               <NavLink className="c-layout__nav-link" to={ROUTES.PROFILE}>
-                {t('nav.profile')}
+                {t("nav.profile")}
               </NavLink>
             </>
           ) : (
             <>
               <NavLink className="c-layout__nav-link" to={ROUTES.HOME}>
-                {t('nav.dashboard')}
+                {t("nav.dashboard")}
               </NavLink>
               <NavLink className="c-layout__nav-link" to={ROUTES.VOUCHERS}>
-                {t('nav.vouchers')}
+                {t("nav.vouchers")}
               </NavLink>
               <NavLink className="c-layout__nav-link" to={ROUTES.STATS}>
-                {t('nav.stats')}
+                {t("nav.stats")}
               </NavLink>
               <NavLink className="c-layout__nav-link" to={ROUTES.PROFILE}>
-                {t('nav.profile')}
+                {t("nav.profile")}
               </NavLink>
               <NavLink className="c-layout__nav-link" to={ROUTES.COMPANY}>
-                {t('nav.company')}
+                {t("nav.company")}
               </NavLink>
             </>
           )}
@@ -133,7 +152,7 @@ const DefaultLayout = () => {
             onClick={handleLogout}
             type="button"
           >
-            {t('nav.logout')}
+            {t("nav.logout")}
           </button>
         </div>
       </aside>
@@ -148,7 +167,7 @@ const DefaultLayout = () => {
           <div className="c-modal__content">
             <div className="c-modal__header">
               <h2 className="c-modal__title">
-                {t('nav.switchStoreModal.heading')}
+                {t("nav.switchStoreModal.heading")}
               </h2>
               <button
                 aria-label="Close"
@@ -162,11 +181,11 @@ const DefaultLayout = () => {
             <div className="c-modal__body">
               <ul className="c-store-switcher__list">
                 {user?.stores?.map((store) => {
-                  const isCurrent = store.store_id === activeStore?.store_id
+                  const isCurrent = store.store_id === activeStore?.store_id;
                   return (
                     <li key={store.store_id}>
                       <button
-                        className={`c-store-switcher__option${isCurrent ? ' c-store-switcher__option--current' : ''}`}
+                        className={`c-store-switcher__option${isCurrent ? " c-store-switcher__option--current" : ""}`}
                         disabled={isCurrent}
                         onClick={() => handleSelectStore(store)}
                         type="button"
@@ -176,12 +195,12 @@ const DefaultLayout = () => {
                         </span>
                         {isCurrent && (
                           <span className="c-store-switcher__option-badge">
-                            {t('nav.switchStoreModal.current')}
+                            {t("nav.switchStoreModal.current")}
                           </span>
                         )}
                       </button>
                     </li>
-                  )
+                  );
                 })}
               </ul>
             </div>
@@ -192,25 +211,29 @@ const DefaultLayout = () => {
       <main className="c-layout__main">
         {isStoreSuspended && (
           <div className="c-layout__suspended-banner" role="alert">
-            {t('features.storeSuspended.banner')}
+            {t("features.storeSuspended.banner")}
           </div>
         )}
         {(header.title || header.actions.length > 0) && (
           <div className="c-layout__main-header">
-            {header.title && <h1 className="c-layout__main-header-title">{header.title}</h1>}
+            {header.title && (
+              <h1 className="c-layout__main-header-title">{header.title}</h1>
+            )}
             {header.actions.length > 0 && (
               <div className="c-layout__main-header-actions">
-                {header.actions.map(({ label, icon: Icon, onClick, variant = 'secondary' }) => (
-                  <button
-                    className={`c-btn c-btn--${variant}`}
-                    key={label}
-                    onClick={onClick}
-                    type="button"
-                  >
-                    {Icon && <Icon className="c-btn__icon" size={16} />}
-                    {label}
-                  </button>
-                ))}
+                {header.actions.map(
+                  ({ label, icon: Icon, onClick, variant = "secondary" }) => (
+                    <button
+                      key={label}
+                      className={`c-btn c-btn--${variant}`}
+                      onClick={onClick}
+                      type="button"
+                    >
+                      {Icon && <Icon className="c-btn__icon" size={16} />}
+                      {label}
+                    </button>
+                  ),
+                )}
               </div>
             )}
           </div>
@@ -220,7 +243,7 @@ const DefaultLayout = () => {
         </div>
       </main>
     </>
-  )
-}
+  );
+};
 
-export default DefaultLayout
+export default DefaultLayout;

@@ -12,6 +12,7 @@ import { ROUTES, voucherPath } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
+import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { post } from '@/services/api'
 
@@ -27,11 +28,20 @@ const VoucherCreate = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const { isStoreSuspended } = useAuth()
+  const { isStoreSuspended, activeStore } = useAuth()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
+  const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
-  const { register, handleSubmit, formState: { errors } } = useForm()
+
+  // Derived State
+  const defaultExpiryDays = activeStore?.default_voucher_expiry_days || 365
+  const defaultExpiryDate = new Date(Date.now() + defaultExpiryDays * 86_400_000)
+    .toISOString().split('T')[0]
+
+  const { register, handleSubmit, formState: { errors } } = useForm({
+    defaultValues: { expires_at: defaultExpiryDate },
+  })
 
   // State
   const [serverError, setServerError] = useState(null)
@@ -59,6 +69,7 @@ const VoucherCreate = () => {
       }
 
       const { data: voucher } = await post('/api/vouchers', payload)
+      triggerRefresh()
       addToast(t('features.vouchers.create.success'), 'success')
       const backgroundLocation = location.state?.backgroundLocation || location
       navigate(voucherPath(voucher.id), {
@@ -70,7 +81,7 @@ const VoucherCreate = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, location, navigate, t])
+  }, [addToast, location, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {

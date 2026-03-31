@@ -109,7 +109,7 @@ export async function onRequestPost(context) {
     )
   }
 
-  const { amount, buyer, expires_at } = body
+  let { amount, buyer, expires_at } = body
 
   // Validate amount (max €50,000 = 5_000_000 cents)
   if (!amount || typeof amount !== 'number' || !Number.isInteger(amount) || amount <= 0 || amount > 5_000_000) {
@@ -127,12 +127,16 @@ export async function onRequestPost(context) {
     )
   }
 
-  // Validate expires_at
+  // If no expires_at provided, compute from the store's default expiry period
   if (!expires_at) {
-    return Response.json(
-      { error: { message: 'Expiry date is required', code: 'VALIDATION_FAILED' } },
-      { status: 400 },
-    )
+    const store = await env.DB.prepare(
+      'SELECT default_voucher_expiry_days FROM stores WHERE id = ?',
+    ).bind(storeId).first()
+
+    const days = store?.default_voucher_expiry_days || 365
+    const defaultExpiry = new Date()
+    defaultExpiry.setDate(defaultExpiry.getDate() + days)
+    expires_at = defaultExpiry.toISOString()
   }
 
   const expiryDate = new Date(expires_at)

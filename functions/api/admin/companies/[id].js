@@ -1,6 +1,6 @@
 import { getAuthUser } from '../../auth/_helpers.js'
 
-const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, status, created_at FROM stores WHERE id = ?`
+const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_voucher_expiry_days, status, created_at FROM stores WHERE id = ?`
 
 const EDITABLE_FIELDS = [
   'name', 'category', 'email', 'vat_id', 'phone',
@@ -129,13 +129,36 @@ export async function onRequestPut(context) {
       body.status = 'active'
     }
 
+    // Validate default_voucher_expiry_days if provided
+    if (body.default_voucher_expiry_days !== undefined) {
+      const days = parseInt(body.default_voucher_expiry_days, 10)
+      if (Number.isNaN(days) || days < 1 || days > 1825) {
+        return Response.json(
+          { error: { message: 'Default expiry must be between 1 and 1825 days', code: 'VALIDATION_FAILED' } },
+          { status: 400 },
+        )
+      }
+    }
+
     const sets = EDITABLE_FIELDS.map((f) => `${f} = ?`).join(', ')
     const values = EDITABLE_FIELDS.map((f) => (body[f] ?? '').toString().trim())
     const now = new Date().toISOString()
 
-    await env.DB.prepare(
-      `UPDATE stores SET ${sets}, updated_at = ? WHERE id = ?`,
-    ).bind(...values, now, id).run()
+    const statements = [
+      env.DB.prepare(
+        `UPDATE stores SET ${sets}, updated_at = ? WHERE id = ?`,
+      ).bind(...values, now, id),
+    ]
+
+    if (body.default_voucher_expiry_days !== undefined) {
+      statements.push(
+        env.DB.prepare(
+          'UPDATE stores SET default_voucher_expiry_days = ?, updated_at = ? WHERE id = ?',
+        ).bind(parseInt(body.default_voucher_expiry_days, 10), now, id),
+      )
+    }
+
+    await env.DB.batch(statements)
 
     const store = await env.DB.prepare(STORE_SELECT).bind(id).first()
 

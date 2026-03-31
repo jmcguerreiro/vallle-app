@@ -15,13 +15,13 @@ import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 
 /**
- * Component: AdminUserEdit
- * Form for editing a user's name, email, role, and status.
- * Super admin only.
+ * Component: CompanyUserEdit
+ * Modal form for editing a user belonging to the active store.
+ * Available to admin role only.
  * @component
  * @returns {JSX.Element}
  */
-const AdminUserEdit = () => {
+const CompanyUserEdit = () => {
   // Hooks
   const { t } = useTranslation()
   const { id } = useParams()
@@ -36,7 +36,6 @@ const AdminUserEdit = () => {
   const [serverError, setServerError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
   const [isLoading, setIsLoading] = useState(true)
-  const [userStores, setUserStores] = useState([])
 
   // Derived State
   const setHeader = isModal ? setModalHeader : setMainHeader
@@ -47,15 +46,15 @@ const AdminUserEdit = () => {
     setIsSubmitting(true)
 
     try {
-      await put(`/api/admin/users/${id}`, values)
+      await put(`/api/company/users/${id}`, values)
       triggerRefresh()
-      addToast(t('features.admin.users.edit.success'), 'success')
+      addToast(t('features.company.users.edit.success'), 'success')
       navigate(-1)
     } catch (error) {
       if (error.code === 'EMAIL_TAKEN') {
-        setServerError(t('features.admin.users.error.emailTaken'))
+        setServerError(t('features.company.users.error.emailTaken'))
       } else {
-        setServerError(error.message || t('features.admin.users.edit.error.generic'))
+        setServerError(error.message || t('features.company.users.edit.error.generic'))
       }
     } finally {
       setIsSubmitting(false)
@@ -64,16 +63,15 @@ const AdminUserEdit = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.admin.users.edit.heading') })
+    setHeader({ title: t('features.company.users.edit.heading') })
     return () => setHeader()
   }, [setHeader, t])
 
   useEffect(() => {
     const loadUser = async () => {
       try {
-        const response = await get(`/api/admin/users/${id}`)
+        const response = await get(`/api/company/users/${id}`)
         const { user } = response.data
-        setUserStores(user.stores ?? [])
         reset({
           name: user.name,
           email: user.email,
@@ -81,7 +79,7 @@ const AdminUserEdit = () => {
           status: user.status,
         })
       } catch {
-        addToast(t('features.admin.users.error.loadFailed'), 'error')
+        addToast(t('features.company.users.error.loadFailed'), 'error')
       } finally {
         setIsLoading(false)
       }
@@ -92,7 +90,7 @@ const AdminUserEdit = () => {
 
   // Render
   if (isLoading) {
-    return <div className="c-admin-user-edit"><p>{t('common.loading')}</p></div>
+    return <p>{t('common.loading')}</p>
   }
 
   return (
@@ -100,62 +98,49 @@ const AdminUserEdit = () => {
       <FormFields>
         <Input
           error={errors.name}
-          label={t('features.admin.users.form.name')}
+          label={t('features.company.users.form.name')}
           name="name"
           register={register}
-          required={t('features.admin.users.form.error.nameRequired')}
+          required={t('features.company.users.form.error.nameRequired')}
         />
         <Input
           error={errors.email}
-          label={t('features.admin.users.form.email')}
+          label={t('features.company.users.form.email')}
           name="email"
           register={register}
-          required={t('features.admin.users.form.error.emailRequired')}
+          required={t('features.company.users.form.error.emailRequired')}
           type="email"
         />
         <div className="c-form__field">
           <label className="c-form__field-label" htmlFor="role">
-            {t('features.admin.users.form.role')}
+            {t('features.company.users.form.role')}
           </label>
           <select
             className="c-form__field-input"
             id="role"
             {...register('role')}
           >
-            <option value="user">{t('features.admin.users.list.role_user')}</option>
-            <option value="admin">{t('features.admin.users.list.role_admin')}</option>
-            <option value="super_admin">{t('features.admin.users.list.role_super_admin')}</option>
+            <option value="user">{t('features.company.users.list.role_user')}</option>
+            <option value="admin">{t('features.company.users.list.role_admin')}</option>
           </select>
         </div>
         <div className="c-form__field">
           <label className="c-form__field-label" htmlFor="status">
-            {t('features.admin.users.list.status')}
+            {t('features.company.users.list.status')}
           </label>
           <select
             className="c-form__field-input"
             id="status"
             {...register('status')}
           >
-            <option value="active">{t('features.admin.users.list.active')}</option>
-            <option value="inactive">{t('features.admin.users.list.inactive')}</option>
+            <option value="active">{t('features.company.users.list.active')}</option>
+            <option value="inactive">{t('features.company.users.list.inactive')}</option>
           </select>
         </div>
       </FormFields>
-
-      {userStores.length > 0 && (
-        <div className="c-admin-user-stores">
-          <p className="c-admin-user-stores__label">{t('features.admin.users.edit.assignedTo')}</p>
-          <ul className="c-admin-user-stores__list">
-            {userStores.map((s) => (
-              <li key={s.store_id} className="c-admin-user-stores__item">{s.store_name}</li>
-            ))}
-          </ul>
-        </div>
-      )}
-
       <FormActions>
         <Button isProcessing={isSubmitting} type="submit">
-          {t('features.admin.users.edit.submit')}
+          {t('features.company.users.edit.submit')}
         </Button>
         <Button onClick={() => navigate(-1)} variant="ghost">
           {t('common.cancel')}
@@ -165,4 +150,4 @@ const AdminUserEdit = () => {
   )
 }
 
-export default AdminUserEdit
+export default CompanyUserEdit

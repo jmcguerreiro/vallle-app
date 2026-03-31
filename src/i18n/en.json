@@ -13,7 +13,9 @@
     "search": "Search...",
     "filters": {
       "allStatuses": "All statuses",
-      "allStores": "All stores"
+      "allStores": "All stores",
+      "allCategories": "All categories",
+      "allRoles": "All roles"
     },
     "pagination": {
       "previous": "Previous",
@@ -226,10 +228,15 @@
     },
     "company": {
       "heading": "Company",
+      "tabs": {
+        "details": "Details",
+        "users": "Users"
+      },
       "sections": {
         "general": "General",
         "contact": "Contact",
-        "address": "Address"
+        "address": "Address",
+        "vouchers": "Voucher settings"
       },
       "form": {
         "name": "Company name",
@@ -243,8 +250,57 @@
         "postalCode": "Postal code",
         "region": "Region",
         "country": "Country",
+        "defaultVoucherExpiryDays": "Default expiry period (days)",
+        "defaultVoucherExpiryDaysHint": "Vouchers will expire this many days after creation. Between 1 and 1825 days (5 years).",
         "error": {
-          "nameRequired": "Company name is required."
+          "nameRequired": "Company name is required.",
+          "expiryDaysRequired": "Default expiry period is required.",
+          "expiryDaysRange": "Must be between 1 and 1825 days."
+        }
+      },
+      "users": {
+        "list": {
+          "name": "Name",
+          "email": "Email",
+          "role": "Role",
+          "status": "Status",
+          "updatedAt": "Last updated",
+          "active": "Active",
+          "inactive": "Inactive",
+          "role_user": "User",
+          "role_admin": "Admin"
+        },
+        "form": {
+          "name": "Name",
+          "email": "Email",
+          "password": "Password",
+          "role": "Role",
+          "error": {
+            "nameRequired": "Name is required.",
+            "emailRequired": "Email is required.",
+            "passwordRequired": "Password is required."
+          }
+        },
+        "create": {
+          "heading": "Add user",
+          "submit": "Create user",
+          "success": "User created successfully!",
+          "error": {
+            "generic": "Could not create the user."
+          }
+        },
+        "edit": {
+          "heading": "Edit user",
+          "submit": "Save changes",
+          "success": "User updated successfully!",
+          "error": {
+            "generic": "Could not update the user."
+          }
+        },
+        "error": {
+          "generic": "Could not load users.",
+          "loadFailed": "Could not load user details.",
+          "emailTaken": "This email is already in use."
         }
       },
       "success": "Company details updated successfully!",
@@ -305,8 +361,11 @@
           "region": "Region",
           "country": "Country",
           "status": "Status",
+          "defaultVoucherExpiryDays": "Default voucher expiry (days)",
           "error": {
-            "nameRequired": "Company name is required."
+            "nameRequired": "Company name is required.",
+            "expiryDaysRequired": "Default expiry period is required.",
+            "expiryDaysRange": "Must be between 1 and 1825 days."
           }
         },
         "create": {
@@ -351,6 +410,7 @@
           "updatedAt": "Last updated",
           "active": "Active",
           "inactive": "Inactive",
+          "role_user": "User",
           "role_admin": "Admin",
           "role_super_admin": "Super Admin"
         },

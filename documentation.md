@@ -13,7 +13,7 @@ Vallle earns 5% commission on every voucher created (min €0.50, max €2.00), 
 3. Customer writes a personal message and gives the postcard as a gift
 4. Recipient visits the store, presents the voucher at checkout
 5. Store owner logs in, redeems the voucher (full or partial)
-6. Remaining balance stays on the voucher until fully used or expired (5 years)
+6. Remaining balance stays on the voucher until fully used or expired (configurable per company, default 1 year, max 5 years)
 
 ### Revenue model
 
@@ -64,6 +64,11 @@ vallle-app/
 │       │   └── [id]/
 │       │       ├── index.js
 │       │       └── redeem.js     POST /api/vouchers/:id/redeem
+│       ├── company/
+│       │   ├── index.js          GET/PUT /api/company
+│       │   └── users/
+│       │       ├── index.js      GET list, POST create (admin only)
+│       │       └── [id].js       GET/PUT /api/company/users/:id (admin only)
 │       └── commissions/
 │           └── index.js
 ├── src/                      ← React + Vite (feature-based structure)
@@ -112,7 +117,7 @@ IDs are ULIDs (sortable, time-based, shorter than UUIDs). Dates are ISO 8601 tex
 #### Schema (v6) — 7 tables
 
 ```
-users                   Who logs in (role: admin or super_admin)
+users                   Who logs in (role: user, admin, or super_admin)
 stores                  Local businesses
 store_users             Many-to-many (user can manage multiple stores, store can have multiple admins)
 vouchers                The core entity — created by stores, redeemed by recipients
@@ -121,13 +126,13 @@ commissions             One row per voucher created — your 5% cut, with paid_a
 password_reset_tokens   Time-limited tokens for password reset flow
 ```
 
-**users** — `id`, `name`, `email` (unique), `password` (hashed), `role` (admin/super_admin), `status`, `created_at`, `updated_at`
+**users** — `id`, `name`, `email` (unique), `password` (hashed), `role` (user/admin/super_admin), `status`, `created_at`, `updated_at`
 
-**stores** — `id`, `name`, `slug` (unique), `category`, `email`, `vat_id`, `phone`, `address1`, `address2`, `city`, `postal_code`, `region`, `country` (default PT), `status`, `created_at`, `updated_at`
+**stores** — `id`, `name`, `slug` (unique), `category`, `email`, `vat_id`, `phone`, `address1`, `address2`, `city`, `postal_code`, `region`, `country` (default PT), `default_voucher_expiry_days` (default 365), `status`, `created_at`, `updated_at`
 
 **store_users** — `id`, `store_id`, `user_id`, `role` (admin/staff), `created_at`. Unique constraint on (store_id, user_id).
 
-**vouchers** — `id`, `store_id`, `created_by` (user), `code` (unique, 9 chars, handwriting-friendly), `amount`, `balance`, `buyer`, `status` (active/used/expired), `created_at`, `expires_at` (+5 years), `updated_at`
+**vouchers** — `id`, `store_id`, `created_by` (user), `code` (unique, 9 chars, handwriting-friendly), `amount`, `balance`, `buyer`, `status` (active/used/expired), `created_at`, `expires_at` (per-company default, max 5 years), `updated_at`
 
 **redemptions** — `id`, `store_id` (denormalised for fast queries), `voucher_id`, `redeemed_by` (user), `description`, `amount`, `balance_after` (snapshot), `created_at`
 
@@ -269,7 +274,8 @@ _Cloudflare Pages deployment config to be documented when we deploy._
 | 2026-03-17 | Structured address fields | Single field too limited for maps/validation/grouping |
 | 2026-03-17 | Many-to-many users ↔ stores | User can manage multiple stores, store can have multiple admins |
 | 2026-03-17 | No formal invoicing | Simple commission tracking with paid_at flag, manual collection |
-| 2026-03-17 | 5-year voucher expiry | EU legal minimum, enforced in app logic not cron |
+| 2026-03-17 | 5-year voucher expiry max | EU legal minimum as safety net, enforced in app logic not cron |
+| 2026-03-31 | Per-company default voucher expiry | Each company sets its own default expiry period (days). Default 365 days (1 year), max 1825 (5 years). Pre-fills voucher create form, allows manual override |
 | 2026-03-17 | store_id denormalised on redemptions | Avoids join for common "today's redemptions" query |
 | 2026-03-17 | English codebase, i18n for frontend | Clean code, translations handled separately |
 | 2026-03-17 | Single app with super_admin role | No separate admin app — role field on users controls what you see |
@@ -292,3 +298,5 @@ _Cloudflare Pages deployment config to be documented when we deploy._
 | 2026-03-18 | react-hook-form for all forms | Uncontrolled inputs, less re-renders, built-in validation. Shared Form + Input components in components/forms/ |
 | 2026-03-18 | Password reset via email link (Resend API) | Tokenised reset flow with 30-min expiry. Only token hash stored in DB. Resend chosen for simplicity — single fetch call from Workers, no SDK |
 | 2026-03-18 | Separate password_reset_tokens table | Audit trail of reset attempts, supports multiple concurrent tokens, cleaner separation from users table. Industry standard (Laravel, NextAuth) |
+| 2026-03-31 | Three-tier user roles: user, admin, super_admin | 'user' role has all admin permissions minus managing company users. 'admin' can manage users within their store. Company page has tabbed layout (Details + Users) with Users tab restricted to admin role |
+| 2026-03-31 | Company user management API | /api/company/users endpoints let admins list, create, and edit users scoped to their active store. Separate from /api/admin/users which is super_admin-only for cross-company management |

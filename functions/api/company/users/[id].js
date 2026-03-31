@@ -1,50 +1,59 @@
+import { requireStore } from '../../_store.js'
 import { getAuthUser } from '../../auth/_helpers.js'
 
 /**
- * GET /api/admin/users/:id — Get a single user with their store associations (super_admin only).
- * @param {Object} context - Cloudflare Pages Function context
- * @returns {Promise<Response>}
+ * GET /api/company/users/:id — Get a single user belonging to the active store.
+ * Requires admin role.
  */
 export async function onRequestGet(context) {
   const { request, env, params } = context
   const { id } = params
 
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
+  const payload = await getAuthUser(request, env.JWT_SECRET)
+  if (!payload) {
     return Response.json(
       { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
       { status: 401 },
     )
   }
-  if (user.role !== 'super_admin') {
+
+  if (payload.role !== 'admin' && payload.role !== 'super_admin') {
     return Response.json(
       { error: { message: 'Forbidden', code: 'AUTH_FORBIDDEN' } },
       { status: 403 },
     )
   }
 
-  try {
-    const foundUser = await env.DB.prepare(
-      'SELECT id, name, email, role, status, created_at FROM users WHERE id = ?',
-    ).bind(id).first()
+  const result = await requireStore(request, env, payload.sub)
+  if (result instanceof Response) return result
 
-    if (!foundUser) {
+  try {
+    // Verify user belongs to this store
+    const link = await env.DB.prepare(
+      'SELECT id FROM store_users WHERE store_id = ? AND user_id = ?',
+    ).bind(result.storeId, id).first()
+
+    if (!link) {
       return Response.json(
         { error: { message: 'User not found', code: 'USER_NOT_FOUND' } },
         { status: 404 },
       )
     }
 
-    const { results: stores } = await env.DB.prepare(
-      `SELECT su.store_id, s.name AS store_name
-       FROM store_users su
-       JOIN stores s ON s.id = su.store_id
-       WHERE su.user_id = ?`,
-    ).bind(id).all()
+    const user = await env.DB.prepare(
+      'SELECT id, name, email, role, status, created_at FROM users WHERE id = ?',
+    ).bind(id).first()
 
-    return Response.json({ data: { user: { ...foundUser, stores } } })
+    if (!user) {
+      return Response.json(
+        { error: { message: 'User not found', code: 'USER_NOT_FOUND' } },
+        { status: 404 },
+      )
+    }
+
+    return Response.json({ data: { user } })
   } catch (error) {
-    const err = new Error('Admin: Failed to get user')
+    const err = new Error('Company: Failed to get user')
     err.code = 'DB_READ_FAILED'
     err.cause = error
     throw err
@@ -52,27 +61,30 @@ export async function onRequestGet(context) {
 }
 
 /**
- * PUT /api/admin/users/:id — Update a user's name, email, role, and status (super_admin only).
- * @param {Object} context - Cloudflare Pages Function context
- * @returns {Promise<Response>}
+ * PUT /api/company/users/:id — Update a user belonging to the active store.
+ * Requires admin role. Can update name, email, role (user/admin), and status.
  */
 export async function onRequestPut(context) {
   const { request, env, params } = context
   const { id } = params
 
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
+  const payload = await getAuthUser(request, env.JWT_SECRET)
+  if (!payload) {
     return Response.json(
       { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
       { status: 401 },
     )
   }
-  if (user.role !== 'super_admin') {
+
+  if (payload.role !== 'admin' && payload.role !== 'super_admin') {
     return Response.json(
       { error: { message: 'Forbidden', code: 'AUTH_FORBIDDEN' } },
       { status: 403 },
     )
   }
+
+  const result = await requireStore(request, env, payload.sub)
+  if (result instanceof Response) return result
 
   let body
   try {
@@ -98,11 +110,12 @@ export async function onRequestPut(context) {
   }
 
   try {
-    const existing = await env.DB.prepare(
-      'SELECT id FROM users WHERE id = ?',
-    ).bind(id).first()
+    // Verify user belongs to this store
+    const link = await env.DB.prepare(
+      'SELECT id FROM store_users WHERE store_id = ? AND user_id = ?',
+    ).bind(result.storeId, id).first()
 
-    if (!existing) {
+    if (!link) {
       return Response.json(
         { error: { message: 'User not found', code: 'USER_NOT_FOUND' } },
         { status: 404 },
@@ -121,8 +134,8 @@ export async function onRequestPut(context) {
       )
     }
 
-    const allowedRoles = ['user', 'admin', 'super_admin']
-    const role = allowedRoles.includes(body.role) ? body.role : 'user'
+    // Company admins can only set user or admin roles
+    const role = body.role === 'admin' ? 'admin' : 'user'
     const status = body.status === 'inactive' ? 'inactive' : 'active'
     const now = new Date().toISOString()
 
@@ -136,7 +149,7 @@ export async function onRequestPut(context) {
 
     return Response.json({ data: { user: updatedUser } })
   } catch (error) {
-    const err = new Error('Admin: Failed to update user')
+    const err = new Error('Company: Failed to update user')
     err.code = 'DB_WRITE_FAILED'
     err.cause = error
     throw err

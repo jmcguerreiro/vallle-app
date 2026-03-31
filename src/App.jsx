@@ -7,6 +7,7 @@ import { USER_ROLES } from '@/constants/user-roles'
 import { AuthProvider } from '@/contexts/auth'
 import { MainProvider } from '@/contexts/main'
 import { ModalProvider } from '@/contexts/modal'
+import { RefreshProvider } from '@/contexts/refresh'
 import { ToastProvider } from '@/contexts/toast'
 import AdminCompaniesIndex from '@/features/admin/companies/pages/Index'
 import AdminCompanyCreate from '@/features/admin/companies/pages/Create'
@@ -24,6 +25,8 @@ import Login from '@/features/auth/Login'
 import ResetPassword from '@/features/auth/ResetPassword'
 import SelectStore from '@/features/auth/SelectStore'
 import Company from '@/features/company/Company'
+import CompanyUserCreate from '@/features/company/pages/UserCreate'
+import CompanyUserEdit from '@/features/company/pages/UserEdit'
 import Dashboard from '@/features/dashboard/Dashboard'
 import ChangePassword from '@/features/profile/pages/ChangePassword'
 import Profile from '@/features/profile/Profile'
@@ -102,6 +105,8 @@ const AppRoutes = () => {
           <Route element={<Profile />} path={ROUTES.PROFILE} />
           <Route element={<ChangePassword />} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
           <Route element={<Company />} path={ROUTES.COMPANY} />
+          <Route element={<CompanyUserCreate />} path={ROUTES.COMPANY_USERS_MODAL_CREATE} />
+          <Route element={<CompanyUserEdit />} path={ROUTES.COMPANY_USERS_MODAL_EDIT} />
 
           {/* Admin routes (super_admin only) */}
           <Route element={<AdminRoute><AdminCompaniesIndex /></AdminRoute>} path={ROUTES.ADMIN_COMPANIES} />
@@ -127,6 +132,10 @@ const AppRoutes = () => {
             <Route element={<Modal><QuickRedeem /></Modal>} path={ROUTES.VOUCHERS_MODAL_QUICK_REDEEM} />
             <Route element={<Modal><QuickLookup /></Modal>} path={ROUTES.VOUCHERS_MODAL_QUICK_LOOKUP} />
             <Route element={<Modal><ChangePassword /></Modal>} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
+
+            {/* Company user modals */}
+            <Route element={<Modal><CompanyUserCreate /></Modal>} path={ROUTES.COMPANY_USERS_MODAL_CREATE} />
+            <Route element={<Modal><CompanyUserEdit /></Modal>} path={ROUTES.COMPANY_USERS_MODAL_EDIT} />
 
             {/* Admin modals */}
             <Route element={<Modal><AdminCompanyCreate /></Modal>} path={ROUTES.ADMIN_COMPANIES_MODAL_CREATE} />
@@ -155,10 +164,12 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <MainProvider>
-          <ToastProvider>
-            <AppRoutes />
-            <Toast />
-          </ToastProvider>
+          <RefreshProvider>
+            <ToastProvider>
+              <AppRoutes />
+              <Toast />
+            </ToastProvider>
+          </RefreshProvider>
         </MainProvider>
       </AuthProvider>
     </BrowserRouter>
