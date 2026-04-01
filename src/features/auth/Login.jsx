@@ -3,11 +3,14 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
+import { LogIn as IconLogIn } from "lucide-react";
+
 import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import Loader from "@/components/Loader";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 
@@ -20,7 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 const Login = () => {
   // Hooks
   const { t } = useTranslation();
-  const { login, isAuthenticated, loading } = useAuth();
+  const { login, isAuthenticated, isLoading } = useAuth();
   const navigate = useNavigate();
   const {
     register,
@@ -40,6 +43,7 @@ const Login = () => {
 
       try {
         const loggedInUser = await login(email, password);
+
         if (loggedInUser.stores?.length > 1) {
           navigate(ROUTES.SELECT_STORE);
         } else {
@@ -59,8 +63,14 @@ const Login = () => {
   );
 
   // Render
-  if (loading) {
-    return <div className="c-loading">{t("common.loading")}</div>;
+  if (isLoading) {
+    return (
+      <div className="p-auth-login">
+        <div className="p-auth-login__loading">
+          <Loader />
+        </div>
+      </div>
+    );
   }
 
   if (isAuthenticated) {
@@ -104,15 +114,15 @@ const Login = () => {
                 name="password"
                 placeholder={t("features.login.form.password")}
                 register={register}
-                required
+                required={t("features.login.form.error.passwordRequired")}
                 type="password"
               />
             </FormFields>
 
             <FormActions>
               <Button
-                className="p-auth-login__submit"
                 display="block"
+                iconLeft={IconLogIn}
                 isProcessing={submitting}
                 type="submit"
               >

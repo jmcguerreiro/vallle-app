@@ -1,5 +1,6 @@
 import { Navigate } from 'react-router-dom'
 
+import Loader from '@/components/Loader'
 import { ROUTES } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -15,11 +16,11 @@ import { useAuth } from '@/hooks/useAuth'
  */
 const AuthGuard = ({ children }) => {
   // Hooks
-  const { isAuthenticated, needsStoreSelection, loading } = useAuth()
+  const { isAuthenticated, needsStoreSelection, isLoading } = useAuth()
 
   // Render
-  if (loading) {
-    return <div className="c-loading">Loading...</div>
+  if (isLoading) {
+    return <Loader />
   }
 
   if (!isAuthenticated) {

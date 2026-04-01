@@ -1,6 +1,19 @@
 .s-background {
-	mix-blend-mode: darken;
-	position: absolute;
-	bottom: 0;
-	left: 0;
+  width: to-rem(160);
+  position: relative;
+  margin: 0 auto;
+
+  @include screen(sm) {
+    width: to-rem(320);
+  }
+}
+
+@include screen(lg, landscape) {
+  .s-background {
+    max-width: to-rem(560);
+    width: 25vw;
+    bottom: 0;
+    left: 0;
+    position: absolute;
+  }
 }

@@ -1,4 +1,12 @@
 .s-main {
-	display: flex;
-	flex: 1;
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  padding: $spacing-12 $spacing-8;
+}
+
+@include screen(lg, landscape) {
+  .s-main {
+    padding: $spacing-12;
+  }
 }

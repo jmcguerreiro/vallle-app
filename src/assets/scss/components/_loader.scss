@@ -1,0 +1,27 @@
+.c-loader {
+  display: inline-flex;
+  width: 40px;
+  aspect-ratio: 4;
+  background:
+    radial-gradient(
+      circle closest-side at left 4px top 50%,
+      $color-espresso 90%,
+      transparent
+    ),
+    radial-gradient(circle closest-side, $color-espresso 90%, transparent),
+    radial-gradient(
+      circle closest-side at right 4px top 50%,
+      $color-espresso 90%,
+      transparent
+    );
+  background-size: 100% 100%;
+  background-repeat: no-repeat;
+  animation: loader-dots 1s infinite alternate;
+}
+
+@keyframes loader-dots {
+  to {
+    width: 8px;
+    aspect-ratio: 1;
+  }
+}

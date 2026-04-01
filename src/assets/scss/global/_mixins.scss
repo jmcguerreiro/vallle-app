@@ -12,6 +12,32 @@
   }
 }
 
+@mixin screen($size, $orientation: null) {
+  $breakpoints: (
+    xs: $screen-xs,
+    sm: $screen-sm,
+    md: $screen-md,
+    lg: $screen-lg,
+    xl: $screen-xl,
+    2xl: $screen-2xl,
+  );
+
+  $value: map-get($breakpoints, $size);
+  @if $value {
+    @if $orientation {
+      @media (min-width: $value) and (orientation: $orientation) {
+        @content;
+      }
+    } @else {
+      @media (min-width: $value) {
+        @content;
+      }
+    }
+  } @else {
+    @warn "Screen size `#{$size}` not found. Available: xs, sm, md, lg, xl, 2xl.";
+  }
+}
+
 @mixin no-user-select {
   -ms-user-select: none;
   -webkit-user-select: none;

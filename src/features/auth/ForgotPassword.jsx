@@ -53,20 +53,13 @@ const ForgotPassword = () => {
   if (sent) {
     return (
       <div className="p-auth-forgot-password">
-        <div className="p-auth-forgot-password__logo">
-          <img
-            alt=""
-            className="p-auth-forgot-password__logo-image"
-            src="/images/logo.svg"
-          />
-        </div>
         <div className="p-auth-forgot-password__header">
-          <h1 className="p-auth-forgot-password__heading">
-            {t("features.forgotPassword.successState.heading")}
+          <h1 className="p-auth-forgot-password__header-title">
+             {t("features.forgotPassword.successState.heading")}
           </h1>
-          <p className="p-auth-forgot-password__description">
+          <div className="p-auth-forgot-password__header-description">
             {t("features.forgotPassword.successState.message")}
-          </p>
+          </div>
         </div>
         <div className="p-auth-forgot-password__body">
           <div className="p-auth-forgot-password__body-back">
@@ -84,20 +77,13 @@ const ForgotPassword = () => {
 
   return (
     <div className="p-auth-forgot-password">
-      <div className="p-auth-forgot-password__logo">
-        <img
-          alt=""
-          className="p-auth-forgot-password__logo-image"
-          src="/images/logo.svg"
-        />
-      </div>
       <div className="p-auth-forgot-password__header">
-        <h1 className="p-auth-forgot-password__heading">
+        <h1 className="p-auth-forgot-password__header-title">
           {t("features.forgotPassword.heading")}
         </h1>
-        <p className="p-auth-forgot-password__description">
+        <div className="p-auth-forgot-password__header-description">
           {t("features.forgotPassword.description")}
-        </p>
+        </div>
       </div>
       <div className="p-auth-forgot-password__body">
         <div className="p-auth-forgot-password__body-form">

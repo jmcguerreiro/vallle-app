@@ -33,6 +33,7 @@
         "submit": "Sign in",
         "error": {
           "invalidEmail": "Please enter a valid email.",
+          "passwordRequired": "Please enter your password.",
           "invalidCredentials": "Invalid email or password.",
           "generic": "Could not sign in. Please try again."
         }
@@ -56,6 +57,7 @@
     },
     "resetPassword": {
       "heading": "Set a new password",
+      "description": "Your new password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.",
       "form": {
         "password": "New password",
         "submit": "Reset password",
@@ -68,7 +70,7 @@
       "successState": {
         "heading": "Password updated",
         "message": "Your password has been reset. You can now sign in.",
-        "backToLogin": "Sign in"
+        "backToLogin": "Back to sign in"
       },
       "errorState": {
         "heading": "Invalid link",
@@ -524,5 +526,10 @@
       "current": "(current)"
     },
     "logout": "Sign out"
+  },
+  "layouts": {
+    "backTo": {
+      "website": "Back to website"
+    }
   }
 }

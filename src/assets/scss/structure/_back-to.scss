@@ -1,0 +1,38 @@
+.s-back-to {
+  display: none;
+}
+
+@include screen(sm) {
+  .s-back-to {
+    display: block;
+    padding: $spacing-6 $spacing-8;
+  }
+
+  .s-back-to__link {
+    border: solid 1px $color-ash;
+    border-radius: $border-radius-md;
+    padding: $spacing-3;
+    display: inline-flex;
+    align-items: center;
+    gap: $spacing-2;
+    color: $text-color-highlight;
+
+    &:hover {
+      .s-back-to__link-icon {
+        transform: translateX(-20%);
+      }
+    }
+  }
+
+  .s-back-to__link-icon {
+    transition: $transition-normal;
+  }
+}
+
+@include screen(lg) {
+  .s-back-to {
+    position: absolute;
+    top: 0;
+    left: 0;
+  }
+}

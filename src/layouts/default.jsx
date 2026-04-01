@@ -208,7 +208,7 @@ const DefaultLayout = () => {
         </dialog>
       )}
 
-      <main className="c-layout__main">
+      <main className="s-main">
         {isStoreSuspended && (
           <div className="c-layout__suspended-banner" role="alert">
             {t("features.storeSuspended.banner")}

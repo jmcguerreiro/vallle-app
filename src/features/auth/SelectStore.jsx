@@ -2,6 +2,7 @@ import { useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Navigate, useNavigate } from 'react-router-dom'
 
+import Loader from '@/components/Loader'
 import { ROUTES } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 
@@ -15,7 +16,7 @@ import { useAuth } from '@/hooks/useAuth'
 const SelectStore = () => {
   // Hooks
   const { t } = useTranslation()
-  const { user, isAuthenticated, loading, selectStore } = useAuth()
+  const { user, isAuthenticated, isLoading, selectStore } = useAuth()
   const navigate = useNavigate()
 
   // Handlers
@@ -25,8 +26,8 @@ const SelectStore = () => {
   }, [selectStore, navigate])
 
   // Render
-  if (loading) {
-    return <div className="c-loading">{t('common.loading')}</div>
+  if (isLoading) {
+    return <Loader />
   }
 
   if (!isAuthenticated) {

@@ -46,7 +46,7 @@ export const AuthProvider = ({ children }) => {
   // State
   const [user, setUser] = useState(null)
   const [activeStore, setActiveStoreState] = useState(null)
-  const [loading, setLoading] = useState(true)
+  const [isLoading, setIsLoading] = useState(true)
 
   // Refs
   const userIdRef = useRef(null)
@@ -110,7 +110,7 @@ export const AuthProvider = ({ children }) => {
         }
       })
       .catch(() => setUser(null))
-      .finally(() => setLoading(false))
+      .finally(() => setIsLoading(false))
   }, [])
 
   // Derived State
@@ -121,7 +121,7 @@ export const AuthProvider = ({ children }) => {
   const value = useMemo(() => ({
     user,
     setUser,
-    loading,
+    isLoading,
     login,
     logout,
     activeStore,
@@ -131,7 +131,7 @@ export const AuthProvider = ({ children }) => {
     isSuperAdmin: user?.role === USER_ROLES.SUPER_ADMIN,
     isAdmin: user?.role === USER_ROLES.ADMIN || user?.role === USER_ROLES.SUPER_ADMIN,
     isStoreSuspended,
-  }), [user, loading, login, logout, activeStore, selectStore, needsStoreSelection, isStoreSuspended])
+  }), [user, isLoading, login, logout, activeStore, selectStore, needsStoreSelection, isStoreSuspended])
 
   // Render
   return (

@@ -85,6 +85,7 @@ All user-facing strings must be internationalized.
 
 - **Structure**: Organize keys hierarchically by: `features` -> `component/feature` -> `state` -> `key`.
   - Example: `features.redeemVoucher.errorState.voucherExpired`
+- **Tone (Portuguese)**: Use formal language (third-person "você" form), not informal "tu". For example: "Introduza o seu email" (not "Introduz o teu email"), "Esqueceu-se da palavra-passe?" (not "Esqueceste a palavra-passe?").
 - **Usage**: Use the `useTranslation` hook from `react-i18next`.
 
 **Example:**

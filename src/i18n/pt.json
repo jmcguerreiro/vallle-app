@@ -9,13 +9,13 @@
     "expand": "Expandir",
     "collapse": "Recolher",
     "noResults": "Sem resultados.",
-    "error": "Algo correu mal. Tenta novamente.",
+    "error": "Algo correu mal. Tente novamente.",
     "search": "Pesquisar...",
     "filters": {
       "allStatuses": "Todos os estados",
       "allStores": "Todas as lojas",
       "allCategories": "Todas as categorias",
-      "allRoles": "Todos os papéis"
+      "allRoles": "Todas as funções"
     },
     "pagination": {
       "previous": "Anterior",
@@ -26,68 +26,70 @@
   "features": {
     "login": {
       "heading": "Entrar no Vallle",
-      "forgotPassword": "Esqueceste a palavra-passe?",
+      "forgotPassword": "Esqueceu-se da palavra-passe?",
       "form": {
         "email": "Email",
         "password": "Palavra-passe",
         "submit": "Entrar",
         "error": {
-          "invalidEmail": "Introduz um email válido.",
+          "invalidEmail": "Introduza um email válido.",
+          "passwordRequired": "Introduza a sua palavra-passe.",
           "invalidCredentials": "Email ou palavra-passe incorretos.",
-          "generic": "Não foi possível iniciar sessão. Tenta novamente."
+          "generic": "Não foi possível iniciar sessão. Tente novamente."
         }
       }
     },
     "forgotPassword": {
-      "heading": "Esqueceste a palavra-passe?",
-      "description": "Introduz o teu email e enviamos-te um link para repor a palavra-passe.",
+      "heading": "Esqueceu-se da palavra-passe?",
+      "description": "Introduza o seu email para receber um link de recuperação de palavra-passe.",
       "backToLogin": "Voltar ao login",
       "form": {
         "submit": "Enviar link",
         "error": {
-          "generic": "Não foi possível enviar o link. Tenta novamente."
+          "generic": "Não foi possível enviar o link. Tente novamente."
         }
       },
       "successState": {
-        "heading": "Verifica o teu email",
-        "message": "Se existir uma conta com esse email, enviámos um link para repor a palavra-passe.",
+        "heading": "Verifique o seu email",
+        "message": "Se existir uma conta com este email, receberá um link para repor a palavra-passe.",
         "backToLogin": "Voltar ao login"
       }
     },
     "resetPassword": {
       "heading": "Definir nova palavra-passe",
+      "description": "A nova palavra-passe deve ter pelo menos 8 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um carácter especial.",
       "form": {
         "password": "Nova palavra-passe",
         "submit": "Repor palavra-passe",
         "error": {
-          "passwordRequired": "Introduz uma nova palavra-passe.",
+          "passwordRequired": "Introduza uma nova palavra-passe.",
           "invalidToken": "Este link é inválido ou expirou.",
-          "generic": "Não foi possível repor a palavra-passe. Tenta novamente."
+          "generic": "Não foi possível repor a palavra-passe. Tente novamente."
         }
       },
       "successState": {
         "heading": "Palavra-passe atualizada",
-        "message": "A tua palavra-passe foi reposta. Já podes iniciar sessão.",
-        "backToLogin": "Entrar"
+        "message": "A sua palavra-passe foi reposta. Já pode iniciar sessão.",
+        "backToLogin": "Voltar ao login"
       },
       "errorState": {
         "heading": "Link inválido",
-        "invalidLink": "Este link está em falta ou mal formado.",
+        "invalidLink": "Este link está incompleto ou mal formatado.",
         "requestNewLink": "Pedir novo link"
       }
     },
     "selectStore": {
-      "heading": "Escolhe uma loja",
-      "description": "Tens acesso a várias lojas. Seleciona com qual queres trabalhar."
+      "heading": "Escolha uma loja",
+      "description": "Tem acesso a várias lojas. Selecione a loja com que pretende trabalhar."
     },
     "dashboard": {
       "heading": "Painel",
       "welcome": "Olá, {{name}}!",
-      "subtitle": "Tens {{count}} vouchers ativos. Como posso ajudar?",
-      "subtitleNone": "Ainda não tens vouchers ativos. Como posso ajudar?",
+      "subtitle": "Tem {{count}} vouchers ativos. Como posso ajudar?",
+      "subtitleNone": "Ainda não tem vouchers ativos. Como posso ajudar?",
       "actions": {
         "create": "Emitir",
-        "redeem": "Redimir",
+        "redeem": "Resgatar",
         "lookup": "Consultar"
       }
     },
@@ -206,8 +208,8 @@
       },
       "password": {
         "heading": "Alterar palavra-passe",
-        "description": "Atualiza a tua palavra-passe para manter a conta segura.",
-        "requirements": "A nova palavra-passe deve ter pelo menos 8 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um caractere especial.",
+        "description": "Atualize a sua palavra-passe para manter a conta segura.",
+        "requirements": "A nova palavra-passe deve ter pelo menos 8 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um carácter especial.",
         "currentPassword": "Palavra-passe atual",
         "newPassword": "Nova palavra-passe",
         "submit": "Alterar palavra-passe",
@@ -216,14 +218,14 @@
           "currentRequired": "A palavra-passe atual é obrigatória.",
           "newRequired": "A nova palavra-passe é obrigatória.",
           "wrongPassword": "A palavra-passe atual está incorreta.",
-          "generic": "Não foi possível alterar a palavra-passe. Tenta novamente."
+          "generic": "Não foi possível alterar a palavra-passe. Tente novamente."
         }
       },
       "success": "Perfil atualizado com sucesso!",
       "error": {
         "loadFailed": "Não foi possível carregar o perfil.",
         "emailTaken": "Este email já está a ser utilizado.",
-        "generic": "Não foi possível atualizar o perfil. Tenta novamente."
+        "generic": "Não foi possível atualizar o perfil. Tente novamente."
       }
     },
     "company": {
@@ -244,14 +246,14 @@
         "email": "Email",
         "phone": "Telefone",
         "vatId": "NIF",
-        "address1": "Morada linha 1",
-        "address2": "Morada linha 2",
+        "address1": "Morada (linha 1)",
+        "address2": "Morada (linha 2)",
         "city": "Cidade",
         "postalCode": "Código postal",
         "region": "Distrito",
         "country": "País",
-        "defaultVoucherExpiryDays": "Período de expiração por defeito (dias)",
-        "defaultVoucherExpiryDaysHint": "Os vouchers expiram após este número de dias desde a criação. Entre 1 e 1825 dias (5 anos).",
+        "defaultVoucherExpiryDays": "Período de expiração predefinido (dias)",
+        "defaultVoucherExpiryDaysHint": "Os vouchers expiram após este número de dias, a contar da data de criação. Entre 1 e 1825 dias (5 anos).",
         "error": {
           "nameRequired": "O nome da empresa é obrigatório.",
           "expiryDaysRequired": "O período de expiração é obrigatório.",
@@ -262,7 +264,7 @@
         "list": {
           "name": "Nome",
           "email": "Email",
-          "role": "Papel",
+          "role": "Função",
           "status": "Estado",
           "updatedAt": "Última atualização",
           "active": "Ativo",
@@ -274,7 +276,7 @@
           "name": "Nome",
           "email": "Email",
           "password": "Palavra-passe",
-          "role": "Papel",
+          "role": "Função",
           "error": {
             "nameRequired": "O nome é obrigatório.",
             "emailRequired": "O email é obrigatório.",
@@ -306,7 +308,7 @@
       "success": "Dados da empresa atualizados com sucesso!",
       "error": {
         "loadFailed": "Não foi possível carregar os dados da empresa.",
-        "generic": "Não foi possível atualizar os dados da empresa. Tenta novamente."
+        "generic": "Não foi possível atualizar os dados da empresa. Tente novamente."
       }
     },
     "commissions": {
@@ -345,7 +347,7 @@
           "active": "Ativo",
           "suspended": "Suspenso",
           "inactive": "Inativo",
-          "paid": "Tudo pago",
+          "paid": "Regularizado",
           "unpaid": "Por pagar"
         },
         "form": {
@@ -354,14 +356,14 @@
           "email": "Email",
           "phone": "Telefone",
           "vatId": "NIF",
-          "address1": "Morada linha 1",
-          "address2": "Morada linha 2",
+          "address1": "Morada (linha 1)",
+          "address2": "Morada (linha 2)",
           "city": "Cidade",
           "postalCode": "Código postal",
           "region": "Distrito",
           "country": "País",
           "status": "Estado",
-          "defaultVoucherExpiryDays": "Expiração de vouchers por defeito (dias)",
+          "defaultVoucherExpiryDays": "Expiração de vouchers predefinida (dias)",
           "error": {
             "nameRequired": "O nome da empresa é obrigatório.",
             "expiryDaysRequired": "O período de expiração é obrigatório.",
@@ -403,7 +405,7 @@
         "list": {
           "name": "Nome",
           "email": "Email",
-          "role": "Papel",
+          "role": "Função",
           "companies": "Empresas",
           "status": "Estado",
           "createdAt": "Criado em",
@@ -418,7 +420,7 @@
           "name": "Nome",
           "email": "Email",
           "password": "Palavra-passe",
-          "role": "Papel",
+          "role": "Função",
           "company": "Atribuir a empresa",
           "noCompany": "Sem empresa",
           "error": {
@@ -504,7 +506,7 @@
       "uppercase": "Deve incluir uma letra maiúscula.",
       "lowercase": "Deve incluir uma letra minúscula.",
       "number": "Deve incluir um número.",
-      "special": "Deve incluir um caractere especial."
+      "special": "Deve incluir um carácter especial."
     }
   },
   "nav": {
@@ -524,5 +526,10 @@
       "current": "(atual)"
     },
     "logout": "Sair"
+  },
+  "layouts": {
+    "backTo": {
+      "website": "Voltar ao website"
+    }
   }
 }

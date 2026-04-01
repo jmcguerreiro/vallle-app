@@ -1,6 +1,8 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 
+import { ROUTES } from "@/constants/routes";
 import Background from "@/layouts/components/Background";
+import BackTo from "@/layouts/components/BackTo";
 
 /**
  * Layout: Blank
@@ -10,10 +12,16 @@ import Background from "@/layouts/components/Background";
  * @returns {JSX.Element}
  */
 const BlankLayout = () => {
+  // Hooks
+  const location = useLocation();
+
+  // Derived State
+  const showBackTo = location.pathname === ROUTES.LOGIN;
+
   // Render
   return (
     <>
-      <div className="s-back-to">Back to Website</div>
+      {showBackTo && <BackTo />}
       <main className="s-main">
         <Outlet />
       </main>

@@ -10,20 +10,24 @@
 @import "./components/dashboard";
 @import "./components/datatable";
 @import "./components/forms";
+@import "./components/loader";
 @import "./components/stats";
 @import "./components/toast";
 @import "./components/vouchers";
 
+@import "./structure/back-to";
 @import "./structure/main";
 @import "./structure/background";
 
 @import "./features/auth/pages/auth-login";
 @import "./features/auth/pages/auth-forgot-password";
+@import "./features/auth/pages/auth-reset-password";
 
 html,
 body {
   @include font-size(md);
   background: $color-linen;
+  color: $text-color;
   font-family: $font-family-one;
   font-weight: $font-weight-regular;
   -webkit-font-smoothing: antialiased;
@@ -324,7 +328,9 @@ body {
   font-family: var(--font-body);
   font-size: 0.9375rem;
   padding: var(--space-sm) var(--space-md);
-  transition: border-color 0.15s, background 0.15s;
+  transition:
+    border-color 0.15s,
+    background 0.15s;
   width: 100%;
 }
 
@@ -385,7 +391,9 @@ body {
   font-weight: 400;
   padding: var(--space-sm) var(--space-md);
   text-align: left;
-  transition: background 0.15s, color 0.15s;
+  transition:
+    background 0.15s,
+    color 0.15s;
 }
 
 .c-company__tab:hover {

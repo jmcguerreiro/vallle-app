@@ -1,8 +1,11 @@
 .p-auth-login {
   margin: auto;
   max-width: $screen-xs;
-  padding: $spacing-12 $spacing-6;
   width: 100%;
+}
+
+.p-auth-login__loading {
+  text-align: center;
 }
 
 .p-auth-login__logo {
@@ -27,4 +30,10 @@
   @include font-size(sm);
   text-decoration: underline wavy $color-terracota 1px;
   text-underline-offset: $spacing-2;
+  transition: $transition-normal;
+
+  &:hover {
+    color: $text-color-highlight;
+    text-underline-offset: $spacing-1;
+  }
 }
