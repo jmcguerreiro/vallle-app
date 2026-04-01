@@ -1,11 +1,19 @@
 @font-face {
-	font-family: 'nudica mono';
-	src: url('/fonts/nudicamono-medium-webfont.eot');
-	src: url('/fonts/nudicamono-medium-webfont.eot?#iefix') format('embedded-opentype'),
-			 url('/fonts/nudicamono-medium-webfont.woff2') format('woff2'),
-			 url('/fonts/nudicamono-medium-webfont.woff') format('woff'),
-			 url('/fonts/nudicamono-medium-webfont.ttf') format('truetype');
-	font-weight: normal;
-	font-style: normal;
+  font-family: "Karl";
+  src:
+    url("/webfonts/karl-light-webfont.woff2") format("woff2"),
+    url("/webfonts/karl-light-webfont.woff") format("woff");
+  font-weight: 300;
+  font-style: normal;
+  font-display: swap;
+}
 
+@font-face {
+  font-family: "Karl";
+  src:
+    url("/webfonts/karl-bold-webfont.woff2") format("woff2"),
+    url("/webfonts/karl-bold-webfont.woff") format("woff");
+  font-weight: 700;
+  font-style: normal;
+  font-display: swap;
 }

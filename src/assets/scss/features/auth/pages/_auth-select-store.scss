@@ -1,0 +1,32 @@
+.p-auth-select-store {
+  margin: auto;
+  max-width: $screen-xs;
+  width: 100%;
+}
+
+.p-auth-select-store__header {
+  margin-bottom: $spacing-9;
+  text-align: center;
+}
+
+.p-auth-select-store__header-title {
+  @include font-size(3xl);
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-6;
+  text-wrap: balance;
+}
+
+.p-auth-select-store__header-description {
+  text-wrap: balance;
+}
+
+.p-auth-select-store__body-form {
+  margin-bottom: $spacing-9;
+}
+
+@include screen(md) {
+  .p-auth-select-store__header-title {
+    @include font-size(5xl);
+  }
+}

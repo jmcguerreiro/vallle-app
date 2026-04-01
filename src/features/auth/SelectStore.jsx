@@ -1,10 +1,11 @@
-import { useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { Navigate, useNavigate } from 'react-router-dom'
+import { useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { Navigate, useNavigate } from "react-router-dom";
 
-import Loader from '@/components/Loader'
-import { ROUTES } from '@/constants/routes'
-import { useAuth } from '@/hooks/useAuth'
+import Loader from "@/components/Loader";
+import StoreSelect from "@/components/StoreSelect";
+import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Component: SelectStore
@@ -15,55 +16,49 @@ import { useAuth } from '@/hooks/useAuth'
  */
 const SelectStore = () => {
   // Hooks
-  const { t } = useTranslation()
-  const { user, isAuthenticated, isLoading, selectStore } = useAuth()
-  const navigate = useNavigate()
+  const { t } = useTranslation();
+  const { user, isAuthenticated, isLoading, selectStore } = useAuth();
+  const navigate = useNavigate();
 
   // Handlers
-  const handleSelect = useCallback((store) => {
-    selectStore(store)
-    navigate(ROUTES.HOME)
-  }, [selectStore, navigate])
+  const handleSelect = useCallback(
+    (store) => {
+      selectStore(store);
+      navigate(ROUTES.HOME);
+    },
+    [selectStore, navigate],
+  );
 
   // Render
   if (isLoading) {
-    return <Loader />
+    return <Loader />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate replace to={ROUTES.LOGIN} />
+    return <Navigate replace to={ROUTES.LOGIN} />;
   }
 
   return (
-    <div className="c-select-store">
-      <div className="c-select-store__card">
-        <h1 className="c-select-store__heading">
-          {t('features.selectStore.heading')}
+    <div className="p-auth-select-store">
+      <div className="p-auth-select-store__header">
+        <h1 className="p-auth-select-store__header-title">
+          {t("features.selectStore.heading")}
         </h1>
-        <p className="c-select-store__description">
-          {t('features.selectStore.description')}
-        </p>
-        <ul className="c-select-store__list">
-          {user?.stores?.map((store) => (
-            <li key={store.store_id}>
-              <button
-                className="c-select-store__option"
-                onClick={() => handleSelect(store)}
-                type="button"
-              >
-                <span className="c-select-store__option-name">
-                  {store.store_name}
-                </span>
-                <span className="c-select-store__option-role">
-                  {store.role}
-                </span>
-              </button>
-            </li>
-          ))}
-        </ul>
+        <div className="p-auth-select-store__header-description">
+          {t("features.selectStore.description")}
+        </div>
+      </div>
+      <div className="p-auth-select-store__body">
+        <div className="p-auth-select-store__body-picker">
+          <StoreSelect
+            onSelect={handleSelect}
+            renderMeta={(store) => store.role}
+            stores={user?.stores}
+          />
+        </div>
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default SelectStore
+export default SelectStore;

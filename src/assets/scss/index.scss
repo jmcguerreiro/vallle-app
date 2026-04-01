@@ -12,6 +12,7 @@
 @import "./components/forms";
 @import "./components/loader";
 @import "./components/stats";
+@import "./components/store-select";
 @import "./components/toast";
 @import "./components/vouchers";
 
@@ -22,6 +23,7 @@
 @import "./features/auth/pages/auth-login";
 @import "./features/auth/pages/auth-forgot-password";
 @import "./features/auth/pages/auth-reset-password";
+@import "./features/auth/pages/auth-select-store";
 
 html,
 body {

@@ -4,6 +4,16 @@
   gap: $spacing-6;
 }
 
+.c-form__error {
+  @include font-size(sm);
+  border: dashed 1px $color-ash;
+  border-radius: $border-radius-lg;
+  color: $text-color-highlight;
+  padding: $spacing-3 $spacing-4;
+  text-align: center;
+  font-weight: $font-weight-bold;
+}
+
 .c-form__fields {
   display: flex;
   flex-direction: column;
@@ -33,12 +43,4 @@
 .c-form__field-error {
   @include font-size(sm);
   color: $color-danger;
-}
-
-.c-form__error {
-  @include font-size(sm);
-  border: dashed 1px $color-ash;
-  border-radius: $border-radius-lg;
-  padding: $spacing-3 $spacing-4;
-  text-align: center;
 }
