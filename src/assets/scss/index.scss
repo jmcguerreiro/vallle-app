@@ -17,6 +17,8 @@
 @import "./components/vouchers";
 
 @import "./structure/back-to";
+@import "./structure/header";
+@import "./structure/navigation";
 @import "./structure/main";
 @import "./structure/background";
 
@@ -90,101 +92,6 @@ body {
   --sidebar-width: 240px;
 }
 
-/* ─── Layout ──────────────────────────────────────────────────── */
-
-.c-layout {
-  display: flex;
-  min-height: 100vh;
-}
-
-.c-layout__sidebar {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: var(--sidebar-width);
-  height: 100vh;
-  display: flex;
-  flex-direction: column;
-  background: var(--color-espresso);
-  color: var(--color-linen);
-  padding: var(--space-lg);
-}
-
-.c-layout__brand {
-  margin-bottom: var(--space-2xl);
-}
-
-.c-layout__logo {
-  font-family: var(--font-display);
-  font-size: 1.75rem;
-  color: var(--color-honey);
-}
-
-.c-layout__nav {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-  flex: 1;
-}
-
-.c-layout__nav-link {
-  display: block;
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  color: var(--color-parchment);
-  font-weight: 400;
-  transition:
-    background 0.15s,
-    color 0.15s;
-}
-
-.c-layout__nav-link:hover {
-  background: rgba(255, 255, 255, 0.08);
-  text-decoration: none;
-}
-
-.c-layout__nav-link.active {
-  background: rgba(255, 255, 255, 0.12);
-  color: var(--color-honey);
-}
-
-.c-layout__user {
-  border-top: 1px solid rgba(255, 255, 255, 0.1);
-  padding-top: var(--space-md);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-sm);
-}
-
-.c-layout__user-name {
-  font-weight: 400;
-  font-size: 0.875rem;
-}
-
-.c-layout__logout {
-  background: none;
-  border: none;
-  color: var(--color-parchment);
-  font-family: var(--font-body);
-  font-size: 0.875rem;
-  cursor: pointer;
-  text-align: left;
-  padding: var(--space-xs) 0;
-  opacity: 0.7;
-  transition: opacity 0.15s;
-}
-
-.c-layout__logout:hover {
-  opacity: 1;
-}
-
-.c-layout__main {
-  margin-left: var(--sidebar-width);
-  flex: 1;
-  padding: var(--space-xl);
-  min-height: 100vh;
-}
-
 /* ─── Modal ──────────────────────────────────────────────────── */
 
 .c-modal {
@@ -243,73 +150,7 @@ body {
   margin-top: var(--space-sm);
 }
 
-/* ─── Main header ────────────────────────────────────────────── */
-
-.c-layout__main-header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-xl);
-}
-
-.c-layout__main-header-title {
-  font-size: 1.5rem;
-  color: var(--color-text);
-}
-
-.c-layout__main-header-actions {
-  display: flex;
-  gap: var(--space-sm);
-}
-
-/* ─── Suspended banner ──────────────────────────────────────── */
-
-.c-layout__suspended-banner {
-  background: rgba(212, 165, 116, 0.15);
-  border: 1px solid var(--color-honey);
-  border-radius: var(--radius-md);
-  color: #8a6520;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: var(--space-lg);
-  padding: var(--space-md) var(--space-lg);
-  text-align: center;
-}
-
 /* ─── Store switcher ─────────────────────────────────────────── */
-
-.c-layout__store {
-  display: flex;
-  align-items: center;
-  gap: var(--space-sm);
-  margin-bottom: var(--space-lg);
-  padding: var(--space-sm) var(--space-md);
-  border-radius: var(--radius-md);
-  background: rgba(255, 255, 255, 0.06);
-}
-
-.c-layout__store-name {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  flex: 1;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-}
-
-.c-layout__store-switch {
-  background: none;
-  border: none;
-  color: var(--color-parchment);
-  cursor: pointer;
-  padding: var(--space-xs);
-  opacity: 0.6;
-  transition: opacity 0.15s;
-}
-
-.c-layout__store-switch:hover {
-  opacity: 1;
-}
 
 .c-store-switcher__list {
   list-style: none;

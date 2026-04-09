@@ -18,7 +18,7 @@ export async function onRequestGet(context) {
 
   try {
     const user = await env.DB.prepare(
-      'SELECT id, name, email, role, status FROM users WHERE id = ?',
+      'SELECT id, name, email, role, status, avatar FROM users WHERE id = ?',
     ).bind(payload.sub).first()
 
     if (!user || user.status !== 'active') {
@@ -44,6 +44,7 @@ export async function onRequestGet(context) {
           name: user.name,
           email: user.email,
           role: user.role,
+          avatar: user.avatar || 'paper-bag-head',
           stores: storeLinks,
         },
       },

@@ -40,7 +40,78 @@
   }
 }
 
+.c-form__field-label {
+  @include font-size(sm);
+  color: $text-color;
+  display: block;
+  font-weight: $font-weight-bold;
+  margin-bottom: $spacing-2;
+}
+
 .c-form__field-error {
   @include font-size(sm);
   color: $color-danger;
+}
+
+.c-form__success {
+  @include font-size(sm);
+  color: $color-success;
+  text-align: center;
+}
+
+// Avatar select option
+.c-avatar-option {
+  align-items: center;
+  display: flex;
+  gap: $spacing-3;
+}
+
+.c-avatar-option__img {
+  flex-shrink: 0;
+  height: 32px;
+  object-fit: contain;
+  width: 32px;
+}
+
+.c-avatar-option__label {
+  @include font-size(sm);
+  color: $text-color-highlight;
+  text-transform: capitalize;
+}
+
+// Image Picker
+.c-image-picker {
+  display: grid;
+  gap: $spacing-2;
+  grid-template-columns: repeat(auto-fill, minmax(64px, 1fr));
+  max-height: 320px;
+  overflow-y: auto;
+  padding: $spacing-3;
+  background: $color-white;
+  border-radius: $border-radius-lg;
+}
+
+.c-image-picker__item {
+  aspect-ratio: 1;
+  border-radius: $border-radius-md;
+  cursor: pointer;
+  padding: $spacing-1;
+  transition: background $transition-normal;
+
+  &:hover {
+    background: $color-linen;
+  }
+
+  &--selected {
+    background: $color-linen;
+    outline: 2px solid $color-terracota;
+    outline-offset: 1px;
+  }
+}
+
+.c-image-picker__img {
+  display: block;
+  height: 100%;
+  object-fit: contain;
+  width: 100%;
 }

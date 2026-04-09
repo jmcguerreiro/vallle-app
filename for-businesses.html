@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vallle — For Businesses</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --terracotta: #C4653A;
+      --terracotta-dark: #A8522D;
+      --linen: #F5E6D8;
+      --espresso: #2C2520;
+      --sage: #7A9B76;
+      --sage-light: #e8f0e7;
+      --parchment: #E8DDD3;
+      --honey: #D4A574;
+      --white: #FFFFFF;
+      --font-display: 'DM Serif Display', Georgia, serif;
+      --font-body: 'DM Sans', system-ui, sans-serif;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      font-family: var(--font-body);
+      font-weight: 300;
+      color: var(--espresso);
+      line-height: 1.6;
+      background: var(--white);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── NAV ── */
+    .nav {
+      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
+      background: rgba(255,255,255,0.95);
+      backdrop-filter: blur(10px);
+      border-bottom: 1px solid var(--parchment);
+      transition: box-shadow 0.3s;
+    }
+    .nav--scrolled { box-shadow: 0 2px 20px rgba(44,37,32,0.08); }
+    .nav__inner {
+      max-width: 1200px; margin: 0 auto; padding: 0 24px;
+      display: flex; align-items: center; justify-content: space-between; height: 64px;
+    }
+    .nav__logo { font-family: var(--font-display); font-size: 1.5rem; color: var(--terracotta); text-decoration: none; }
+    .nav__links { display: flex; gap: 28px; align-items: center; }
+    .nav__link {
+      text-decoration: none; color: var(--espresso); font-weight: 400; font-size: 0.92rem;
+      transition: color 0.2s;
+    }
+    .nav__link:hover { color: var(--terracotta); }
+    .nav__app-btn {
+      background: var(--espresso); color: var(--white);
+      padding: 9px 20px; border-radius: 8px; text-decoration: none;
+      font-weight: 500; font-size: 0.88rem; transition: all 0.2s;
+    }
+    .nav__app-btn:hover { background: var(--terracotta); }
+    .nav__hamburger {
+      display: none; background: none; border: none; cursor: pointer;
+      width: 32px; height: 32px; position: relative;
+    }
+    .nav__hamburger span {
+      display: block; width: 24px; height: 2px; background: var(--espresso);
+      position: absolute; left: 4px; transition: all 0.3s;
+    }
+    .nav__hamburger span:nth-child(1) { top: 8px; }
+    .nav__hamburger span:nth-child(2) { top: 15px; }
+    .nav__hamburger span:nth-child(3) { top: 22px; }
+
+    /* ── SHARED ── */
+    .section__inner { max-width: 1100px; margin: 0 auto; }
+    .section__label {
+      font-size: 0.82rem; font-weight: 500; text-transform: uppercase;
+      letter-spacing: 2px; color: var(--terracotta); text-align: center; margin-bottom: 12px;
+    }
+    .section__title {
+      font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.8rem);
+      text-align: center; margin-bottom: 16px; color: var(--espresso);
+    }
+    .section__subtitle {
+      text-align: center; max-width: 600px; margin: 0 auto 60px;
+      color: #6b5e56; font-size: 1.05rem;
+    }
+    .btn {
+      display: inline-flex; align-items: center; gap: 8px;
+      padding: 14px 32px; border-radius: 10px; font-family: var(--font-body);
+      font-size: 1rem; font-weight: 500; text-decoration: none; transition: all 0.2s;
+      cursor: pointer; border: none;
+    }
+    .btn--primary { background: var(--terracotta); color: var(--white); }
+    .btn--primary:hover { background: var(--terracotta-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,101,58,0.3); }
+    .btn--secondary { background: var(--white); color: var(--espresso); border: 2px solid var(--parchment); }
+    .btn--secondary:hover { border-color: var(--terracotta); color: var(--terracotta); }
+    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
+    .fade-in.visible { opacity: 1; transform: translateY(0); }
+
+    /* ── HERO ── */
+    .hero {
+      padding: 140px 24px 100px;
+      background: linear-gradient(170deg, var(--linen) 0%, var(--white) 60%);
+      text-align: center;
+    }
+    .hero__title {
+      font-family: var(--font-display);
+      font-size: clamp(2.4rem, 6vw, 4rem);
+      line-height: 1.15; max-width: 700px; margin: 0 auto 24px; color: var(--espresso);
+    }
+    .hero__title em { font-style: normal; color: var(--terracotta); }
+    .hero__subtitle {
+      font-size: 1.2rem; max-width: 540px; margin: 0 auto 40px; color: #6b5e56; line-height: 1.7;
+    }
+    .hero__actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; }
+
+    /* ── HOW IT WORKS ── */
+    .how { padding: 100px 24px; background: var(--white); }
+    .how__steps {
+      display: grid; grid-template-columns: repeat(4, 1fr); gap: 24px;
+    }
+    .how__step {
+      background: var(--linen); border-radius: 16px; padding: 32px 24px;
+      text-align: center; position: relative;
+    }
+    .how__step-num {
+      position: absolute; top: -12px; left: 50%; transform: translateX(-50%);
+      width: 28px; height: 28px; border-radius: 50%;
+      background: var(--terracotta); color: var(--white);
+      font-size: 0.8rem; font-weight: 600;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .how__step-icon { font-size: 1.8rem; margin-bottom: 12px; margin-top: 8px; }
+    .how__step-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 6px; }
+    .how__step-desc { color: #6b5e56; font-size: 0.85rem; line-height: 1.5; }
+
+    /* ── BENEFITS ── */
+    .benefits { padding: 100px 24px; background: var(--linen); }
+    .benefits__grid {
+      display: grid; grid-template-columns: repeat(3, 1fr); gap: 24px;
+    }
+    .benefit {
+      display: flex; align-items: flex-start; gap: 14px;
+      background: var(--white); border-radius: 14px; padding: 28px;
+    }
+    .benefit__icon {
+      flex-shrink: 0; width: 44px; height: 44px; border-radius: 12px;
+      background: #fef3ee; display: flex; align-items: center; justify-content: center; font-size: 1.2rem;
+    }
+    .benefit__text h4 { font-weight: 600; font-size: 0.95rem; margin-bottom: 4px; }
+    .benefit__text p { font-size: 0.88rem; color: #6b5e56; line-height: 1.5; }
+
+    /* ── FAQ ── */
+    .faq { padding: 100px 24px; background: var(--white); }
+    .faq__list {
+      max-width: 700px; margin: 0 auto;
+      display: flex; flex-direction: column; gap: 16px;
+    }
+    .faq__item {
+      border: 1px solid var(--parchment); border-radius: 12px;
+      overflow: hidden; transition: border-color 0.3s;
+    }
+    .faq__item:hover { border-color: var(--honey); }
+    .faq__question {
+      width: 100%; background: none; border: none; padding: 20px 24px;
+      font-family: var(--font-body); font-size: 1.05rem; font-weight: 500;
+      color: var(--espresso); cursor: pointer;
+      display: flex; justify-content: space-between; align-items: center; text-align: left;
+    }
+    .faq__question::after {
+      content: '+'; font-size: 1.3rem; color: var(--terracotta);
+      transition: transform 0.3s; flex-shrink: 0; margin-left: 16px;
+    }
+    .faq__item.active .faq__question::after { transform: rotate(45deg); }
+    .faq__answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
+    .faq__item.active .faq__answer { max-height: 300px; }
+    .faq__answer-inner {
+      padding: 0 24px 20px; color: #6b5e56; font-size: 0.95rem; line-height: 1.7;
+    }
+
+    /* ── PRICING ── */
+    .pricing { padding: 100px 24px; background: var(--linen); }
+    .pricing__card {
+      max-width: 520px; margin: 0 auto;
+      background: var(--white); border-radius: 20px; padding: 48px;
+      text-align: center; box-shadow: 0 8px 40px rgba(44,37,32,0.08);
+      position: relative; overflow: hidden;
+    }
+    .pricing__card::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 4px;
+      background: linear-gradient(90deg, var(--terracotta), var(--honey));
+    }
+    .pricing__heading {
+      font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 24px;
+    }
+    .pricing__row {
+      display: flex; justify-content: center; gap: 48px; margin-bottom: 24px;
+    }
+    .pricing__value {
+      font-family: var(--font-display); font-size: 2.2rem; color: var(--terracotta);
+    }
+    .pricing__label { color: #6b5e56; font-size: 0.88rem; margin-top: 2px; }
+    .pricing__divider { border: none; border-top: 1px dashed var(--parchment); margin: 24px 0; }
+    .pricing__includes {
+      list-style: none; text-align: left; display: flex; flex-direction: column; gap: 10px; margin-bottom: 28px;
+    }
+    .pricing__includes li {
+      display: flex; align-items: center; gap: 10px; font-size: 0.92rem;
+    }
+    .pricing__includes li::before { content: '\2713'; color: var(--sage); font-weight: 600; }
+    .pricing__note { color: #8a7d75; font-size: 0.85rem; margin-top: 16px; }
+
+    /* ── CTA ── */
+    .cta {
+      padding: 100px 24px;
+      background: var(--espresso); color: var(--white); text-align: center;
+    }
+    .cta__title {
+      font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.5rem);
+      margin-bottom: 16px; color: var(--linen);
+    }
+    .cta__desc {
+      color: #a89d95; max-width: 460px; margin: 0 auto 32px; font-size: 1.05rem; line-height: 1.7;
+    }
+
+    /* ── FOOTER ── */
+    .footer { padding: 48px 24px; background: var(--espresso); color: #a89d95; font-size: 0.9rem; border-top: 1px solid rgba(255,255,255,0.06); }
+    .footer__inner {
+      max-width: 1100px; margin: 0 auto;
+      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
+    }
+    .footer__logo { font-family: var(--font-display); color: var(--honey); font-size: 1.3rem; }
+    .footer__links { display: flex; gap: 24px; }
+    .footer__link { color: #a89d95; text-decoration: none; transition: color 0.2s; }
+    .footer__link:hover { color: var(--linen); }
+
+    /* ── RESPONSIVE ── */
+    @media (max-width: 900px) {
+      .how__steps { grid-template-columns: repeat(2, 1fr); }
+      .benefits__grid { grid-template-columns: 1fr; }
+    }
+    @media (max-width: 768px) {
+      .nav__links { display: none; }
+      .nav__hamburger { display: flex; align-items: center; justify-content: center; }
+      .nav__links.open {
+        display: flex; flex-direction: column; position: absolute;
+        top: 64px; left: 0; right: 0; background: var(--white);
+        padding: 24px; border-bottom: 1px solid var(--parchment);
+        box-shadow: 0 8px 24px rgba(44,37,32,0.1); gap: 16px;
+      }
+      .hero { padding: 120px 24px 80px; }
+      .how__steps { grid-template-columns: 1fr; }
+      .pricing__card { padding: 36px 28px; }
+      .pricing__row { gap: 28px; }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav class="nav" id="nav">
+    <div class="nav__inner">
+      <a href="/homepage.html" class="nav__logo">Vallle</a>
+      <div class="nav__links" id="navLinks">
+        <a href="#how" class="nav__link">How it works</a>
+        <a href="#benefits" class="nav__link">Benefits</a>
+        <a href="#pricing" class="nav__link">Pricing</a>
+        <a href="#faq" class="nav__link">FAQ</a>
+        <a href="/login" class="nav__app-btn">Customer area</a>
+      </div>
+      <button class="nav__hamburger" id="hamburger" aria-label="Menu">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="section__inner">
+      <h1 class="hero__title">Your shop, your vouchers, <em>zero hassle</em></h1>
+      <p class="hero__subtitle">You already have customers who'd love to give your shop as a gift. Vallle makes it effortless — a simple app, beautiful branded postcards, and no monthly fees.</p>
+      <div class="hero__actions">
+        <a href="#pricing" class="btn btn--primary">See pricing</a>
+        <a href="#how" class="btn btn--secondary">How it works</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- HOW IT WORKS -->
+  <section class="how" id="how">
+    <div class="section__inner">
+      <p class="section__label">How it works</p>
+      <h2 class="section__title">Up and running in minutes</h2>
+      <p class="section__subtitle">Creating and managing vouchers is as simple as taking an order.</p>
+      <div class="how__steps">
+        <div class="how__step fade-in">
+          <div class="how__step-num">1</div>
+          <div class="how__step-icon">&#128241;</div>
+          <h3 class="how__step-title">Create a voucher</h3>
+          <p class="how__step-desc">Open the app, enter the amount, get a unique code. Takes 30 seconds.</p>
+        </div>
+        <div class="how__step fade-in">
+          <div class="how__step-num">2</div>
+          <div class="how__step-icon">&#9997;&#65039;</div>
+          <h3 class="how__step-title">Write the postcard</h3>
+          <p class="how__step-desc">Write the code and amount on a branded Vallle postcard. Hand it to the customer.</p>
+        </div>
+        <div class="how__step fade-in">
+          <div class="how__step-num">3</div>
+          <div class="how__step-icon">&#128176;</div>
+          <h3 class="how__step-title">Get paid</h3>
+          <p class="how__step-desc">The customer pays you directly — cash, card, however you normally take payment.</p>
+        </div>
+        <div class="how__step fade-in">
+          <div class="how__step-num">4</div>
+          <div class="how__step-icon">&#10004;&#65039;</div>
+          <h3 class="how__step-title">Redeem later</h3>
+          <p class="how__step-desc">When the recipient shows up, look up the code and redeem. Full or partial.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- BENEFITS -->
+  <section class="benefits" id="benefits">
+    <div class="section__inner">
+      <p class="section__label">Why Vallle</p>
+      <h2 class="section__title">Good for your shop. Good for your community.</h2>
+      <p class="section__subtitle">A simple tool with real impact for your business.</p>
+      <div class="benefits__grid">
+        <div class="benefit fade-in">
+          <div class="benefit__icon">&#128200;</div>
+          <div class="benefit__text">
+            <h4>Revenue upfront</h4>
+            <p>Cash in hand the moment a voucher is sold. Before any service is delivered.</p>
+          </div>
+        </div>
+        <div class="benefit fade-in">
+          <div class="benefit__icon">&#128101;</div>
+          <div class="benefit__text">
+            <h4>New faces at the door</h4>
+            <p>Every voucher gift brings someone new to your shop who might not have found you otherwise.</p>
+          </div>
+        </div>
+        <div class="benefit fade-in">
+          <div class="benefit__icon">&#127912;</div>
+          <div class="benefit__text">
+            <h4>Your brand, beautifully</h4>
+            <p>Postcards feature your store name and branding. It's your gift — we just make it work.</p>
+          </div>
+        </div>
+        <div class="benefit fade-in">
+          <div class="benefit__icon">&#128274;</div>
+          <div class="benefit__text">
+            <h4>Everything tracked</h4>
+            <p>Balances, redemptions, expiry dates, team access. All in one simple dashboard.</p>
+          </div>
+        </div>
+        <div class="benefit fade-in">
+          <div class="benefit__icon">&#128242;</div>
+          <div class="benefit__text">
+            <h4>Works on any device</h4>
+            <p>Phone, tablet, computer. No app to install, no special hardware needed.</p>
+          </div>
+        </div>
+        <div class="benefit fade-in">
+          <div class="benefit__icon">&#128106;</div>
+          <div class="benefit__text">
+            <h4>Bring your team</h4>
+            <p>Add staff members so anyone at the counter can create and redeem vouchers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FAQ -->
+  <section class="faq" id="faq">
+    <div class="section__inner">
+      <p class="section__label">Questions</p>
+      <h2 class="section__title">Frequently asked</h2>
+      <div class="faq__list">
+        <div class="faq__item">
+          <button class="faq__question">How does a customer buy a voucher?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">They walk into your shop and ask for a gift voucher. You create it in the Vallle app (30 seconds), write the code on a branded postcard, and hand it over. The customer pays you directly — cash, card, however you normally take payment.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question">How does someone redeem a voucher?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">The recipient brings the postcard to your shop. You look up the code in the app and redeem the full amount or just a portion. Any remaining balance stays on the voucher for their next visit.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question">What if a voucher isn't fully used in one visit?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">No problem — vouchers support partial redemptions. The remaining balance carries over. The recipient can use it across as many visits as they like until it's fully redeemed or expires.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question">How long are vouchers valid?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">You choose your default expiry period — anywhere from a few months to up to 5 years. The default is 1 year. Each voucher shows its expiry date clearly on the postcard and in the app.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question">Do I need any special hardware or software?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">Nope. Vallle works in any web browser — phone, tablet, or computer. No app to install, no special equipment. If you can browse the internet, you can use Vallle.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question">Can I have multiple staff members using it?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">Yes. You can add as many team members as you need. Admins can manage users, and all staff can create and redeem vouchers.</p>
+          </div>
+        </div>
+        <div class="faq__item">
+          <button class="faq__question">What kind of businesses is this for?</button>
+          <div class="faq__answer">
+            <p class="faq__answer-inner">Any local, independent business where people might want to give a gift — cafes, bakeries, restaurants, wine shops, bookshops, hair salons, florists, boutiques. If people love your shop, they'll love giving your vouchers.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- PRICING -->
+  <section class="pricing" id="pricing">
+    <div class="section__inner">
+      <p class="section__label">Pricing</p>
+      <h2 class="section__title">Simple, fair, transparent</h2>
+      <p class="section__subtitle">No monthly fees. No contracts. You only pay when you sell.</p>
+      <div class="pricing__card fade-in">
+        <h3 class="pricing__heading">Everything you need</h3>
+        <div class="pricing__row">
+          <div>
+            <div class="pricing__value">&euro;50</div>
+            <div class="pricing__label">One-time setup</div>
+          </div>
+          <div>
+            <div class="pricing__value">5%</div>
+            <div class="pricing__label">Per voucher sold</div>
+          </div>
+        </div>
+        <hr class="pricing__divider">
+        <ul class="pricing__includes">
+          <li>50 branded postcards included in setup</li>
+          <li>Unlimited vouchers, unlimited staff accounts</li>
+          <li>No monthly fees, no contracts, no lock-in</li>
+          <li>Postcard restocks from ~&euro;20 for 50</li>
+          <li>Personal onboarding and support</li>
+        </ul>
+        <a href="mailto:hello@vallle.pt" class="btn btn--primary" style="width: 100%; justify-content: center;">Get in touch to join</a>
+        <p class="pricing__note">Commission: min &euro;0.50, max &euro;2.50 per voucher</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- CTA -->
+  <section class="cta">
+    <div class="section__inner">
+      <h2 class="cta__title">Ready to start?</h2>
+      <p class="cta__desc">We'll set up your account, design your postcards, and have you selling within a week.</p>
+      <a href="mailto:hello@vallle.pt" class="btn btn--primary">Get in touch</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <span class="footer__logo">Vallle</span>
+      <div class="footer__links">
+        <a href="/homepage.html" class="footer__link">Home</a>
+        <a href="mailto:hello@vallle.pt" class="footer__link">hello@vallle.pt</a>
+        <a href="#" class="footer__link">Privacy</a>
+        <a href="#" class="footer__link">Terms</a>
+      </div>
+      <span>&copy; 2026 Vallle. Made in Portugal.</span>
+    </div>
+  </footer>
+
+  <script>
+    const nav = document.getElementById('nav')
+    window.addEventListener('scroll', () => {
+      nav.classList.toggle('nav--scrolled', window.scrollY > 10)
+    })
+
+    const hamburger = document.getElementById('hamburger')
+    const navLinks = document.getElementById('navLinks')
+    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'))
+    navLinks.querySelectorAll('a').forEach(link => {
+      link.addEventListener('click', () => navLinks.classList.remove('open'))
+    })
+
+    document.querySelectorAll('.faq__question').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const item = btn.parentElement
+        const wasActive = item.classList.contains('active')
+        document.querySelectorAll('.faq__item').forEach(i => i.classList.remove('active'))
+        if (!wasActive) item.classList.add('active')
+      })
+    })
+
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) entry.target.classList.add('visible')
+      })
+    }, { threshold: 0.1 })
+    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
+  </script>
+</body>
+</html>

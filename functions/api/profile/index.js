@@ -18,7 +18,7 @@ export async function onRequestGet(context) {
 
   try {
     const user = await env.DB.prepare(
-      'SELECT id, name, email, role, status, created_at FROM users WHERE id = ?',
+      'SELECT id, name, email, role, status, avatar, created_at FROM users WHERE id = ?',
     ).bind(payload.sub).first()
 
     if (!user || user.status !== 'active') {
@@ -35,6 +35,7 @@ export async function onRequestGet(context) {
           name: user.name,
           email: user.email,
           role: user.role,
+          avatar: user.avatar || 'paper-bag-head',
           created_at: user.created_at,
         },
       },
@@ -73,7 +74,7 @@ export async function onRequestPut(context) {
     )
   }
 
-  const { name, email } = body
+  const { name, email, avatar } = body
 
   if (!name || !name.trim()) {
     return Response.json(
@@ -104,11 +105,11 @@ export async function onRequestPut(context) {
 
     const now = new Date().toISOString()
     await env.DB.prepare(
-      'UPDATE users SET name = ?, email = ?, updated_at = ? WHERE id = ?',
-    ).bind(name.trim(), email.trim().toLowerCase(), now, payload.sub).run()
+      'UPDATE users SET name = ?, email = ?, avatar = ?, updated_at = ? WHERE id = ?',
+    ).bind(name.trim(), email.trim().toLowerCase(), avatar || 'paper-bag-head', now, payload.sub).run()
 
     const user = await env.DB.prepare(
-      'SELECT id, name, email, role, status, created_at FROM users WHERE id = ?',
+      'SELECT id, name, email, role, status, avatar, created_at FROM users WHERE id = ?',
     ).bind(payload.sub).first()
 
     return Response.json({
@@ -118,6 +119,7 @@ export async function onRequestPut(context) {
           name: user.name,
           email: user.email,
           role: user.role,
+          avatar: user.avatar || 'paper-bag-head',
           created_at: user.created_at,
         },
       },

@@ -4,6 +4,7 @@ $root-rem: 16;
 $color-black: #000000;
 $color-white: #ffffff;
 $color-terracota: #c4653a;
+$color-parchment: #D5C9BC;
 $color-linen: #f5e6d8;
 $color-driftwood: #6b5e56;
 $color-ash: #a8988f;
@@ -17,9 +18,9 @@ $text-color: $color-driftwood;
 $text-color-highlight: $color-espresso;
 $text-color-muted: $color-ash;
 
-$icon-color: var(--icon-color);
-$icon-color-highlight: var(--icon-color-highlight);
-$icon-color-muted: var(--icon-color-muted);
+$icon-color: $color-driftwood;
+$icon-color-highlight: $color-espresso;
+$icon-color-muted: $color-ash;
 
 $border-color: var(--border-color);
 $border-active-color: var(--border-active-color);

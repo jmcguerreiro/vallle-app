@@ -28,7 +28,7 @@ export async function onRequestPost(context) {
 
   try {
     const user = await env.DB.prepare(
-      'SELECT id, name, email, password, role, status FROM users WHERE email = ?',
+      'SELECT id, name, email, password, role, status, avatar FROM users WHERE email = ?',
     ).bind(email.toLowerCase().trim()).first()
 
     if (!user || user.status !== 'active') {
@@ -67,6 +67,7 @@ export async function onRequestPost(context) {
             name: user.name,
             email: user.email,
             role: user.role,
+            avatar: user.avatar || 'paper-bag-head',
             stores: storeLinks,
           },
         },

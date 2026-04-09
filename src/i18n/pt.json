@@ -198,6 +198,7 @@
     "profile": {
       "heading": "Perfil",
       "form": {
+        "avatar": "Avatar",
         "name": "Nome",
         "email": "Email",
         "language": "Idioma",
@@ -525,7 +526,11 @@
       "heading": "Trocar de loja",
       "current": "(atual)"
     },
-    "logout": "Sair"
+    "logout": "Sair",
+    "mainMenu": "Menu principal",
+    "help": "Ajuda",
+    "editProfile": "Editar perfil",
+    "userMenu": "Menu do utilizador"
   },
   "layouts": {
     "backTo": {

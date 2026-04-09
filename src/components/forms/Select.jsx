@@ -14,6 +14,8 @@ import ReactSelect from 'react-select'
  * @param {Object} props.control - react-hook-form's control object
  * @param {boolean|string} [props.required] - Pass true for default message, or a string for custom
  * @param {Object} [props.error] - Field error object from react-hook-form
+ * @param {boolean} [props.isSearchable] - Whether the select is searchable. Defaults to false.
+ * @param {Function} [props.formatOptionLabel] - Custom renderer for each option label.
  * @returns {JSX.Element}
  */
 const Select = ({
@@ -24,6 +26,8 @@ const Select = ({
   control,
   required,
   error,
+  isSearchable = false,
+  formatOptionLabel,
 }) => {
   // Derived State
   const rules = {}
@@ -49,8 +53,9 @@ const Select = ({
           <ReactSelect
             ref={ref}
             classNamePrefix="c-select"
+            formatOptionLabel={formatOptionLabel}
             inputId={name}
-            isSearchable={false}
+            isSearchable={isSearchable}
             onChange={(option) => onChange(option?.value)}
             options={options}
             placeholder={placeholder}

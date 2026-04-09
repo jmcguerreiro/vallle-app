@@ -15,13 +15,13 @@ export const MainContext = createContext(null)
  */
 export const MainProvider = ({ children }) => {
   // State
-  const [header, setHeaderState] = useState({ title: '', actions: [] })
+  const [header, setHeaderState] = useState({ title: '', subtitle: '', actions: [] })
 
   // Handlers
-  const setHeader = useCallback(({ title = '', actions = [] } = {}) => {
+  const setHeader = useCallback(({ title = '', subtitle = '', actions = [] } = {}) => {
     setHeaderState((prev) => {
-      if (prev.title === title && prev.actions === actions) return prev
-      return { title, actions }
+      if (prev.title === title && prev.subtitle === subtitle && prev.actions === actions) return prev
+      return { title, subtitle, actions }
     })
   }, [])
 

@@ -198,6 +198,7 @@
     "profile": {
       "heading": "Profile",
       "form": {
+        "avatar": "Avatar",
         "name": "Name",
         "email": "Email",
         "language": "Language",
@@ -525,7 +526,11 @@
       "heading": "Switch store",
       "current": "(current)"
     },
-    "logout": "Sign out"
+    "logout": "Sign out",
+    "mainMenu": "Main menu",
+    "help": "Help",
+    "editProfile": "Edit profile",
+    "userMenu": "User menu"
   },
   "layouts": {
     "backTo": {
