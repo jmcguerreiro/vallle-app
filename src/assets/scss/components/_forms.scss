@@ -38,6 +38,12 @@
   &:not(:last-child) {
     margin-bottom: $spacing-1;
   }
+
+  &--readonly {
+    cursor: default;
+    opacity: 0.7;
+    pointer-events: none;
+  }
 }
 
 .c-form__field-label {

@@ -3,8 +3,10 @@
 @import "./global/mixins";
 @import "./global/utilities";
 @import "./global/animations";
+@import "./global/fonts";
 
 @import "./components/admin";
+@import "./components/empty-state";
 @import "./components/buttons";
 @import "./components/commissions";
 @import "./components/dashboard";
@@ -16,16 +18,21 @@
 @import "./components/toast";
 @import "./components/vouchers";
 
+@import "./layouts/blank";
+@import "./layouts/default";
+
 @import "./structure/back-to";
+@import "./structure/background";
 @import "./structure/header";
 @import "./structure/navigation";
 @import "./structure/main";
-@import "./structure/background";
+@import "./structure/modal";
 
 @import "./features/auth/pages/auth-login";
 @import "./features/auth/pages/auth-forgot-password";
 @import "./features/auth/pages/auth-reset-password";
 @import "./features/auth/pages/auth-select-store";
+@import "./features/dashboard/pages/dashboard";
 
 html,
 body {
@@ -90,64 +97,6 @@ body {
 
   /* Layout */
   --sidebar-width: 240px;
-}
-
-/* ─── Modal ──────────────────────────────────────────────────── */
-
-.c-modal {
-  border: none;
-  border-radius: var(--radius-lg);
-  box-shadow: var(--shadow-md);
-  padding: 0;
-  max-width: 560px;
-  width: calc(100% - var(--space-xl) * 2);
-  background: var(--color-surface);
-}
-
-.c-modal::backdrop {
-  background: rgba(44, 37, 32, 0.4);
-}
-
-.c-modal__content {
-  padding: var(--space-xl);
-}
-
-.c-modal__header {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  margin-bottom: var(--space-lg);
-}
-
-.c-modal__title {
-  font-family: var(--font-display);
-  font-size: 1.25rem;
-  color: var(--color-espresso);
-}
-
-.c-modal__close {
-  background: none;
-  border: none;
-  font-size: 1.5rem;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  padding: var(--space-xs);
-  line-height: 1;
-  transition: color 0.15s;
-}
-
-.c-modal__close:hover {
-  color: var(--color-text);
-}
-
-.c-modal__body {
-  color: var(--color-text);
-}
-
-.c-modal__meta {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  margin-top: var(--space-sm);
 }
 
 /* ─── Store switcher ─────────────────────────────────────────── */

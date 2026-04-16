@@ -1,0 +1,75 @@
+.p-dashboard {
+  display: flex;
+  justify-content: center;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-dashboard__welcome {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  margin-bottom: $spacing-9;
+}
+
+.p-dashboard__welcome-title {
+  @include font-size(5xl);
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+.p-dashboard__welcome-subtitle {
+  @include font-size(xl);
+  color: $text-color;
+}
+
+.p-dashboard__actions {
+  display: flex;
+  gap: $spacing-6;
+  width: 100%;
+}
+
+.p-dashboard__action {
+  aspect-ratio: 1/1;
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-3xl;
+  cursor: pointer;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: $spacing-3;
+  flex: 1;
+  transition: $transition-normal;
+
+  &:hover {
+    box-shadow: 0 12px 12px -8px rgba($color-black, 0.1);
+
+    .p-dashboard__action-icon {
+      transform: translateY(-50%);
+    }
+  }
+}
+
+.p-dashboard__action-label {
+  @include font-size(xl);
+}
+
+.p-dashboard__action-icon {
+  color: $color-terracota;
+  transition: $transition-normal;
+}
+
+@include screen(xl) {
+  .p-dashboard__actions {
+    flex-direction: row;
+  }
+
+  .p-dashboard__action {
+    padding: $spacing-9;
+  }
+
+  .p-dashboard__action-icon {
+    height: to-rem(32);
+    width: to-rem(32);
+  }
+}

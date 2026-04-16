@@ -1,6 +1,8 @@
 import { useCallback, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 
+import { X as IconX } from "lucide-react";
+
 import Button from "@/components/Button";
 import { useModal } from "@/hooks/useModal";
 
@@ -50,15 +52,25 @@ const Modal = ({ children, className = "", size = "default" }) => {
   return (
     <dialog
       ref={dialogRef}
-      className={`c-modal${size === "wide" ? " c-modal--wide" : ""}${className ? ` ${className}` : ""}`}
+      className={`s-modal${size === "wide" ? " s-modal--wide" : ""}${className ? ` ${className}` : ""}`}
       onClick={handleBackdropClick}
       onClose={handleClose}
     >
-      <div className="c-modal__content">
-        <div className="c-modal__header">
-          {header.title && <h2 className="c-modal__title">{header.title}</h2>}
+      <button
+        aria-label="Close"
+        className="s-modal__close"
+        onClick={handleClose}
+        type="button"
+      >
+        <IconX className="s-modal__close-icon" size={18} />
+      </button>
+      <div className="s-modal__wrapper">
+        <div className="s-modal__header">
+          {header.title && (
+            <h2 className="s-modal__header-title">{header.title}</h2>
+          )}
           {header.actions.length > 0 && (
-            <div className="c-modal__actions">
+            <div className="s-modal__header-actions">
               {header.actions.map(
                 ({ label, icon, onClick, variant = "ghost" }) => (
                   <Button
@@ -73,16 +85,8 @@ const Modal = ({ children, className = "", size = "default" }) => {
               )}
             </div>
           )}
-          <button
-            aria-label="Close"
-            className="c-modal__close"
-            onClick={handleClose}
-            type="button"
-          >
-            ×
-          </button>
         </div>
-        <div className="c-modal__body">{children}</div>
+        <div className="s-modal__body">{children}</div>
       </div>
     </dialog>
   );

@@ -20,13 +20,13 @@ const BlankLayout = () => {
 
   // Render
   return (
-    <>
+    <div className="l-blank">
       {showBackTo && <BackTo />}
-      <main className="s-main">
+      <main className="s-main s-main--has-padding">
         <Outlet />
       </main>
       <Background />
-    </>
+    </div>
   );
 };
 

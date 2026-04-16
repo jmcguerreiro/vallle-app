@@ -2,34 +2,33 @@
   display: flex;
   flex-direction: column;
   gap: $spacing-2;
-  list-style: none;
 }
 
 .c-store-select__option {
   align-items: center;
-  background: none;
-  border: 1px solid $color-ash;
+  border: solid 1px $color-parchment;
   border-radius: $border-radius-lg;
-  color: $text-color;
   cursor: pointer;
   display: flex;
-  font-family: $font-family-one;
   gap: $spacing-4;
   justify-content: space-between;
-  padding: $spacing-4 $spacing-5;
+  padding: $spacing-4 $spacing-6;
   transition: $transition-normal;
   width: 100%;
 
   &:hover {
-    box-shadow: 0 0 10px 10px rgba($color-black, 0.1);
+    box-shadow: 0 12px 12px -8px rgba($color-black, 0.1);
+
+    .c-store-select__option-arrow {
+      color: $color-terracota;
+      transform: translateX(12.5%);
+    }
   }
 }
 
 .c-store-select__option-content {
   display: flex;
   flex-direction: column;
-  gap: $spacing-1;
-  text-align: left;
 }
 
 .c-store-select__option-name {
@@ -38,16 +37,12 @@
 }
 
 .c-store-select__option-meta {
-  @include font-size(xs);
+  @include font-size(sm);
   color: $text-color-muted;
 }
 
 .c-store-select__option-arrow {
-  color: $text-color-muted;
+  color: $icon-color-highlight;
   flex-shrink: 0;
-  transition: color $transition-normal;
-
-  .c-store-select__option:hover & {
-    color: $color-terracota;
-  }
+  transition: $transition-normal;
 }

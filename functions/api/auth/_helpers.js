@@ -192,16 +192,20 @@ export async function getAuthUser(request, secret) {
 /**
  * Creates a Set-Cookie header for the auth token.
  * @param {string} token
+ * @param {boolean} [secure=true] - Whether to set the Secure flag (disable for local dev over HTTP)
  * @returns {string}
  */
-export function authCookie(token) {
-  return `vallle_token=${token}; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=${JWT_EXPIRY}`
+export function authCookie(token, secure = true) {
+  const secureFlag = secure ? '; Secure' : ''
+  return `vallle_token=${token}; Path=/; HttpOnly; SameSite=Strict${secureFlag}; Max-Age=${JWT_EXPIRY}`
 }
 
 /**
  * Creates a Set-Cookie header that clears the auth token.
+ * @param {boolean} [secure=true] - Whether to set the Secure flag (disable for local dev over HTTP)
  * @returns {string}
  */
-export function clearAuthCookie() {
-  return 'vallle_token=; Path=/; HttpOnly; SameSite=Strict; Secure; Max-Age=0'
+export function clearAuthCookie(secure = true) {
+  const secureFlag = secure ? '; Secure' : ''
+  return `vallle_token=; Path=/; HttpOnly; SameSite=Strict${secureFlag}; Max-Age=0`
 }

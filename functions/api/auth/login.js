@@ -59,6 +59,8 @@ export async function onRequestPost(context) {
       env.JWT_SECRET,
     )
 
+    const secure = env.ENVIRONMENT !== 'development'
+
     return Response.json(
       {
         data: {
@@ -73,7 +75,7 @@ export async function onRequestPost(context) {
         },
       },
       {
-        headers: { 'Set-Cookie': authCookie(token) },
+        headers: { 'Set-Cookie': authCookie(token, secure) },
       },
     )
   } catch (error) {

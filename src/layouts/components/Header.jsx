@@ -1,20 +1,28 @@
 import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { NavLink, useNavigate } from "react-router-dom";
 
-import { ArrowLeftRight as IconSwitch } from "lucide-react";
+import {
+  EllipsisVertical as IconEllipsisVertical,
+  CircleHelp as IconHelp,
+  Store as IconStore,
+  ChevronDown as IconSwitch,
+} from "lucide-react";
 
+import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Layout: Header
- * Top bar displaying the app logo and the active store name with a switcher.
+ * Top bar displaying the app logo, navigation menu, store switcher, help link, and user menu.
  * @component
  * @returns {JSX.Element}
  */
 const Header = () => {
   // Hooks
   const { t } = useTranslation();
-  const { user, isSuperAdmin, activeStore, selectStore } = useAuth();
+  const { user, isSuperAdmin, activeStore, selectStore, logout } = useAuth();
+  const navigate = useNavigate();
 
   // State
   const [switcherOpen, setSwitcherOpen] = useState(false);
@@ -26,6 +34,15 @@ const Header = () => {
   const hasMultipleStores = (user?.stores?.length ?? 0) > 1;
 
   // Handlers
+  const handleLogout = useCallback(async () => {
+    await logout();
+    navigate(ROUTES.LOGIN);
+  }, [logout, navigate]);
+
+  const handleClosePopover = useCallback(() => {
+    document.querySelector("#user-menu-popover")?.hidePopover();
+  }, []);
+
   const handleOpenSwitcher = useCallback(() => {
     setSwitcherOpen(true);
     setTimeout(() => dialogRef.current?.showModal(), 0);
@@ -56,29 +73,78 @@ const Header = () => {
   // Render
   return (
     <header className="s-header">
-      <h1 className="s-header__logo">
-        <img
-          alt={t("common.appName")}
-          className="s-header__logo"
-          src="/images/logo.svg"
-        />
-      </h1>
-
       {activeStore && !isSuperAdmin && (
         <div className="s-header__store">
-          <span className="s-header__store-name">{activeStore.store_name}</span>
-          {hasMultipleStores && (
+          {hasMultipleStores ? (
             <button
               aria-label={t("nav.switchStore")}
               className="s-header__store-switch"
               onClick={handleOpenSwitcher}
               type="button"
             >
-              <IconSwitch size={14} />
+              <IconStore
+                className="s-header__store-switch-icon"
+                strokeWidth="1.5"
+              />
+              {activeStore.store_name}
             </button>
+          ) : (
+            <span className="s-header__store-name">
+              {activeStore.store_name}
+            </span>
           )}
         </div>
       )}
+
+      <div className="s-header__extra">
+        <a aria-label={t("nav.help")} className="s-header__help" href="#">
+          <IconHelp
+            aria-hidden="true"
+            className="s-header__help-icon"
+            strokeWidth="1.5"
+          />
+        </a>
+
+        <div className="s-header__user">
+          <button
+            aria-label={t("nav.userMenu")}
+            className="s-header__user-button"
+            popovertarget="user-menu-popover"
+            type="button"
+          >
+            <img
+              alt={user?.name}
+              className="s-header__user-button-image"
+              src={`/images/avatars/${user?.avatar || "paper-bag-head"}.svg`}
+            />
+            <IconEllipsisVertical
+              className="s-header__user-button-toggle-icon"
+              strokeWidth="1.5"
+            />
+          </button>
+
+          <div
+            className="s-header__user-popover"
+            id="user-menu-popover"
+            popover="auto"
+          >
+            <NavLink
+              className="s-header__user-popover-item"
+              onClick={handleClosePopover}
+              to={ROUTES.PROFILE}
+            >
+              {t("nav.editProfile")}
+            </NavLink>
+            <button
+              className="s-header__user-popover-item"
+              onClick={handleLogout}
+              type="button"
+            >
+              {t("nav.logout")}
+            </button>
+          </div>
+        </div>
+      </div>
 
       {switcherOpen && (
         <dialog

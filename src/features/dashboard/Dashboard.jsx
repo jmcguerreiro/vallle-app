@@ -2,11 +2,10 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Plus, Receipt, Search } from "lucide-react";
+import { ArrowUpFromDot, ArrowDownToDot, View } from "lucide-react";
 
 import { ROUTES, voucherCreatePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
-import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
 
 /**
@@ -20,12 +19,19 @@ const Dashboard = () => {
   // Hooks
   const { t } = useTranslation();
   const { user, isStoreSuspended } = useAuth();
-  const { setHeader } = useMain();
   const navigate = useNavigate();
   const location = useLocation();
 
   // State
   const [activeCount, setActiveCount] = useState(null);
+
+  // Derived State
+  const subtitle =
+    activeCount === null
+      ? null
+      : activeCount > 0
+        ? t("features.dashboard.subtitle", { count: activeCount })
+        : t("features.dashboard.subtitleNone");
 
   // Handlers
   const handleCreate = useCallback(() => {
@@ -46,17 +52,6 @@ const Dashboard = () => {
 
   // Effects
   useEffect(() => {
-    const subtitle =
-      activeCount === null
-        ? undefined
-        : activeCount > 0
-          ? t("features.dashboard.subtitle", { count: activeCount })
-          : t("features.dashboard.subtitleNone");
-    setHeader({ title: t("features.dashboard.welcome", { name: user?.name }), subtitle });
-    return () => setHeader();
-  }, [setHeader, t, user?.name, activeCount]);
-
-  useEffect(() => {
     let cancelled = false;
 
     const fetchCount = async () => {
@@ -74,56 +69,54 @@ const Dashboard = () => {
     };
   }, []);
 
-  // Derived State
-  const subtitle =
-    activeCount > 0
-      ? t("features.dashboard.subtitle", { count: activeCount })
-      : t("features.dashboard.subtitleNone");
-
   // Render
   return (
-    <div className="c-dashboard">
-      <div className="c-dashboard__welcome">
-        <h2 className="c-dashboard__heading">
+    <div className="p-dashboard">
+      <div className="p-dashboard__welcome">
+        <h1 className="p-dashboard__welcome-title">
           {t("features.dashboard.welcome", { name: user?.name })}
-        </h2>
-        {activeCount !== null && (
-          <p className="c-dashboard__subtitle">{subtitle}</p>
+        </h1>
+        {subtitle && (
+          <p className="p-dashboard__welcome-subtitle">{subtitle}</p>
         )}
       </div>
-
-      <div className="c-dashboard__actions">
-        {!isStoreSuspended && (
-          <button
-            className="c-dashboard__action"
-            onClick={handleCreate}
-            type="button"
-          >
-            <Plus className="c-dashboard__action-icon" size={24} />
-            <span className="c-dashboard__action-label">
-              {t("features.dashboard.actions.create")}
-            </span>
-          </button>
-        )}
+      <div className="p-dashboard__actions">
         <button
-          className="c-dashboard__action"
+          className="p-dashboard__action"
+          disabled={isStoreSuspended}
+          onClick={handleCreate}
+          type="button"
+        >
+          <span className="p-dashboard__action-label">
+            {t("features.dashboard.actions.create")}
+          </span>
+          <ArrowUpFromDot
+            className="p-dashboard__action-icon"
+            strokeWidth="1.5"
+          />
+        </button>
+        <button
+          className="p-dashboard__action"
           onClick={handleRedeem}
           type="button"
         >
-          <Receipt className="c-dashboard__action-icon" size={24} />
-          <span className="c-dashboard__action-label">
+          <span className="p-dashboard__action-label">
             {t("features.dashboard.actions.redeem")}
           </span>
+          <ArrowDownToDot
+            className="p-dashboard__action-icon"
+            strokeWidth="1.5"
+          />
         </button>
         <button
-          className="c-dashboard__action"
+          className="p-dashboard__action"
           onClick={handleLookup}
           type="button"
         >
-          <Search className="c-dashboard__action-icon" size={24} />
-          <span className="c-dashboard__action-label">
+          <span className="p-dashboard__action-label">
             {t("features.dashboard.actions.lookup")}
           </span>
+          <View className="p-dashboard__action-icon" strokeWidth="1.5" />
         </button>
       </div>
     </div>

@@ -1,0 +1,50 @@
+.s-modal {
+  background: transparent;
+  border: none;
+  max-width: $screen-sm;
+  padding: 0;
+  width: 100%;
+}
+
+.s-modal::backdrop {
+  background: rgba($color-espresso, 0.5);
+}
+
+.s-modal__wrapper {
+  border-radius: $border-radius-3xl;
+  background: $color-linen;
+  display: flex;
+  flex-direction: column;
+}
+
+.s-modal__close {
+  margin: $spacing-3 $spacing-3 $spacing-3 auto;
+}
+
+.s-modal__close-icon {
+  height: to-rem(24);
+  width: to-rem(24);
+}
+
+.s-modal__header {
+  border-bottom: solid 1px $color-parchment;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: $spacing-6;
+}
+
+.s-modal__header-title {
+  @include font-size(2xl);
+  font-weight: $font-weight-bold;
+}
+
+.s-modal__body {
+  padding: $spacing-6;
+}
+
+.s-modal__meta {
+  font-size: 0.8125rem;
+  color: var(--color-text-muted);
+  margin-top: var(--space-sm);
+}

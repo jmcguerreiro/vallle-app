@@ -14,6 +14,7 @@
  * @param {Object} [props.error] - Field error object from react-hook-form
  * @param {string} [props.autoComplete] - HTML autocomplete attribute
  * @param {string} [props.hint] - Help text displayed below the input
+ * @param {boolean} [props.readOnly=false] - Makes the input read-only
  * @returns {JSX.Element}
  */
 const Input = ({
@@ -28,6 +29,7 @@ const Input = ({
   error,
   autoComplete,
   hint,
+  readOnly = false,
 }) => {
   // Derived State
   const rules = {}
@@ -55,9 +57,10 @@ const Input = ({
       )}
       <input
         autoComplete={autoComplete}
-        className={`c-form__field-input${error ? ' c-form__field-input--error' : ''}`}
+        className={`c-form__field-input${error ? ' c-form__field-input--error' : ''}${readOnly ? ' c-form__field-input--readonly' : ''}`}
         id={name}
         placeholder={placeholder}
+        readOnly={readOnly}
         type={type}
         {...register(name, rules)}
       />

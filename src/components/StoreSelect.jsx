@@ -1,6 +1,6 @@
-import { useCallback } from 'react'
+import { useCallback } from "react";
 
-import { ChevronRight } from 'lucide-react'
+import { ArrowRight as IconArrowRight } from "lucide-react";
 
 /**
  * Component: StoreSelect
@@ -17,10 +17,10 @@ const StoreSelect = ({ stores, onSelect, renderMeta }) => {
   // Handlers
   const handleSelect = useCallback(
     (store) => {
-      onSelect(store)
+      onSelect(store);
     },
     [onSelect],
-  )
+  );
 
   // Render
   return (
@@ -43,13 +43,16 @@ const StoreSelect = ({ stores, onSelect, renderMeta }) => {
                   </span>
                 )}
               </div>
-              <ChevronRight className="c-store-select__option-arrow" size={18} />
+              <IconArrowRight
+                className="c-store-select__option-arrow"
+                size={18}
+              />
             </button>
           </li>
         ))}
       </ul>
     </div>
-  )
-}
+  );
+};
 
-export default StoreSelect
+export default StoreSelect;

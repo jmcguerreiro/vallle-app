@@ -84,7 +84,7 @@
     },
     "dashboard": {
       "heading": "Painel",
-      "welcome": "Olá, {{name}}!",
+      "welcome": "Olá, {{name}}.",
       "subtitle": "Tem {{count}} vouchers ativos. Como posso ajudar?",
       "subtitleNone": "Ainda não tem vouchers ativos. Como posso ajudar?",
       "actions": {
@@ -181,7 +181,8 @@
         "expiresAt": "Expira em",
         "active": "Ativo",
         "used": "Usado",
-        "expired": "Expirado"
+        "expired": "Expirado",
+        "empty": "Nenhum voucher encontrado."
       }
     },
     "stats": {

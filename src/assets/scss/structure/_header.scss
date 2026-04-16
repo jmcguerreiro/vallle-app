@@ -1,50 +1,56 @@
 .s-header {
+  background: $color-linen;
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-4;
+  padding: $spacing-2;
+  border: solid 1px $color-parchment;
+  border-radius: to-rem(40);
+  width: calc(100% - #{$spacing-8});
+  margin: 0 auto;
+  position: sticky;
+  top: $spacing-3;
 }
 
-.s-header__logo {
-  font-family: var(--font-display);
-  font-size: 1.5rem;
-  color: var(--color-honey);
-}
-
-.s-header__store {
-  display: flex;
+.s-header__extra {
   align-items: center;
-  gap: var(--space-sm);
+  display: flex;
+  gap: $spacing-3;
 }
 
-.s-header__store-name {
-  font-size: 0.8125rem;
-  font-weight: 400;
-  color: var(--color-parchment);
-  max-width: 200px;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
+.s-header__help-icon {
+  width: to-rem(20);
+  height: to-rem(20);
 }
 
 .s-header__store-switch {
-  background: none;
-  border: none;
-  color: var(--color-parchment);
-  cursor: pointer;
-  display: flex;
   align-items: center;
-  padding: var(--space-xs);
-  opacity: 0.6;
-  transition: opacity 0.15s;
+  display: inline-flex;
+  gap: $spacing-2;
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-3xl;
+  padding: 0 $spacing-3;
+  height: to-rem(48);
 }
 
-.s-header__store-switch:hover {
-  opacity: 1;
+.s-header__store-switch-icon {
+  width: to-rem(20);
+  height: to-rem(20);
 }
 
-@include screen(lg) {
-  .s-header {
-    padding: $spacing-9;
-  }
+.s-header__user-button {
+  align-items: center;
+  display: flex;
+}
+
+.s-header__user-button-image {
+  border-radius: to-rem(48);
+  border: solid 1px $color-parchment;
+  width: to-rem(48);
+  height: to-rem(48);
+}
+
+.s-header__user-button-toggle-icon {
+  width: to-rem(20);
+  height: to-rem(20);
 }

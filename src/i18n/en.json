@@ -84,7 +84,7 @@
     },
     "dashboard": {
       "heading": "Dashboard",
-      "welcome": "Hi, {{name}}!",
+      "welcome": "Hi, {{name}}.",
       "subtitle": "You have {{count}} active vouchers. How can I help you?",
       "subtitleNone": "You have no active vouchers yet. How can I help you?",
       "actions": {
@@ -181,7 +181,8 @@
         "expiresAt": "Expires",
         "active": "Active",
         "used": "Used",
-        "expired": "Expired"
+        "expired": "Expired",
+        "empty": "No vouchers found."
       }
     },
     "stats": {

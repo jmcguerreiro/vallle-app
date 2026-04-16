@@ -10,11 +10,11 @@ import Navigation from './components/Navigation'
  * @returns {JSX.Element}
  */
 const DefaultLayout = () => (
-  <>
+  <div className="l-default">
     <Header />
     <Navigation />
     <Main />
-  </>
+  </div>
 )
 
 export default DefaultLayout

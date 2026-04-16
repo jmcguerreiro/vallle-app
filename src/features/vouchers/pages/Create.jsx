@@ -119,6 +119,7 @@ const VoucherCreate = () => {
           error={errors.expires_at}
           label={t('features.vouchers.create.expiresAt')}
           name="expires_at"
+          readOnly
           register={register}
           required={t('features.vouchers.create.error.expiresAtRequired')}
           type="date"
@@ -134,12 +135,6 @@ const VoucherCreate = () => {
           type="submit"
         >
           {t('features.vouchers.create.submit')}
-        </Button>
-        <Button
-          onClick={() => navigate(-1)}
-          variant="ghost"
-        >
-          {t('common.cancel')}
         </Button>
       </FormActions>
     </Form>

@@ -1,99 +1,41 @@
 .s-navigation {
+  order: 1;
+  padding: $spacing-3;
+  position: sticky;
+  bottom: 0;
+  left: 0;
+  width: 100%;
   display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: $spacing-4;
-}
-
-.s-navigation__menu-items {
-  display: flex;
-  align-items: center;
-  list-style: none;
-}
-
-.s-navigation__menu-item {
-  border: solid 1px transparent;
-  border-radius: to-rem(40);
-  display: inline-flex;
-  align-items: center;
-  color: $icon-color-muted;
   justify-content: center;
-  height: to-rem(40);
+}
+
+.s-navigation__items {
+  background: $color-linen;
+  display: flex;
+  gap: $spacing-4;
+  border: solid 1px $color-parchment;
+  padding: $spacing-1;
+  border-radius: to-rem(40);
+}
+
+.s-navigation__item {
+  align-items: center;
+  display: flex;
+  justify-content: center;
+  border-radius: to-rem(40);
+  border: solid 1px transparent;
   width: to-rem(40);
+  height: to-rem(40);
 
   &.is-active {
     border-color: $color-parchment;
-    color: $icon-color-highlight;
+
+    .s-navigation__item-icon {
+      color: $icon-color-highlight;
+    }
   }
 }
 
-.s-navigation__extra {
-  display: flex;
-  align-items: center;
-  gap: $spacing-4;
-}
-
-.s-navigation__help {
+.s-navigation__item-icon {
   color: $icon-color-muted;
-}
-
-.s-navigation__user-button {
-  display: flex;
-  cursor: pointer;
-  align-items: center;
-  gap: $spacing-1;
-  position: relative;
-}
-
-.s-navigation__user-button-image {
-  border-radius: to-rem(40);
-  border: solid 1px $color-parchment;
-  height: to-rem(40);
-  width: to-rem(40);
-}
-
-.s-navigation__user-button-toggle-icon {
-  height: to-rem(16);
-  width: to-rem(16);
-  color: $icon-color-muted;
-  position: absolute;
-  right: -$spacing-1;
-  transform: translateX(100%);
-}
-
-@include screen(lg) {
-  .s-navigation {
-    flex-direction: column;
-    position: fixed;
-    left: 0;
-    height: 100vh;
-    padding: $spacing-9;
-  }
-
-  .s-navigation__menu {
-    display: flex;
-    align-items: center;
-    flex: 1;
-  }
-
-  .s-navigation__menu-items {
-    flex-direction: column;
-    gap: $spacing-3;
-  }
-
-  .s-navigation__menu-item {
-    border-radius: to-rem(48);
-    height: to-rem(48);
-    width: to-rem(48);
-  }
-
-  .s-navigation__extra {
-    flex-direction: column;
-  }
-
-  .s-navigation__user-button-image {
-    border-radius: to-rem(48);
-    height: to-rem(48);
-    width: to-rem(48);
-  }
 }

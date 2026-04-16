@@ -1,0 +1,20 @@
+.c-empty-state {
+	align-items: center;
+	display: flex;
+	flex-direction: column;
+	gap: $spacing-4;
+	padding: $spacing-12 $spacing-4;
+	text-align: center;
+}
+
+.c-empty-state__image {
+	height: auto;
+	max-width: 200px;
+	width: 100%;
+}
+
+.c-empty-state__description {
+	@include font-size(sm);
+
+	color: $text-color-muted;
+}
