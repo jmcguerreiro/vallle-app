@@ -55,6 +55,7 @@ const AdminCompanyView = () => {
   useEffect(() => {
     setHeader({
       title: t('features.admin.companies.view.heading'),
+      description: t('features.admin.companies.view.description'),
       actions: [{ label: t('features.admin.companies.view.edit'), onClick: handleEdit }],
     })
     return () => setHeader()

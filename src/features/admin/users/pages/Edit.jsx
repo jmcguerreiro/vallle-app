@@ -64,7 +64,10 @@ const AdminUserEdit = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.admin.users.edit.heading') })
+    setHeader({
+      title: t('features.admin.users.edit.heading'),
+      description: t('features.admin.users.edit.description'),
+    })
     return () => setHeader()
   }, [setHeader, t])
 

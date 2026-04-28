@@ -38,6 +38,7 @@ const CompanyUserCreate = () => {
 
   // Derived State
   const title = t('features.company.users.create.heading')
+  const description = t('features.company.users.create.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
 
   // Handlers
@@ -68,9 +69,9 @@ const CompanyUserCreate = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   // Render
   return (

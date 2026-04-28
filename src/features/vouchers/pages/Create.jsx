@@ -1,13 +1,9 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import Button from '@/components/Button'
-import Form from '@/components/forms/Form'
-import FormActions from '@/components/forms/FormActions'
-import FormFields from '@/components/forms/FormFields'
-import Input from '@/components/forms/Input'
 import { ROUTES, voucherPath } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 import { useMain } from '@/hooks/useMain'
@@ -18,14 +14,14 @@ import { post } from '@/services/api'
 
 /**
  * Component: VoucherCreate
- * Form for creating a new voucher. Submits amount (converted from euros to
- * cents), buyer name, and expiry date to the API.
+ * Creates a voucher with a hero amount input, a minimal buyer field, and a
+ * fixed expiry derived from the store's default voucher expiry setting.
  * @component
  * @returns {JSX.Element}
  */
 const VoucherCreate = () => {
   // Hooks
-  const { t } = useTranslation()
+  const { t, i18n } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
   const { isStoreSuspended, activeStore } = useAuth()
@@ -34,27 +30,30 @@ const VoucherCreate = () => {
   const { triggerRefresh } = useRefresh()
   const { addToast } = useToast()
 
-  // Derived State
-  const defaultExpiryDays = activeStore?.default_voucher_expiry_days || 365
-  const defaultExpiryDate = new Date(Date.now() + defaultExpiryDays * 86_400_000)
-    .toISOString().split('T')[0]
-
-  const { register, handleSubmit, formState: { errors } } = useForm({
-    defaultValues: { expires_at: defaultExpiryDate },
-  })
+  const { register, handleSubmit, formState: { errors } } = useForm()
 
   // State
   const [serverError, setServerError] = useState(null)
   const [isSubmitting, setIsSubmitting] = useState(false)
 
-  // Redirect suspended stores away from create
-  useEffect(() => {
-    if (isStoreSuspended) navigate(ROUTES.VOUCHERS, { replace: true })
-  }, [isStoreSuspended, navigate])
-
   // Derived State
   const title = t('features.vouchers.create.heading')
+  const description = t('features.vouchers.create.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
+
+  const expiryDate = useMemo(() => {
+    const days = activeStore?.default_voucher_expiry_days || 365
+    return new Date(Date.now() + days * 86_400_000)
+  }, [activeStore])
+
+  const expiryLabel = useMemo(() => {
+    const formatted = expiryDate.toLocaleDateString(i18n.language === 'en' ? 'en-GB' : 'pt-PT', {
+      day: 'numeric',
+      month: 'long',
+      year: 'numeric',
+    })
+    return t('features.vouchers.create.validUntil', { date: formatted })
+  }, [expiryDate, i18n.language, t])
 
   // Handlers
   const onSubmit = useCallback(async (values) => {
@@ -64,8 +63,8 @@ const VoucherCreate = () => {
     try {
       const payload = {
         amount: Math.round(Number.parseFloat(values.amount) * 100),
-        buyer: values.buyer || null,
-        expires_at: new Date(values.expires_at).toISOString(),
+        buyer: values.buyer?.trim() || null,
+        expires_at: expiryDate.toISOString(),
       }
 
       const { data: voucher } = await post('/api/vouchers', payload)
@@ -81,63 +80,66 @@ const VoucherCreate = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, location, navigate, t, triggerRefresh])
+  }, [addToast, expiryDate, location, navigate, t, triggerRefresh])
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    if (isStoreSuspended) navigate(ROUTES.VOUCHERS, { replace: true })
+  }, [isStoreSuspended, navigate])
+
+  useEffect(() => {
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   // Render
   return (
-    <Form
-      error={serverError}
-      handleSubmit={handleSubmit}
-      onSubmit={onSubmit}
+    <form
+      className="c-voucher-create"
+      noValidate
+      onSubmit={handleSubmit(onSubmit)}
     >
-      <FormFields>
-        <Input
-          error={errors.amount}
-          label={t('features.vouchers.create.amount')}
-          name="amount"
-          register={register}
-          required={t('features.vouchers.create.error.amountRequired')}
-          type="number"
-          validate={{
-            positive: (v) =>
-              Number.parseFloat(v) > 0 || t('features.vouchers.create.error.amountPositive'),
-          }}
+      <div className="c-voucher-create__amount">
+        <input
+          aria-label={t('features.vouchers.create.amount')}
+          className={`c-voucher-create__amount-input${errors.amount ? ' c-voucher-create__amount-input--error' : ''}`}
+          inputMode="decimal"
+          placeholder={t('features.vouchers.create.amountPlaceholder')}
+          size="3"
+          type="text"
+          {...register('amount', {
+            required: t('features.vouchers.create.error.amountRequired'),
+            validate: {
+              positive: (v) =>
+                Number.parseFloat(v) > 0 || t('features.vouchers.create.error.amountPositive'),
+            },
+          })}
         />
-        <Input
-          error={errors.buyer}
-          label={t('features.vouchers.create.buyer')}
-          name="buyer"
-          register={register}
-        />
-        <Input
-          error={errors.expires_at}
-          label={t('features.vouchers.create.expiresAt')}
-          name="expires_at"
-          readOnly
-          register={register}
-          required={t('features.vouchers.create.error.expiresAtRequired')}
-          type="date"
-          validate={{
-            future: (v) =>
-              new Date(v) > new Date() || t('features.vouchers.create.error.expiresAtFuture'),
-          }}
-        />
-      </FormFields>
-      <FormActions>
-        <Button
-          isProcessing={isSubmitting}
-          type="submit"
-        >
+        <span className="c-voucher-create__amount-currency">€</span>
+      </div>
+
+      {errors.amount && (
+        <p className="c-voucher-create__error">{errors.amount.message}</p>
+      )}
+
+      <input
+        aria-label={t('features.vouchers.create.buyer')}
+        className="c-voucher-create__buyer"
+        placeholder={t('features.vouchers.create.buyerPlaceholder')}
+        type="text"
+        {...register('buyer')}
+      />
+
+      <p className="c-voucher-create__expiry">{expiryLabel}</p>
+
+      {serverError && <div className="c-form__error">{serverError}</div>}
+
+      <div className="c-voucher-create__actions">
+        <Button isProcessing={isSubmitting} type="submit">
           {t('features.vouchers.create.submit')}
         </Button>
-      </FormActions>
-    </Form>
+      </div>
+    </form>
   )
 }
 

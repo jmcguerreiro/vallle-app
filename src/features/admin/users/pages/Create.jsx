@@ -40,6 +40,7 @@ const AdminUserCreate = () => {
 
   // Derived State
   const title = t('features.admin.users.create.heading')
+  const description = t('features.admin.users.create.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
 
   // Handlers
@@ -68,9 +69,9 @@ const AdminUserCreate = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   useEffect(() => {
     const loadCompanies = async () => {

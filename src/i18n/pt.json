@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Vallle",
+    "appName": "Voucher",
     "loading": "A carregar...",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -25,7 +25,7 @@
   },
   "features": {
     "login": {
-      "heading": "Entrar no Vallle",
+      "heading": "Entrar no Voucher",
       "forgotPassword": "Esqueceu-se da palavra-passe?",
       "form": {
         "email": "Email",
@@ -112,9 +112,13 @@
       "heading": "Vouchers",
       "create": {
         "heading": "Criar voucher",
+        "description": "Defina o valor e o destinatário.",
         "amount": "Valor (€)",
+        "amountPlaceholder": "15",
         "buyer": "Nome do comprador",
+        "buyerPlaceholder": "Nome do comprador",
         "expiresAt": "Data de expiração",
+        "validUntil": "Válido até {{date}}",
         "submit": "Criar voucher",
         "success": "Voucher criado com sucesso!",
         "error": {
@@ -127,6 +131,7 @@
       },
       "view": {
         "heading": "Detalhes do voucher",
+        "description": "Consulte os detalhes e o histórico de resgates.",
         "code": "Código",
         "amount": "Valor",
         "balance": "Saldo",
@@ -138,6 +143,7 @@
       },
       "edit": {
         "heading": "Editar voucher",
+        "description": "Atualize o nome do comprador ou a data de expiração.",
         "buyer": "Nome do comprador",
         "expiresAt": "Data de expiração",
         "currentAmount": "Valor",
@@ -150,6 +156,7 @@
       },
       "redeem": {
         "heading": "Resgatar voucher",
+        "description": "Deduza um valor deste voucher.",
         "code": "Código do voucher",
         "amount": "Valor a resgatar (€)",
         "description": "Descrição",
@@ -161,6 +168,12 @@
           "insufficientBalance": "Saldo insuficiente.",
           "generic": "Não foi possível resgatar o voucher."
         }
+      },
+      "quickLookup": {
+        "description": "Introduza um código para consultar um voucher."
+      },
+      "quickRedeem": {
+        "description": "Introduza um código para resgatar um voucher."
       },
       "redemptions": {
         "heading": "Histórico de resgates",
@@ -287,6 +300,7 @@
         },
         "create": {
           "heading": "Adicionar utilizador",
+          "description": "Adicione um novo utilizador a esta loja.",
           "submit": "Criar utilizador",
           "success": "Utilizador criado com sucesso!",
           "error": {
@@ -295,6 +309,7 @@
         },
         "edit": {
           "heading": "Editar utilizador",
+          "description": "Atualize os dados deste utilizador.",
           "submit": "Guardar alterações",
           "success": "Utilizador atualizado com sucesso!",
           "error": {
@@ -374,6 +389,7 @@
         },
         "create": {
           "heading": "Adicionar empresa",
+          "description": "Adicione uma nova empresa à plataforma.",
           "submit": "Criar empresa",
           "success": "Empresa criada com sucesso!",
           "error": {
@@ -382,6 +398,7 @@
         },
         "view": {
           "heading": "Detalhes da empresa",
+          "description": "Consulte os detalhes da empresa e as estatísticas.",
           "edit": "Editar",
           "vouchers": "Vouchers emitidos",
           "totalSales": "Total de vendas",
@@ -391,6 +408,7 @@
         },
         "edit": {
           "heading": "Editar empresa",
+          "description": "Atualize os dados desta empresa.",
           "submit": "Guardar alterações",
           "success": "Empresa atualizada com sucesso!",
           "error": {
@@ -433,6 +451,7 @@
         },
         "create": {
           "heading": "Adicionar utilizador",
+          "description": "Adicione um novo utilizador e atribua-o a uma empresa.",
           "submit": "Criar utilizador",
           "success": "Utilizador criado com sucesso!",
           "error": {
@@ -441,6 +460,7 @@
         },
         "view": {
           "heading": "Detalhes do utilizador",
+          "description": "Consulte os detalhes e as empresas atribuídas.",
           "edit": "Editar",
           "disable": "Desativar conta",
           "enable": "Ativar conta",
@@ -449,6 +469,7 @@
         },
         "edit": {
           "heading": "Editar utilizador",
+          "description": "Atualize a função ou o estado do utilizador.",
           "submit": "Guardar alterações",
           "success": "Utilizador atualizado com sucesso!",
           "assignedTo": "Atribuído a",
@@ -464,6 +485,7 @@
       },
       "commissions": {
         "heading": "Comissões",
+        "companyDetailDescription": "Detalhamento mensal de comissões.",
         "company": "Empresa",
         "voucherSales": "Vendas de vouchers",
         "totalCommission": "Comissão",

@@ -67,7 +67,10 @@ const AdminCompanyEdit = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.admin.companies.edit.heading') })
+    setHeader({
+      title: t('features.admin.companies.edit.heading'),
+      description: t('features.admin.companies.edit.description'),
+    })
     return () => setHeader()
   }, [setHeader, t])
 

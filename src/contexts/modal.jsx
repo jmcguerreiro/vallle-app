@@ -15,13 +15,13 @@ export const ModalContext = createContext(null)
  */
 export const ModalProvider = ({ children }) => {
   // State
-  const [header, setHeaderState] = useState({ title: '', actions: [] })
+  const [header, setHeaderState] = useState({ title: '', description: '', actions: [] })
 
   // Handlers
-  const setHeader = useCallback(({ title = '', actions = [] } = {}) => {
+  const setHeader = useCallback(({ title = '', description = '', actions = [] } = {}) => {
     setHeaderState((prev) => {
-      if (prev.title === title && prev.actions === actions) return prev
-      return { title, actions }
+      if (prev.title === title && prev.description === description && prev.actions === actions) return prev
+      return { title, description, actions }
     })
   }, [])
 

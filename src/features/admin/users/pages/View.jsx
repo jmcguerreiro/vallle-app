@@ -79,7 +79,11 @@ const AdminUserView = () => {
         variant: isActive ? 'danger' : 'primary',
       })
     }
-    setHeader({ title: t('features.admin.users.view.heading'), actions })
+    setHeader({
+      title: t('features.admin.users.view.heading'),
+      description: t('features.admin.users.view.description'),
+      actions,
+    })
     return () => setHeader()
   }, [setHeader, t, handleEdit, handleToggleStatus, data, isSelf])
 

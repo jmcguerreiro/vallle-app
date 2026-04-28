@@ -6,70 +6,91 @@
 }
 
 .p-dashboard__welcome {
+  align-items: center;
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
   margin-bottom: $spacing-9;
+  text-align: center;
+}
+
+.p-dashboard__welcome-image {
+  height: to-rem(240);
+  width: to-rem(240);
 }
 
 .p-dashboard__welcome-title {
-  @include font-size(5xl);
+  @include font-size(4xl);
   color: $text-color-highlight;
   font-weight: $font-weight-bold;
 }
 
 .p-dashboard__welcome-subtitle {
-  @include font-size(xl);
-  color: $text-color;
 }
 
 .p-dashboard__actions {
   display: flex;
-  gap: $spacing-6;
+  flex-direction: column;
+  gap: $spacing-4;
   width: 100%;
 }
 
 .p-dashboard__action {
-  aspect-ratio: 1/1;
+  align-items: center;
   border: solid 1px $color-parchment;
-  border-radius: $border-radius-3xl;
+  border-radius: $border-radius-lg;
   cursor: pointer;
   display: flex;
-  flex-direction: column;
   justify-content: space-between;
   gap: $spacing-3;
+  padding: $spacing-6 $spacing-4;
   flex: 1;
   transition: $transition-normal;
 
   &:hover {
     box-shadow: 0 12px 12px -8px rgba($color-black, 0.1);
-
-    .p-dashboard__action-icon {
-      transform: translateY(-50%);
-    }
   }
 }
 
 .p-dashboard__action-label {
-  @include font-size(xl);
 }
 
 .p-dashboard__action-icon {
   color: $color-terracota;
-  transition: $transition-normal;
+  flex-shrink: 0;
+  height: to-rem(20);
+  width: to-rem(20);
 }
 
-@include screen(xl) {
+@include screen(md) {
+  .p-dashboard__welcome-image {
+    height: to-rem(360);
+    width: to-rem(360);
+  }
+
+  .p-dashboard__welcome-title {
+    @include font-size(6xl);
+  }
+
+  .p-dashboard__welcome-subtitle {
+    @include font-size(lg);
+  }
+
   .p-dashboard__actions {
     flex-direction: row;
   }
 
   .p-dashboard__action {
-    padding: $spacing-9;
+    padding: $spacing-12 $spacing-6;
+  }
+
+  .p-dashboard__action-label {
+    @include font-size(lg);
   }
 
   .p-dashboard__action-icon {
-    height: to-rem(32);
-    width: to-rem(32);
+    color: $color-terracota;
+    height: to-rem(24);
+    width: to-rem(24);
   }
 }

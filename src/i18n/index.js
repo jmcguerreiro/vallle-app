@@ -4,7 +4,7 @@ import { initReactI18next } from 'react-i18next'
 import en from './en.json'
 import pt from './pt.json'
 
-const savedLanguage = globalThis.localStorage?.getItem('vallle_language')
+const savedLanguage = globalThis.localStorage?.getItem('voucher_language')
 
 i18n.use(initReactI18next).init({
   resources: {

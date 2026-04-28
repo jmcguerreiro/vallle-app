@@ -1,24 +1,60 @@
+// Desktop centered dialog (>= 1024px)
+
 .s-modal {
   background: transparent;
   border: none;
+  inset: 0;
+  margin: auto;
+  max-height: 90dvh;
   max-width: $screen-sm;
   padding: 0;
   width: 100%;
 }
 
-.s-modal::backdrop {
+.s-modal[open] {
+  animation: s-modal-fade-in 0.2s ease-out;
+}
+
+.s-modal[open]::backdrop {
+  animation: s-modal-backdrop-fade 0.2s ease-out forwards;
   background: rgba($color-espresso, 0.5);
 }
 
+@keyframes s-modal-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes s-modal-backdrop-fade {
+  from {
+    background: rgba($color-espresso, 0);
+  }
+  to {
+    background: rgba($color-espresso, 0.5);
+  }
+}
+
 .s-modal__wrapper {
-  border-radius: $border-radius-3xl;
   background: $color-linen;
+  border-radius: $border-radius-3xl;
   display: flex;
   flex-direction: column;
+  max-height: 90dvh;
+  overflow: hidden;
+  position: relative;
 }
 
 .s-modal__close {
-  margin: $spacing-3 $spacing-3 $spacing-3 auto;
+  position: absolute;
+  right: $spacing-3;
+  top: $spacing-3;
+  z-index: 1;
 }
 
 .s-modal__close-icon {
@@ -27,11 +63,20 @@
 }
 
 .s-modal__header {
+  align-items: center;
   border-bottom: solid 1px $color-parchment;
   display: flex;
-  align-items: center;
+  flex-shrink: 0;
+  gap: $spacing-4;
   justify-content: space-between;
-  padding: $spacing-6;
+  padding: $spacing-4 $spacing-12 $spacing-4 $spacing-6;
+}
+
+.s-modal__header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  min-width: 0;
 }
 
 .s-modal__header-title {
@@ -39,12 +84,92 @@
   font-weight: $font-weight-bold;
 }
 
+.s-modal__header-description {
+  @include font-size(sm);
+  color: rgba($color-espresso, 0.7);
+  margin: 0;
+}
+
 .s-modal__body {
+  flex: 1;
+  overflow-y: auto;
   padding: $spacing-6;
 }
 
-.s-modal__meta {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  margin-top: var(--space-sm);
+// Mobile bottom drawer (< 1024px, powered by Vaul)
+
+.s-drawer__overlay {
+  background: rgba($color-espresso, 0.5);
+  inset: 0;
+  position: fixed;
+  z-index: 999;
+}
+
+.s-drawer {
+  background: $color-linen;
+  border-radius: $border-radius-3xl $border-radius-3xl 0 0;
+  bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+  height: auto !important;
+  left: 0;
+  max-height: 90dvh;
+  outline: none;
+  overflow: hidden;
+  position: fixed;
+  right: 0;
+  z-index: 1000;
+}
+
+.s-drawer__handle {
+  background: $color-parchment;
+  border-radius: 999px;
+  flex-shrink: 0;
+  height: to-rem(4);
+  margin: $spacing-3 auto $spacing-1;
+  width: to-rem(40);
+}
+
+.s-drawer__header {
+  align-items: center;
+  border-bottom: solid 1px $color-parchment;
+  display: flex;
+  flex-shrink: 0;
+  gap: $spacing-4;
+  justify-content: space-between;
+  padding: $spacing-4 $spacing-6;
+}
+
+.s-drawer__header-titles {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  min-width: 0;
+}
+
+.s-drawer__header-title {
+  @include font-size(2xl);
+  font-weight: $font-weight-bold;
+}
+
+.s-drawer__header-title--hidden {
+  clip: rect(0 0 0 0);
+  clip-path: inset(50%);
+  height: 1px;
+  overflow: hidden;
+  position: absolute;
+  white-space: nowrap;
+  width: 1px;
+}
+
+.s-drawer__header-description {
+  @include font-size(sm);
+  color: rgba($color-espresso, 0.7);
+  margin: 0;
+}
+
+.s-drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-6;
 }

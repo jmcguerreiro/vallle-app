@@ -26,6 +26,8 @@ const Dashboard = () => {
   const [activeCount, setActiveCount] = useState(null);
 
   // Derived State
+  const firstName = user?.name?.split(' ')[0] ?? user?.name
+
   const subtitle =
     activeCount === null
       ? null
@@ -73,8 +75,13 @@ const Dashboard = () => {
   return (
     <div className="p-dashboard">
       <div className="p-dashboard__welcome">
+        <img
+          alt=""
+          className="p-dashboard__welcome-image"
+          src="/images/test.svg"
+        />
         <h1 className="p-dashboard__welcome-title">
-          {t("features.dashboard.welcome", { name: user?.name })}
+          {t("features.dashboard.welcome", { name: firstName })}
         </h1>
         {subtitle && (
           <p className="p-dashboard__welcome-subtitle">{subtitle}</p>

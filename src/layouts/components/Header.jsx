@@ -73,129 +73,131 @@ const Header = () => {
   // Render
   return (
     <header className="s-header">
-      {activeStore && !isSuperAdmin && (
-        <div className="s-header__store">
-          {hasMultipleStores ? (
-            <button
-              aria-label={t("nav.switchStore")}
-              className="s-header__store-switch"
-              onClick={handleOpenSwitcher}
-              type="button"
-            >
-              <IconStore
-                className="s-header__store-switch-icon"
-                strokeWidth="1.5"
-              />
-              {activeStore.store_name}
-            </button>
-          ) : (
-            <span className="s-header__store-name">
-              {activeStore.store_name}
-            </span>
-          )}
-        </div>
-      )}
-
-      <div className="s-header__extra">
-        <a aria-label={t("nav.help")} className="s-header__help" href="#">
-          <IconHelp
-            aria-hidden="true"
-            className="s-header__help-icon"
-            strokeWidth="1.5"
-          />
-        </a>
-
-        <div className="s-header__user">
-          <button
-            aria-label={t("nav.userMenu")}
-            className="s-header__user-button"
-            popovertarget="user-menu-popover"
-            type="button"
-          >
-            <img
-              alt={user?.name}
-              className="s-header__user-button-image"
-              src={`/images/avatars/${user?.avatar || "paper-bag-head"}.svg`}
-            />
-            <IconEllipsisVertical
-              className="s-header__user-button-toggle-icon"
-              strokeWidth="1.5"
-            />
-          </button>
-
-          <div
-            className="s-header__user-popover"
-            id="user-menu-popover"
-            popover="auto"
-          >
-            <NavLink
-              className="s-header__user-popover-item"
-              onClick={handleClosePopover}
-              to={ROUTES.PROFILE}
-            >
-              {t("nav.editProfile")}
-            </NavLink>
-            <button
-              className="s-header__user-popover-item"
-              onClick={handleLogout}
-              type="button"
-            >
-              {t("nav.logout")}
-            </button>
-          </div>
-        </div>
-      </div>
-
-      {switcherOpen && (
-        <dialog
-          ref={dialogRef}
-          className="c-modal c-store-switcher"
-          onClick={handleBackdropClick}
-          onClose={handleCloseSwitcher}
-        >
-          <div className="c-modal__content">
-            <div className="c-modal__header">
-              <h2 className="c-modal__title">
-                {t("nav.switchStoreModal.heading")}
-              </h2>
+      <div className="s-header__wrapper">
+        {activeStore && !isSuperAdmin && (
+          <div className="s-header__store">
+            {hasMultipleStores ? (
               <button
-                aria-label="Close"
-                className="c-modal__close"
-                onClick={handleCloseSwitcher}
+                aria-label={t("nav.switchStore")}
+                className="s-header__store-switch"
+                onClick={handleOpenSwitcher}
                 type="button"
               >
-                &times;
+                <IconStore
+                  className="s-header__store-switch-icon"
+                  strokeWidth="1.5"
+                />
+                {activeStore.store_name}
+              </button>
+            ) : (
+              <span className="s-header__store-name">
+                {activeStore.store_name}
+              </span>
+            )}
+          </div>
+        )}
+
+        <div className="s-header__extra">
+          <a aria-label={t("nav.help")} className="s-header__help" href="#">
+            <IconHelp
+              aria-hidden="true"
+              className="s-header__help-icon"
+              strokeWidth="1.5"
+            />
+          </a>
+
+          <div className="s-header__user">
+            <button
+              aria-label={t("nav.userMenu")}
+              className="s-header__user-button"
+              popovertarget="user-menu-popover"
+              type="button"
+            >
+              <img
+                alt={user?.name}
+                className="s-header__user-button-image"
+                src={`/images/avatars/${user?.avatar || "paper-bag-head"}.svg`}
+              />
+              <IconEllipsisVertical
+                className="s-header__user-button-toggle-icon"
+                strokeWidth="1.5"
+              />
+            </button>
+
+            <div
+              className="s-header__user-popover"
+              id="user-menu-popover"
+              popover="auto"
+            >
+              <NavLink
+                className="s-header__user-popover-item"
+                onClick={handleClosePopover}
+                to={ROUTES.PROFILE}
+              >
+                {t("nav.editProfile")}
+              </NavLink>
+              <button
+                className="s-header__user-popover-item"
+                onClick={handleLogout}
+                type="button"
+              >
+                {t("nav.logout")}
               </button>
             </div>
-            <div className="c-modal__body">
-              <ul className="c-store-switcher__list">
-                {user?.stores?.map((store) => {
-                  const isCurrent = store.store_id === activeStore?.store_id;
-                  return (
-                    <li key={store.store_id}>
-                      <button
-                        className={`c-store-switcher__option${isCurrent ? " c-store-switcher__option--current" : ""}`}
-                        disabled={isCurrent}
-                        onClick={() => handleSelectStore(store)}
-                        type="button"
-                      >
-                        <span className="c-store-switcher__option-name">
-                          {store.store_name}
-                        </span>
-                        {isCurrent && (
-                          <span className="c-store-switcher__option-badge">
-                            {t("nav.switchStoreModal.current")}
-                          </span>
-                        )}
-                      </button>
-                    </li>
-                  );
-                })}
-              </ul>
-            </div>
           </div>
-        </dialog>
-      )}
+        </div>
+
+        {switcherOpen && (
+          <dialog
+            ref={dialogRef}
+            className="c-modal c-store-switcher"
+            onClick={handleBackdropClick}
+            onClose={handleCloseSwitcher}
+          >
+            <div className="c-modal__content">
+              <div className="c-modal__header">
+                <h2 className="c-modal__title">
+                  {t("nav.switchStoreModal.heading")}
+                </h2>
+                <button
+                  aria-label="Close"
+                  className="c-modal__close"
+                  onClick={handleCloseSwitcher}
+                  type="button"
+                >
+                  &times;
+                </button>
+              </div>
+              <div className="c-modal__body">
+                <ul className="c-store-switcher__list">
+                  {user?.stores?.map((store) => {
+                    const isCurrent = store.store_id === activeStore?.store_id;
+                    return (
+                      <li key={store.store_id}>
+                        <button
+                          className={`c-store-switcher__option${isCurrent ? " c-store-switcher__option--current" : ""}`}
+                          disabled={isCurrent}
+                          onClick={() => handleSelectStore(store)}
+                          type="button"
+                        >
+                          <span className="c-store-switcher__option-name">
+                            {store.store_name}
+                          </span>
+                          {isCurrent && (
+                            <span className="c-store-switcher__option-badge">
+                              {t("nav.switchStoreModal.current")}
+                            </span>
+                          )}
+                        </button>
+                      </li>
+                    );
+                  })}
+                </ul>
+              </div>
+            </div>
+          </dialog>
+        )}
+      </div>
     </header>
   );
 };

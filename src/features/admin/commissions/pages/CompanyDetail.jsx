@@ -75,10 +75,13 @@ const AdminCommissionsCompanyDetail = () => {
   // Effects
   useEffect(() => {
     if (data?.store) {
-      setHeader({ title: data.store.name })
+      setHeader({
+        title: data.store.name,
+        description: t('features.admin.commissions.companyDetailDescription'),
+      })
     }
     return () => setHeader()
-  }, [data, setHeader])
+  }, [data, setHeader, t])
 
   useEffect(() => {
     fetchData()

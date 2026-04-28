@@ -40,6 +40,7 @@ const AdminCompanyCreate = () => {
 
   // Derived State
   const title = t('features.admin.companies.create.heading')
+  const description = t('features.admin.companies.create.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
   const categoryOptions = COMPANY_CATEGORIES.map((key) => ({
     value: key,
@@ -69,9 +70,9 @@ const AdminCompanyCreate = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   // Render
   return (

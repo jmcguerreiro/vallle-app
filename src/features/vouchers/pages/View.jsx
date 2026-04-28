@@ -35,6 +35,7 @@ const VoucherView = () => {
 
   // Derived State
   const title = t('features.vouchers.view.heading')
+  const description = t('features.vouchers.view.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
 
   const statusLabel = useMemo(() => {
@@ -101,10 +102,10 @@ const VoucherView = () => {
       })
     }
 
-    setHeader({ title, actions })
+    setHeader({ title, description, actions })
 
     return () => setHeader()
-  }, [title, setHeader, handleEdit, handleRedeem, canRedeem, t])
+  }, [title, description, setHeader, handleEdit, handleRedeem, canRedeem, t])
 
   useEffect(() => {
     fetchVoucher()

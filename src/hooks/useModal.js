@@ -2,7 +2,7 @@ import { useCallback, useContext } from 'react'
 
 import { ModalContext } from '@/contexts/modal'
 
-const EMPTY_HEADER = { title: '', actions: [] }
+const EMPTY_HEADER = { title: '', description: '', actions: [] }
 const noop = () => {}
 
 /**
@@ -10,7 +10,7 @@ const noop = () => {}
  * Provides access to modal layout state and actions.
  * Always returns a safe object. When used outside a ModalProvider,
  * isModal is false and setHeader is a no-op.
- * @returns {{ header: { title: string, actions: Array }, setHeader: Function, isModal: boolean }}
+ * @returns {{ header: { title: string, description: string, actions: Array }, setHeader: Function, isModal: boolean }}
  */
 export const useModal = () => {
   const context = useContext(ModalContext)

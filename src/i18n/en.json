@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Vallle",
+    "appName": "Voucher",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
@@ -25,7 +25,7 @@
   },
   "features": {
     "login": {
-      "heading": "Sign in to Vallle",
+      "heading": "Sign in to Voucher",
       "forgotPassword": "Forgot your password?",
       "form": {
         "email": "Email",
@@ -112,9 +112,13 @@
       "heading": "Vouchers",
       "create": {
         "heading": "Create voucher",
+        "description": "Set the amount and who it's for.",
         "amount": "Amount (€)",
+        "amountPlaceholder": "15",
         "buyer": "Buyer name",
+        "buyerPlaceholder": "Buyer's name",
         "expiresAt": "Expiry date",
+        "validUntil": "Valid until {{date}}",
         "submit": "Create voucher",
         "success": "Voucher created successfully!",
         "error": {
@@ -127,6 +131,7 @@
       },
       "view": {
         "heading": "Voucher details",
+        "description": "See details and redemption history.",
         "code": "Code",
         "amount": "Amount",
         "balance": "Balance",
@@ -138,6 +143,7 @@
       },
       "edit": {
         "heading": "Edit voucher",
+        "description": "Update the buyer name or expiry date.",
         "buyer": "Buyer name",
         "expiresAt": "Expiry date",
         "currentAmount": "Amount",
@@ -150,6 +156,7 @@
       },
       "redeem": {
         "heading": "Redeem voucher",
+        "description": "Deduct an amount from this voucher.",
         "code": "Voucher code",
         "amount": "Amount to redeem (€)",
         "description": "Description",
@@ -161,6 +168,12 @@
           "insufficientBalance": "Insufficient balance.",
           "generic": "Could not redeem the voucher."
         }
+      },
+      "quickLookup": {
+        "description": "Enter a code to look up a voucher."
+      },
+      "quickRedeem": {
+        "description": "Enter a code to redeem a voucher."
       },
       "redemptions": {
         "heading": "Redemption history",
@@ -287,6 +300,7 @@
         },
         "create": {
           "heading": "Add user",
+          "description": "Add a new user to this store.",
           "submit": "Create user",
           "success": "User created successfully!",
           "error": {
@@ -295,6 +309,7 @@
         },
         "edit": {
           "heading": "Edit user",
+          "description": "Update this user's details.",
           "submit": "Save changes",
           "success": "User updated successfully!",
           "error": {
@@ -374,6 +389,7 @@
         },
         "create": {
           "heading": "Add company",
+          "description": "Add a new company to the platform.",
           "submit": "Create company",
           "success": "Company created successfully!",
           "error": {
@@ -382,6 +398,7 @@
         },
         "view": {
           "heading": "Company details",
+          "description": "See company details and related stats.",
           "edit": "Edit",
           "vouchers": "Vouchers issued",
           "totalSales": "Total sales",
@@ -391,6 +408,7 @@
         },
         "edit": {
           "heading": "Edit company",
+          "description": "Update this company's details.",
           "submit": "Save changes",
           "success": "Company updated successfully!",
           "error": {
@@ -433,6 +451,7 @@
         },
         "create": {
           "heading": "Add user",
+          "description": "Add a new user and assign them to a company.",
           "submit": "Create user",
           "success": "User created successfully!",
           "error": {
@@ -441,6 +460,7 @@
         },
         "view": {
           "heading": "User details",
+          "description": "See this user's details and assignments.",
           "edit": "Edit",
           "disable": "Disable account",
           "enable": "Enable account",
@@ -449,6 +469,7 @@
         },
         "edit": {
           "heading": "Edit user",
+          "description": "Update this user's role or status.",
           "submit": "Save changes",
           "success": "User updated successfully!",
           "assignedTo": "Assigned to",
@@ -464,6 +485,7 @@
       },
       "commissions": {
         "heading": "Commissions",
+        "companyDetailDescription": "Monthly commission breakdown.",
         "company": "Company",
         "voucherSales": "Voucher sales",
         "totalCommission": "Commission",

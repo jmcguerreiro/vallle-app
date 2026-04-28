@@ -37,6 +37,7 @@ const QuickLookup = () => {
 
   // Derived State
   const title = t('features.vouchers.view.heading')
+  const description = t('features.vouchers.quickLookup.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
 
   const statusLabel = useMemo(() => {
@@ -75,9 +76,9 @@ const QuickLookup = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   useEffect(() => {
     if (code.length !== CODE_LENGTH) return

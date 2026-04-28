@@ -28,14 +28,20 @@
   height: to-rem(40);
 
   &.is-active {
-    border-color: $color-parchment;
+    background: $color-espresso;
 
     .s-navigation__item-icon {
-      color: $icon-color-highlight;
+      color: $color-white;
     }
   }
 }
 
 .s-navigation__item-icon {
   color: $icon-color-muted;
+}
+
+@include screen(md) {
+  .s-navigation {
+    padding: $spacing-6;
+  }
 }

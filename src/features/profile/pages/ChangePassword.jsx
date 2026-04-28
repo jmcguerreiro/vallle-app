@@ -35,6 +35,7 @@ const ChangePassword = () => {
 
   // Derived State
   const title = t('features.profile.password.heading')
+  const description = t('features.profile.password.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
   const passwordRules = useMemo(() => validatePassword(t), [t])
 
@@ -62,9 +63,9 @@ const ChangePassword = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   // Render
   return (

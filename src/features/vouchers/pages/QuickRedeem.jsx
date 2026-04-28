@@ -43,6 +43,7 @@ const QuickRedeem = () => {
 
   // Derived State
   const title = t('features.vouchers.redeem.heading')
+  const description = t('features.vouchers.quickRedeem.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
 
   // Handlers
@@ -116,9 +117,9 @@ const QuickRedeem = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title })
+    setHeader({ title, description })
     return () => setHeader()
-  }, [title, setHeader])
+  }, [title, description, setHeader])
 
   // Render
   if (!voucher) {
