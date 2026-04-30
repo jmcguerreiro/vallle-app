@@ -1,0 +1,11 @@
+.p-voucher-quick-lookup {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-voucher-quick-lookup__actions {
+  display: flex;
+  gap: $spacing-3;
+  margin-top: $spacing-4;
+}

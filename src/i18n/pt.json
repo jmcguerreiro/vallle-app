@@ -10,6 +10,7 @@
     "collapse": "Recolher",
     "noResults": "Sem resultados.",
     "error": "Algo correu mal. Tente novamente.",
+    "tryAgain": "Tentar novamente",
     "search": "Pesquisar...",
     "filters": {
       "allStatuses": "Todos os estados",
@@ -116,17 +117,18 @@
         "amount": "Valor (€)",
         "amountPlaceholder": "15",
         "buyer": "Nome do comprador",
-        "buyerPlaceholder": "Nome do comprador",
+        "buyerPlaceholder": "José Antunes",
         "expiresAt": "Data de expiração",
         "validUntil": "Válido até {{date}}",
         "submit": "Criar voucher",
         "success": "Voucher criado com sucesso!",
         "error": {
-          "amountRequired": "O valor é obrigatório.",
-          "amountPositive": "O valor deve ser superior a zero.",
-          "expiresAtRequired": "A data de expiração é obrigatória.",
-          "expiresAtFuture": "A data de expiração deve ser no futuro.",
-          "generic": "Não foi possível criar o voucher."
+          "amountRequired": "Indique o valor deste voucher.",
+          "amountPositive": "O valor tem de ser superior a zero.",
+          "buyerRequired": "Quem está a comprar este voucher? Adicione o nome para continuar.",
+          "expiresAtRequired": "Escolha quando este voucher expira.",
+          "expiresAtFuture": "A data de expiração tem de ser no futuro.",
+          "generic": "Algo correu mal ao criar o voucher. Tente novamente."
         }
       },
       "view": {
@@ -139,6 +141,8 @@
         "status": "Estado",
         "createdAt": "Criado em",
         "expiresAt": "Expira em",
+        "ofTotal": "de {{total}}",
+        "available": "Disponível: {{balance}}",
         "edit": "Editar"
       },
       "edit": {
@@ -149,6 +153,12 @@
         "currentAmount": "Valor",
         "submit": "Guardar alterações",
         "success": "Voucher atualizado com sucesso!",
+        "archive": "Arquivar voucher",
+        "restore": "Restaurar voucher",
+        "archiveConfirm": "Arquivar este voucher? Deixará de poder ser resgatado, mas o histórico será mantido. Pode restaurá-lo mais tarde.",
+        "restoreConfirm": "Restaurar este voucher para ativo?",
+        "archiveSuccess": "Voucher arquivado.",
+        "restoreSuccess": "Voucher restaurado.",
         "error": {
           "generic": "Não foi possível atualizar o voucher.",
           "loadFailed": "Não foi possível carregar o voucher."
@@ -160,6 +170,7 @@
         "code": "Código do voucher",
         "amount": "Valor a resgatar (€)",
         "description": "Descrição",
+        "remaining": "{{balance}} restante",
         "submit": "Resgatar",
         "success": "Voucher resgatado com sucesso!",
         "error": {
@@ -170,10 +181,19 @@
         }
       },
       "quickLookup": {
-        "description": "Introduza um código para consultar um voucher."
+        "description": "Introduza um código para consultar um voucher.",
+        "submit": "Consultar voucher",
+        "notFound": "Não foi possível encontrar um voucher com o código {{code}}. Verifique o código e tente novamente.",
+        "error": "Algo correu mal ao consultar esse voucher. Tente novamente daqui a um momento."
       },
       "quickRedeem": {
-        "description": "Introduza um código para resgatar um voucher."
+        "description": "Introduza um código para resgatar um voucher.",
+        "submit": "Resgatar voucher",
+        "notFound": "Não foi possível encontrar um voucher com o código {{code}}. Confirme o código e tente novamente.",
+        "expired": "O voucher {{code}} já expirou e não pode ser resgatado. Pode abri-lo para consultar o histórico completo.",
+        "usedUp": "O voucher {{code}} já foi totalmente resgatado — não tem saldo disponível. Abra-o para ver como foi utilizado.",
+        "error": "Algo correu mal ao consultar esse voucher. Tente novamente daqui a um momento.",
+        "viewVoucher": "Ver voucher"
       },
       "redemptions": {
         "heading": "Histórico de resgates",
@@ -195,6 +215,7 @@
         "active": "Ativo",
         "used": "Usado",
         "expired": "Expirado",
+        "archived": "Arquivado",
         "empty": "Nenhum voucher encontrado."
       }
     },

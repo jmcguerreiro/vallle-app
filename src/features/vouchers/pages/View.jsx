@@ -4,6 +4,7 @@ import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
 import { Pencil, Receipt } from 'lucide-react'
 
+import Accordion from '@/components/Accordion'
 import { voucherEditPath, voucherRedeemPath } from '@/constants/routes'
 import { isVoucherExpired } from '@/features/vouchers/utils'
 import { useMain } from '@/hooks/useMain'
@@ -35,18 +36,38 @@ const VoucherView = () => {
 
   // Derived State
   const title = t('features.vouchers.view.heading')
-  const description = t('features.vouchers.view.description')
+  const description = voucher?.code || ''
   const setHeader = isModal ? setModalHeader : setMainHeader
+
+  const statusKey = useMemo(() => {
+    if (!voucher) return 'active'
+    if (voucher.status === 'archived') return 'archived'
+    if (isVoucherExpired(voucher.expires_at)) return 'expired'
+    if (voucher.balance === 0) return 'used'
+    return 'active'
+  }, [voucher])
 
   const statusLabel = useMemo(() => {
     if (!voucher) return ''
+    if (voucher.status === 'archived') return t('features.vouchers.list.archived')
     if (isVoucherExpired(voucher.expires_at)) return t('features.vouchers.list.expired')
     if (voucher.balance === 0) return t('features.vouchers.list.used')
     return t('features.vouchers.list.active')
   }, [voucher, t])
 
+  const amountDisplay = useMemo(() => {
+    if (!voucher) return '0.00'
+    return (voucher.amount / 100).toFixed(2)
+  }, [voucher])
+
+  const availableLabel = useMemo(() => {
+    if (!voucher) return ''
+    return t('features.vouchers.view.available', { balance: formatCurrency(voucher.balance) })
+  }, [voucher, t])
+
   const canRedeem = useMemo(() => {
     if (!voucher) return false
+    if (voucher.status !== 'active') return false
     if (voucher.balance === 0) return false
     return !isVoucherExpired(voucher.expires_at)
   }, [voucher])
@@ -121,17 +142,24 @@ const VoucherView = () => {
   }
 
   const fields = [
-    { label: t('features.vouchers.view.code'), value: voucher.code },
-    { label: t('features.vouchers.view.amount'), value: formatCurrency(voucher.amount) },
-    { label: t('features.vouchers.view.balance'), value: formatCurrency(voucher.balance) },
-    { label: t('features.vouchers.view.buyer'), value: voucher.buyer || '\u2014' },
-    { label: t('features.vouchers.view.status'), value: statusLabel },
-    { label: t('features.vouchers.view.createdAt'), value: formatDate(voucher.created_at) },
+    { label: t('features.vouchers.view.buyer'), value: voucher.buyer || '—' },
     { label: t('features.vouchers.view.expiresAt'), value: formatDate(voucher.expires_at) },
+    { label: t('features.vouchers.view.createdAt'), value: formatDate(voucher.created_at) },
   ]
 
   return (
-    <div className="c-voucher-view">
+    <div className="p-voucher-view">
+      <div className="p-voucher-view__hero">
+        <span className={`c-voucher-status c-voucher-status--${statusKey}`}>{statusLabel}</span>
+        <div className="p-voucher-view__balance">
+          <span className={`p-voucher-view__balance-value${statusKey === 'active' ? '' : ' p-voucher-view__balance-value--inactive'}`}>
+            {amountDisplay}
+          </span>
+          <span className="p-voucher-view__balance-currency">{"€"}</span>
+        </div>
+        <p className="p-voucher-view__total">{availableLabel}</p>
+      </div>
+
       <dl className="c-voucher-detail">
         {fields.map(({ label, value }) => (
           <div key={label} className="c-voucher-detail__field">
@@ -141,10 +169,7 @@ const VoucherView = () => {
         ))}
       </dl>
 
-      <div className="c-voucher-redemptions">
-        <h3 className="c-voucher-redemptions__heading">
-          {t('features.vouchers.redemptions.heading')}
-        </h3>
+      <Accordion className="c-voucher-redemptions" title={t('features.vouchers.redemptions.heading')}>
         {redemptions.length === 0 ? (
           <p className="c-voucher-redemptions__empty">
             {t('features.vouchers.redemptions.empty')}
@@ -171,7 +196,7 @@ const VoucherView = () => {
             </tbody>
           </table>
         )}
-      </div>
+      </Accordion>
     </div>
   )
 }

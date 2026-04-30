@@ -21,6 +21,7 @@ const STATUS_ALL = "all";
  * @returns {'active'|'used'|'expired'}
  */
 function deriveStatus(voucher) {
+  if (voucher.status === "archived") return "archived";
   if (isVoucherExpired(voucher.expires_at)) return "expired";
   if (voucher.balance === 0) return "used";
   return "active";
@@ -167,6 +168,7 @@ const VouchersIndex = () => {
         <option value="active">{t("features.vouchers.list.active")}</option>
         <option value="used">{t("features.vouchers.list.used")}</option>
         <option value="expired">{t("features.vouchers.list.expired")}</option>
+        <option value="archived">{t("features.vouchers.list.archived")}</option>
       </select>
     </div>
   );

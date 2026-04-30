@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
@@ -8,6 +8,7 @@ import Form from '@/components/forms/Form'
 import FormActions from '@/components/forms/FormActions'
 import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
+import { isVoucherExpired } from '@/features/vouchers/utils'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
 import { useRefresh } from '@/hooks/useRefresh'
@@ -42,8 +43,27 @@ const VoucherRedeem = () => {
 
   // Derived State
   const title = t('features.vouchers.redeem.heading')
-  const description = t('features.vouchers.redeem.description')
+  const description = voucher?.code || ''
   const setHeader = isModal ? setModalHeader : setMainHeader
+
+  const statusKey = useMemo(() => {
+    if (!voucher) return 'active'
+    if (isVoucherExpired(voucher.expires_at)) return 'expired'
+    if (voucher.balance === 0) return 'used'
+    return 'active'
+  }, [voucher])
+
+  const statusLabel = useMemo(() => {
+    if (!voucher) return ''
+    if (isVoucherExpired(voucher.expires_at)) return t('features.vouchers.list.expired')
+    if (voucher.balance === 0) return t('features.vouchers.list.used')
+    return t('features.vouchers.list.active')
+  }, [voucher, t])
+
+  const remainingLabel = useMemo(() => {
+    if (!voucher) return ''
+    return t('features.vouchers.redeem.remaining', { balance: formatCurrency(voucher.balance) })
+  }, [voucher, t])
 
   // Handlers
   const fetchVoucher = useCallback(async () => {
@@ -103,35 +123,41 @@ const VoucherRedeem = () => {
   }
 
   return (
-    <div className="c-voucher-redeem">
-      <div className="c-voucher-redeem__info">
-        <span className="c-voucher-redeem__code">{voucher.code}</span>
-        <span className="c-voucher-redeem__balance">
-          {t('features.vouchers.view.balance')}: {formatCurrency(voucher.balance)}
-        </span>
-      </div>
-
+    <div className="p-voucher-redeem">
       <Form
         error={serverError}
         handleSubmit={handleSubmit}
         onSubmit={onSubmit}
       >
+        <div className="p-voucher-redeem__hero">
+          <div className="p-voucher-redeem__balance">
+            <input
+              aria-label={t('features.vouchers.redeem.amount')}
+              className="p-voucher-redeem__balance-value"
+              inputMode="decimal"
+              placeholder={t('features.vouchers.create.amountPlaceholder')}
+              type="text"
+              {...register('amount', {
+                required: t('features.vouchers.create.error.amountRequired'),
+                validate: {
+                  positive: (v) =>
+                    Number.parseFloat(v) > 0 || t('features.vouchers.create.error.amountPositive'),
+                  max: (v) =>
+                    Math.round(Number.parseFloat(v) * 100) <= voucher.balance ||
+                    t('features.vouchers.redeem.error.insufficientBalance'),
+                },
+              })}
+            />
+            <span className="p-voucher-redeem__balance-currency">{'€'}</span>
+          </div>
+          {errors.amount && (
+            <p className="p-voucher-redeem__error">{errors.amount.message}</p>
+          )}
+          <p className="p-voucher-redeem__total">{remainingLabel}</p>
+          <span className={`c-voucher-status c-voucher-status--${statusKey}`}>{statusLabel}</span>
+        </div>
+
         <FormFields>
-          <Input
-            error={errors.amount}
-            label={t('features.vouchers.redeem.amount')}
-            name="amount"
-            register={register}
-            required={t('features.vouchers.create.error.amountRequired')}
-            type="number"
-            validate={{
-              positive: (v) =>
-                Number.parseFloat(v) > 0 || t('features.vouchers.create.error.amountPositive'),
-              max: (v) =>
-                Math.round(Number.parseFloat(v) * 100) <= voucher.balance ||
-                t('features.vouchers.redeem.error.insufficientBalance'),
-            }}
-          />
           <Input
             error={errors.description}
             label={t('features.vouchers.redeem.description')}

@@ -94,32 +94,25 @@ export async function onRequestPost(context) {
 
     const now = new Date().toISOString()
     const redemptionId = generateUlid()
+    const balanceAfter = voucher.balance - amount
 
-    // Atomically deduct balance — WHERE balance >= amount prevents double-spend.
-    // A 0-row UPDATE is NOT a DB error (D1 won't rollback), so we must check
-    // changes BEFORE inserting the redemption record.
+    // Atomically deduct balance and mark as 'used' when fully redeemed.
+    // The WHERE clause enforces both balance and expiry to prevent double-spend
+    // and last-millisecond expiry races. A 0-row UPDATE is NOT a DB error in
+    // D1, so we check changes before inserting the redemption record.
     const updateResult = await env.DB.prepare(
-      'UPDATE vouchers SET balance = balance - ?, updated_at = ? WHERE id = ? AND store_id = ? AND balance >= ?',
-    ).bind(amount, now, id, storeId, amount).run()
+      `UPDATE vouchers
+         SET balance    = balance - ?,
+             status     = CASE WHEN (balance - ?) = 0 THEN 'used' ELSE status END,
+             updated_at = ?
+       WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
+    ).bind(amount, amount, now, id, storeId, amount, now).run()
 
     if (!updateResult.meta.changes) {
       return Response.json(
         { error: { message: 'Insufficient balance (concurrent redemption)', code: 'VOUCHER_INSUFFICIENT_BALANCE' } },
         { status: 409 },
       )
-    }
-
-    // Balance was deducted — read the actual new balance from the DB for accuracy
-    const updated = await env.DB.prepare(
-      'SELECT balance FROM vouchers WHERE id = ?',
-    ).bind(id).first()
-    const balanceAfter = updated.balance
-
-    // Mark voucher as 'used' when fully redeemed
-    if (balanceAfter === 0) {
-      await env.DB.prepare(
-        'UPDATE vouchers SET status = ? WHERE id = ?',
-      ).bind('used', id).run()
     }
 
     await env.DB.prepare(

@@ -1,201 +1,228 @@
 /* ─── Shared button base ─────────────────────────────────────── */
 
 %button-base {
-	@include font-size(sm);
+  @include font-size(sm);
 
-	align-items: center;
-	border: none;
-	border-radius: $border-radius-lg;
-	cursor: pointer;
-	display: inline-flex;
-	font-family: $font-family-one;
-	font-weight: $font-weight-bold;
-	gap: $spacing-2;
-	padding: $spacing-3 $spacing-4;
-	transition: background $transition-normal, color $transition-normal, border-color $transition-normal;
+  align-items: center;
+  border: none;
+  border-radius: $border-radius-lg;
+  cursor: pointer;
+  display: inline-flex;
+  font-family: $font-family-one;
+  font-weight: $font-weight-bold;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-4;
+  transition:
+    background $transition-normal,
+    color $transition-normal,
+    border-color $transition-normal;
 
-	&:disabled {
-		cursor: not-allowed;
-		opacity: 0.5;
-	}
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
 }
 
 /* ─── Fill (primary solid) ───────────────────────────────────── */
 
 .c-button-fill {
-	@extend %button-base;
+  @extend %button-base;
 
-	background: $color-terracota;
-	color: $color-white;
+  background: $color-terracota;
+  color: $color-white;
 
-	&:hover:not(:disabled) {
-		background: darken($color-terracota, 8%);
-	}
+  &:hover:not(:disabled) {
+    background: darken($color-terracota, 8%);
+  }
 
-	&--skin-secondary {
-		background: $color-espresso;
+  &--skin-secondary {
+    background: $color-espresso;
 
-		&:hover:not(:disabled) {
-			background: lighten($color-espresso, 8%);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: lighten($color-espresso, 8%);
+    }
+  }
 
-	&--skin-danger {
-		background: $color-danger;
+  &--skin-danger {
+    background: $color-danger;
 
-		&:hover:not(:disabled) {
-			background: darken($color-danger, 8%);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: darken($color-danger, 8%);
+    }
+  }
 
-	&--size-sm {
-		@include font-size(xs);
+  &--size-sm {
+    @include font-size(xs);
 
-		padding: $spacing-1 $spacing-3;
-	}
+    padding: $spacing-1 $spacing-3;
+  }
 
-	&--display-block {
-		display: flex;
-		justify-content: center;
-		width: 100%;
-	}
+  &--display-block {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
 
-	&--is-processing {
-		.c-button-fill__icon {
-			animation: spin 1s linear infinite;
-		}
-	}
+  &--full-width {
+    width: 100%;
+  }
+
+  &--is-processing {
+    .c-button-fill__icon {
+      animation: spin 1s linear infinite;
+    }
+  }
 }
 
 /* ─── Outline ────────────────────────────────────────────────── */
 
 .c-button-outline {
-	@extend %button-base;
+  @extend %button-base;
 
-	background: transparent;
-	border: 1px solid $color-terracota;
-	color: $color-terracota;
+  background: transparent;
+  border: 1px solid $color-terracota;
+  color: $color-terracota;
 
-	&:hover:not(:disabled) {
-		background: rgba($color-terracota, 0.08);
-	}
+  &:hover:not(:disabled) {
+    background: rgba($color-terracota, 0.08);
+  }
 
-	&--skin-secondary {
-		border-color: $color-ash;
-		color: $text-color;
+  &--skin-secondary {
+    border-color: $color-ash;
+    color: $text-color;
 
-		&:hover:not(:disabled) {
-			background: rgba($color-ash, 0.1);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: rgba($color-ash, 0.1);
+    }
+  }
 
-	&--skin-danger {
-		border-color: $color-danger;
-		color: $color-danger;
+  &--skin-danger {
+    border-color: $color-danger;
+    color: $color-danger;
 
-		&:hover:not(:disabled) {
-			background: rgba($color-danger, 0.08);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: rgba($color-danger, 0.08);
+    }
+  }
 
-	&--size-sm {
-		@include font-size(xs);
+  &--size-sm {
+    @include font-size(xs);
 
-		padding: $spacing-1 $spacing-3;
-	}
+    padding: $spacing-1 $spacing-3;
+  }
 
-	&--is-processing {
-		.c-button-outline__icon {
-			animation: spin 1s linear infinite;
-		}
-	}
+  &--display-block {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  &--is-processing {
+    .c-button-outline__icon {
+      animation: spin 1s linear infinite;
+    }
+  }
 }
 
 /* ─── Ghost ──────────────────────────────────────────────────── */
 
 .c-button-ghost {
-	@extend %button-base;
+  @extend %button-base;
 
-	background: transparent;
-	color: $text-color;
+  background: transparent;
+  color: $text-color;
 
-	&:hover:not(:disabled) {
-		background: rgba($color-ash, 0.12);
-	}
+  &:hover:not(:disabled) {
+    background: rgba($color-ash, 0.12);
+  }
 
-	&--skin-danger {
-		color: $color-danger;
+  &--skin-danger {
+    color: $color-danger;
 
-		&:hover:not(:disabled) {
-			background: rgba($color-danger, 0.08);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: rgba($color-danger, 0.08);
+    }
+  }
 
-	&--size-sm {
-		@include font-size(xs);
+  &--size-sm {
+    @include font-size(xs);
 
-		padding: $spacing-1 $spacing-3;
-	}
+    padding: $spacing-1 $spacing-3;
+  }
 
-	&--is-processing {
-		.c-button-ghost__icon {
-			animation: spin 1s linear infinite;
-		}
-	}
+  &--display-block {
+    display: flex;
+    justify-content: center;
+    width: 100%;
+  }
+
+  &--full-width {
+    width: 100%;
+  }
+
+  &--is-processing {
+    .c-button-ghost__icon {
+      animation: spin 1s linear infinite;
+    }
+  }
 }
 
 /* ─── Icon-only ──────────────────────────────────────────────── */
 
 .c-button-icon {
-	@extend %button-base;
+  @extend %button-base;
 
-	background: transparent;
-	border-radius: $border-radius-md;
-	color: $text-color-muted;
-	padding: $spacing-2;
+  background: transparent;
+  border-radius: $border-radius-md;
+  color: $text-color-muted;
+  padding: $spacing-2;
 
-	&:hover:not(:disabled) {
-		background: rgba($color-ash, 0.12);
-		color: $text-color-highlight;
-	}
+  &:hover:not(:disabled) {
+    background: rgba($color-ash, 0.12);
+    color: $text-color-highlight;
+  }
 }
 
 /* ─── Layout header action buttons ───────────────────────────── */
 
 .c-btn {
-	@extend %button-base;
+  @extend %button-base;
 
-	&--primary {
-		background: $color-terracota;
-		color: $color-white;
+  &--primary {
+    background: $color-terracota;
+    color: $color-white;
 
-		&:hover:not(:disabled) {
-			background: darken($color-terracota, 8%);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: darken($color-terracota, 8%);
+    }
+  }
 
-	&--secondary {
-		background: transparent;
-		border: 1px solid rgba($color-ash, 0.3);
-		color: $text-color;
+  &--secondary {
+    background: transparent;
+    border: 1px solid rgba($color-ash, 0.3);
+    color: $text-color;
 
-		&:hover:not(:disabled) {
-			border-color: $color-terracota;
-			color: $color-terracota;
-		}
-	}
+    &:hover:not(:disabled) {
+      border-color: $color-terracota;
+      color: $color-terracota;
+    }
+  }
 
-	&--danger {
-		background: transparent;
-		border: 1px solid $color-danger;
-		color: $color-danger;
+  &--danger {
+    background: transparent;
+    border: 1px solid $color-danger;
+    color: $color-danger;
 
-		&:hover:not(:disabled) {
-			background: rgba($color-danger, 0.08);
-		}
-	}
+    &:hover:not(:disabled) {
+      background: rgba($color-danger, 0.08);
+    }
+  }
 
-	&__icon {
-		flex-shrink: 0;
-	}
+  &__icon {
+    flex-shrink: 0;
+  }
 }

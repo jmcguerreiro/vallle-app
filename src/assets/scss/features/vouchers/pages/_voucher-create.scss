@@ -1,92 +1,68 @@
-.c-voucher-create {
-  align-items: center;
+.p-voucher-create {
   display: flex;
   flex-direction: column;
-  gap: $spacing-6;
-  padding: $spacing-8 0;
+  gap: $spacing-9;
   width: 100%;
 }
 
-.c-voucher-create__amount {
+.p-voucher-create__amount {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-voucher-create__amount-input {
   align-items: baseline;
-  color: $color-espresso;
   display: flex;
   gap: $spacing-2;
   justify-content: center;
-  line-height: 1;
   width: 100%;
+
+  &:not(:last-child) {
+    margin-bottom: $spacing-1;
+  }
 }
 
-.c-voucher-create__amount-input {
+.p-voucher-create__amount-input-amount {
   @include font-size(8xl);
-  background: transparent;
-  border: 0;
-  color: $color-espresso;
-  font-weight: $font-weight-bold;
+  color: $text-color-highlight;
   field-sizing: content;
-  line-height: 1;
-  min-width: 1ch;
-  outline: 0;
-  padding: 0;
-  text-align: right;
-
-  &::placeholder {
-    color: $color-parchment;
-  }
-
-  &:focus {
-    outline: 0;
-  }
-
-  &--error {
-    color: $color-danger;
-  }
-}
-
-.c-voucher-create__amount-currency {
-  @include font-size(5xl);
-  color: $text-color-muted;
-  font-weight: $font-weight-regular;
-  line-height: 1;
-}
-
-.c-voucher-create__expiry {
-  @include font-size(sm);
-  color: $text-color-muted;
-  text-align: center;
-}
-
-.c-voucher-create__buyer {
-  @include font-size(lg);
-  background: transparent;
-  border: 0;
-  border-bottom: 1px solid $color-parchment;
-  color: $color-espresso;
-  max-width: 320px;
-  padding: $spacing-2 0;
-  text-align: center;
-  transition: border-color $transition-normal;
-  width: 100%;
+  font-weight: $font-weight-bold;
 
   &::placeholder {
     color: $text-color-muted;
   }
-
-  &:focus {
-    border-bottom-color: $color-driftwood;
-    outline: 0;
-  }
 }
 
-.c-voucher-create__error {
-  @include font-size(sm);
-  color: $color-danger;
+.p-voucher-create__amount-input-currency {
+  @include font-size(8xl);
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+.p-voucher-create__amount-error {
+  @extend .c-form__field-error;
   text-align: center;
 }
 
-.c-voucher-create__actions {
+.p-voucher-create__buyer {
   display: flex;
-  justify-content: center;
-  margin-top: $spacing-4;
-  width: 100%;
+  flex-direction: column;
+}
+
+.p-voucher-create__buyer-label {
+  @extend .c-form__field-label;
+}
+
+.p-voucher-create__buyer-input {
+  @extend .c-form__field-input;
+}
+
+.p-voucher-create__buyer-error {
+  @extend .c-form__field-error;
+}
+
+.p-voucher-create__expiry {
+  @include font-size(sm);
+  color: $text-color-muted;
+  text-align: center;
 }

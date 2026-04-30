@@ -5,6 +5,7 @@
 @import "./global/animations";
 @import "./global/fonts";
 
+@import "./components/accordion";
 @import "./components/admin";
 @import "./components/empty-state";
 @import "./components/buttons";
@@ -33,7 +34,13 @@
 @import "./features/auth/pages/auth-reset-password";
 @import "./features/auth/pages/auth-select-store";
 @import "./features/dashboard/pages/dashboard";
+@import "./features/vouchers/components/voucher-code-input";
 @import "./features/vouchers/pages/voucher-create";
+@import "./features/vouchers/pages/voucher-view";
+@import "./features/vouchers/pages/voucher-edit";
+@import "./features/vouchers/pages/voucher-redeem";
+@import "./features/vouchers/pages/voucher-quick-lookup";
+@import "./features/vouchers/pages/voucher-quick-redeem";
 
 html,
 body {
@@ -98,6 +105,73 @@ body {
 
   /* Layout */
   --sidebar-width: 240px;
+}
+
+// Drawer (< 1024px, powered by Vaul)
+.drawer__overlay {
+  background: rgba($color-espresso, 0.5);
+  inset: 0;
+  position: fixed;
+  z-index: 999;
+}
+
+.drawer {
+  background: $color-linen;
+  border-radius: $border-radius-3xl $border-radius-3xl 0 0;
+  bottom: 0 !important;
+  display: flex;
+  flex-direction: column;
+  height: auto !important;
+  left: 0;
+  max-height: 90dvh;
+  outline: none;
+  overflow: hidden;
+  position: fixed;
+  right: 0;
+  z-index: 1000;
+}
+
+.drawer__handle {
+  background: $color-parchment !important;
+  margin: $spacing-3 auto $spacing-1;
+  opacity: 1 !important;
+}
+
+.drawer__header {
+  align-items: center;
+  border-bottom: solid 1px $color-parchment;
+  display: flex;
+  flex-direction: column;
+  text-align: center;
+  gap: $spacing-1;
+  padding: $spacing-4 $spacing-6;
+}
+
+.drawer__header-title {
+  @include font-size(lg);
+  font-weight: $font-weight-bold;
+  color: $text-color-highlight;
+}
+
+.drawer__header-description {
+  @include font-size(sm);
+  color: $text-color-muted;
+  margin: 0;
+}
+
+.drawer__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-6;
+}
+
+.drawer__footer {
+  border-top: solid 1px $color-parchment;
+  display: flex;
+  flex-shrink: 0;
+  gap: $spacing-3;
+  justify-content: flex-end;
+  padding: $spacing-4 $spacing-6;
 }
 
 /* ─── Store switcher ─────────────────────────────────────────── */

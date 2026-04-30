@@ -79,12 +79,20 @@ export async function onRequestPut(context) {
     )
   }
 
-  const { buyer, expires_at } = body
+  const { buyer, expires_at, status } = body
 
   // Validate buyer length
   if (buyer !== undefined && buyer !== null && (typeof buyer !== 'string' || buyer.length > 255)) {
     return Response.json(
       { error: { message: 'Buyer must be a string of 255 characters or fewer', code: 'VALIDATION_FAILED' } },
+      { status: 400 },
+    )
+  }
+
+  // Validate status (only active/archived can be set manually)
+  if (status !== undefined && status !== 'active' && status !== 'archived') {
+    return Response.json(
+      { error: { message: 'Status must be active or archived', code: 'VALIDATION_FAILED' } },
       { status: 400 },
     )
   }
@@ -126,15 +134,18 @@ export async function onRequestPut(context) {
     const now = new Date().toISOString()
     const updatedBuyer = buyer !== undefined ? buyer : existing.buyer
     const updatedExpiresAt = expires_at ? new Date(expires_at).toISOString() : existing.expires_at
+    // Only allow status transitions between active and archived; preserve 'used' otherwise.
+    const updatedStatus = status !== undefined && existing.status !== 'used' ? status : existing.status
 
     await env.DB.prepare(
-      'UPDATE vouchers SET buyer = ?, expires_at = ?, updated_at = ? WHERE id = ? AND store_id = ?',
-    ).bind(updatedBuyer, updatedExpiresAt, now, id, storeId).run()
+      'UPDATE vouchers SET buyer = ?, expires_at = ?, status = ?, updated_at = ? WHERE id = ? AND store_id = ?',
+    ).bind(updatedBuyer, updatedExpiresAt, updatedStatus, now, id, storeId).run()
 
     const voucher = {
       ...existing,
       buyer: updatedBuyer,
       expires_at: updatedExpiresAt,
+      status: updatedStatus,
       updated_at: now,
     }
 

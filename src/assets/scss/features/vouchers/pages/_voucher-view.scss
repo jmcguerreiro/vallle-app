@@ -1,0 +1,69 @@
+.p-voucher-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-voucher-view__hero {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  margin-bottom: $spacing-6;
+}
+
+.p-voucher-view__balance {
+  align-items: baseline;
+  display: flex;
+  gap: $spacing-2;
+  justify-content: center;
+}
+
+.p-voucher-view__balance-value {
+  @include font-size(8xl);
+
+  color: $text-color-highlight;
+  field-sizing: content;
+  font-weight: $font-weight-bold;
+  text-align: center;
+
+  &--inactive {
+    color: $text-color-muted;
+  }
+
+  &::placeholder {
+    color: $text-color-muted;
+  }
+}
+
+.p-voucher-view__error {
+  @include font-size(sm);
+
+  color: $color-danger;
+  text-align: center;
+}
+
+.p-voucher-view__balance-currency {
+  @include font-size(8xl);
+
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+.p-voucher-view__total {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+  text-align: center;
+}
+
+.p-voucher-view__code {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+  font-family: "DM Mono", "Courier New", monospace;
+  letter-spacing: 0.1em;
+  margin-bottom: $spacing-3;
+  text-align: center;
+  text-transform: uppercase;
+}

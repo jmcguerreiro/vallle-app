@@ -21,14 +21,15 @@
 }
 
 .c-form__field-input {
-  background: $color-white;
+  border: solid 1px $color-parchment;
   border-radius: $border-radius-lg;
   color: $color-espresso;
   padding: $spacing-3 $spacing-4;
+  transition: $transition-normal;
   width: 100%;
 
   &:focus {
-    outline: solid 1px $color-ash;
+    border-color: $color-ash;
   }
 
   &::placeholder {

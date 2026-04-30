@@ -1,0 +1,11 @@
+.p-voucher-quick-redeem {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-voucher-quick-redeem__actions {
+  display: flex;
+  gap: $spacing-3;
+  margin-top: $spacing-4;
+}

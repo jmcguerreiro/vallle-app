@@ -1,14 +1,14 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useRef, useState } from "react";
+import { useNavigate } from "react-router-dom";
 
-import { X as IconX } from 'lucide-react'
-import { Drawer } from 'vaul'
+import { X as IconX } from "lucide-react";
+import { Drawer } from "vaul";
 
-import Button from '@/components/Button'
-import { useMediaQuery } from '@/hooks/useMediaQuery'
-import { useModal } from '@/hooks/useModal'
+import Button from "@/components/Button";
+import { useMediaQuery } from "@/hooks/useMediaQuery";
+import { useModal } from "@/hooks/useModal";
 
-const CLOSE_ANIMATION_MS = 350
+const CLOSE_ANIMATION_MS = 350;
 
 /**
  * Component: Modal
@@ -22,46 +22,46 @@ const CLOSE_ANIMATION_MS = 350
  * @param {'default'|'wide'} [props.size='default'] - Modal width variant (desktop only)
  * @returns {JSX.Element}
  */
-const Modal = ({ children, className = '', size = 'default' }) => {
+const Modal = ({ children, className = "", size = "default" }) => {
   // Hooks
-  const navigate = useNavigate()
-  const { header } = useModal()
-  const isDesktop = useMediaQuery('(min-width: 1024px)')
+  const navigate = useNavigate();
+  const { header } = useModal();
+  const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   // State
-  const [isOpen, setIsOpen] = useState(true)
+  const [isOpen, setIsOpen] = useState(true);
 
   // Refs
-  const dialogRef = useRef(null)
+  const dialogRef = useRef(null);
 
   // Handlers
   const handleClose = useCallback(() => {
-    navigate(-1)
-  }, [navigate])
+    navigate(-1);
+  }, [navigate]);
 
   const handleBackdropClick = useCallback(
     (event) => {
-      if (event.target === dialogRef.current) handleClose()
+      if (event.target === dialogRef.current) handleClose();
     },
     [handleClose],
-  )
+  );
 
   const handleOpenChange = useCallback((open) => {
-    if (!open) setIsOpen(false)
-  }, [])
+    if (!open) setIsOpen(false);
+  }, []);
 
   // Effects
   useEffect(() => {
-    if (!isDesktop) return
-    const dialog = dialogRef.current
-    if (dialog && !dialog.open) dialog.showModal()
-  }, [isDesktop])
+    if (!isDesktop) return;
+    const dialog = dialogRef.current;
+    if (dialog && !dialog.open) dialog.showModal();
+  }, [isDesktop]);
 
   useEffect(() => {
-    if (isOpen) return
-    const timer = setTimeout(() => navigate(-1), CLOSE_ANIMATION_MS)
-    return () => clearTimeout(timer)
-  }, [isOpen, navigate])
+    if (isOpen) return;
+    const timer = setTimeout(() => navigate(-1), CLOSE_ANIMATION_MS);
+    return () => clearTimeout(timer);
+  }, [isOpen, navigate]);
 
   // Render
   if (!isDesktop) {
@@ -72,58 +72,55 @@ const Modal = ({ children, className = '', size = 'default' }) => {
         repositionInputs={false}
       >
         <Drawer.Portal>
-          <Drawer.Overlay className="s-drawer__overlay" />
+          <Drawer.Overlay className="drawer__overlay" />
           <Drawer.Content
             aria-describedby={undefined}
-            className={`s-drawer${className ? ` ${className}` : ''}`}
+            aria-label={header.title || "Dialog"}
+            className={`drawer${className ? ` ${className}` : ""}`}
             onOpenAutoFocus={(event) => event.preventDefault()}
           >
-            <Drawer.Handle className="s-drawer__handle" />
-            <div className="s-drawer__header">
-              <div className="s-drawer__header-titles">
-                <Drawer.Title
-                  className={
-                    header.title
-                      ? 's-drawer__header-title'
-                      : 's-drawer__header-title--hidden'
-                  }
-                >
-                  {header.title || 'Dialog'}
+            <Drawer.Handle className="drawer__handle" />
+            <div className="drawer__header">
+              {header.title && (
+                <Drawer.Title className="drawer__header-title">
+                  {header.title}
                 </Drawer.Title>
-                {header.description && (
-                  <Drawer.Description className="s-drawer__header-description">
-                    {header.description}
-                  </Drawer.Description>
-                )}
-              </div>
-              {header.actions.length > 0 && (
-                <div className="s-drawer__header-actions">
-                  {header.actions.map(
-                    ({ label, icon, onClick, variant = 'ghost' }) => (
-                      <Button
-                        key={label}
-                        iconLeft={icon}
-                        onClick={onClick}
-                        variant={variant}
-                      >
-                        {label}
-                      </Button>
-                    ),
-                  )}
-                </div>
+              )}
+              {header.description && (
+                <Drawer.Description className="drawer__header-description">
+                  {header.description}
+                </Drawer.Description>
               )}
             </div>
-            <div className="s-drawer__body">{children}</div>
+            <div className="drawer__body">{children}</div>
+            {header.actions.length > 0 && (
+              <div className="drawer__footer">
+                {header.actions.map(
+                  ({ label, icon, onClick, variant = "ghost" }) => (
+                    <Button
+                      key={label}
+                      display="block"
+                      fullWidth={true}
+                      iconLeft={icon}
+                      onClick={onClick}
+                      variant={variant}
+                    >
+                      {label}
+                    </Button>
+                  ),
+                )}
+              </div>
+            )}
           </Drawer.Content>
         </Drawer.Portal>
       </Drawer.Root>
-    )
+    );
   }
 
   return (
     <dialog
       ref={dialogRef}
-      className={`s-modal${size === 'wide' ? ' s-modal--wide' : ''}${className ? ` ${className}` : ''}`}
+      className={`s-modal${size === "wide" ? " s-modal--wide" : ""}${className ? ` ${className}` : ""}`}
       onClick={handleBackdropClick}
       onClose={handleClose}
     >
@@ -143,14 +140,16 @@ const Modal = ({ children, className = '', size = 'default' }) => {
                 <h2 className="s-modal__header-title">{header.title}</h2>
               )}
               {header.description && (
-                <p className="s-modal__header-description">{header.description}</p>
+                <p className="s-modal__header-description">
+                  {header.description}
+                </p>
               )}
             </div>
           )}
           {header.actions.length > 0 && (
             <div className="s-modal__header-actions">
               {header.actions.map(
-                ({ label, icon, onClick, variant = 'ghost' }) => (
+                ({ label, icon, onClick, variant = "ghost" }) => (
                   <Button
                     key={label}
                     iconLeft={icon}
@@ -167,7 +166,7 @@ const Modal = ({ children, className = '', size = 'default' }) => {
         <div className="s-modal__body">{children}</div>
       </div>
     </dialog>
-  )
-}
+  );
+};
 
-export default Modal
+export default Modal;

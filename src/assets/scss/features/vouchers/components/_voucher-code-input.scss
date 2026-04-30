@@ -1,0 +1,62 @@
+.c-voucher-code-input {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+  align-items: center;
+
+  &--error {
+    .c-voucher-code-input__input-segment-input {
+      outline: solid 1px $color-danger;
+    }
+  }
+}
+
+.c-voucher-code-input__label {
+  flex: 1 0 100%;
+}
+
+.c-voucher-code-input__input-segment {
+  display: flex;
+  flex: 1;
+  align-items: center;
+  gap: $spacing-2;
+}
+
+.c-voucher-code-input__input-segment-input {
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-lg;
+  letter-spacing: 4px;
+  flex: 1;
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+  padding: $spacing-6 $spacing-3;
+  text-align: center;
+  text-transform: uppercase;
+  width: 1px;
+
+  &:focus {
+    border-color: solid 1px $color-ash;
+  }
+
+  &::placeholder {
+    color: $text-color-muted;
+  }
+}
+
+.c-voucher-code-input__input-segment-separator {
+  font-weight: $font-weight-bold;
+  color: $text-color-muted;
+  user-select: none;
+}
+
+.c-voucher-code-input__error {
+  flex: 1 0 100%;
+  color: $color-danger;
+}
+
+@include screen(lg) {
+  .c-voucher-code-input__input-segment-input {
+    @include font-size(3xl);
+    padding: $spacing-9 $spacing-6;
+  }
+}

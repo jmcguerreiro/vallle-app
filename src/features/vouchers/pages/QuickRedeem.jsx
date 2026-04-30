@@ -1,199 +1,181 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { useLocation, useNavigate } from "react-router-dom";
 
-import Button from '@/components/Button'
-import Form from '@/components/forms/Form'
-import FormActions from '@/components/forms/FormActions'
-import FormFields from '@/components/forms/FormFields'
-import Input from '@/components/forms/Input'
-import VoucherCodeInput, { CODE_LENGTH } from '@/features/vouchers/components/VoucherCodeInput'
-import { useMain } from '@/hooks/useMain'
-import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
-import { useToast } from '@/hooks/useToast'
-import { get, post } from '@/services/api'
-import { formatCurrency } from '@/utils/currency'
+import Button from "@/components/Button";
+import EmptyState from "@/components/EmptyState";
+import { voucherPath, voucherRedeemPath } from "@/constants/routes";
+import VoucherCodeInput, {
+  CODE_LENGTH,
+} from "@/features/vouchers/components/VoucherCodeInput";
+import { formatVoucherCode, isVoucherExpired } from "@/features/vouchers/utils";
+import { useMain } from "@/hooks/useMain";
+import { useModal } from "@/hooks/useModal";
+import { get } from "@/services/api";
 
 /**
  * Component: QuickRedeem
- * Two-step modal: first enter a voucher code (auto-formatted with dashes),
- * then fill in amount + description to redeem.
+ * Modal that looks up a voucher by code and redirects to the full
+ * redeem flow on success, or shows an empty state if the code isn't
+ * found, the voucher has expired, or it has no balance left.
  * @component
  * @returns {JSX.Element}
  */
 const QuickRedeem = () => {
   // Hooks
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { setHeader: setMainHeader } = useMain()
-  const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
-  const { addToast } = useToast()
-  const { register, handleSubmit, formState: { errors }, reset } = useForm()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const location = useLocation();
+  const { setHeader: setMainHeader } = useMain();
+  const { setHeader: setModalHeader, isModal } = useModal();
 
   // State
-  const [code, setCode] = useState('')
-  const [voucher, setVoucher] = useState(null)
-  const [lookupError, setLookupError] = useState(null)
-  const [isLooking, setIsLooking] = useState(false)
-  const [serverError, setServerError] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [code, setCode] = useState("");
+  const [isLooking, setIsLooking] = useState(false);
+  const [lookupResult, setLookupResult] = useState(null);
 
   // Derived State
-  const title = t('features.vouchers.redeem.heading')
-  const description = t('features.vouchers.quickRedeem.description')
-  const setHeader = isModal ? setModalHeader : setMainHeader
+  const title = t("features.vouchers.redeem.heading");
+  const description = t("features.vouchers.quickRedeem.description");
+  const setHeader = isModal ? setModalHeader : setMainHeader;
+  const backgroundLocation = location.state?.backgroundLocation || location;
 
   // Handlers
   const handleCodeChange = useCallback((raw) => {
-    setCode(raw)
-    setLookupError(null)
-  }, [])
+    setCode(raw);
+  }, []);
 
   const handleLookup = useCallback(async () => {
-    setLookupError(null)
-    setIsLooking(true)
+    setIsLooking(true);
+
+    const formatted = formatVoucherCode(code);
 
     try {
-      const formatted = `${code.slice(0, 3)}-${code.slice(3, 6)}-${code.slice(6, 9)}`
-      const { data } = await get(`/api/vouchers/lookup?code=${encodeURIComponent(formatted)}`)
+      const { data } = await get(
+        `/api/vouchers/lookup?code=${encodeURIComponent(formatted)}`,
+      );
 
-      if (new Date(data.expires_at) < new Date()) {
-        setLookupError(t('features.vouchers.redeem.error.expired'))
-        return
+      if (isVoucherExpired(data.expires_at)) {
+        setLookupResult({
+          status: "expired",
+          code: formatted,
+          voucherId: data.id,
+        });
+        return;
       }
 
       if (data.balance === 0) {
-        setLookupError(t('features.vouchers.redeem.error.insufficientBalance'))
-        return
+        setLookupResult({
+          status: "used-up",
+          code: formatted,
+          voucherId: data.id,
+        });
+        return;
       }
 
-      setVoucher(data)
-      reset()
+      navigate(voucherRedeemPath(data.id), {
+        replace: true,
+        state: { backgroundLocation },
+      });
     } catch (error) {
-      setLookupError(
-        error.code === 'VOUCHER_NOT_FOUND'
-          ? t('features.vouchers.redeem.error.notFound')
-          : error.message || t('common.error'),
-      )
-    } finally {
-      setIsLooking(false)
-    }
-  }, [code, reset, t])
-
-  const handleRedeem = useCallback(async (values) => {
-    setServerError(null)
-    setIsSubmitting(true)
-
-    try {
-      const payload = {
-        amount: Math.round(Number.parseFloat(values.amount) * 100),
-        description: values.description || null,
+      if (error.code === "VOUCHER_NOT_FOUND") {
+        setLookupResult({ status: "not-found", code: formatted });
+      } else {
+        setLookupResult({ status: "error", code: formatted });
       }
-
-      await post(`/api/vouchers/${voucher.id}/redeem`, payload)
-      triggerRefresh()
-      addToast(t('features.vouchers.redeem.success'), 'success')
-      navigate(-1)
-    } catch (error) {
-      const codeMap = {
-        VOUCHER_EXPIRED: t('features.vouchers.redeem.error.expired'),
-        VOUCHER_INSUFFICIENT_BALANCE: t('features.vouchers.redeem.error.insufficientBalance'),
-      }
-      setServerError(codeMap[error.code] || error.message || t('features.vouchers.redeem.error.generic'))
     } finally {
-      setIsSubmitting(false)
+      setIsLooking(false);
     }
-  }, [addToast, navigate, t, triggerRefresh, voucher])
+  }, [code, navigate, backgroundLocation]);
 
-  const handleBack = useCallback(() => {
-    setCode('')
-    setVoucher(null)
-    setServerError(null)
-    reset()
-  }, [reset])
+  const handleTryAgain = useCallback(() => {
+    setLookupResult(null);
+    setCode("");
+  }, []);
 
   // Effects
   useEffect(() => {
-    setHeader({ title, description })
-    return () => setHeader()
-  }, [title, description, setHeader])
+    setHeader({ title, description });
+    return () => setHeader();
+  }, [title, description, setHeader]);
 
   // Render
-  if (!voucher) {
+  if (lookupResult) {
     return (
-      <div className="c-voucher-lookup">
-        <VoucherCodeInput
-          error={lookupError}
-          onChange={handleCodeChange}
-          value={code}
-        />
-        <div className="c-voucher-lookup__actions">
-          <Button
-            disabled={code.length !== CODE_LENGTH}
-            isProcessing={isLooking}
-            onClick={handleLookup}
-          >
-            {t('common.search')}
-          </Button>
-          <Button onClick={() => navigate(-1)} variant="ghost">
-            {t('common.cancel')}
-          </Button>
+      <div className="p-voucher-quick-redeem">
+        <div className="p-voucher-quick-redeem__empty-state">
+          {lookupResult.status === "not-found" && (
+            <EmptyState
+              action={{
+                text: t("common.tryAgain"),
+                onClick: handleTryAgain,
+              }}
+              description={t("features.vouchers.quickRedeem.notFound", {
+                code: lookupResult.code,
+              })}
+              image="redeem-voucher--not-found"
+            />
+          )}
+
+          {lookupResult.status === "expired" && (
+            <EmptyState
+              action={{
+                text: t("features.vouchers.quickRedeem.viewVoucher"),
+                to: voucherPath(lookupResult.voucherId),
+                state: { backgroundLocation },
+              }}
+              description={t("features.vouchers.quickRedeem.expired", {
+                code: lookupResult.code,
+              })}
+              image="redeem-voucher--expired"
+            />
+          )}
+
+          {lookupResult.status === "used-up" && (
+            <EmptyState
+              action={{
+                text: t("features.vouchers.quickRedeem.viewVoucher"),
+                to: voucherPath(lookupResult.voucherId),
+                state: { backgroundLocation },
+              }}
+              description={t("features.vouchers.quickRedeem.usedUp", {
+                code: lookupResult.code,
+              })}
+              image="redeem-voucher--used-up"
+            />
+          )}
+
+          {lookupResult.status === "error" && (
+            <EmptyState
+              action={{
+                text: t("common.tryAgain"),
+                onClick: handleTryAgain,
+              }}
+              description={t("features.vouchers.quickRedeem.error")}
+              image="redeem-voucher--error"
+            />
+          )}
         </div>
       </div>
-    )
+    );
   }
 
   return (
-    <div className="c-voucher-redeem">
-      <div className="c-voucher-redeem__info">
-        <span className="c-voucher-redeem__code">{voucher.code}</span>
-        <span className="c-voucher-redeem__balance">
-          {t('features.vouchers.view.balance')}: {formatCurrency(voucher.balance)}
-        </span>
+    <div className="p-voucher-quick-redeem">
+      <VoucherCodeInput onChange={handleCodeChange} value={code} />
+
+      <div className="p-voucher-quick-redeem__actions">
+        <Button
+          disabled={code.length !== CODE_LENGTH}
+          display="block"
+          isProcessing={isLooking}
+          onClick={handleLookup}
+        >
+          {t("features.vouchers.quickRedeem.submit")}
+        </Button>
       </div>
-
-      <Form
-        error={serverError}
-        handleSubmit={handleSubmit}
-        onSubmit={handleRedeem}
-      >
-        <FormFields>
-          <Input
-            error={errors.amount}
-            label={t('features.vouchers.redeem.amount')}
-            name="amount"
-            register={register}
-            required={t('features.vouchers.create.error.amountRequired')}
-            type="number"
-            validate={{
-              positive: (v) =>
-                Number.parseFloat(v) > 0 || t('features.vouchers.create.error.amountPositive'),
-              max: (v) =>
-                Math.round(Number.parseFloat(v) * 100) <= voucher.balance ||
-                t('features.vouchers.redeem.error.insufficientBalance'),
-            }}
-          />
-          <Input
-            error={errors.description}
-            label={t('features.vouchers.redeem.description')}
-            name="description"
-            register={register}
-          />
-        </FormFields>
-        <FormActions>
-          <Button isProcessing={isSubmitting} type="submit">
-            {t('features.vouchers.redeem.submit')}
-          </Button>
-          <Button onClick={handleBack} variant="ghost">
-            {t('common.back')}
-          </Button>
-        </FormActions>
-      </Form>
     </div>
-  )
-}
+  );
+};
 
-export default QuickRedeem
+export default QuickRedeem;

@@ -10,6 +10,7 @@
     "collapse": "Collapse",
     "noResults": "No results.",
     "error": "Something went wrong. Please try again.",
+    "tryAgain": "Try again",
     "search": "Search...",
     "filters": {
       "allStatuses": "All statuses",
@@ -116,17 +117,18 @@
         "amount": "Amount (€)",
         "amountPlaceholder": "15",
         "buyer": "Buyer name",
-        "buyerPlaceholder": "Buyer's name",
+        "buyerPlaceholder": "John Smith",
         "expiresAt": "Expiry date",
         "validUntil": "Valid until {{date}}",
         "submit": "Create voucher",
         "success": "Voucher created successfully!",
         "error": {
-          "amountRequired": "Amount is required.",
-          "amountPositive": "Amount must be greater than zero.",
-          "expiresAtRequired": "Expiry date is required.",
-          "expiresAtFuture": "Expiry date must be in the future.",
-          "generic": "Could not create the voucher."
+          "amountRequired": "Please enter an amount for this voucher.",
+          "amountPositive": "The amount needs to be more than zero.",
+          "buyerRequired": "Who's buying this voucher? Add their name to continue.",
+          "expiresAtRequired": "Please choose when this voucher expires.",
+          "expiresAtFuture": "The expiry date needs to be in the future.",
+          "generic": "Something went wrong creating the voucher. Please try again."
         }
       },
       "view": {
@@ -139,6 +141,8 @@
         "status": "Status",
         "createdAt": "Created",
         "expiresAt": "Expires",
+        "ofTotal": "of {{total}}",
+        "available": "Available: {{balance}}",
         "edit": "Edit"
       },
       "edit": {
@@ -149,6 +153,12 @@
         "currentAmount": "Amount",
         "submit": "Save changes",
         "success": "Voucher updated successfully!",
+        "archive": "Archive voucher",
+        "restore": "Restore voucher",
+        "archiveConfirm": "Archive this voucher? It will no longer be redeemable, but its history will be kept. You can restore it later.",
+        "restoreConfirm": "Restore this voucher to active?",
+        "archiveSuccess": "Voucher archived.",
+        "restoreSuccess": "Voucher restored.",
         "error": {
           "generic": "Could not update the voucher.",
           "loadFailed": "Could not load the voucher."
@@ -160,6 +170,7 @@
         "code": "Voucher code",
         "amount": "Amount to redeem (€)",
         "description": "Description",
+        "remaining": "{{balance}} remaining",
         "submit": "Redeem",
         "success": "Voucher redeemed successfully!",
         "error": {
@@ -170,10 +181,19 @@
         }
       },
       "quickLookup": {
-        "description": "Enter a code to look up a voucher."
+        "description": "Enter a code to look up a voucher.",
+        "submit": "Look up voucher",
+        "notFound": "We couldn't find a voucher with the code {{code}}. Please check the code and try again.",
+        "error": "Something went wrong looking up that voucher. Please try again in a moment."
       },
       "quickRedeem": {
-        "description": "Enter a code to redeem a voucher."
+        "description": "Enter a code to redeem a voucher.",
+        "submit": "Redeem voucher",
+        "notFound": "We couldn't find a voucher with the code {{code}}. Double-check the code and give it another go.",
+        "expired": "The voucher {{code}} has already expired, so it can't be redeemed. You can still open it to see its full history.",
+        "usedUp": "Voucher {{code}} has already been fully redeemed — there's no balance left. Open it to see how it was spent.",
+        "error": "Something went wrong looking up that voucher. Please try again in a moment.",
+        "viewVoucher": "View voucher"
       },
       "redemptions": {
         "heading": "Redemption history",
@@ -195,6 +215,7 @@
         "active": "Active",
         "used": "Used",
         "expired": "Expired",
+        "archived": "Archived",
         "empty": "No vouchers found."
       }
     },

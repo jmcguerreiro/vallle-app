@@ -1,20 +1,22 @@
 .c-empty-state {
-	align-items: center;
-	display: flex;
-	flex-direction: column;
-	gap: $spacing-4;
-	padding: $spacing-12 $spacing-4;
-	text-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
 }
 
 .c-empty-state__image {
-	height: auto;
-	max-width: 200px;
-	width: 100%;
+  height: to-rem(240);
+  width: to-rem(240);
 }
 
 .c-empty-state__description {
-	@include font-size(sm);
+  text-align: center;
 
-	color: $text-color-muted;
+  &:not(:last-child) {
+    margin-bottom: $spacing-6;
+  }
+}
+
+.c-empty-state__action {
+  width: 100%;
 }
