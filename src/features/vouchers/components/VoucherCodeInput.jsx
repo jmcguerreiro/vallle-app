@@ -1,63 +1,73 @@
 import { Fragment, useCallback, useRef } from "react";
-import { useTranslation } from "react-i18next";
 
 const CODE_LENGTH = 9;
-const SEGMENT_LENGTH = 3;
 const VALID_CHARS = /[^A-Z2-9]/g;
 
 /**
  * Component: VoucherCodeInput
- * Three-segment input for voucher codes (XXX-XXX-XXX).
- * Auto-advances to the next segment when full, auto-rewinds on backspace.
+ * Nine single-character inputs for voucher codes (XXX-XXX-XXX).
+ * Auto-advances to the next input on entry, auto-rewinds on backspace.
  * Converts to uppercase and filters to valid characters only.
  * @component
  * @param {Object} props
  * @param {string} props.value - Raw value without dashes (up to 9 chars)
  * @param {Function} props.onChange - Called with the raw value (without dashes)
  * @param {string} [props.error] - Error message to display
- * @param {string} [props.label] - Label text override
+ * @param {boolean} [props.autoFocus] - Focus the first input on mount
  * @returns {JSX.Element}
  */
-const VoucherCodeInput = ({ value, onChange, error, label }) => {
+const VoucherCodeInput = ({ value, onChange, error, autoFocus }) => {
   // Hooks
-  const { t } = useTranslation();
-  const refs = [useRef(null), useRef(null), useRef(null)];
+  const refs = useRef([]);
 
   // Derived State
-  const fieldLabel = label || t("features.vouchers.redeem.code");
-  const segments = [value.slice(0, 3), value.slice(3, 6), value.slice(6, 9)];
+  const chars = Array.from({ length: CODE_LENGTH }, (_, i) => value[i] || "");
 
   // Handlers
+  const setRef = useCallback((index, el) => {
+    refs.current[index] = el;
+  }, []);
+
   const handleChange = useCallback(
-    (segIndex, e) => {
-      const clean = e.target.value
-        .toUpperCase()
-        .replaceAll(VALID_CHARS, "")
-        .slice(0, SEGMENT_LENGTH);
-      const before = value.slice(0, segIndex * SEGMENT_LENGTH);
-      const after = value.slice((segIndex + 1) * SEGMENT_LENGTH);
+    (index, e) => {
+      const clean = e.target.value.toUpperCase().replaceAll(VALID_CHARS, "");
+
+      if (clean.length === 0) {
+        const next = (value.slice(0, index) + value.slice(index + 1)).slice(
+          0,
+          CODE_LENGTH,
+        );
+        onChange(next);
+        return;
+      }
+
+      const before = value.slice(0, index);
+      const after = value.slice(index + 1);
       const next = (before + clean + after).slice(0, CODE_LENGTH);
       onChange(next);
 
-      if (clean.length === SEGMENT_LENGTH && segIndex < 2) {
-        refs[segIndex + 1].current?.focus();
-      }
+      const advanceTo = Math.min(index + clean.length, CODE_LENGTH - 1);
+      refs.current[advanceTo]?.focus();
     },
-    [value, onChange, refs],
+    [value, onChange],
   );
 
   const handleKeyDown = useCallback(
-    (segIndex, e) => {
-      if (
-        e.key === "Backspace" &&
-        segments[segIndex].length === 0 &&
-        segIndex > 0
-      ) {
+    (index, e) => {
+      if (e.key === "Backspace" && !chars[index] && index > 0) {
         e.preventDefault();
-        refs[segIndex - 1].current?.focus();
+        const next = value.slice(0, index - 1) + value.slice(index);
+        onChange(next);
+        refs.current[index - 1]?.focus();
+      } else if (e.key === "ArrowLeft" && index > 0) {
+        e.preventDefault();
+        refs.current[index - 1]?.focus();
+      } else if (e.key === "ArrowRight" && index < CODE_LENGTH - 1) {
+        e.preventDefault();
+        refs.current[index + 1]?.focus();
       }
     },
-    [segments, refs],
+    [chars, value, onChange],
   );
 
   const handleFocus = useCallback((e) => {
@@ -73,13 +83,10 @@ const VoucherCodeInput = ({ value, onChange, error, label }) => {
         .replaceAll(VALID_CHARS, "")
         .slice(0, CODE_LENGTH);
       onChange(pasted);
-      const nextSegIndex = Math.min(
-        Math.floor(pasted.length / SEGMENT_LENGTH),
-        2,
-      );
-      refs[nextSegIndex].current?.focus();
+      const nextIndex = Math.min(pasted.length, CODE_LENGTH - 1);
+      refs.current[nextIndex]?.focus();
     },
-    [onChange, refs],
+    [onChange],
   );
 
   // Render
@@ -87,28 +94,27 @@ const VoucherCodeInput = ({ value, onChange, error, label }) => {
     <div
       className={`c-voucher-code-input${error ? " c-voucher-code-input--error" : ""}`}
     >
-      <label className="c-voucher-code-input__label">{fieldLabel}</label>
-      {[0, 1, 2].map((i) => (
+      {chars.map((char, i) => (
         <Fragment key={i}>
           <div className="c-voucher-code-input__input-segment">
             <input
-              ref={refs[i]}
+              ref={(el) => setRef(i, el)}
               autoCapitalize="characters"
               autoComplete="off"
               autoCorrect="off"
+              autoFocus={autoFocus && i === 0}
               className="c-voucher-code-input__input-segment-input"
-              maxLength={SEGMENT_LENGTH}
+              maxLength={1}
               onChange={(e) => handleChange(i, e)}
               onFocus={handleFocus}
               onKeyDown={(e) => handleKeyDown(i, e)}
               onPaste={handlePaste}
-              placeholder="XXX"
               spellCheck={false}
               type="text"
-              value={segments[i]}
+              value={char}
             />
           </div>
-          {i < 2 && (
+          {(i === 2 || i === 5) && (
             <span className="c-voucher-code-input__input-segment-separator">
               –
             </span>

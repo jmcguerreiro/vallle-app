@@ -36,7 +36,7 @@ const VoucherView = () => {
 
   // Derived State
   const title = t('features.vouchers.view.heading')
-  const description = voucher?.code || ''
+  const description = t('features.vouchers.view.description')
   const setHeader = isModal ? setModalHeader : setMainHeader
 
   const statusKey = useMemo(() => {
@@ -55,14 +55,12 @@ const VoucherView = () => {
     return t('features.vouchers.list.active')
   }, [voucher, t])
 
-  const amountDisplay = useMemo(() => {
-    if (!voucher) return '0.00'
-    return (voucher.amount / 100).toFixed(2)
-  }, [voucher])
-
-  const availableLabel = useMemo(() => {
+  const heroSubtitle = useMemo(() => {
     if (!voucher) return ''
-    return t('features.vouchers.view.available', { balance: formatCurrency(voucher.balance) })
+    return t('features.vouchers.view.balanceSummary', {
+      total: formatCurrency(voucher.amount),
+      balance: formatCurrency(voucher.balance),
+    })
   }, [voucher, t])
 
   const canRedeem = useMemo(() => {
@@ -123,7 +121,7 @@ const VoucherView = () => {
       })
     }
 
-    setHeader({ title, description, actions })
+    setHeader({ title, description, actions, back: true })
 
     return () => setHeader()
   }, [title, description, setHeader, handleEdit, handleRedeem, canRedeem, t])
@@ -151,13 +149,10 @@ const VoucherView = () => {
     <div className="p-voucher-view">
       <div className="p-voucher-view__hero">
         <span className={`c-voucher-status c-voucher-status--${statusKey}`}>{statusLabel}</span>
-        <div className="p-voucher-view__balance">
-          <span className={`p-voucher-view__balance-value${statusKey === 'active' ? '' : ' p-voucher-view__balance-value--inactive'}`}>
-            {amountDisplay}
-          </span>
-          <span className="p-voucher-view__balance-currency">{"€"}</span>
-        </div>
-        <p className="p-voucher-view__total">{availableLabel}</p>
+        <h2 className={`p-voucher-view__code${statusKey === 'active' ? '' : ' p-voucher-view__code--inactive'}`}>
+          {voucher.code}
+        </h2>
+        <p className="p-voucher-view__subtitle">{heroSubtitle}</p>
       </div>
 
       <dl className="c-voucher-detail">

@@ -11,18 +11,19 @@ import {
   CartesianGrid,
 } from 'recharts'
 
+import Stat from '@/components/Stat'
 import { useMain } from '@/hooks/useMain'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
 
 /**
- * Component: Stats
+ * Component: StatsIndex
  * Statistics page showing performance metrics for the current store.
  * Displays summary cards and an area chart of vouchers created over time.
  * @component
  * @returns {JSX.Element}
  */
-const Stats = () => {
+const StatsIndex = () => {
   // Hooks
   const { t } = useTranslation()
   const { setHeader } = useMain()
@@ -59,7 +60,7 @@ const Stats = () => {
   // Render
   if (isLoading) {
     return (
-      <div className="c-stats">
+      <div className="p-stats">
         <p>{t('common.loading')}</p>
       </div>
     )
@@ -67,35 +68,23 @@ const Stats = () => {
 
   if (error) {
     return (
-      <div className="c-stats">
+      <div className="p-stats">
         <p>{t('common.error')}</p>
       </div>
     )
   }
 
   return (
-    <div className="c-stats">
-      <div className="c-stats__cards">
-        <div className="c-stats__card">
-          <span className="c-stats__card-value">{stats.totalVouchers}</span>
-          <span className="c-stats__card-label">{t('features.stats.totalVouchers')}</span>
-        </div>
-        <div className="c-stats__card">
-          <span className="c-stats__card-value">{stats.activeVouchers}</span>
-          <span className="c-stats__card-label">{t('features.stats.activeVouchers')}</span>
-        </div>
-        <div className="c-stats__card">
-          <span className="c-stats__card-value">{formatCurrency(stats.totalAmount)}</span>
-          <span className="c-stats__card-label">{t('features.stats.totalAmount')}</span>
-        </div>
-        <div className="c-stats__card">
-          <span className="c-stats__card-value">{formatCurrency(stats.totalRedeemed)}</span>
-          <span className="c-stats__card-label">{t('features.stats.totalRedeemed')}</span>
-        </div>
+    <div className="p-stats">
+      <div className="p-stats__cards">
+        <Stat label={t('features.stats.totalVouchers')} value={stats.totalVouchers} />
+        <Stat label={t('features.stats.activeVouchers')} value={stats.activeVouchers} />
+        <Stat label={t('features.stats.totalAmount')} value={formatCurrency(stats.totalAmount)} />
+        <Stat label={t('features.stats.totalRedeemed')} value={formatCurrency(stats.totalRedeemed)} />
       </div>
 
-      <div className="c-stats__chart">
-        <h3 className="c-stats__chart-title">{t('features.stats.chart.title')}</h3>
+      <div className="p-stats__chart">
+        <h3 className="p-stats__chart-title">{t('features.stats.chart.title')}</h3>
         <div style={{ height: 300 }}>
           <ResponsiveContainer height="100%" width="100%">
             <AreaChart data={stats.chartData}>
@@ -119,4 +108,4 @@ const Stats = () => {
   )
 }
 
-export default Stats
+export default StatsIndex

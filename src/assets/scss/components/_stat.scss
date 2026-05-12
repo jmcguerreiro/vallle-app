@@ -1,0 +1,21 @@
+.c-stat {
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-lg;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-1;
+  padding: $spacing-5;
+}
+
+.c-stat__value {
+  @include font-size(3xl);
+
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+.c-stat__label {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+}

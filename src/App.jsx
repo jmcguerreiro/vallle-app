@@ -30,7 +30,7 @@ import CompanyUserEdit from '@/features/company/pages/UserEdit'
 import Dashboard from '@/features/dashboard/Dashboard'
 import ChangePassword from '@/features/profile/pages/ChangePassword'
 import Profile from '@/features/profile/Profile'
-import Stats from '@/features/stats/Stats'
+import StatsIndex from '@/features/stats/pages/Index'
 import VoucherCreate from '@/features/vouchers/pages/Create'
 import VoucherEdit from '@/features/vouchers/pages/Edit'
 import VouchersIndex from '@/features/vouchers/pages/Index'
@@ -101,7 +101,7 @@ const AppRoutes = () => {
           <Route element={<VoucherRedeem />} path={ROUTES.VOUCHERS_MODAL_REDEEM} />
           <Route element={<QuickRedeem />} path={ROUTES.VOUCHERS_MODAL_QUICK_REDEEM} />
           <Route element={<QuickLookup />} path={ROUTES.VOUCHERS_MODAL_QUICK_LOOKUP} />
-          <Route element={<Stats />} path={ROUTES.STATS} />
+          <Route element={<StatsIndex />} path={ROUTES.STATS} />
           <Route element={<Profile />} path={ROUTES.PROFILE} />
           <Route element={<ChangePassword />} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
           <Route element={<Company />} path={ROUTES.COMPANY} />

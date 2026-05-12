@@ -28,6 +28,7 @@ import { Loader2 as IconLoader } from 'lucide-react'
  * @param {string} [props.className] - Additional CSS classes
  * @param {Function} [props.onClick] - Click handler
  * @param {string} [props.ariaLabel] - Accessible label (required for icon-only buttons)
+ * @param {string} [props.tooltip] - Tooltip text shown on hover/focus (icon variant only)
  * @returns {JSX.Element}
  */
 const Button = ({
@@ -48,6 +49,7 @@ const Button = ({
   className = '',
   onClick,
   ariaLabel,
+  tooltip,
   ...rest
 }) => {
   // Derived State
@@ -79,6 +81,11 @@ const Button = ({
       )}
       {!isProcessing && IconRight && (
         <IconRight className={`${block}__icon`} size={iconSize} />
+      )}
+      {variant === 'icon' && tooltip && (
+        <span className={`${block}__tooltip`} role="tooltip">
+          {tooltip}
+        </span>
       )}
     </>
   )

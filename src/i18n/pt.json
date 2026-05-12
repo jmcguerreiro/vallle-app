@@ -142,7 +142,7 @@
         "createdAt": "Criado em",
         "expiresAt": "Expira em",
         "ofTotal": "de {{total}}",
-        "available": "Disponível: {{balance}}",
+        "balanceSummary": "{{total}} • Disponível: {{balance}}",
         "edit": "Editar"
       },
       "edit": {
@@ -575,6 +575,11 @@
     "help": "Ajuda",
     "editProfile": "Editar perfil",
     "userMenu": "Menu do utilizador"
+  },
+  "roles": {
+    "user": "Colaborador",
+    "admin": "Administrador",
+    "super_admin": "Super administrador"
   },
   "layouts": {
     "backTo": {

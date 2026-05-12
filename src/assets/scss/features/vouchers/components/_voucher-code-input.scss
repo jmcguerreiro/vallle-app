@@ -1,7 +1,7 @@
 .c-voucher-code-input {
   display: flex;
   flex-wrap: wrap;
-  gap: $spacing-2;
+  gap: $spacing-1;
   align-items: center;
 
   &--error {
@@ -9,10 +9,6 @@
       outline: solid 1px $color-danger;
     }
   }
-}
-
-.c-voucher-code-input__label {
-  flex: 1 0 100%;
 }
 
 .c-voucher-code-input__input-segment {
@@ -23,13 +19,12 @@
 }
 
 .c-voucher-code-input__input-segment-input {
-  border: solid 1px $color-parchment;
-  border-radius: $border-radius-lg;
-  letter-spacing: 4px;
+  background: $color-parchment;
+  border-radius: $border-radius-sm;
   flex: 1;
   color: $text-color-highlight;
   font-weight: $font-weight-bold;
-  padding: $spacing-6 $spacing-3;
+  aspect-ratio: 1/1;
   text-align: center;
   text-transform: uppercase;
   width: 1px;
@@ -45,7 +40,7 @@
 
 .c-voucher-code-input__input-segment-separator {
   font-weight: $font-weight-bold;
-  color: $text-color-muted;
+  color: $text-color-highlight;
   user-select: none;
 }
 
@@ -55,8 +50,8 @@
 }
 
 @include screen(lg) {
-  .c-voucher-code-input__input-segment-input {
+  .c-voucher-code-input__input-segment-input,
+  .c-voucher-code-input__input-segment-separator {
     @include font-size(3xl);
-    padding: $spacing-9 $spacing-6;
   }
 }

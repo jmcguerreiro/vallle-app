@@ -2,9 +2,8 @@ import { useMemo, useCallback } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import Button from '@/components/Button'
 import Datatable from '@/components/Datatable'
-import { voucherPath, voucherRedeemPath } from '@/constants/routes'
+import { voucherPath } from '@/constants/routes'
 import { formatCurrency } from '@/utils/currency'
 import { formatDate } from '@/utils/dates'
 
@@ -19,9 +18,9 @@ const STATUS_KEYS = {
 
 /**
  * Component: VoucherDatatable
- * Renders a datatable of vouchers with columns for code, buyer, amount,
- * balance, status, created date, and expiry date. Clicking a row opens
- * the voucher detail modal.
+ * Renders a datatable of vouchers. Clicking a row opens the voucher detail
+ * modal where actions like redeem live. Secondary columns (balance, dates)
+ * are hidden on mobile to keep the table compact.
  * @component
  * @param {Object} props
  * @param {Array} props.vouchers - Array of voucher objects from the API
@@ -46,6 +45,7 @@ const VoucherDatatable = ({ vouchers, filters, pageSize, serverPagination }) => 
       accessorKey: 'buyer',
       header: t('features.vouchers.list.buyer'),
       cell: ({ getValue }) => getValue() || '—',
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'amount',
@@ -56,6 +56,7 @@ const VoucherDatatable = ({ vouchers, filters, pageSize, serverPagination }) => 
       accessorKey: 'balance',
       header: t('features.vouchers.list.balance'),
       cell: ({ getValue }) => formatCurrency(getValue()),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'status',
@@ -73,35 +74,15 @@ const VoucherDatatable = ({ vouchers, filters, pageSize, serverPagination }) => 
       accessorKey: 'created_at',
       header: t('features.vouchers.list.createdAt'),
       cell: ({ getValue }) => formatDate(getValue()),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'expires_at',
       header: t('features.vouchers.list.expiresAt'),
       cell: ({ getValue }) => formatDate(getValue()),
+      meta: { hideOnMobile: true },
     },
-    {
-      id: 'actions',
-      header: '',
-      enableSorting: false,
-      cell: ({ row }) => {
-        const v = row.original
-        if (v.status !== 'active' || v.balance === 0) return null
-        return (
-          <Button
-            onClick={(event) => {
-              event.stopPropagation()
-              navigate(voucherRedeemPath(v.id), { state: { backgroundLocation: location } })
-            }}
-            size="sm"
-            skin="primary"
-            variant="outline"
-          >
-            {t('features.vouchers.redeem.submit')}
-          </Button>
-        )
-      },
-    },
-  ], [t, navigate, location])
+  ], [t])
 
   // Handlers
   const handleRowClick = useCallback((voucher) => {

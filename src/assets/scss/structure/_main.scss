@@ -2,7 +2,6 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  width: 100%;
 
   &--has-padding {
     padding: $spacing-12 $spacing-8;
@@ -11,20 +10,30 @@
 
 .s-main__header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   align-items: center;
   justify-content: space-between;
-  padding: $spacing-6;
+  gap: $spacing-3;
+  padding: $spacing-4;
+}
+
+.s-main__header-lead {
+  align-items: center;
+  display: flex;
+  flex: 1;
+  gap: $spacing-2;
+  min-width: 0;
 }
 
 .s-main__header-titles {
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
+  min-width: 0;
 }
 
 .s-main__header-title {
-  @include font-size(3xl);
+  @include font-size(2xl);
   color: $text-color-highlight;
   font-weight: $font-weight-bold;
 }
@@ -34,8 +43,10 @@
 }
 
 .s-main__header-actions {
+  align-items: center;
   display: flex;
-  gap: var(--space-sm);
+  flex-shrink: 0;
+  gap: $spacing-1;
 }
 
 .s-main__content {

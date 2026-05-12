@@ -162,7 +162,9 @@ const QuickRedeem = () => {
 
   return (
     <div className="p-voucher-quick-redeem">
-      <VoucherCodeInput onChange={handleCodeChange} value={code} />
+      <div className="p-voucher-quick-redeem__input">
+        <VoucherCodeInput autoFocus onChange={handleCodeChange} value={code} />
+      </div>
 
       <div className="p-voucher-quick-redeem__actions">
         <Button

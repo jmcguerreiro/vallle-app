@@ -7,7 +7,12 @@
   display: inline-block;
   font-weight: $font-weight-bold;
   letter-spacing: 0.02em;
-  padding: $spacing-1 $spacing-3;
+  padding: $spacing-1 $spacing-2;
+  white-space: nowrap;
+
+  @include screen(md) {
+    padding: $spacing-1 $spacing-3;
+  }
 
   &--active {
     background: rgba($color-success, 0.12);

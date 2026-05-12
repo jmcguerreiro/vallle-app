@@ -14,7 +14,7 @@
 @import "./components/datatable";
 @import "./components/forms";
 @import "./components/loader";
-@import "./components/stats";
+@import "./components/stat";
 @import "./components/store-select";
 @import "./components/toast";
 @import "./components/vouchers";
@@ -34,6 +34,7 @@
 @import "./features/auth/pages/auth-reset-password";
 @import "./features/auth/pages/auth-select-store";
 @import "./features/dashboard/pages/dashboard";
+@import "./features/stats/pages/index";
 @import "./features/vouchers/components/voucher-code-input";
 @import "./features/vouchers/pages/voucher-create";
 @import "./features/vouchers/pages/voucher-view";

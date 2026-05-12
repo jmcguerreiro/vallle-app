@@ -4,8 +4,8 @@
   width: 100%;
 }
 
-.p-voucher-quick-redeem__actions {
-  display: flex;
-  gap: $spacing-3;
-  margin-top: $spacing-4;
+.p-voucher-quick-redeem__input {
+  margin: 0 auto $spacing-9 auto;
+  max-width: $screen-xs;
+  width: 100%;
 }

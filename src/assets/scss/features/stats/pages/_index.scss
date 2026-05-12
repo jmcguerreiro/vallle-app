@@ -1,0 +1,16 @@
+.p-stats {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-8;
+  width: 100%;
+}
+
+.p-stats__cards {
+  display: grid;
+  gap: $spacing-4;
+  grid-template-columns: repeat(4, 1fr);
+
+  @media (max-width: $screen-md) {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}

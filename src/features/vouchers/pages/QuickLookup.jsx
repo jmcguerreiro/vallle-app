@@ -116,7 +116,9 @@ const QuickLookup = () => {
 
   return (
     <div className="p-voucher-quick-lookup">
-      <VoucherCodeInput onChange={handleCodeChange} value={code} />
+      <div className="p-voucher-quick-lookup__input">
+        <VoucherCodeInput autoFocus onChange={handleCodeChange} value={code} />
+      </div>
 
       <div className="p-voucher-quick-lookup__actions">
         <Button

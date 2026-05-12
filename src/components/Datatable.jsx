@@ -136,10 +136,12 @@ const Datatable = ({
           <thead className="c-datatable__thead">
             {table.getHeaderGroups().map((headerGroup) => (
               <tr key={headerGroup.id} className="c-datatable__header-row">
-                {headerGroup.headers.map((header) => (
+                {headerGroup.headers.map((header) => {
+                  const hideOnMobile = header.column.columnDef.meta?.hideOnMobile
+                  return (
                   <th
                     key={header.id}
-                    className={`c-datatable__th${header.column.getCanSort() ? " c-datatable__th--sortable" : ""}`}
+                    className={`c-datatable__th${header.column.getCanSort() ? " c-datatable__th--sortable" : ""}${hideOnMobile ? " c-datatable__th--hide-mobile" : ""}`}
                     onClick={header.column.getToggleSortingHandler()}
                   >
                     {flexRender(
@@ -148,14 +150,15 @@ const Datatable = ({
                     )}
                     {sortIndicator[header.column.getIsSorted()] ?? ""}
                   </th>
-                ))}
+                  )
+                })}
               </tr>
             ))}
           </thead>
           <tbody className="c-datatable__tbody">
             {table.getRowModel().rows.length === 0 ? (
               <tr className="c-datatable__row c-datatable__row--empty">
-                <td className="c-datatable__td" colSpan={columns.length}>
+                <td className="c-datatable__td" colSpan={table.getVisibleLeafColumns().length}>
                   {t("common.noResults")}
                 </td>
               </tr>
@@ -169,14 +172,20 @@ const Datatable = ({
                   role={onRowClick ? "button" : undefined}
                   tabIndex={onRowClick ? 0 : undefined}
                 >
-                  {row.getVisibleCells().map((cell) => (
-                    <td key={cell.id} className="c-datatable__td">
+                  {row.getVisibleCells().map((cell) => {
+                    const hideOnMobile = cell.column.columnDef.meta?.hideOnMobile
+                    return (
+                    <td
+                      key={cell.id}
+                      className={`c-datatable__td${hideOnMobile ? " c-datatable__td--hide-mobile" : ""}`}
+                    >
                       {flexRender(
                         cell.column.columnDef.cell,
                         cell.getContext(),
                       )}
                     </td>
-                  ))}
+                    )
+                  })}
                 </tr>
               ))
             )}

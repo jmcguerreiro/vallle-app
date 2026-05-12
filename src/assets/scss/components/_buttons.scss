@@ -180,11 +180,39 @@
   border-radius: $border-radius-md;
   color: $text-color-muted;
   padding: $spacing-2;
+  position: relative;
 
   &:hover:not(:disabled) {
     background: rgba($color-ash, 0.12);
     color: $text-color-highlight;
   }
+
+  &:hover:not(:disabled) .c-button-icon__tooltip,
+  &:focus-visible:not(:disabled) .c-button-icon__tooltip {
+    opacity: 1;
+    transform: translateX(-50%) translateY(0);
+  }
+}
+
+.c-button-icon__tooltip {
+  @include font-size(xs);
+
+  background: $color-espresso;
+  border-radius: $border-radius-md;
+  color: $color-white;
+  font-weight: $font-weight-regular;
+  left: 50%;
+  opacity: 0;
+  padding: $spacing-1 $spacing-2;
+  pointer-events: none;
+  position: absolute;
+  top: calc(100% + #{$spacing-1});
+  transform: translateX(-50%) translateY(-2px);
+  transition:
+    opacity $transition-normal,
+    transform $transition-normal;
+  white-space: nowrap;
+  z-index: 10;
 }
 
 /* ─── Layout header action buttons ───────────────────────────── */
