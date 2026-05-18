@@ -111,7 +111,8 @@ const VouchersIndex = () => {
 
     setHeader({
       title: t("features.vouchers.heading"),
-      subtitle: "Emite, redima ou consulte todos os vallles disponíveis.",
+      description: t("features.vouchers.description"),
+      image: "vouchers",
       actions,
     });
     return () => setHeader();

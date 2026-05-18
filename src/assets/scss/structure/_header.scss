@@ -1,18 +1,21 @@
 .s-header {
-  background: $color-linen;
-  width: 100%;
   padding: $spacing-3;
   position: sticky;
   top: 0;
+  width: 100%;
 }
 
 .s-header__wrapper {
-  display: flex;
   align-items: center;
-  justify-content: space-between;
-  padding: $spacing-2;
-  border: solid 1px $color-parchment;
+  background: $color-linen;
   border-radius: to-rem(40);
+  border: solid 1px $color-parchment;
+  display: flex;
+  justify-content: space-between;
+  margin: 0 auto;
+  max-width: $screen-xl;
+  padding: $spacing-2;
+  width: 100%;
 }
 
 .s-header__extra {

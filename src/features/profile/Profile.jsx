@@ -109,7 +109,11 @@ const Profile = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.profile.heading') })
+    setHeader({
+      title: t('features.profile.heading'),
+      description: t('features.profile.description'),
+      image: 'profile',
+    })
     return () => setHeader({ title: '' })
   }, [setHeader, t])
 

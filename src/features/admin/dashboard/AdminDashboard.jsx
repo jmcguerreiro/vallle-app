@@ -76,9 +76,8 @@ const AdminDashboard = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.adminDashboard.heading') })
-    return () => setHeader()
-  }, [setHeader, t])
+    setHeader()
+  }, [setHeader])
 
   useEffect(() => {
     fetchDashboard(year)

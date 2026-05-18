@@ -49,7 +49,11 @@ const StatsIndex = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.stats.heading') })
+    setHeader({
+      title: t('features.stats.heading'),
+      description: t('features.stats.description'),
+      image: 'stats',
+    })
     return () => setHeader()
   }, [setHeader, t])
 

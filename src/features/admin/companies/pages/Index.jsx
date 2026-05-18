@@ -141,6 +141,8 @@ const AdminCompaniesIndex = () => {
   useEffect(() => {
     setHeader({
       title: t('features.admin.companies.heading'),
+      description: t('features.admin.companies.description'),
+      image: 'companies',
       actions: [
         {
           label: t('features.admin.companies.create.heading'),

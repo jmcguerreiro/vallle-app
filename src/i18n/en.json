@@ -5,7 +5,6 @@
     "save": "Save",
     "cancel": "Cancel",
     "confirm": "Confirm",
-    "back": "Back",
     "expand": "Expand",
     "collapse": "Collapse",
     "noResults": "No results.",
@@ -111,6 +110,7 @@
     },
     "vouchers": {
       "heading": "Vouchers",
+      "description": "Issue, redeem, or look up any voucher in your store.",
       "create": {
         "heading": "Create voucher",
         "description": "Set the amount and who it's for.",
@@ -221,6 +221,7 @@
     },
     "stats": {
       "heading": "Stats",
+      "description": "Track how your vouchers are performing over time.",
       "totalVouchers": "Total vouchers",
       "activeVouchers": "Active vouchers",
       "totalAmount": "Total amount",
@@ -232,6 +233,7 @@
     },
     "profile": {
       "heading": "Profile",
+      "description": "Update your personal details and preferences.",
       "form": {
         "avatar": "Avatar",
         "name": "Name",
@@ -264,12 +266,16 @@
         "generic": "Could not update your profile. Please try again."
       }
     },
+    "settings": {
+      "heading": "Settings",
+      "description": "Manage your company details and team.",
+      "tabs": {
+        "company": "Company",
+        "users": "Users"
+      }
+    },
     "company": {
       "heading": "Company",
-      "tabs": {
-        "details": "Details",
-        "users": "Users"
-      },
       "sections": {
         "general": "General",
         "contact": "Contact",
@@ -371,6 +377,7 @@
     "admin": {
       "companies": {
         "heading": "Companies",
+        "description": "Manage every company on the platform.",
         "list": {
           "name": "Company",
           "category": "Category",
@@ -443,6 +450,7 @@
       },
       "users": {
         "heading": "Users",
+        "description": "Manage every user across the platform.",
         "list": {
           "name": "Name",
           "email": "Email",
@@ -506,6 +514,7 @@
       },
       "commissions": {
         "heading": "Commissions",
+        "description": "Track commissions earned across all companies.",
         "companyDetailDescription": "Monthly commission breakdown.",
         "company": "Company",
         "voucherSales": "Voucher sales",
@@ -559,7 +568,7 @@
     "vouchers": "Vouchers",
     "stats": "Stats",
     "profile": "Profile",
-    "company": "Company",
+    "settings": "Settings",
     "commissions": "Commissions",
     "admin": "Admin",
     "adminCompanies": "Companies",

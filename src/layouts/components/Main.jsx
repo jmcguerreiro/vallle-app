@@ -1,11 +1,7 @@
-import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Outlet, useNavigate } from "react-router-dom";
-
-import { ChevronLeft as IconChevronLeft } from "lucide-react";
+import { Outlet } from "react-router-dom";
 
 import Button from "@/components/Button";
-import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { useMain } from "@/hooks/useMain";
 
@@ -18,30 +14,8 @@ import { useMain } from "@/hooks/useMain";
 const Main = () => {
   // Hooks
   const { t } = useTranslation();
-  const navigate = useNavigate();
   const { isStoreSuspended } = useAuth();
   const { header } = useMain();
-
-  // Handlers
-  const handleBack = useCallback(() => {
-    const back = header.back;
-    if (typeof back === "function") {
-      back();
-      return;
-    }
-    if (typeof back === "string") {
-      navigate(back);
-      return;
-    }
-    const sameOriginReferrer =
-      document.referrer &&
-      new URL(document.referrer).origin === globalThis.location.origin;
-    if (sameOriginReferrer) {
-      navigate(-1);
-    } else {
-      navigate(ROUTES.HOME);
-    }
-  }, [header, navigate]);
 
   // Render
   return (
@@ -52,38 +26,38 @@ const Main = () => {
         </div>
       )}
 
-      {(header.title || header.actions.length > 0 || header.back) && (
+      {(header.title || header.actions.length > 0 || header.image) && (
         <div className="s-main__header">
-          <div className="s-main__header-lead">
-            {header.back && (
-              <Button
-                ariaLabel={t("common.back")}
-                iconLeft={IconChevronLeft}
-                onClick={handleBack}
-                tooltip={t("common.back")}
-                variant="icon"
-              />
-            )}
-            {header.title && (
-              <div className="s-main__header-titles">
+          {header.image && (
+            <img
+              alt=""
+              className="s-main__header-image"
+              src={`/images/pages/${header.image}.svg`}
+            />
+          )}
+          {(header.title || header.description) && (
+            <div className="s-main__header-titles">
+              {header.title && (
                 <h1 className="s-main__header-title">{header.title}</h1>
-                {header.subtitle && (
-                  <p className="s-main__header-subtitle">{header.subtitle}</p>
-                )}
-              </div>
-            )}
-          </div>
+              )}
+              {header.description && (
+                <p className="s-main__header-description">
+                  {header.description}
+                </p>
+              )}
+            </div>
+          )}
           {header.actions.length > 0 && (
             <div className="s-main__header-actions">
               {header.actions.map(({ label, icon: Icon, onClick }) => (
                 <Button
                   key={label}
-                  ariaLabel={label}
+                  display="block"
                   iconLeft={Icon}
                   onClick={onClick}
-                  tooltip={label}
-                  variant="icon"
-                />
+                >
+                  {label}
+                </Button>
               ))}
             </div>
           )}

@@ -174,13 +174,13 @@
 /* ─── Icon-only ──────────────────────────────────────────────── */
 
 .c-button-icon {
-  @extend %button-base;
-
-  background: transparent;
-  border-radius: $border-radius-md;
-  color: $text-color-muted;
-  padding: $spacing-2;
-  position: relative;
+  border: solid 1px $color-parchment;
+  border-radius: 50%;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
 
   &:hover:not(:disabled) {
     background: rgba($color-ash, 0.12);
@@ -191,6 +191,14 @@
   &:focus-visible:not(:disabled) .c-button-icon__tooltip {
     opacity: 1;
     transform: translateX(-50%) translateY(0);
+  }
+
+  &--skin-transparent {
+    border-color: transparent;
+  }
+
+  &--skin-dark {
+    background: $color-terracota;
   }
 }
 

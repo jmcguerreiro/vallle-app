@@ -22,9 +22,11 @@ export const ROUTES = {
   STATS: '/stats',
   PROFILE: '/profile',
   PROFILE_MODAL_CHANGE_PASSWORD: '/profile/change-password',
-  COMPANY: '/company',
-  COMPANY_USERS_MODAL_CREATE: '/company/users/create',
-  COMPANY_USERS_MODAL_EDIT: '/company/users/:id/edit',
+  SETTINGS: '/settings',
+  SETTINGS_COMPANY: '/settings/company',
+  SETTINGS_USERS: '/settings/users',
+  SETTINGS_USERS_MODAL_CREATE: '/settings/users/create',
+  SETTINGS_USERS_MODAL_EDIT: '/settings/users/:id/edit',
 
   // Admin (super_admin only)
   ADMIN_COMPANIES: '/admin/companies',
@@ -102,14 +104,14 @@ export const adminUserEditPath = (id) => `/admin/users/${id}/edit`
 export const adminCommissionsDetailPath = (storeId) => `/admin/commissions/${storeId}`
 
 /**
- * Builds a full company user create path for navigation.
- * @returns {string} '/company/users/create'
+ * Builds a full settings user create path for navigation.
+ * @returns {string} '/settings/users/create'
  */
-export const companyUserCreatePath = () => '/company/users/create'
+export const settingsUserCreatePath = () => '/settings/users/create'
 
 /**
- * Builds a full company user edit path for navigation.
+ * Builds a full settings user edit path for navigation.
  * @param {string} id - User ID
- * @returns {string} e.g. '/company/users/abc123/edit'
+ * @returns {string} e.g. '/settings/users/abc123/edit'
  */
-export const companyUserEditPath = (id) => `/company/users/${id}/edit`
+export const settingsUserEditPath = (id) => `/settings/users/${id}/edit`

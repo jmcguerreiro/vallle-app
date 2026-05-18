@@ -5,7 +5,6 @@
     "save": "Guardar",
     "cancel": "Cancelar",
     "confirm": "Confirmar",
-    "back": "Voltar",
     "expand": "Expandir",
     "collapse": "Recolher",
     "noResults": "Sem resultados.",
@@ -111,6 +110,7 @@
     },
     "vouchers": {
       "heading": "Vouchers",
+      "description": "Emita, resgate ou consulte qualquer voucher da sua loja.",
       "create": {
         "heading": "Criar voucher",
         "description": "Defina o valor e o destinatário.",
@@ -221,6 +221,7 @@
     },
     "stats": {
       "heading": "Estatísticas",
+      "description": "Acompanhe o desempenho dos seus vouchers ao longo do tempo.",
       "totalVouchers": "Total de vouchers",
       "activeVouchers": "Vouchers ativos",
       "totalAmount": "Valor total",
@@ -232,6 +233,7 @@
     },
     "profile": {
       "heading": "Perfil",
+      "description": "Atualize os seus dados pessoais e preferências.",
       "form": {
         "avatar": "Avatar",
         "name": "Nome",
@@ -264,12 +266,16 @@
         "generic": "Não foi possível atualizar o perfil. Tente novamente."
       }
     },
+    "settings": {
+      "heading": "Definições",
+      "description": "Faça a gestão dos dados da empresa e da equipa.",
+      "tabs": {
+        "company": "Empresa",
+        "users": "Utilizadores"
+      }
+    },
     "company": {
       "heading": "Empresa",
-      "tabs": {
-        "details": "Detalhes",
-        "users": "Utilizadores"
-      },
       "sections": {
         "general": "Geral",
         "contact": "Contacto",
@@ -371,6 +377,7 @@
     "admin": {
       "companies": {
         "heading": "Empresas",
+        "description": "Faça a gestão de todas as empresas da plataforma.",
         "list": {
           "name": "Empresa",
           "category": "Categoria",
@@ -443,6 +450,7 @@
       },
       "users": {
         "heading": "Utilizadores",
+        "description": "Faça a gestão de todos os utilizadores da plataforma.",
         "list": {
           "name": "Nome",
           "email": "Email",
@@ -506,6 +514,7 @@
       },
       "commissions": {
         "heading": "Comissões",
+        "description": "Acompanhe as comissões geradas por todas as empresas.",
         "companyDetailDescription": "Detalhamento mensal de comissões.",
         "company": "Empresa",
         "voucherSales": "Vendas de vouchers",
@@ -559,7 +568,7 @@
     "vouchers": "Vouchers",
     "stats": "Estatísticas",
     "profile": "Perfil",
-    "company": "Empresa",
+    "settings": "Definições",
     "commissions": "Comissões",
     "admin": "Admin",
     "adminCompanies": "Empresas",

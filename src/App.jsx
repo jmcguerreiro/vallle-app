@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes, useLocation } from 'react-router-dom'
+import { BrowserRouter, Navigate, Route, Routes, useLocation } from 'react-router-dom'
 
 import Modal from '@/components/Modal'
 import Toast from '@/components/Toast'
@@ -9,27 +9,29 @@ import { MainProvider } from '@/contexts/main'
 import { ModalProvider } from '@/contexts/modal'
 import { RefreshProvider } from '@/contexts/refresh'
 import { ToastProvider } from '@/contexts/toast'
-import AdminCompaniesIndex from '@/features/admin/companies/pages/Index'
+import AdminCommissionsCompanyDetail from '@/features/admin/commissions/pages/CompanyDetail'
+import AdminCommissionsIndex from '@/features/admin/commissions/pages/Index'
 import AdminCompanyCreate from '@/features/admin/companies/pages/Create'
 import AdminCompanyEdit from '@/features/admin/companies/pages/Edit'
+import AdminCompaniesIndex from '@/features/admin/companies/pages/Index'
 import AdminCompanyView from '@/features/admin/companies/pages/View'
-import AdminCommissionsIndex from '@/features/admin/commissions/pages/Index'
-import AdminCommissionsCompanyDetail from '@/features/admin/commissions/pages/CompanyDetail'
 import AdminDashboard from '@/features/admin/dashboard/AdminDashboard'
-import AdminUsersIndex from '@/features/admin/users/pages/Index'
 import AdminUserCreate from '@/features/admin/users/pages/Create'
 import AdminUserEdit from '@/features/admin/users/pages/Edit'
+import AdminUsersIndex from '@/features/admin/users/pages/Index'
 import AdminUserView from '@/features/admin/users/pages/View'
 import ForgotPassword from '@/features/auth/ForgotPassword'
 import Login from '@/features/auth/Login'
 import ResetPassword from '@/features/auth/ResetPassword'
 import SelectStore from '@/features/auth/SelectStore'
-import Company from '@/features/company/Company'
-import CompanyUserCreate from '@/features/company/pages/UserCreate'
-import CompanyUserEdit from '@/features/company/pages/UserEdit'
 import Dashboard from '@/features/dashboard/Dashboard'
 import ChangePassword from '@/features/profile/pages/ChangePassword'
 import Profile from '@/features/profile/Profile'
+import CompanyDetails from '@/features/settings/CompanyDetails'
+import CompanyUsers from '@/features/settings/CompanyUsers'
+import SettingsUserCreate from '@/features/settings/pages/UserCreate'
+import SettingsUserEdit from '@/features/settings/pages/UserEdit'
+import Settings from '@/features/settings/Settings'
 import StatsIndex from '@/features/stats/pages/Index'
 import VoucherCreate from '@/features/vouchers/pages/Create'
 import VoucherEdit from '@/features/vouchers/pages/Edit'
@@ -38,9 +40,9 @@ import QuickLookup from '@/features/vouchers/pages/QuickLookup'
 import QuickRedeem from '@/features/vouchers/pages/QuickRedeem'
 import VoucherRedeem from '@/features/vouchers/pages/Redeem'
 import VoucherView from '@/features/vouchers/pages/View'
+import { useAuth } from '@/hooks/useAuth'
 import BlankLayout from '@/layouts/blank'
 import DefaultLayout from '@/layouts/default'
-import { useAuth } from '@/hooks/useAuth'
 import AuthGuard from '@/router/AuthGuard'
 import RoleGuard from '@/router/RoleGuard'
 
@@ -104,9 +106,20 @@ const AppRoutes = () => {
           <Route element={<StatsIndex />} path={ROUTES.STATS} />
           <Route element={<Profile />} path={ROUTES.PROFILE} />
           <Route element={<ChangePassword />} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
-          <Route element={<Company />} path={ROUTES.COMPANY} />
-          <Route element={<CompanyUserCreate />} path={ROUTES.COMPANY_USERS_MODAL_CREATE} />
-          <Route element={<CompanyUserEdit />} path={ROUTES.COMPANY_USERS_MODAL_EDIT} />
+          <Route element={<Settings />} path={ROUTES.SETTINGS}>
+            <Route element={<Navigate replace to={ROUTES.SETTINGS_COMPANY} />} index />
+            <Route element={<CompanyDetails />} path={ROUTES.SETTINGS_COMPANY} />
+            <Route
+              element={
+                <RoleGuard allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN]}>
+                  <CompanyUsers />
+                </RoleGuard>
+              }
+              path={ROUTES.SETTINGS_USERS}
+            />
+          </Route>
+          <Route element={<SettingsUserCreate />} path={ROUTES.SETTINGS_USERS_MODAL_CREATE} />
+          <Route element={<SettingsUserEdit />} path={ROUTES.SETTINGS_USERS_MODAL_EDIT} />
 
           {/* Admin routes (super_admin only) */}
           <Route element={<AdminRoute><AdminCompaniesIndex /></AdminRoute>} path={ROUTES.ADMIN_COMPANIES} />
@@ -133,9 +146,9 @@ const AppRoutes = () => {
             <Route element={<Modal><QuickLookup /></Modal>} path={ROUTES.VOUCHERS_MODAL_QUICK_LOOKUP} />
             <Route element={<Modal><ChangePassword /></Modal>} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
 
-            {/* Company user modals */}
-            <Route element={<Modal><CompanyUserCreate /></Modal>} path={ROUTES.COMPANY_USERS_MODAL_CREATE} />
-            <Route element={<Modal><CompanyUserEdit /></Modal>} path={ROUTES.COMPANY_USERS_MODAL_EDIT} />
+            {/* Settings user modals */}
+            <Route element={<Modal><SettingsUserCreate /></Modal>} path={ROUTES.SETTINGS_USERS_MODAL_CREATE} />
+            <Route element={<Modal><SettingsUserEdit /></Modal>} path={ROUTES.SETTINGS_USERS_MODAL_EDIT} />
 
             {/* Admin modals */}
             <Route element={<Modal><AdminCompanyCreate /></Modal>} path={ROUTES.ADMIN_COMPANIES_MODAL_CREATE} />

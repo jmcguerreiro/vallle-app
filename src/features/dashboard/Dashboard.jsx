@@ -6,6 +6,7 @@ import { ArrowUpFromDot, ArrowDownToDot, View } from "lucide-react";
 
 import { ROUTES, voucherCreatePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
 
 /**
@@ -21,6 +22,7 @@ const Dashboard = () => {
   const { user, isStoreSuspended } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { setHeader } = useMain();
 
   // State
   const [activeCount, setActiveCount] = useState(null);
@@ -53,6 +55,10 @@ const Dashboard = () => {
   }, [navigate, location]);
 
   // Effects
+  useEffect(() => {
+    setHeader();
+  }, [setHeader]);
+
   useEffect(() => {
     let cancelled = false;
 

@@ -121,7 +121,7 @@ const VoucherView = () => {
       })
     }
 
-    setHeader({ title, description, actions, back: true })
+    setHeader({ title, description, actions })
 
     return () => setHeader()
   }, [title, description, setHeader, handleEdit, handleRedeem, canRedeem, t])

@@ -55,7 +55,7 @@ const Navigation = () => {
               icon: IconVouchers,
             },
             { to: ROUTES.STATS, label: t("nav.stats"), icon: IconStats },
-            { to: ROUTES.COMPANY, label: t("nav.company"), icon: IconSettings },
+            { to: ROUTES.SETTINGS, label: t("nav.settings"), icon: IconSettings },
           ],
     [isSuperAdmin, t],
   );

@@ -6,7 +6,7 @@ import { MainContext } from '@/contexts/main'
  * Hook: useMain
  * Provides access to main layout state and actions.
  * Must be used within a MainProvider.
- * @returns {{ header: { title: string, subtitle: string, actions: React.ReactNode|null }, setHeader: Function }}
+ * @returns {{ header: { title: string, description: string, image: string, actions: Array }, setHeader: Function }}
  */
 export const useMain = () => {
   const context = useContext(MainContext)

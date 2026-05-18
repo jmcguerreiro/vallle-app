@@ -6,7 +6,7 @@ import { Plus as IconPlus } from 'lucide-react'
 
 import Button from '@/components/Button'
 import Datatable from '@/components/Datatable'
-import { companyUserCreatePath, companyUserEditPath } from '@/constants/routes'
+import { settingsUserCreatePath, settingsUserEditPath } from '@/constants/routes'
 import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
@@ -45,13 +45,13 @@ const CompanyUsers = () => {
   }, [addToast, t])
 
   const handleRowClick = useCallback((row) => {
-    navigate(companyUserEditPath(row.id), {
+    navigate(settingsUserEditPath(row.id), {
       state: { backgroundLocation: location },
     })
   }, [navigate, location])
 
   const handleCreate = useCallback(() => {
-    navigate(companyUserCreatePath(), {
+    navigate(settingsUserCreatePath(), {
       state: { backgroundLocation: location },
     })
   }, [navigate, location])

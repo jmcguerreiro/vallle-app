@@ -103,7 +103,11 @@ const AdminCommissionsIndex = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title: t('features.admin.commissions.heading') })
+    setHeader({
+      title: t('features.admin.commissions.heading'),
+      description: t('features.admin.commissions.description'),
+      image: 'commissions',
+    })
     return () => setHeader()
   }, [setHeader, t])
 

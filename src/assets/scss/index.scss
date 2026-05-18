@@ -233,55 +233,53 @@ body {
   font-size: 0.875rem;
 }
 
-/* ─── Company tabs ───────────────────────────────────────────── */
+/* ─── Settings tabs ──────────────────────────────────────────── */
 
-.c-company {
-  display: flex;
-  gap: var(--space-xl);
-}
-
-.c-company__tabs {
+.c-settings {
   display: flex;
   flex-direction: column;
-  gap: var(--space-xs);
-  min-width: 160px;
-  flex-shrink: 0;
+  gap: var(--space-lg);
+  width: 100%;
 }
 
-.c-company__tab {
+.c-settings__tabs {
+  display: flex;
+  gap: var(--space-xs);
+  border-bottom: 1px solid var(--color-border);
+}
+
+.c-settings__tab {
   background: none;
   border: none;
-  border-radius: var(--radius-md);
+  border-bottom: 2px solid transparent;
   color: var(--color-text-muted);
   cursor: pointer;
   font-family: var(--font-body);
   font-size: 0.9375rem;
   font-weight: 400;
+  margin-bottom: -1px;
   padding: var(--space-sm) var(--space-md);
-  text-align: left;
+  text-decoration: none;
   transition:
-    background 0.15s,
+    border-color 0.15s,
     color 0.15s;
 }
 
-.c-company__tab:hover {
-  background: rgba(44, 37, 32, 0.04);
+.c-settings__tab:hover {
   color: var(--color-text);
 }
 
-.c-company__tab--active {
-  background: var(--color-surface);
-  box-shadow: var(--shadow-sm);
+.c-settings__tab--active {
+  border-bottom-color: var(--color-primary);
   color: var(--color-primary);
   font-weight: 500;
 }
 
-.c-company__tab--active:hover {
-  background: var(--color-surface);
+.c-settings__tab--active:hover {
   color: var(--color-primary);
 }
 
-.c-company__content {
+.c-settings__content {
   flex: 1;
   min-width: 0;
 }

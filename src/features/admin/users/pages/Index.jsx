@@ -128,6 +128,8 @@ const AdminUsersIndex = () => {
   useEffect(() => {
     setHeader({
       title: t('features.admin.users.heading'),
+      description: t('features.admin.users.description'),
+      image: 'users',
       actions: [
         {
           label: t('features.admin.users.create.heading'),
