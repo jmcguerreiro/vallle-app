@@ -6,6 +6,7 @@ import { Plus as IconPlus } from 'lucide-react'
 
 import Button from '@/components/Button'
 import Datatable from '@/components/Datatable'
+import FilterSelect from '@/components/forms/FilterSelect'
 import { settingsUserCreatePath, settingsUserEditPath } from '@/constants/routes'
 import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
@@ -115,15 +116,16 @@ const CompanyUsers = () => {
 
   const userFilters = (
     <div className="c-datatable__filter-group">
-      <select
-        className="c-datatable__filter-select"
+      <FilterSelect
+        ariaLabel={t('common.filters.allStatuses')}
         onChange={handleStatusFilter}
+        options={[
+          { value: 'all', label: t('common.filters.allStatuses') },
+          { value: 'active', label: t('features.company.users.list.active') },
+          { value: 'inactive', label: t('features.company.users.list.inactive') },
+        ]}
         value={statusFilter}
-      >
-        <option value="all">{t('common.filters.allStatuses')}</option>
-        <option value="active">{t('features.company.users.list.active')}</option>
-        <option value="inactive">{t('features.company.users.list.inactive')}</option>
-      </select>
+      />
     </div>
   )
 

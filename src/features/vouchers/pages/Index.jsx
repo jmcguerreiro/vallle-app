@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { MailPlus } from "lucide-react";
 
 import EmptyState from "@/components/EmptyState";
+import FilterSelect from "@/components/forms/FilterSelect";
 import { voucherCreatePath } from "@/constants/routes";
 import VoucherDatatable from "@/features/vouchers/components/VoucherDatatable";
 import { isVoucherExpired } from "@/features/vouchers/utils";
@@ -148,17 +149,18 @@ const VouchersIndex = () => {
 
   const statusFilters = (
     <div className="c-datatable__filter-group">
-      <select
-        className="c-datatable__filter-select"
+      <FilterSelect
+        ariaLabel={t("common.filters.allStatuses")}
         onChange={handleStatusFilter}
+        options={[
+          { value: STATUS_ALL, label: t("common.filters.allStatuses") },
+          { value: "active", label: t("features.vouchers.list.active") },
+          { value: "used", label: t("features.vouchers.list.used") },
+          { value: "expired", label: t("features.vouchers.list.expired") },
+          { value: "archived", label: t("features.vouchers.list.archived") },
+        ]}
         value={statusFilter}
-      >
-        <option value={STATUS_ALL}>{t("common.filters.allStatuses")}</option>
-        <option value="active">{t("features.vouchers.list.active")}</option>
-        <option value="used">{t("features.vouchers.list.used")}</option>
-        <option value="expired">{t("features.vouchers.list.expired")}</option>
-        <option value="archived">{t("features.vouchers.list.archived")}</option>
-      </select>
+      />
     </div>
   );
 

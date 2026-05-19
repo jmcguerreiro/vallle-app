@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import { Plus as IconPlus } from 'lucide-react'
 
 import Datatable from '@/components/Datatable'
+import FilterSelect from '@/components/forms/FilterSelect'
 import { ROUTES, adminUserPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
 import { useRefresh } from '@/hooks/useRefresh'
@@ -145,25 +146,27 @@ const AdminUsersIndex = () => {
 
   const userFilters = (
     <div className="c-datatable__filter-group">
-      <select
-        className="c-datatable__filter-select"
+      <FilterSelect
+        ariaLabel={t('common.filters.allRoles')}
         onChange={handleRoleFilter}
+        options={[
+          { value: 'all', label: t('common.filters.allRoles') },
+          { value: 'user', label: t('features.admin.users.list.role_user') },
+          { value: 'admin', label: t('features.admin.users.list.role_admin') },
+          { value: 'super_admin', label: t('features.admin.users.list.role_super_admin') },
+        ]}
         value={roleFilter}
-      >
-        <option value="all">{t('common.filters.allRoles')}</option>
-        <option value="user">{t('features.admin.users.list.role_user')}</option>
-        <option value="admin">{t('features.admin.users.list.role_admin')}</option>
-        <option value="super_admin">{t('features.admin.users.list.role_super_admin')}</option>
-      </select>
-      <select
-        className="c-datatable__filter-select"
+      />
+      <FilterSelect
+        ariaLabel={t('common.filters.allStatuses')}
         onChange={handleStatusFilter}
+        options={[
+          { value: 'all', label: t('common.filters.allStatuses') },
+          { value: 'active', label: t('features.admin.users.list.active') },
+          { value: 'inactive', label: t('features.admin.users.list.inactive') },
+        ]}
         value={statusFilter}
-      >
-        <option value="all">{t('common.filters.allStatuses')}</option>
-        <option value="active">{t('features.admin.users.list.active')}</option>
-        <option value="inactive">{t('features.admin.users.list.inactive')}</option>
-      </select>
+      />
     </div>
   )
 

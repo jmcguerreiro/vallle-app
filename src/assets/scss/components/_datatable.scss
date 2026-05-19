@@ -9,7 +9,7 @@
 .c-datatable__toolbar {
   align-items: center;
   display: flex;
-  flex-direction: column;
+  gap: $spacing-6;
   width: 100%;
   margin-bottom: $spacing-3;
 }
@@ -21,7 +21,7 @@
   border: solid 1px $color-parchment;
   border-radius: $border-radius-3xl;
   padding: $spacing-3;
-  width: 100%;
+  flex: 1;
 }
 
 .c-datatable__toolbar-search-icon {
@@ -39,45 +39,29 @@
 }
 
 .c-datatable__toolbar-actions {
-  margin-bottom: $spacing-3;
-  width: 100%;
+  display: flex;
+  gap: $spacing-2;
+  margin-left: auto;
 }
 
 .c-datatable__toolbar-actions {
   > * {
-    border-radius: $border-radius-3xl;
-    width: 100%;
+    background: $color-terracota;
+    border: solid 1px transparent;
+    width: 48px;
+    height: 48px;
+  }
+
+  .c-button-icon__icon {
+    color: $color-white;
+    width: 20px;
+    height: 20px;
   }
 }
 
 .c-datatable__filter-group {
   display: flex;
   gap: $spacing-2;
-}
-
-.c-datatable__filter-select {
-  @include font-size(sm);
-
-  appearance: none;
-  background: $color-white
-    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b5e56' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")
-    no-repeat right $spacing-3 center;
-  border: 1px solid rgba($color-ash, 0.3);
-  border-radius: $border-radius-lg;
-  color: $text-color;
-  cursor: pointer;
-  font-family: $font-family-one;
-  padding: $spacing-2 $spacing-8 $spacing-2 $spacing-3;
-  transition: border-color $transition-normal;
-
-  &:hover {
-    border-color: $color-ash;
-  }
-
-  &:focus {
-    border-color: $color-terracota;
-    outline: none;
-  }
 }
 
 .c-datatable__search {

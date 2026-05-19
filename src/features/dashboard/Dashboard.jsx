@@ -2,7 +2,7 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { ArrowUpFromDot, ArrowDownToDot, View } from "lucide-react";
+import { MailPlus, MailMinus, MailSearch } from "lucide-react";
 
 import { ROUTES, voucherCreatePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
@@ -28,7 +28,7 @@ const Dashboard = () => {
   const [activeCount, setActiveCount] = useState(null);
 
   // Derived State
-  const firstName = user?.name?.split(' ')[0] ?? user?.name
+  const firstName = user?.name?.split(" ")[0] ?? user?.name;
 
   const subtitle =
     activeCount === null
@@ -103,10 +103,7 @@ const Dashboard = () => {
           <span className="p-dashboard__action-label">
             {t("features.dashboard.actions.create")}
           </span>
-          <ArrowUpFromDot
-            className="p-dashboard__action-icon"
-            strokeWidth="1.5"
-          />
+          <MailPlus className="p-dashboard__action-icon" strokeWidth="1.5" />
         </button>
         <button
           className="p-dashboard__action"
@@ -116,10 +113,7 @@ const Dashboard = () => {
           <span className="p-dashboard__action-label">
             {t("features.dashboard.actions.redeem")}
           </span>
-          <ArrowDownToDot
-            className="p-dashboard__action-icon"
-            strokeWidth="1.5"
-          />
+          <MailMinus className="p-dashboard__action-icon" strokeWidth="1.5" />
         </button>
         <button
           className="p-dashboard__action"
@@ -129,7 +123,7 @@ const Dashboard = () => {
           <span className="p-dashboard__action-label">
             {t("features.dashboard.actions.lookup")}
           </span>
-          <View className="p-dashboard__action-icon" strokeWidth="1.5" />
+          <MailSearch className="p-dashboard__action-icon" strokeWidth="1.5" />
         </button>
       </div>
     </div>

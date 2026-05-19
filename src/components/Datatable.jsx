@@ -25,7 +25,7 @@ import Button from "@/components/Button";
  * @param {number} [props.pageSize=10] - Rows per page
  * @param {Function} [props.onRowClick] - Optional row click handler, receives the row's original data
  * @param {React.ReactNode} [props.filters] - Optional filter controls rendered in the toolbar
- * @param {Array<{label: string, icon?: Component, onClick: Function, variant?: string}>} [props.actions] - Optional action buttons rendered in the toolbar (e.g. a "Create" button)
+ * @param {Array<{label: string, icon: Component, onClick: Function, skin?: string}>} [props.actions] - Optional icon-only action buttons rendered in the toolbar. `label` is used as the tooltip and aria-label.
  * @param {string} [props.className] - Additional CSS class
  * @param {Object} [props.serverPagination] - Server-side pagination config
  * @param {number} props.serverPagination.total - Total record count from the server
@@ -122,21 +122,6 @@ const Datatable = ({
   return (
     <div className={`c-datatable${className ? ` ${className}` : ""}`}>
       <div className="c-datatable__toolbar">
-        {actions && actions.length > 0 && (
-          <div className="c-datatable__toolbar-actions">
-            {actions.map(({ label, icon: Icon, onClick, variant }) => (
-              <Button
-                key={label}
-                display="block"
-                iconLeft={Icon}
-                onClick={onClick}
-                variant={variant}
-              >
-                {label}
-              </Button>
-            ))}
-          </div>
-        )}
         <div className="c-datatable__toolbar-search">
           <Search className="c-datatable__toolbar-search-icon" size={16} />
           <input
@@ -149,6 +134,21 @@ const Datatable = ({
         </div>
         {filters && (
           <div className="c-datatable__toolbar-filters">{filters}</div>
+        )}
+        {actions && actions.length > 0 && (
+          <div className="c-datatable__toolbar-actions">
+            {actions.map(({ label, icon: Icon, onClick, skin }) => (
+              <Button
+                key={label}
+                ariaLabel={label}
+                iconLeft={Icon}
+                onClick={onClick}
+                skin={skin}
+                tooltip={label}
+                variant="icon"
+              />
+            ))}
+          </div>
         )}
       </div>
 

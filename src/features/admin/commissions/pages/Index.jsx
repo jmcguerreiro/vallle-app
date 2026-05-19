@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
 import Datatable from '@/components/Datatable'
+import FilterSelect from '@/components/forms/FilterSelect'
 import { adminCommissionsDetailPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
 import { useRefresh } from '@/hooks/useRefresh'
@@ -122,15 +123,16 @@ const AdminCommissionsIndex = () => {
 
   const commissionFilters = (
     <div className="c-datatable__filter-group">
-      <select
-        className="c-datatable__filter-select"
+      <FilterSelect
+        ariaLabel={t('common.filters.allStatuses')}
         onChange={handlePaymentFilter}
+        options={[
+          { value: 'all', label: t('common.filters.allStatuses') },
+          { value: 'unpaid', label: t('features.admin.commissions.unpaid') },
+          { value: 'paid', label: t('features.admin.commissions.paid') },
+        ]}
         value={paymentFilter}
-      >
-        <option value="all">{t('common.filters.allStatuses')}</option>
-        <option value="unpaid">{t('features.admin.commissions.unpaid')}</option>
-        <option value="paid">{t('features.admin.commissions.paid')}</option>
-      </select>
+      />
     </div>
   )
 

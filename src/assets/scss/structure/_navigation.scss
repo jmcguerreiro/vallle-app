@@ -22,10 +22,10 @@
   align-items: center;
   display: flex;
   justify-content: center;
-  border-radius: to-rem(40);
+  border-radius: to-rem(48);
   border: solid 1px transparent;
-  width: to-rem(40);
-  height: to-rem(40);
+  width: to-rem(48);
+  height: to-rem(48);
 
   &.is-active {
     background: $color-terracota;
