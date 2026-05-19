@@ -4,10 +4,8 @@ export const MainContext = createContext(null)
 
 /**
  * Provides layout state for the main content area.
- * Pages use the useMain hook to set the header title, description, image, and actions,
+ * Pages use the useMain hook to set the header title, description, and image,
  * which the DefaultLayout reads and renders in the layout header bar.
- *
- * Actions shape: Array<{ label: string, icon: Component, onClick: Function, variant?: 'primary' | 'secondary' }>
  * @component
  * @param {Object} props
  * @param {React.ReactNode} props.children
@@ -15,18 +13,17 @@ export const MainContext = createContext(null)
  */
 export const MainProvider = ({ children }) => {
   // State
-  const [header, setHeaderState] = useState({ title: '', description: '', image: '', actions: [] })
+  const [header, setHeaderState] = useState({ title: '', description: '', image: '' })
 
   // Handlers
-  const setHeader = useCallback(({ title = '', description = '', image = '', actions = [] } = {}) => {
+  const setHeader = useCallback(({ title = '', description = '', image = '' } = {}) => {
     setHeaderState((prev) => {
       if (
         prev.title === title &&
         prev.description === description &&
-        prev.image === image &&
-        prev.actions === actions
+        prev.image === image
       ) return prev
-      return { title, description, image, actions }
+      return { title, description, image }
     })
   }, [])
 

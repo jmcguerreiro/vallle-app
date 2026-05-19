@@ -130,17 +130,9 @@ const AdminUsersIndex = () => {
       title: t('features.admin.users.heading'),
       description: t('features.admin.users.description'),
       image: 'users',
-      actions: [
-        {
-          label: t('features.admin.users.create.heading'),
-          icon: IconPlus,
-          onClick: handleCreate,
-          variant: 'primary',
-        },
-      ],
     })
     return () => setHeader()
-  }, [setHeader, t, handleCreate])
+  }, [setHeader, t])
 
   useEffect(() => {
     fetchUsers()
@@ -175,9 +167,18 @@ const AdminUsersIndex = () => {
     </div>
   )
 
+  const actions = [
+    {
+      label: t('features.admin.users.create.heading'),
+      icon: IconPlus,
+      onClick: handleCreate,
+    },
+  ]
+
   return (
     <div className="c-admin-users">
       <Datatable
+        actions={actions}
         columns={columns}
         data={filteredUsers}
         filters={userFilters}

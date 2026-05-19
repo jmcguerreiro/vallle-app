@@ -143,17 +143,9 @@ const AdminCompaniesIndex = () => {
       title: t('features.admin.companies.heading'),
       description: t('features.admin.companies.description'),
       image: 'companies',
-      actions: [
-        {
-          label: t('features.admin.companies.create.heading'),
-          icon: IconPlus,
-          onClick: handleCreate,
-          variant: 'primary',
-        },
-      ],
     })
     return () => setHeader()
-  }, [setHeader, t, handleCreate])
+  }, [setHeader, t])
 
   useEffect(() => {
     fetchCompanies()
@@ -189,9 +181,18 @@ const AdminCompaniesIndex = () => {
     </div>
   )
 
+  const actions = [
+    {
+      label: t('features.admin.companies.create.heading'),
+      icon: IconPlus,
+      onClick: handleCreate,
+    },
+  ]
+
   return (
     <div className="c-admin-companies">
       <Datatable
+        actions={actions}
         columns={columns}
         data={filteredCompanies}
         filters={companyFilters}

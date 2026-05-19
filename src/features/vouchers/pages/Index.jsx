@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { Plus } from "lucide-react";
+import { MailPlus } from "lucide-react";
 
 import EmptyState from "@/components/EmptyState";
 import { voucherCreatePath } from "@/constants/routes";
@@ -98,25 +98,13 @@ const VouchersIndex = () => {
 
   // Effects
   useEffect(() => {
-    const actions = isStoreSuspended
-      ? []
-      : [
-          {
-            label: t("features.vouchers.create.heading"),
-            icon: Plus,
-            onClick: handleCreate,
-            variant: "primary",
-          },
-        ];
-
     setHeader({
       title: t("features.vouchers.heading"),
       description: t("features.vouchers.description"),
       image: "vouchers",
-      actions,
     });
     return () => setHeader();
-  }, [t, setHeader, handleCreate, isStoreSuspended]);
+  }, [t, setHeader]);
 
   const handlePageChange = useCallback(
     (newPageIndex) => {
@@ -174,9 +162,20 @@ const VouchersIndex = () => {
     </div>
   );
 
+  const actions = isStoreSuspended
+    ? []
+    : [
+        {
+          label: t("features.vouchers.create.heading"),
+          icon: MailPlus,
+          onClick: handleCreate,
+        },
+      ];
+
   return (
     <div className="p-vouchers">
       <VoucherDatatable
+        actions={actions}
         filters={statusFilters}
         pageSize={PAGE_SIZE}
         serverPagination={{

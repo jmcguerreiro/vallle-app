@@ -1,192 +1,242 @@
+.p-vouchers {
+  width: 100%;
+}
 .c-datatable {
-	display: flex;
-	flex-direction: column;
-	gap: $spacing-4;
+  display: flex;
+  flex-direction: column;
 }
 
 .c-datatable__toolbar {
-	align-items: center;
-	display: flex;
-	gap: $spacing-3;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  margin-bottom: $spacing-3;
 }
 
-.c-datatable__filters {
-	margin-left: auto;
+.c-datatable__toolbar-search {
+  align-items: center;
+  display: flex;
+  gap: $spacing-2;
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-3xl;
+  padding: $spacing-3;
+  width: 100%;
+}
+
+.c-datatable__toolbar-search-icon {
+  flex-shrink: 0;
+}
+
+.c-datatable__toolbar-search-input {
+  &::placeholder {
+    color: $text-color-muted;
+  }
+}
+
+.c-datatable__toolbar-filters {
+  display: none;
+}
+
+.c-datatable__toolbar-actions {
+  margin-bottom: $spacing-3;
+  width: 100%;
+}
+
+.c-datatable__toolbar-actions {
+  > * {
+    border-radius: $border-radius-3xl;
+    width: 100%;
+  }
 }
 
 .c-datatable__filter-group {
-	display: flex;
-	gap: $spacing-2;
+  display: flex;
+  gap: $spacing-2;
 }
 
 .c-datatable__filter-select {
-	@include font-size(sm);
+  @include font-size(sm);
 
-	appearance: none;
-	background: $color-white url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b5e56' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E") no-repeat right $spacing-3 center;
-	border: 1px solid rgba($color-ash, 0.3);
-	border-radius: $border-radius-lg;
-	color: $text-color;
-	cursor: pointer;
-	font-family: $font-family-one;
-	padding: $spacing-2 $spacing-8 $spacing-2 $spacing-3;
-	transition: border-color $transition-normal;
+  appearance: none;
+  background: $color-white
+    url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 24 24' fill='none' stroke='%236b5e56' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='6 9 12 15 18 9'%3E%3C/polyline%3E%3C/svg%3E")
+    no-repeat right $spacing-3 center;
+  border: 1px solid rgba($color-ash, 0.3);
+  border-radius: $border-radius-lg;
+  color: $text-color;
+  cursor: pointer;
+  font-family: $font-family-one;
+  padding: $spacing-2 $spacing-8 $spacing-2 $spacing-3;
+  transition: border-color $transition-normal;
 
-	&:hover {
-		border-color: $color-ash;
-	}
+  &:hover {
+    border-color: $color-ash;
+  }
 
-	&:focus {
-		border-color: $color-terracota;
-		outline: none;
-	}
+  &:focus {
+    border-color: $color-terracota;
+    outline: none;
+  }
 }
 
 .c-datatable__search {
-	display: flex;
-	align-items: center;
-	background: $color-white;
-	border-radius: $border-radius-lg;
-	gap: $spacing-2;
-	max-width: 320px;
-	padding: $spacing-2 $spacing-3;
-	width: 100%;
+  display: flex;
+  align-items: center;
+  background: $color-white;
+  border-radius: $border-radius-lg;
+  gap: $spacing-2;
+  max-width: 320px;
+  padding: $spacing-2 $spacing-3;
+  width: 100%;
 }
 
 .c-datatable__search-icon {
-	color: $text-color-muted;
-	flex-shrink: 0;
+  color: $text-color-muted;
+  flex-shrink: 0;
 }
 
 .c-datatable__search-input {
-	@include font-size(sm);
+  @include font-size(sm);
 
-	background: none;
-	border: none;
-	color: $color-espresso;
-	outline: none;
-	width: 100%;
+  background: none;
+  border: none;
+  color: $color-espresso;
+  outline: none;
+  width: 100%;
 
-	&::placeholder {
-		color: $text-color-muted;
-	}
+  &::placeholder {
+    color: $text-color-muted;
+  }
 }
 
 .c-datatable__table-wrapper {
-	overflow-x: auto;
+  overflow-x: auto;
 }
 
 .c-datatable__table {
-	border-collapse: collapse;
-	width: 100%;
+  border-collapse: collapse;
+  width: 100%;
 }
 
 .c-datatable__th {
-	@include font-size(xs);
+  @include font-size(xs);
 
-	color: $text-color-muted;
-	font-weight: $font-weight-bold;
-	letter-spacing: 0.03em;
-	padding: $spacing-2;
-	text-align: left;
-	text-transform: uppercase;
-	white-space: nowrap;
+  color: $text-color-muted;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.03em;
+  padding: $spacing-2;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
 
-	@include screen(md) {
-		padding: $spacing-3 $spacing-4;
-	}
+  @include screen(md) {
+    padding: $spacing-3 $spacing-4;
+  }
 
-	&--sortable {
-		cursor: pointer;
+  &--sortable {
+    cursor: pointer;
 
-		&:hover {
-			color: $text-color-highlight;
-		}
-	}
+    &:hover {
+      color: $text-color-highlight;
+    }
+  }
 
-	&--hide-mobile {
-		display: none;
+  &--hide-mobile {
+    display: none;
 
-		@include screen(md) {
-			display: table-cell;
-		}
-	}
+    @include screen(md) {
+      display: table-cell;
+    }
+  }
 }
 
 .c-datatable__td {
-	@include font-size(sm);
+  @include font-size(sm);
 
-	border-top: 1px solid rgba($color-ash, 0.2);
-	color: $text-color;
-	padding: $spacing-2;
+  border-top: 1px solid rgba($color-ash, 0.2);
+  color: $text-color;
+  padding: $spacing-2;
 
-	@include screen(md) {
-		padding: $spacing-3 $spacing-4;
-	}
+  @include screen(md) {
+    padding: $spacing-3 $spacing-4;
+  }
 
-	&--hide-mobile {
-		display: none;
+  &--hide-mobile {
+    display: none;
 
-		@include screen(md) {
-			display: table-cell;
-		}
-	}
+    @include screen(md) {
+      display: table-cell;
+    }
+  }
 }
 
 .c-datatable__row {
-	transition: background $transition-normal;
+  transition: background $transition-normal;
 
-	&--clickable {
-		cursor: pointer;
+  &--clickable {
+    cursor: pointer;
 
-		&:hover {
-			background: rgba($color-white, 0.6);
-		}
-	}
+    &:hover {
+      background: rgba($color-white, 0.6);
+    }
+  }
 
-	&--empty {
-		.c-datatable__td {
-			@include font-size(sm);
+  &--empty {
+    .c-datatable__td {
+      @include font-size(sm);
 
-			color: $text-color-muted;
-			padding: $spacing-8 $spacing-4;
-			text-align: center;
-		}
-	}
+      color: $text-color-muted;
+      padding: $spacing-8 $spacing-4;
+      text-align: center;
+    }
+  }
 }
 
 .c-datatable__pagination {
-	align-items: center;
-	display: flex;
-	gap: $spacing-4;
-	justify-content: center;
-	padding-top: $spacing-2;
+  align-items: center;
+  display: flex;
+  gap: $spacing-4;
+  justify-content: center;
+  padding-top: $spacing-2;
 }
 
 .c-datatable__pagination-info {
-	@include font-size(sm);
+  @include font-size(sm);
 
-	color: $text-color-muted;
+  color: $text-color-muted;
 }
 
 .c-datatable__pagination-btn {
-	@include font-size(sm);
+  @include font-size(sm);
 
-	background: none;
-	border: 1px solid rgba($color-ash, 0.3);
-	border-radius: $border-radius-md;
-	color: $text-color;
-	cursor: pointer;
-	padding: $spacing-1 $spacing-3;
-	transition: border-color $transition-normal, color $transition-normal;
+  background: none;
+  border: 1px solid rgba($color-ash, 0.3);
+  border-radius: $border-radius-md;
+  color: $text-color;
+  cursor: pointer;
+  padding: $spacing-1 $spacing-3;
+  transition:
+    border-color $transition-normal,
+    color $transition-normal;
 
-	&:hover:not(:disabled) {
-		border-color: $color-terracota;
-		color: $color-terracota;
-	}
+  &:hover:not(:disabled) {
+    border-color: $color-terracota;
+    color: $color-terracota;
+  }
 
-	&:disabled {
-		cursor: not-allowed;
-		opacity: 0.35;
-	}
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.35;
+  }
+}
+
+@include screen(md) {
+  .c-datatable__toolbar {
+    flex-direction: row;
+  }
+
+  .c-datatable__toolbar-filters {
+    display: flex;
+  }
 }

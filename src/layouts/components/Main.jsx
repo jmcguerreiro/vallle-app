@@ -1,7 +1,6 @@
 import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 
-import Button from "@/components/Button";
 import { useAuth } from "@/hooks/useAuth";
 import { useMain } from "@/hooks/useMain";
 
@@ -26,7 +25,7 @@ const Main = () => {
         </div>
       )}
 
-      {(header.title || header.actions.length > 0 || header.image) && (
+      {(header.title || header.image) && (
         <div className="s-main__header">
           {header.image && (
             <img
@@ -45,20 +44,6 @@ const Main = () => {
                   {header.description}
                 </p>
               )}
-            </div>
-          )}
-          {header.actions.length > 0 && (
-            <div className="s-main__header-actions">
-              {header.actions.map(({ label, icon: Icon, onClick }) => (
-                <Button
-                  key={label}
-                  display="block"
-                  iconLeft={Icon}
-                  onClick={onClick}
-                >
-                  {label}
-                </Button>
-              ))}
             </div>
           )}
         </div>

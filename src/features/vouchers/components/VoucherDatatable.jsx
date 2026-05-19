@@ -25,11 +25,12 @@ const STATUS_KEYS = {
  * @param {Object} props
  * @param {Array} props.vouchers - Array of voucher objects from the API
  * @param {React.ReactNode} [props.filters] - Optional filter controls
+ * @param {Array} [props.actions] - Optional action buttons rendered in the toolbar (see Datatable)
  * @param {number} [props.pageSize] - Rows per page
  * @param {Object} [props.serverPagination] - Server-side pagination config
  * @returns {JSX.Element}
  */
-const VoucherDatatable = ({ vouchers, filters, pageSize, serverPagination }) => {
+const VoucherDatatable = ({ vouchers, filters, actions, pageSize, serverPagination }) => {
   // Hooks
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -92,6 +93,7 @@ const VoucherDatatable = ({ vouchers, filters, pageSize, serverPagination }) => 
   // Render
   return (
     <Datatable
+      actions={actions}
       columns={columns}
       data={vouchers}
       filters={filters}
