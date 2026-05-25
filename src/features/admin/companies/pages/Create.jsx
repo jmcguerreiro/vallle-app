@@ -11,9 +11,10 @@ import Input from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { COMPANY_CATEGORIES } from '@/constants/company-categories'
 import { adminCompanyPath } from '@/constants/routes'
+import { useQueryClient } from '@tanstack/react-query'
+
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { post } from '@/services/api'
 
@@ -30,7 +31,7 @@ const AdminCompanyCreate = () => {
   const location = useLocation()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
+  const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { register, handleSubmit, control, formState: { errors } } = useForm()
 
@@ -54,7 +55,7 @@ const AdminCompanyCreate = () => {
 
     try {
       const { data: { store } } = await post('/api/admin/companies', values)
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['admin', 'companies'] })
       addToast(t('features.admin.companies.create.success'), 'success')
       const backgroundLocation = location.state?.backgroundLocation || location
       navigate(adminCompanyPath(store.id), {
@@ -66,7 +67,7 @@ const AdminCompanyCreate = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, location, navigate, t, triggerRefresh])
+  }, [addToast, location, navigate, t, queryClient])
 
   // Effects
   useEffect(() => {

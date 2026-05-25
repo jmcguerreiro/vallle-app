@@ -8,9 +8,10 @@ import Form from '@/components/forms/Form'
 import FormActions from '@/components/forms/FormActions'
 import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
+import { useQueryClient } from '@tanstack/react-query'
+
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 
@@ -28,7 +29,7 @@ const AdminUserEdit = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
+  const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { register, handleSubmit, reset, formState: { errors } } = useForm()
 
@@ -48,7 +49,7 @@ const AdminUserEdit = () => {
 
     try {
       await put(`/api/admin/users/${id}`, values)
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['admin', 'users'] })
       addToast(t('features.admin.users.edit.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -60,7 +61,7 @@ const AdminUserEdit = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [id, addToast, navigate, t, triggerRefresh])
+  }, [id, addToast, navigate, t, queryClient])
 
   // Effects
   useEffect(() => {

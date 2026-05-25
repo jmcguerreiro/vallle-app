@@ -1,56 +1,57 @@
-import { useTranslation } from "react-i18next";
 import { Outlet } from "react-router-dom";
 
-import { useAuth } from "@/hooks/useAuth";
+import Button from "@/components/Button";
 import { useMain } from "@/hooks/useMain";
 
 /**
  * Layout: Main
- * Main content area with optional suspended banner, page-level header, and route outlet.
+ * Main content area with page-level header and route outlet.
  * @component
  * @returns {JSX.Element}
  */
 const Main = () => {
   // Hooks
-  const { t } = useTranslation();
-  const { isStoreSuspended } = useAuth();
   const { header } = useMain();
 
   // Render
   return (
     <main className="s-main">
-      {isStoreSuspended && (
-        <div className="s-main__banner" role="alert">
-          {t("features.storeSuspended.banner")}
+      <div className="s-main__wrapper">
+        {(header.title || header.image || header.actions?.length > 0) && (
+          <div className="s-main__header">
+            {(header.title || header.description) && (
+              <div className="s-main__header-title-description">
+                {header.title && (
+                  <h1 className="s-main__header-title">{header.title}</h1>
+                )}
+                {header.description && (
+                  <p className="s-main__header-description">
+                    {header.description}
+                  </p>
+                )}
+              </div>
+            )}
+            {header.actions?.length > 0 && (
+              <div className="s-main__header-actions">
+                {header.actions.map((action, index) => (
+                  <Button
+                    key={action.label || index}
+                    iconLeft={action.icon}
+                    onClick={action.onClick}
+                    state={action.state}
+                    to={action.to}
+                    variant={action.variant || "fill"}
+                  >
+                    {action.label}
+                  </Button>
+                ))}
+              </div>
+            )}
+          </div>
+        )}
+        <div className="s-main__body">
+          <Outlet />
         </div>
-      )}
-
-      {(header.title || header.image) && (
-        <div className="s-main__header">
-          {header.image && (
-            <img
-              alt=""
-              className="s-main__header-image"
-              src={`/images/pages/${header.image}.svg`}
-            />
-          )}
-          {(header.title || header.description) && (
-            <div className="s-main__header-titles">
-              {header.title && (
-                <h1 className="s-main__header-title">{header.title}</h1>
-              )}
-              {header.description && (
-                <p className="s-main__header-description">
-                  {header.description}
-                </p>
-              )}
-            </div>
-          )}
-        </div>
-      )}
-
-      <div className="s-main__content">
-        <Outlet />
       </div>
     </main>
   );

@@ -1,13 +1,12 @@
 import { useCallback } from 'react'
 
-import { AlertCircle, Check, Info, X } from 'lucide-react'
-
 import { useToast } from '@/hooks/useToast'
+import { IconAlertCircle, IconCheck, IconInfo, IconX } from '@/utils/icons'
 
 const ICON_MAP = {
-  success: Check,
-  error: AlertCircle,
-  info: Info,
+  success: IconCheck,
+  error: IconAlertCircle,
+  info: IconInfo,
 }
 
 /**
@@ -31,7 +30,7 @@ const Toast = () => {
   return (
     <div className="c-toast-container">
       {toasts.map((toast) => {
-        const Icon = ICON_MAP[toast.type] || Info
+        const Icon = ICON_MAP[toast.type] || IconInfo
 
         return (
           <div
@@ -45,7 +44,7 @@ const Toast = () => {
               className="c-toast__close"
               onClick={() => handleClose(toast.id)}
             >
-              <X size={16} />
+              <IconX size={16} />
             </button>
           </div>
         )

@@ -1,29 +1,28 @@
-.c-empty-state {
+.c-error-state {
   align-items: center;
   display: flex;
   flex-direction: column;
 }
 
-.c-empty-state__image {
+.c-error-state__image {
   height: to-rem(240);
   width: to-rem(240);
 }
 
-.c-empty-state__description {
+.c-error-state__description {
   text-align: center;
-  text-wrap: balance;
 
   &:not(:last-child) {
     margin-bottom: $spacing-6;
   }
 }
 
-.c-empty-state__action {
+.c-error-state__action {
   width: 100%;
 }
 
 @include screen(md) {
-  .c-empty-state__image {
+  .c-error-state__image {
     height: to-rem(360);
     width: to-rem(360);
   }

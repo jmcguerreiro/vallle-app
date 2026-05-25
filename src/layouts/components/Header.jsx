@@ -2,19 +2,18 @@ import { useCallback, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 
-import {
-  EllipsisVertical as IconEllipsisVertical,
-  CircleHelp as IconHelp,
-  LogOut as IconLogOut,
-  Pencil as IconPencil,
-  Store as IconStore,
-  X as IconX,
-} from "lucide-react";
-
 import Button from "@/components/Button";
 import StoreSelect from "@/components/StoreSelect";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  IconCircleHelp,
+  IconEllipsisVertical,
+  IconLogOut,
+  IconPencil,
+  IconStore,
+  IconX,
+} from "@/utils/icons";
 
 /**
  * Layout: Header
@@ -129,7 +128,7 @@ const Header = () => {
 
         <div className="s-header__extra">
           <a aria-label={t("nav.help")} className="s-header__help" href="#">
-            <IconHelp
+            <IconCircleHelp
               aria-hidden="true"
               className="s-header__help-icon"
               strokeWidth="1.5"

@@ -1,6 +1,5 @@
 .c-loader {
-  display: inline-flex;
-  width: 40px;
+  animation: loader-animation 1s infinite alternate;
   aspect-ratio: 4;
   background:
     radial-gradient(
@@ -14,14 +13,16 @@
       $color-espresso 90%,
       transparent
     );
-  background-size: 100% 100%;
   background-repeat: no-repeat;
-  animation: loader-dots 1s infinite alternate;
+  background-size: 100% 100%;
+  display: inline-block;
+  height: 12px;
+  width: 40px;
 }
 
-@keyframes loader-dots {
+@keyframes loader-animation {
   to {
-    width: 8px;
     aspect-ratio: 1;
+    width: 8px;
   }
 }

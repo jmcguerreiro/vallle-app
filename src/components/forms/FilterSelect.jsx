@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown } from '@/utils/icons'
 
 /**
  * Component: FilterSelect
@@ -30,7 +30,7 @@ const FilterSelect = ({ value, onChange, options, ariaLabel, className = '' }) =
           </option>
         ))}
       </select>
-      <ChevronDown className="c-filter-select__icon" size={14} />
+      <IconChevronDown className="c-filter-select__icon" size={14} />
     </div>
   )
 }

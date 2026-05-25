@@ -1,7 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 
-import { ChevronLeft as IconPrev, ChevronRight as IconNext } from 'lucide-react'
 import {
   ResponsiveContainer,
   LineChart,
@@ -18,6 +17,7 @@ import { useMain } from '@/hooks/useMain'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
+import { IconChevronLeft, IconChevronRight } from '@/utils/icons'
 
 const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
 
@@ -125,7 +125,7 @@ const AdminDashboard = () => {
               onClick={handlePrevYear}
               type="button"
             >
-              <IconPrev size={18} />
+              <IconChevronLeft size={18} />
             </button>
             <span className="c-stats__year-label">{year}</span>
             <button
@@ -134,7 +134,7 @@ const AdminDashboard = () => {
               onClick={handleNextYear}
               type="button"
             >
-              <IconNext size={18} />
+              <IconChevronRight size={18} />
             </button>
           </div>
         </div>

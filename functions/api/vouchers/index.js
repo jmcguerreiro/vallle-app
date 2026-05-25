@@ -1,6 +1,6 @@
-import { getAuthUser } from '../auth/_helpers.js'
 import { getStoreStatus, requireStore } from '../_store.js'
 import { generateUlid } from '../_ulid.js'
+import { getAuthUser } from '../auth/_helpers.js'
 
 /**
  * Characters used for voucher code generation.
@@ -46,14 +46,73 @@ export async function onRequestGet(context) {
 
   try {
     const url = new URL(request.url)
-    const limit = Math.min(Math.max(parseInt(url.searchParams.get('limit'), 10) || 50, 1), 200)
-    const offset = Math.max(parseInt(url.searchParams.get('offset'), 10) || 0, 0)
+    const limit = Math.min(Math.max(Number.parseInt(url.searchParams.get('limit'), 10) || 50, 1), 200)
+    const offset = Math.max(Number.parseInt(url.searchParams.get('offset'), 10) || 0, 0)
+    const search = (url.searchParams.get('search') || '').trim()
+    const status = url.searchParams.get('status') || 'all'
+
+    const where = ['store_id = ?']
+    const params = [storeId]
+
+    if (search) {
+      const like = `%${search.replaceAll(/[\\%_]/g, (c) => `\\${c}`)}%`
+      const clauses = [
+        String.raw`code LIKE ? ESCAPE '\'`,
+        String.raw`buyer LIKE ? ESCAPE '\'`,
+      ]
+      const searchParams = [like, like]
+
+      // Numeric search — match amount/balance. Input is in euros (e.g. "50"
+      // or "50.5"); DB stores cents. Match if the row's cent value, when
+      // formatted as a 2-decimal euro string, contains the query.
+      const numeric = search.replace(',', '.')
+      if (/^\d+(\.\d{1,2})?$/.test(numeric)) {
+        clauses.push(
+          "printf('%.2f', amount / 100.0) LIKE ?",
+          "printf('%.2f', balance / 100.0) LIKE ?",
+        )
+        searchParams.push(`%${numeric}%`, `%${numeric}%`)
+      }
+
+      where.push(`(${clauses.join(' OR ')})`)
+      params.push(...searchParams)
+    }
+
+    const now = new Date().toISOString()
+    switch (status) {
+    case 'archived': {
+      where.push("status = 'archived'")
+
+    break;
+    }
+    case 'expired': {
+      where.push("status = 'active' AND expires_at < ?")
+      params.push(now)
+
+    break;
+    }
+    case 'used': {
+      where.push("status = 'active' AND balance = 0 AND expires_at >= ?")
+      params.push(now)
+
+    break;
+    }
+    case 'active': {
+      where.push("status = 'active' AND balance > 0 AND expires_at >= ?")
+      params.push(now)
+
+    break;
+    }
+    // No default
+    }
+
+    const whereSql = where.join(' AND ')
 
     const [countResult, dataResult] = await env.DB.batch([
-      env.DB.prepare('SELECT COUNT(*) as total FROM vouchers WHERE store_id = ?').bind(storeId),
+      env.DB.prepare(`SELECT COUNT(*) as total FROM vouchers WHERE ${whereSql}`).bind(...params),
       env.DB.prepare(
-        'SELECT * FROM vouchers WHERE store_id = ? ORDER BY created_at DESC LIMIT ? OFFSET ?',
-      ).bind(storeId, limit, offset),
+        `SELECT * FROM vouchers WHERE ${whereSql} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      ).bind(...params, limit, offset),
     ])
 
     const total = countResult.results[0].total

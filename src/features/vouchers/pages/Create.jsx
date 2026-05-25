@@ -3,12 +3,13 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+
 import Button from "@/components/Button";
 import { ROUTES, voucherPath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
-import { useRefresh } from "@/hooks/useRefresh";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
 
@@ -27,8 +28,8 @@ const VoucherCreate = () => {
   const { isStoreSuspended, activeStore } = useAuth();
   const { setHeader: setMainHeader } = useMain();
   const { setHeader: setModalHeader, isModal } = useModal();
-  const { triggerRefresh } = useRefresh();
   const { addToast } = useToast();
+  const queryClient = useQueryClient();
 
   const {
     register,
@@ -38,7 +39,6 @@ const VoucherCreate = () => {
 
   // State
   const [serverError, setServerError] = useState(null);
-  const [isSubmitting, setIsSubmitting] = useState(false);
 
   // Derived State
   const title = t("features.vouchers.create.heading");
@@ -62,37 +62,38 @@ const VoucherCreate = () => {
     return t("features.vouchers.create.validUntil", { date: formatted });
   }, [expiryDate, i18n.language, t]);
 
+  // Mutations
+  const createVoucher = useMutation({
+    mutationFn: (payload) => post("/api/vouchers", payload),
+    onSuccess: ({ data: voucher }) => {
+      queryClient.invalidateQueries({ queryKey: ["vouchers"] });
+      queryClient.invalidateQueries({ queryKey: ["stats"] });
+      addToast(t("features.vouchers.create.success"), "success");
+      const backgroundLocation =
+        location.state?.backgroundLocation || location;
+      navigate(voucherPath(voucher.id), {
+        replace: true,
+        state: { backgroundLocation },
+      });
+    },
+    onError: (error) => {
+      setServerError(
+        error.message || t("features.vouchers.create.error.generic"),
+      );
+    },
+  });
+
   // Handlers
   const onSubmit = useCallback(
-    async (values) => {
+    (values) => {
       setServerError(null);
-      setIsSubmitting(true);
-
-      try {
-        const payload = {
-          amount: Math.round(Number.parseFloat(values.amount) * 100),
-          buyer: values.buyer?.trim() || null,
-          expires_at: expiryDate.toISOString(),
-        };
-
-        const { data: voucher } = await post("/api/vouchers", payload);
-        triggerRefresh();
-        addToast(t("features.vouchers.create.success"), "success");
-        const backgroundLocation =
-          location.state?.backgroundLocation || location;
-        navigate(voucherPath(voucher.id), {
-          replace: true,
-          state: { backgroundLocation },
-        });
-      } catch (error) {
-        setServerError(
-          error.message || t("features.vouchers.create.error.generic"),
-        );
-      } finally {
-        setIsSubmitting(false);
-      }
+      createVoucher.mutate({
+        amount: Math.round(Number.parseFloat(values.amount) * 100),
+        buyer: values.buyer?.trim() || null,
+        expires_at: expiryDate.toISOString(),
+      });
     },
-    [addToast, expiryDate, location, navigate, t, triggerRefresh],
+    [createVoucher, expiryDate],
   );
 
   // Effects
@@ -170,7 +171,7 @@ const VoucherCreate = () => {
         <Button
           display="block"
           fullWidth={true}
-          isProcessing={isSubmitting}
+          isProcessing={createVoucher.isPending}
           type="submit"
         >
           {t("features.vouchers.create.submit")}

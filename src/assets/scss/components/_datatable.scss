@@ -1,9 +1,7 @@
-.p-vouchers {
-  width: 100%;
-}
 .c-datatable {
   display: flex;
   flex-direction: column;
+  width: 100%;
 }
 
 .c-datatable__toolbar {
@@ -29,6 +27,8 @@
 }
 
 .c-datatable__toolbar-search-input {
+  width: 100%;
+
   &::placeholder {
     color: $text-color-muted;
   }

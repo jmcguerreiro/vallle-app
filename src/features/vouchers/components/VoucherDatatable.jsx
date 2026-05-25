@@ -30,7 +30,7 @@ const STATUS_KEYS = {
  * @param {Object} [props.serverPagination] - Server-side pagination config
  * @returns {JSX.Element}
  */
-const VoucherDatatable = ({ vouchers, filters, actions, pageSize, serverPagination }) => {
+const VoucherDatatable = ({ vouchers, filters, actions, pageSize, serverPagination, serverSearch }) => {
   // Hooks
   const { t } = useTranslation()
   const navigate = useNavigate()
@@ -100,6 +100,7 @@ const VoucherDatatable = ({ vouchers, filters, actions, pageSize, serverPaginati
       onRowClick={handleRowClick}
       pageSize={pageSize}
       serverPagination={serverPagination}
+      serverSearch={serverSearch}
     />
   )
 }

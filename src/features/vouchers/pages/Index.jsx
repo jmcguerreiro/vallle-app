@@ -2,19 +2,22 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { MailPlus } from "lucide-react";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import EmptyState from "@/components/EmptyState";
+import ErrorState from "@/components/ErrorState";
 import FilterSelect from "@/components/forms/FilterSelect";
+import Loader from "@/components/Loader";
 import { voucherCreatePath } from "@/constants/routes";
 import VoucherDatatable from "@/features/vouchers/components/VoucherDatatable";
 import { isVoucherExpired } from "@/features/vouchers/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useMain } from "@/hooks/useMain";
-import { useRefresh } from "@/hooks/useRefresh";
 import { get } from "@/services/api";
+import { IconMailPlus } from "@/utils/icons";
 
 const STATUS_ALL = "all";
+const SEARCH_DEBOUNCE_MS = 300;
 
 /**
  * Derives the display status for a voucher based on its data.
@@ -43,58 +46,69 @@ const VouchersIndex = () => {
   const navigate = useNavigate();
   const { isStoreSuspended } = useAuth();
   const { setHeader } = useMain();
-  const { refreshKey } = useRefresh();
 
   // State
-  const [vouchers, setVouchers] = useState([]);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
   const [pageIndex, setPageIndex] = useState(0);
-  const [totalCount, setTotalCount] = useState(0);
+  const [searchInput, setSearchInput] = useState("");
+  const [debouncedSearch, setDebouncedSearch] = useState("");
 
   // Constants
-  const PAGE_SIZE = 50;
+  const PAGE_SIZE = 5;
+
+  // Queries
+  const {
+    data: response,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: [
+      "vouchers",
+      {
+        page: pageIndex,
+        pageSize: PAGE_SIZE,
+        status: statusFilter,
+        search: debouncedSearch,
+      },
+    ],
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(pageIndex * PAGE_SIZE),
+      });
+      if (statusFilter !== STATUS_ALL) params.set("status", statusFilter);
+      if (debouncedSearch) params.set("search", debouncedSearch);
+      return get(`/api/vouchers?${params.toString()}`, { signal });
+    },
+    placeholderData: keepPreviousData,
+  });
+
+  const totalCount = response?.meta?.total ?? 0;
+  const hasActiveFilters =
+    statusFilter !== STATUS_ALL || debouncedSearch !== "";
 
   // Derived State
-  const enrichedVouchers = useMemo(
-    () => vouchers.map((v) => ({ ...v, status: deriveStatus(v) })),
-    [vouchers],
-  );
-
-  const filteredVouchers = useMemo(() => {
-    if (statusFilter === STATUS_ALL) return enrichedVouchers;
-    return enrichedVouchers.filter((v) => v.status === statusFilter);
-  }, [enrichedVouchers, statusFilter]);
+  const enrichedVouchers = useMemo(() => {
+    const vouchers = response?.data ?? [];
+    return vouchers.map((v) => ({ ...v, status: deriveStatus(v) }));
+  }, [response]);
 
   // Handlers
   const handleCreate = useCallback(() => {
     navigate(voucherCreatePath(), { state: { backgroundLocation: location } });
   }, [navigate, location]);
 
-  const fetchVouchers = useCallback(
-    async (page = 0) => {
-      setIsLoading(true);
-      setError(null);
-
-      try {
-        const offset = page * PAGE_SIZE;
-        const { data, meta } = await get(
-          `/api/vouchers?limit=${PAGE_SIZE}&offset=${offset}`,
-        );
-        setVouchers(data);
-        setTotalCount(meta.total);
-      } catch (error_) {
-        setError(error_.message || t("common.error"));
-      } finally {
-        setIsLoading(false);
-      }
-    },
-    [t],
-  );
-
   const handleStatusFilter = useCallback((event) => {
     setStatusFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearchInput(value);
+  }, []);
+
+  const handlePageChange = useCallback((newPageIndex) => {
+    setPageIndex(newPageIndex);
   }, []);
 
   // Effects
@@ -103,46 +117,57 @@ const VouchersIndex = () => {
       title: t("features.vouchers.heading"),
       description: t("features.vouchers.description"),
       image: "vouchers",
+      actions: isStoreSuspended
+        ? []
+        : [
+            {
+              label: t("features.vouchers.create.heading"),
+              icon: IconMailPlus,
+              onClick: handleCreate,
+            },
+          ],
     });
     return () => setHeader();
-  }, [t, setHeader]);
-
-  const handlePageChange = useCallback(
-    (newPageIndex) => {
-      setPageIndex(newPageIndex);
-      fetchVouchers(newPageIndex);
-    },
-    [fetchVouchers],
-  );
+  }, [t, setHeader, isStoreSuspended, handleCreate]);
 
   useEffect(() => {
-    fetchVouchers(pageIndex);
-  }, [fetchVouchers, refreshKey]);
+    const handle = setTimeout(() => {
+      setDebouncedSearch(searchInput.trim());
+      setPageIndex(0);
+    }, SEARCH_DEBOUNCE_MS);
+    return () => clearTimeout(handle);
+  }, [searchInput]);
 
   // Render
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="p-vouchers">
-        <p>{t("common.loading")}</p>
+        <div className="p-vouchers__loading">
+          <Loader />
+        </div>
       </div>
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="p-vouchers">
-        <p>{t("common.error")}</p>
+        <div className="p-vouchers__error">
+          <EmptyState description={t("common.error")} image="vouchers--error" />
+        </div>
       </div>
     );
   }
 
-  if (filteredVouchers.length === 0) {
+  if (true || (enrichedVouchers.length === 0 && !hasActiveFilters)) {
     return (
       <div className="p-vouchers">
-        <EmptyState
-          description={t("features.vouchers.list.empty")}
-          image="empty-vouchers"
-        />
+        <div className="p-vouchers__empty">
+          <EmptyState
+            description={t("features.vouchers.list.empty")}
+            image="vouchers"
+          />
+        </div>
       </div>
     );
   }
@@ -169,7 +194,7 @@ const VouchersIndex = () => {
     : [
         {
           label: t("features.vouchers.create.heading"),
-          icon: MailPlus,
+          icon: IconMailPlus,
           onClick: handleCreate,
         },
       ];
@@ -185,7 +210,11 @@ const VouchersIndex = () => {
           pageIndex,
           onPageChange: handlePageChange,
         }}
-        vouchers={filteredVouchers}
+        serverSearch={{
+          value: searchInput,
+          onChange: handleSearchChange,
+        }}
+        vouchers={enrichedVouchers}
       />
     </div>
   );

@@ -2,16 +2,16 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { Plus as IconPlus } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
 import Button from '@/components/Button'
 import Datatable from '@/components/Datatable'
 import FilterSelect from '@/components/forms/FilterSelect'
 import { settingsUserCreatePath, settingsUserEditPath } from '@/constants/routes'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatDateTime } from '@/utils/dates'
+import { IconPlus } from '@/utils/icons'
 
 /**
  * Component: CompanyUsers
@@ -24,27 +24,20 @@ const CompanyUsers = () => {
   const { t } = useTranslation()
   const navigate = useNavigate()
   const location = useLocation()
-  const { refreshKey } = useRefresh()
   const { addToast } = useToast()
 
   // State
-  const [users, setUsers] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('all')
 
-  // Handlers
-  const fetchUsers = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      const response = await get('/api/company/users')
-      setUsers(response.data)
-    } catch {
-      addToast(t('features.company.users.error.generic'), 'error')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [addToast, t])
+  // Queries
+  const { data: response, isPending, isError } = useQuery({
+    queryKey: ['company', 'users'],
+    queryFn: ({ signal }) => get('/api/company/users', { signal }),
+  })
 
+  const users = useMemo(() => response?.data ?? [], [response])
+
+  // Handlers
   const handleRowClick = useCallback((row) => {
     navigate(settingsUserEditPath(row.id), {
       state: { backgroundLocation: location },
@@ -106,11 +99,11 @@ const CompanyUsers = () => {
 
   // Effects
   useEffect(() => {
-    fetchUsers()
-  }, [fetchUsers, refreshKey])
+    if (isError) addToast(t('features.company.users.error.generic'), 'error')
+  }, [isError, addToast, t])
 
   // Render
-  if (isLoading) {
+  if (isPending) {
     return <p>{t('common.loading')}</p>
   }
 

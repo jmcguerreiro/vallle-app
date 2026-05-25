@@ -1,5 +1,5 @@
 .s-header {
-  padding: $spacing-3;
+  padding: $spacing-6;
   position: sticky;
   top: 0;
   width: 100%;
@@ -131,6 +131,6 @@
 
 @include screen(md) {
   .s-header {
-    padding: $spacing-6;
+    padding: $spacing-6 $spacing-9;
   }
 }

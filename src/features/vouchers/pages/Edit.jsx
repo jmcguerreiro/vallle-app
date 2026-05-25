@@ -3,20 +3,20 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate, useParams } from 'react-router-dom'
 
-import { Archive, RotateCcw } from 'lucide-react'
-
 import Button from '@/components/Button'
 import Form from '@/components/forms/Form'
 import FormActions from '@/components/forms/FormActions'
 import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
 import { isVoucherExpired } from '@/features/vouchers/utils'
+import { useQueryClient } from '@tanstack/react-query'
+
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
+import { IconArchive, IconRotateCcw } from '@/utils/icons'
 
 /**
  * Component: VoucherEdit
@@ -33,7 +33,7 @@ const VoucherEdit = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
+  const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors }, reset } = useForm()
 
@@ -106,7 +106,7 @@ const VoucherEdit = () => {
         buyer: values.buyer || null,
         expires_at: new Date(values.expires_at).toISOString(),
       })
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] })
       addToast(t('features.vouchers.edit.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -114,7 +114,7 @@ const VoucherEdit = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, id, navigate, t, triggerRefresh])
+  }, [addToast, id, navigate, t, queryClient])
 
   const handleToggleArchive = useCallback(async () => {
     const nextStatus = isArchived ? 'active' : 'archived'
@@ -124,7 +124,8 @@ const VoucherEdit = () => {
     try {
       const { data } = await put(`/api/vouchers/${id}`, { status: nextStatus })
       setVoucher(data)
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
       addToast(
         t(`features.vouchers.edit.${isArchived ? 'restoreSuccess' : 'archiveSuccess'}`),
         'success',
@@ -132,7 +133,7 @@ const VoucherEdit = () => {
     } catch (error) {
       addToast(error.message || t('features.vouchers.edit.error.generic'), 'error')
     }
-  }, [addToast, id, isArchived, t, triggerRefresh])
+  }, [addToast, id, isArchived, t, queryClient])
 
   // Effects
   useEffect(() => {
@@ -140,7 +141,7 @@ const VoucherEdit = () => {
       ? [
         {
           label: t(`features.vouchers.edit.${isArchived ? 'restore' : 'archive'}`),
-          icon: isArchived ? RotateCcw : Archive,
+          icon: isArchived ? IconRotateCcw : IconArchive,
           onClick: handleToggleArchive,
           variant: 'ghost',
         },

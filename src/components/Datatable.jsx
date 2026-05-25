@@ -9,9 +9,8 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
-import { Search } from "lucide-react";
-
 import Button from "@/components/Button";
+import { IconSearch } from "@/utils/icons";
 
 /**
  * Component: Datatable
@@ -22,7 +21,7 @@ import Button from "@/components/Button";
  * @param {Object} props
  * @param {Array} props.columns - TanStack column definitions
  * @param {Array} props.data - Row data array
- * @param {number} [props.pageSize=10] - Rows per page
+ * @param {number} [props.pageSize=25] - Rows per page
  * @param {Function} [props.onRowClick] - Optional row click handler, receives the row's original data
  * @param {React.ReactNode} [props.filters] - Optional filter controls rendered in the toolbar
  * @param {Array<{label: string, icon: Component, onClick: Function, skin?: string}>} [props.actions] - Optional icon-only action buttons rendered in the toolbar. `label` is used as the tooltip and aria-label.
@@ -31,27 +30,33 @@ import Button from "@/components/Button";
  * @param {number} props.serverPagination.total - Total record count from the server
  * @param {number} props.serverPagination.pageIndex - Current zero-based page index
  * @param {Function} props.serverPagination.onPageChange - Callback receiving the new page index
+ * @param {Object} [props.serverSearch] - Server-side search config. When provided, the search input is controlled by the parent and local filtering is disabled.
+ * @param {string} props.serverSearch.value - Current search value
+ * @param {Function} props.serverSearch.onChange - Callback receiving the new search value
  * @returns {JSX.Element}
  */
 const Datatable = ({
   columns,
   data,
-  pageSize = 2,
+  pageSize = 25,
   onRowClick,
   filters,
   actions,
   className = "",
   serverPagination,
+  serverSearch,
 }) => {
   // Hooks
   const { t } = useTranslation();
 
   // State
-  const [globalFilter, setGlobalFilter] = useState("");
+  const [localGlobalFilter, setLocalGlobalFilter] = useState("");
   const [sorting, setSorting] = useState([]);
 
   // Derived State
   const isServerPaginated = !!serverPagination;
+  const isServerSearch = !!serverSearch;
+  const globalFilter = isServerSearch ? serverSearch.value : localGlobalFilter;
   const serverPageCount = isServerPaginated
     ? Math.ceil(serverPagination.total / pageSize)
     : undefined;
@@ -66,10 +71,10 @@ const Datatable = ({
         pagination: { pageIndex: serverPagination.pageIndex, pageSize },
       }),
     },
-    onGlobalFilterChange: setGlobalFilter,
+    onGlobalFilterChange: isServerSearch ? serverSearch.onChange : setLocalGlobalFilter,
     onSortingChange: setSorting,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: isServerPaginated ? undefined : getFilteredRowModel(),
+    getFilteredRowModel: isServerSearch || isServerPaginated ? undefined : getFilteredRowModel(),
     getSortedRowModel: getSortedRowModel(),
     getPaginationRowModel: isServerPaginated
       ? undefined
@@ -86,9 +91,16 @@ const Datatable = ({
       : table.getState().pagination.pageIndex) + 1;
 
   // Handlers
-  const handleSearchChange = useCallback((event) => {
-    setGlobalFilter(event.target.value);
-  }, []);
+  const handleSearchChange = useCallback(
+    (event) => {
+      if (isServerSearch) {
+        serverSearch.onChange(event.target.value);
+      } else {
+        setLocalGlobalFilter(event.target.value);
+      }
+    },
+    [isServerSearch, serverSearch],
+  );
 
   const handleRowClick = useCallback(
     (row) => {
@@ -123,7 +135,7 @@ const Datatable = ({
     <div className={`c-datatable${className ? ` ${className}` : ""}`}>
       <div className="c-datatable__toolbar">
         <div className="c-datatable__toolbar-search">
-          <Search className="c-datatable__toolbar-search-icon" size={16} />
+          <IconSearch className="c-datatable__toolbar-search-icon" size={16} />
           <input
             className="c-datatable__toolbar-search-input"
             onChange={handleSearchChange}

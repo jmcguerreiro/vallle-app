@@ -134,12 +134,16 @@ Every exported component or hook **must** have a JSDoc block.
 Organize the code inside the component or hook using comment headers in this exact order:
 
 1. `// Hooks` (Router, Contexts, i18n, etc.)
-2. `// State` (useState, useReducer)
-3. `// Refs`
-4. `// Derived State` (Variables calculated from props/state, useMemo)
-5. `// Handlers` (Functions interacting with UI/Events. **Must use `useCallback`**)
-6. `// Effects` (useEffect)
-7. `// Render` (The return statement)
+2. `// Queries` (TanStack `useQuery` calls — server reads)
+3. `// Mutations` (TanStack `useMutation` calls — server writes)
+4. `// State` (useState, useReducer)
+5. `// Refs`
+6. `// Derived State` (Variables calculated from props/state, useMemo)
+7. `// Handlers` (Functions interacting with UI/Events. **Must use `useCallback`**)
+8. `// Effects` (useEffect)
+9. `// Render` (The return statement)
+
+Queries and Mutations sit above local State because they represent remote/server state and the data they produce is consumed by Derived State, Handlers, and Effects below. Omit the section header if the component has no queries or mutations.
 
 ### 5.4 Performance & Logic Patterns
 
@@ -323,7 +327,77 @@ const backgroundLocation = location.state?.backgroundLocation
 </Modal>
 ```
 
-## 9. Design Tokens
+## 9. Data Fetching (TanStack Query)
+
+All client-side data fetching goes through [TanStack Query](https://tanstack.com/query). A single `QueryClient` is provided at the app root in `src/main.jsx`. Never call `useEffect` + `fetch`/`get()` to load data — use `useQuery`. Never call `triggerRefresh()`-style global invalidation — use `useMutation` + targeted `queryClient.invalidateQueries(...)`.
+
+### 9.1 Reads — `useQuery`
+
+```javascript
+const { data: response, isPending, isError } = useQuery({
+  queryKey: ['vouchers', { page: pageIndex, pageSize: PAGE_SIZE }],
+  queryFn: ({ signal }) =>
+    get(`/api/vouchers?limit=${PAGE_SIZE}&offset=${pageIndex * PAGE_SIZE}`, { signal }),
+})
+```
+
+- **`queryKey`**: An array used as the cache key. Include any parameter (id, page, filter) that should produce a separate cache entry. Convention: `[domain, subdomain, params]` — e.g. `['vouchers']`, `['admin', 'companies']`, `['stats']`.
+- **`queryFn`**: Always destructure `signal` and pass it to `get()` — that's how cancellation works.
+- **`isPending` vs `isLoading`**: Use `isPending` (true when there's no data yet). `isFetching` is for showing background refetch indicators.
+- **Pagination**: Add `placeholderData: keepPreviousData` to keep showing the previous page's data while the new page loads.
+
+### 9.2 Writes — `useMutation`
+
+```javascript
+const queryClient = useQueryClient()
+
+const createVoucher = useMutation({
+  mutationFn: (payload) => post('/api/vouchers', payload),
+  onSuccess: ({ data: voucher }) => {
+    queryClient.invalidateQueries({ queryKey: ['vouchers'] })
+    queryClient.invalidateQueries({ queryKey: ['stats'] })
+    addToast(t('features.vouchers.create.success'), 'success')
+    navigate(voucherPath(voucher.id), { replace: true, state: { backgroundLocation } })
+  },
+  onError: (error) => {
+    setServerError(error.message || t('features.vouchers.create.error.generic'))
+  },
+})
+
+// In the form submit handler:
+createVoucher.mutate(payload)
+```
+
+- **Trigger with `.mutate(payload)`**, not by calling `mutationFn` directly.
+- **Use `createVoucher.isPending`** for submit-button loading state instead of a separate `useState`.
+- **`onSuccess` / `onError`** replace the old `try/catch/finally`.
+
+### 9.3 Cache invalidation
+
+After a successful mutation, invalidate the queries that should refetch:
+
+```javascript
+queryClient.invalidateQueries({ queryKey: ['vouchers'] })
+```
+
+`invalidateQueries` matches by prefix — `['vouchers']` matches `['vouchers', { page: 0 }]`, `['vouchers', { page: 1 }]`, etc. Pick the most specific prefix that covers the lists you need refreshed. Avoid invalidating unrelated domains (don't invalidate `['users']` when creating a voucher).
+
+Cross-domain invalidations are fine when warranted — e.g. creating a voucher invalidates both `['vouchers']` and `['stats']` because the dashboard stat depends on voucher count.
+
+### 9.4 Query key conventions
+
+| Resource | Key |
+| --- | --- |
+| Voucher list (current store) | `['vouchers', { page, pageSize }]` |
+| Dashboard stats | `['stats']` |
+| Company users | `['company', 'users']` |
+| Admin: users | `['admin', 'users']` |
+| Admin: companies | `['admin', 'companies']` |
+| Admin: commissions | `['admin', 'commissions']` |
+
+When adding a new resource, follow the pattern: namespace first (e.g. `'admin'`), then the resource name, then any parameters as a plain object.
+
+## 10. Design Tokens
 
 Use the Vallle brand palette in all UI work:
 
@@ -337,7 +411,7 @@ Use the Vallle brand palette in all UI work:
 - **Body font:** DM Sans Light
 - **Tone:** Warm, personal, local — not corporate.
 
-## 10. Living Documentation
+## 11. Living Documentation
 
 `documentation.md` is the single source of truth for the project — what Vallle is, how it works, the schema, infrastructure decisions, and setup steps. It must be kept up to date as the project evolves.
 
@@ -345,7 +419,7 @@ Use the Vallle brand palette in all UI work:
 - **What to update**: The relevant section(s) in `documentation.md`. Add a new row to the decision log when a non-trivial choice is made.
 - **Agents must update it proactively**: If you make a change to the codebase that affects project documentation (e.g., adding a dependency, changing the folder structure, adding a new API route), update `documentation.md` in the same session.
 
-## 11. General Rules
+## 12. General Rules
 
 - **JavaScript, not TypeScript** — keep it simple.
 - **ES Modules** — `import`/`export`, no CommonJS.

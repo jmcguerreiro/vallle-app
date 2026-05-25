@@ -1,12 +1,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { useNavigate } from "react-router-dom";
 
-import { X as IconX } from "lucide-react";
 import { Drawer } from "vaul";
 
 import Button from "@/components/Button";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useModal } from "@/hooks/useModal";
+import { IconX } from "@/utils/icons";
 
 const CLOSE_ANIMATION_MS = 350;
 

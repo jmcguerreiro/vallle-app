@@ -1,4 +1,4 @@
-import { CircleAlert as IconCircleAlert } from "lucide-react";
+import { IconCircleAlert } from "@/utils/icons";
 
 /**
  * Component: Form

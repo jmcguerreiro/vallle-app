@@ -2,17 +2,16 @@ import { useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { NavLink } from "react-router-dom";
 
-import {
-  Settings2 as IconSettings,
-  HouseHeart as IconDashboard,
-  ReceiptText as IconCommissions,
-  Mailbox as IconVouchers,
-  ChartNoAxesCombined as IconStats,
-  Users as IconUsers,
-} from "lucide-react";
-
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import {
+  IconChart,
+  IconHouseHeart,
+  IconMailbox,
+  IconReceiptText,
+  IconSettings,
+  IconUsers,
+} from "@/utils/icons";
 
 /**
  * Layout: Navigation
@@ -30,7 +29,7 @@ const Navigation = () => {
     () =>
       isSuperAdmin
         ? [
-            { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconDashboard },
+            { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconHouseHeart },
             {
               to: ROUTES.ADMIN_COMPANIES,
               label: t("nav.adminCompanies"),
@@ -44,17 +43,17 @@ const Navigation = () => {
             {
               to: ROUTES.ADMIN_COMMISSIONS,
               label: t("nav.adminCommissions"),
-              icon: IconCommissions,
+              icon: IconReceiptText,
             },
           ]
         : [
-            { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconDashboard },
+            { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconHouseHeart },
             {
               to: ROUTES.VOUCHERS,
               label: t("nav.vouchers"),
-              icon: IconVouchers,
+              icon: IconMailbox,
             },
-            { to: ROUTES.STATS, label: t("nav.stats"), icon: IconStats },
+            { to: ROUTES.STATS, label: t("nav.stats"), icon: IconChart },
             { to: ROUTES.SETTINGS, label: t("nav.settings"), icon: IconSettings },
           ],
     [isSuperAdmin, t],

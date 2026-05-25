@@ -1,4 +1,4 @@
-import { ChevronDown } from 'lucide-react'
+import { IconChevronDown } from '@/utils/icons'
 
 /**
  * Component: Accordion
@@ -16,7 +16,7 @@ const Accordion = ({ title, children, defaultOpen = false, className = '' }) => 
     <details className={`c-accordion${className ? ` ${className}` : ''}`} open={defaultOpen}>
       <summary className="c-accordion__trigger">
         <span className="c-accordion__title">{title}</span>
-        <ChevronDown className="c-accordion__icon" size={16} />
+        <IconChevronDown className="c-accordion__icon" size={16} />
       </summary>
       <div className="c-accordion__body">{children}</div>
     </details>

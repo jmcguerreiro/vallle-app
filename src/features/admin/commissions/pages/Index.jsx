@@ -2,11 +2,12 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
+import { useQuery } from '@tanstack/react-query'
+
 import Datatable from '@/components/Datatable'
 import FilterSelect from '@/components/forms/FilterSelect'
 import { adminCommissionsDetailPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -25,27 +26,20 @@ const AdminCommissionsIndex = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { setHeader } = useMain()
-  const { refreshKey } = useRefresh()
   const { addToast } = useToast()
 
   // State
-  const [companies, setCompanies] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
   const [paymentFilter, setPaymentFilter] = useState('all')
 
-  // Handlers
-  const fetchData = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      const response = await get('/api/admin/commissions')
-      setCompanies(response.data)
-    } catch {
-      addToast(t('features.admin.commissions.error.generic'), 'error')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [addToast, t])
+  // Queries
+  const { data: response, isPending, isError } = useQuery({
+    queryKey: ['admin', 'commissions'],
+    queryFn: ({ signal }) => get('/api/admin/commissions', { signal }),
+  })
 
+  const companies = useMemo(() => response?.data ?? [], [response])
+
+  // Handlers
   const handleRowClick = useCallback((row) => {
     navigate(adminCommissionsDetailPath(row.store_id), {
       state: { backgroundLocation: location },
@@ -113,11 +107,11 @@ const AdminCommissionsIndex = () => {
   }, [setHeader, t])
 
   useEffect(() => {
-    fetchData()
-  }, [fetchData, refreshKey])
+    if (isError) addToast(t('features.admin.commissions.error.generic'), 'error')
+  }, [isError, addToast, t])
 
   // Render
-  if (isLoading) {
+  if (isPending) {
     return <div className="c-admin-commissions"><p>{t('common.loading')}</p></div>
   }
 

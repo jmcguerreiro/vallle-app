@@ -2,18 +2,18 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate } from 'react-router-dom'
 
-import { Plus as IconPlus } from 'lucide-react'
+import { useQuery } from '@tanstack/react-query'
 
 import Datatable from '@/components/Datatable'
 import FilterSelect from '@/components/forms/FilterSelect'
 import { COMPANY_CATEGORIES } from '@/constants/company-categories'
 import { ROUTES, adminCompanyEditPath, adminCompanyPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
 import { formatDateTime } from '@/utils/dates'
+import { IconPlus } from '@/utils/icons'
 
 /**
  * Component: AdminCompaniesIndex
@@ -28,28 +28,21 @@ const AdminCompaniesIndex = () => {
   const navigate = useNavigate()
   const location = useLocation()
   const { setHeader } = useMain()
-  const { refreshKey } = useRefresh()
   const { addToast } = useToast()
 
   // State
-  const [companies, setCompanies] = useState([])
-  const [isLoading, setIsLoading] = useState(true)
   const [statusFilter, setStatusFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
 
-  // Handlers
-  const fetchCompanies = useCallback(async () => {
-    try {
-      setIsLoading(true)
-      const response = await get('/api/admin/companies')
-      setCompanies(response.data)
-    } catch {
-      addToast(t('features.admin.companies.error.generic'), 'error')
-    } finally {
-      setIsLoading(false)
-    }
-  }, [addToast, t])
+  // Queries
+  const { data: response, isPending, isError } = useQuery({
+    queryKey: ['admin', 'companies'],
+    queryFn: ({ signal }) => get('/api/admin/companies', { signal }),
+  })
 
+  const companies = useMemo(() => response?.data ?? [], [response])
+
+  // Handlers
   const handleRowClick = useCallback((row) => {
     navigate(adminCompanyPath(row.id), {
       state: { backgroundLocation: location },
@@ -149,11 +142,11 @@ const AdminCompaniesIndex = () => {
   }, [setHeader, t])
 
   useEffect(() => {
-    fetchCompanies()
-  }, [fetchCompanies, refreshKey])
+    if (isError) addToast(t('features.admin.companies.error.generic'), 'error')
+  }, [isError, addToast, t])
 
   // Render
-  if (isLoading) {
+  if (isPending) {
     return <div className="c-admin-companies"><p>{t('common.loading')}</p></div>
   }
 

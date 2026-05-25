@@ -9,9 +9,10 @@ import FormActions from '@/components/forms/FormActions'
 import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
 import { isVoucherExpired } from '@/features/vouchers/utils'
+import { useQueryClient } from '@tanstack/react-query'
+
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, post } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
@@ -31,7 +32,7 @@ const VoucherRedeem = () => {
   const { id } = useParams()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
+  const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors } } = useForm()
 
@@ -89,7 +90,8 @@ const VoucherRedeem = () => {
       }
 
       await post(`/api/vouchers/${id}/redeem`, payload)
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['vouchers'] })
+      queryClient.invalidateQueries({ queryKey: ['stats'] })
       addToast(t('features.vouchers.redeem.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -101,7 +103,7 @@ const VoucherRedeem = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, id, navigate, t, triggerRefresh])
+  }, [addToast, id, navigate, t, queryClient])
 
   // Effects
   useEffect(() => {

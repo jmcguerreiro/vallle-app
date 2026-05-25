@@ -1,0 +1,26 @@
+.p-vouchers {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.p-vouchers__loading {
+  margin: auto;
+}
+
+.p-vouchers__error,
+.p-vouchers__empty {
+  border: solid 1px $color-parchment;
+  padding: $spacing-6;
+  border-radius: $border-radius-3xl;
+  margin: auto;
+}
+
+@include screen(md) {
+  .p-vouchers__error,
+  .p-vouchers__empty {
+    border: none;
+    padding: 0;
+    border-radius: 0;
+  }
+}

@@ -8,9 +8,10 @@ import Form from '@/components/forms/Form'
 import FormActions from '@/components/forms/FormActions'
 import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
+import { useQueryClient } from '@tanstack/react-query'
+
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { post } from '@/services/api'
 import { validatePassword } from '@/utils/password'
@@ -28,7 +29,7 @@ const CompanyUserCreate = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
+  const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { register, handleSubmit, formState: { errors } } = useForm()
 
@@ -53,7 +54,7 @@ const CompanyUserCreate = () => {
         password: values.password,
         role: values.role,
       })
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['company', 'users'] })
       addToast(t('features.company.users.create.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -65,7 +66,7 @@ const CompanyUserCreate = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [addToast, navigate, t, triggerRefresh])
+  }, [addToast, navigate, t, queryClient])
 
   // Effects
   useEffect(() => {

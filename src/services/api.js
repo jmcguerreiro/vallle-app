@@ -51,30 +51,41 @@ export const api = async (path, options = {}) => {
 /**
  * GET helper.
  * @param {string} path
+ * @param {Object} [options]
+ * @param {AbortSignal} [options.signal]
  * @returns {Promise<Object>}
  */
-export const get = (path) => api(path)
+export const get = (path, { signal } = {}) => api(path, { signal })
 
 /**
  * POST helper.
  * @param {string} path
  * @param {Object} body
+ * @param {Object} [options]
+ * @param {AbortSignal} [options.signal]
  * @returns {Promise<Object>}
  */
-export const post = (path, body) => api(path, { method: 'POST', body })
+export const post = (path, body, { signal } = {}) =>
+  api(path, { method: 'POST', body, signal })
 
 /**
  * PUT helper.
  * @param {string} path
  * @param {Object} body
+ * @param {Object} [options]
+ * @param {AbortSignal} [options.signal]
  * @returns {Promise<Object>}
  */
-export const put = (path, body) => api(path, { method: 'PUT', body })
+export const put = (path, body, { signal } = {}) =>
+  api(path, { method: 'PUT', body, signal })
 
 /**
  * PATCH helper.
  * @param {string} path
  * @param {Object} body
+ * @param {Object} [options]
+ * @param {AbortSignal} [options.signal]
  * @returns {Promise<Object>}
  */
-export const patch = (path, body) => api(path, { method: 'PATCH', body })
+export const patch = (path, body, { signal } = {}) =>
+  api(path, { method: 'PATCH', body, signal })

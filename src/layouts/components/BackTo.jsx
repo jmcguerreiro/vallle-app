@@ -1,8 +1,7 @@
 import { useTranslation } from "react-i18next";
 
-import { ArrowLeft as IconArrowLeft } from "lucide-react";
-
 import { EXTERNAL_LINKS } from "@/constants/external-links";
+import { IconArrowLeft } from "@/utils/icons";
 
 /**
  * Component: BackTo

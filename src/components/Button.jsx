@@ -1,7 +1,7 @@
 import { useCallback } from 'react'
 import { Link } from 'react-router-dom'
 
-import { Loader2 as IconLoader } from 'lucide-react'
+import { IconLoader } from '@/utils/icons'
 
 /**
  * Component: Button

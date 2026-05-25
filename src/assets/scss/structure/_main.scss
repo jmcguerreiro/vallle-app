@@ -2,71 +2,77 @@
   display: flex;
   flex-direction: column;
   flex: 1;
-  padding: $spacing-3;
+  padding: 0 $spacing-6;
   gap: $spacing-6;
+  width: 100%;
 
   &--has-padding {
     padding: $spacing-12 $spacing-8;
   }
 }
 
-.s-main__header {
-  align-items: center;
+.s-main__wrapper {
   display: flex;
   flex-direction: column;
-  text-align: center;
+  flex: 1;
+  margin: 0 auto;
+  max-width: $screen-xl;
+  width: 100%;
+}
+
+.s-main__header {
+  display: flex;
+  flex-direction: column;
   gap: $spacing-3;
+  margin-bottom: $spacing-9;
+  text-align: center;
 }
 
-.s-main__header-image {
-  height: to-rem(240);
-  width: to-rem(240);
-}
-
-.s-main__header-titles {
+.s-main__header-title-description {
   display: flex;
   flex-direction: column;
   gap: $spacing-1;
-  min-width: 0;
 }
 
 .s-main__header-title {
-  @include font-size(3xl);
+  @include font-size(2xl);
   color: $text-color-highlight;
   font-weight: $font-weight-bold;
 }
 
 .s-main__header-description {
-  color: $text-color;
+  color: $text-color-highlight;
   text-wrap: balance;
 }
 
-.s-main__content {
+.s-main__header-actions {
+  order: -1;
   display: flex;
-  flex: 1;
-  width: 100%;
-  max-width: $screen-xl;
-  margin: 0 auto;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+  justify-content: flex-end;
 }
 
-/* ─── Suspended banner ──────────────────────────────────────── */
-
-.s-main__banner {
-  background: rgba(212, 165, 116, 0.15);
-  border: 1px solid var(--color-honey);
-  border-radius: var(--radius-md);
-  color: #8a6520;
-  font-size: 0.875rem;
-  font-weight: 500;
-  margin-bottom: var(--space-lg);
-  padding: var(--space-md) var(--space-lg);
-  text-align: center;
+.s-main__body {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
 }
 
 @include screen(md) {
-  .s-main__header-image {
-    height: to-rem(360);
-    width: to-rem(360);
+  .s-main {
+    padding: 0 $spacing-9;
+  }
+
+  .s-main__header {
+    flex-direction: row;
+    text-align: left;
+  }
+
+  .s-main__header-actions {
+    justify-content: flex-start;
+    margin-left: auto;
+    order: initial;
   }
 
   .s-main__header-title {

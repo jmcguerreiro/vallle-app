@@ -7,7 +7,6 @@ import { USER_ROLES } from '@/constants/user-roles'
 import { AuthProvider } from '@/contexts/auth'
 import { MainProvider } from '@/contexts/main'
 import { ModalProvider } from '@/contexts/modal'
-import { RefreshProvider } from '@/contexts/refresh'
 import { ToastProvider } from '@/contexts/toast'
 import AdminCommissionsCompanyDetail from '@/features/admin/commissions/pages/CompanyDetail'
 import AdminCommissionsIndex from '@/features/admin/commissions/pages/Index'
@@ -24,7 +23,7 @@ import ForgotPassword from '@/features/auth/ForgotPassword'
 import Login from '@/features/auth/Login'
 import ResetPassword from '@/features/auth/ResetPassword'
 import SelectStore from '@/features/auth/SelectStore'
-import Dashboard from '@/features/dashboard/Dashboard'
+import Dashboard from '@/features/dashboard/pages/Index'
 import ChangePassword from '@/features/profile/pages/ChangePassword'
 import Profile from '@/features/profile/Profile'
 import CompanyDetails from '@/features/settings/CompanyDetails'
@@ -41,8 +40,8 @@ import QuickRedeem from '@/features/vouchers/pages/QuickRedeem'
 import VoucherRedeem from '@/features/vouchers/pages/Redeem'
 import VoucherView from '@/features/vouchers/pages/View'
 import { useAuth } from '@/hooks/useAuth'
-import BlankLayout from '@/layouts/blank'
-import DefaultLayout from '@/layouts/default'
+import BlankLayout from '@/layouts/Blank'
+import DefaultLayout from '@/layouts/Default'
 import AuthGuard from '@/router/AuthGuard'
 import RoleGuard from '@/router/RoleGuard'
 
@@ -177,12 +176,10 @@ const App = () => {
     <BrowserRouter>
       <AuthProvider>
         <MainProvider>
-          <RefreshProvider>
-            <ToastProvider>
-              <AppRoutes />
-              <Toast />
-            </ToastProvider>
-          </RefreshProvider>
+          <ToastProvider>
+            <AppRoutes />
+            <Toast />
+          </ToastProvider>
         </MainProvider>
       </AuthProvider>
     </BrowserRouter>

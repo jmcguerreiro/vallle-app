@@ -3,8 +3,6 @@ import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
 import { Link, Navigate, useNavigate } from "react-router-dom";
 
-import { LogIn as IconLogIn } from "lucide-react";
-
 import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
@@ -13,6 +11,7 @@ import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { IconLogIn } from "@/utils/icons";
 
 /**
  * Component: Login

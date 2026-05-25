@@ -1,12 +1,12 @@
 import Button from "@/components/Button";
 
 /**
- * Component: EmptyState
- * Displays a centred empty state with an illustration, a description, and an optional action button.
+ * Component: ErrorState
+ * Displays a centred error state with an illustration, a description, and an optional action button.
  * @component
  * @param {Object} props
- * @param {string} props.image - Image filename without extension (resolved from /images/empty-states/).
- * @param {string} props.description - Text describing the empty state.
+ * @param {string} props.image - Image filename without extension (resolved from /images/error-states/).
+ * @param {string} props.description - Text describing the error state.
  * @param {Object} [props.action] - Optional action rendered as a full-width fill button.
  * @param {string} props.action.text - Button label.
  * @param {Function} [props.action.onClick] - Click handler.
@@ -15,21 +15,21 @@ import Button from "@/components/Button";
  * @param {string} [props.action.href] - External href. Renders the button as an anchor.
  * @returns {JSX.Element}
  */
-const EmptyState = ({ image, description, action }) => {
+const ErrorState = ({ image = "unexpected", description, action }) => {
   // Render
   return (
-    <div className="c-empty-state">
+    <div className="c-error-state">
       {image && (
         <img
           alt=""
           aria-hidden="true"
-          className="c-empty-state__image"
-          src={`/images/empty-states/${image}.svg`}
+          className="c-error-state__image"
+          src={`/images/error-states/${image}.svg`}
         />
       )}
-      <div className="c-empty-state__description">{description}</div>
+      <div className="c-error-state__description">{description}</div>
       {action && (
-        <div className="c-empty-state__action">
+        <div className="c-error-state__action">
           <Button
             display="block"
             href={action.href}
@@ -46,4 +46,4 @@ const EmptyState = ({ image, description, action }) => {
   );
 };
 
-export default EmptyState;
+export default ErrorState;

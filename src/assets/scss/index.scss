@@ -8,9 +8,9 @@
 @import "./components/accordion";
 @import "./components/admin";
 @import "./components/empty-state";
+@import "./components/error-state";
 @import "./components/buttons";
 @import "./components/commissions";
-@import "./components/dashboard";
 @import "./components/datatable";
 @import "./components/filter-select";
 @import "./components/forms";
@@ -25,18 +25,23 @@
 
 @import "./structure/back-to";
 @import "./structure/background";
+@import "./structure/banner";
 @import "./structure/header";
 @import "./structure/navigation";
 @import "./structure/main";
 @import "./structure/modal";
 
+@import "./features/dashboard/pages/index";
+@import "./features/vouchers/pages/index";
+
 @import "./features/auth/pages/auth-login";
 @import "./features/auth/pages/auth-forgot-password";
 @import "./features/auth/pages/auth-reset-password";
 @import "./features/auth/pages/auth-select-store";
-@import "./features/dashboard/pages/dashboard";
+
 @import "./features/stats/pages/index";
 @import "./features/vouchers/components/voucher-code-input";
+
 @import "./features/vouchers/pages/voucher-create";
 @import "./features/vouchers/pages/voucher-view";
 @import "./features/vouchers/pages/voucher-edit";

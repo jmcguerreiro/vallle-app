@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 
-import { ArrowRight as IconArrowRight } from "lucide-react";
+import { IconArrowRight } from "@/utils/icons";
 
 /**
  * Component: StoreSelect

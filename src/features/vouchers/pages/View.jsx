@@ -2,8 +2,6 @@ import { useCallback, useEffect, useMemo, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { useLocation, useNavigate, useParams } from 'react-router-dom'
 
-import { Pencil, Receipt } from 'lucide-react'
-
 import Accordion from '@/components/Accordion'
 import { voucherEditPath, voucherRedeemPath } from '@/constants/routes'
 import { isVoucherExpired } from '@/features/vouchers/utils'
@@ -12,6 +10,7 @@ import { useModal } from '@/hooks/useModal'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
 import { formatDate } from '@/utils/dates'
+import { IconPencil, IconReceipt } from '@/utils/icons'
 
 /**
  * Component: VoucherView
@@ -106,7 +105,7 @@ const VoucherView = () => {
     const actions = [
       {
         label: t('features.vouchers.view.edit'),
-        icon: Pencil,
+        icon: IconPencil,
         onClick: handleEdit,
         variant: 'ghost',
       },
@@ -115,7 +114,7 @@ const VoucherView = () => {
     if (canRedeem) {
       actions.unshift({
         label: t('features.vouchers.redeem.submit'),
-        icon: Receipt,
+        icon: IconReceipt,
         onClick: handleRedeem,
         variant: 'outline',
       })

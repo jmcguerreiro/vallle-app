@@ -10,9 +10,10 @@ import FormFields from '@/components/forms/FormFields'
 import Input from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
 import { COMPANY_CATEGORIES } from '@/constants/company-categories'
+import { useQueryClient } from '@tanstack/react-query'
+
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
-import { useRefresh } from '@/hooks/useRefresh'
 import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 
@@ -29,7 +30,7 @@ const AdminCompanyEdit = () => {
   const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
-  const { triggerRefresh } = useRefresh()
+  const queryClient = useQueryClient()
   const { addToast } = useToast()
   const { register, handleSubmit, reset, control, formState: { errors } } = useForm()
 
@@ -55,7 +56,7 @@ const AdminCompanyEdit = () => {
 
     try {
       await put(`/api/admin/companies/${id}`, values)
-      triggerRefresh()
+      queryClient.invalidateQueries({ queryKey: ['admin', 'companies'] })
       addToast(t('features.admin.companies.edit.success'), 'success')
       navigate(-1)
     } catch (error) {
@@ -63,7 +64,7 @@ const AdminCompanyEdit = () => {
     } finally {
       setIsSubmitting(false)
     }
-  }, [id, addToast, navigate, t, triggerRefresh])
+  }, [id, addToast, navigate, t, queryClient])
 
   // Effects
   useEffect(() => {
