@@ -44,6 +44,7 @@ import BlankLayout from '@/layouts/Blank'
 import DefaultLayout from '@/layouts/Default'
 import AuthGuard from '@/router/AuthGuard'
 import RoleGuard from '@/router/RoleGuard'
+import ScrollToTop from '@/router/ScrollToTop'
 
 const AdminRoute = ({ children }) => (
   <RoleGuard allowedRoles={[USER_ROLES.SUPER_ADMIN]}>{children}</RoleGuard>
@@ -174,6 +175,7 @@ const App = () => {
   // Render
   return (
     <BrowserRouter>
+      <ScrollToTop />
       <AuthProvider>
         <MainProvider>
           <ToastProvider>

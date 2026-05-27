@@ -26,6 +26,11 @@
   font-weight: $font-weight-bold;
 }
 
+.p-dashboard__header-subtitle {
+  @include font-size(lg);
+  text-wrap: balance;
+}
+
 .p-dashboard__body-actions {
   display: flex;
   flex-direction: column;

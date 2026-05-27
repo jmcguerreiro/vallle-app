@@ -40,7 +40,7 @@ const Main = () => {
                     onClick={action.onClick}
                     state={action.state}
                     to={action.to}
-                    variant={action.variant || "fill"}
+                    variant={action.variant || "icon"}
                   >
                     {action.label}
                   </Button>

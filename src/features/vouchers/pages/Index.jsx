@@ -159,7 +159,7 @@ const VouchersIndex = () => {
     );
   }
 
-  if (true || (enrichedVouchers.length === 0 && !hasActiveFilters)) {
+  if (enrichedVouchers.length === 0 && !hasActiveFilters) {
     return (
       <div className="p-vouchers">
         <div className="p-vouchers__empty">

@@ -16,7 +16,7 @@
   flex-direction: column;
   flex: 1;
   margin: 0 auto;
-  max-width: $screen-xl;
+  max-width: $screen-lg;
   width: 100%;
 }
 
@@ -31,17 +31,17 @@
 .s-main__header-title-description {
   display: flex;
   flex-direction: column;
-  gap: $spacing-1;
+  gap: $spacing-2;
 }
 
 .s-main__header-title {
-  @include font-size(2xl);
+  @include font-size(3xl);
   color: $text-color-highlight;
   font-weight: $font-weight-bold;
 }
 
 .s-main__header-description {
-  color: $text-color-highlight;
+  @include font-size(lg);
   text-wrap: balance;
 }
 
@@ -76,6 +76,6 @@
   }
 
   .s-main__header-title {
-    @include font-size(6xl);
+    @include font-size(5xl);
   }
 }
