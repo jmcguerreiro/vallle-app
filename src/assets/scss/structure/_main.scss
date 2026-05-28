@@ -28,6 +28,12 @@
   text-align: center;
 }
 
+.s-main__header-image {
+  height: to-rem(240);
+  margin: 0 auto;
+  width: to-rem(240);
+}
+
 .s-main__header-title-description {
   display: flex;
   flex-direction: column;
@@ -68,6 +74,10 @@
     align-items: center;
     flex-direction: row;
     text-align: left;
+  }
+
+  .s-main__header-image {
+    display: none;
   }
 
   .s-main__header-actions {

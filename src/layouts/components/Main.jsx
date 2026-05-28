@@ -19,6 +19,9 @@ const Main = () => {
       <div className="s-main__wrapper">
         {(header.title || header.image || header.actions?.length > 0) && (
           <div className="s-main__header">
+            {header.image && (
+              <img alt="" className="s-main__header-image" src={`/images/pages/${header.image}.svg`} />
+            )}
             {(header.title || header.description) && (
               <div className="s-main__header-title-description">
                 {header.title && (
