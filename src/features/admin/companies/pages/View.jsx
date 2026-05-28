@@ -78,12 +78,12 @@ const AdminCompanyView = () => {
     <div className="c-admin-company-view">
       <div className="c-admin-stats-grid">
         <div className="c-admin-stat">
-          <span className="c-admin-stat__label">{t('features.admin.companies.view.vouchers')}</span>
-          <span className="c-admin-stat__value">{stats.voucher_count}</span>
+          <span className="c-admin-stat__label">{t('features.admin.companies.view.vallles')}</span>
+          <span className="c-admin-stat__value">{stats.vallle_count}</span>
         </div>
         <div className="c-admin-stat">
           <span className="c-admin-stat__label">{t('features.admin.companies.view.totalSales')}</span>
-          <span className="c-admin-stat__value">{formatCurrency(stats.total_voucher_amount)}</span>
+          <span className="c-admin-stat__value">{formatCurrency(stats.total_vallle_amount)}</span>
         </div>
         <div className="c-admin-stat">
           <span className="c-admin-stat__label">{t('features.admin.companies.view.totalCommission')}</span>

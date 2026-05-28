@@ -1,21 +1,24 @@
 .s-navigation {
-  order: 1;
-  padding: $spacing-6 $spacing-3;
-  position: sticky;
   bottom: 0;
-  left: 0;
-  width: 100%;
   display: flex;
   justify-content: center;
+  left: 0;
+  order: 1;
+  padding: $spacing-6 $spacing-3;
+  pointer-events: none;
+  position: sticky;
+  width: 100%;
+  z-index: 100;
 }
 
 .s-navigation__items {
   background: $color-linen;
+  border-radius: to-rem(40);
+  border: solid 1px $color-parchment;
   display: flex;
   gap: $spacing-4;
-  border: solid 1px $color-parchment;
   padding: $spacing-1;
-  border-radius: to-rem(40);
+  pointer-events: all;
 }
 
 .s-navigation__item {

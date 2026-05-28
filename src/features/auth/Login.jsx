@@ -121,7 +121,7 @@ const Login = () => {
             <FormActions>
               <Button
                 display="block"
-                iconLeft={IconLogIn}
+                icon={IconLogIn}
                 isProcessing={submitting}
                 type="submit"
               >

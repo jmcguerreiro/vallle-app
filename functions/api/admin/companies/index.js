@@ -7,7 +7,7 @@ const STORE_FIELDS = [
 ]
 
 /**
- * GET /api/admin/companies — List all stores with voucher stats (super_admin only).
+ * GET /api/admin/companies — List all stores with vallle stats (super_admin only).
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
@@ -31,12 +31,12 @@ export async function onRequestGet(context) {
   try {
     const { results } = await env.DB.prepare(
       `SELECT s.id, s.name, s.category, s.status, s.created_at, s.updated_at,
-              COUNT(v.id) AS voucher_count,
+              COUNT(v.id) AS vallle_count,
               COALESCE(SUM(v.amount), 0) AS total_revenue,
               COALESCE(cs.total_commission, 0) AS total_commission,
               COALESCE(cs.unpaid_commission, 0) AS unpaid_commission
        FROM stores s
-       LEFT JOIN vouchers v ON v.store_id = s.id
+       LEFT JOIN vallles v ON v.store_id = s.id
        LEFT JOIN (
          SELECT store_id,
                 SUM(amount) AS total_commission,

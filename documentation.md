@@ -2,22 +2,22 @@
 
 ## What is Vallle?
 
-Vallle is a voucher platform for local businesses. Stores sell branded physical postcards as gift vouchers. Customers buy them in-store, write a personal message, and give them to someone. The recipient redeems the voucher at the store, partially or fully.
+Vallle is a vallle platform for local businesses. Stores sell branded physical postcards as gift vallles. Customers buy them in-store, write a personal message, and give them to someone. The recipient redeems the vallle at the store, partially or fully.
 
-Vallle earns 5% commission on every voucher created (min €0.50, max €2.00), collected directly from the store.
+Vallle earns 5% commission on every vallle created (min €0.50, max €2.00), collected directly from the store.
 
 ### How it works
 
-1. Store owner logs into the Vallle app, creates a voucher, gets a unique code
+1. Store owner logs into the Vallle app, creates a vallle, gets a unique code
 2. Store writes the code and amount on a physical Vallle postcard, customer pays
 3. Customer writes a personal message and gives the postcard as a gift
-4. Recipient visits the store, presents the voucher at checkout
-5. Store owner logs in, redeems the voucher (full or partial)
-6. Remaining balance stays on the voucher until fully used or expired (configurable per company, default 1 year, max 5 years)
+4. Recipient visits the store, presents the vallle at checkout
+5. Store owner logs in, redeems the vallle (full or partial)
+6. Remaining balance stays on the vallle until fully used or expired (configurable per company, default 1 year, max 5 years)
 
 ### Revenue model
 
-- 5% of every voucher created
+- 5% of every vallle created
 - Minimum commission: €0.50
 - Maximum commission: €2.50
 - Collected monthly from stores — you select which commissions to mark as paid
@@ -59,11 +59,11 @@ vallle-app/
 │       │   ├── index.js          GET /api/stores
 │       │   ├── [id].js           GET /api/stores/:id
 │       │   └── public.js         GET /api/stores/public (for Hugo site)
-│       ├── vouchers/
+│       ├── vallles/
 │       │   ├── index.js          POST create, GET list
 │       │   └── [id]/
 │       │       ├── index.js
-│       │       └── redeem.js     POST /api/vouchers/:id/redeem
+│       │       └── redeem.js     POST /api/vallles/:id/redeem
 │       ├── company/
 │       │   ├── index.js          GET/PUT /api/company
 │       │   └── users/
@@ -79,10 +79,10 @@ vallle-app/
 │   │   │   └── ResetPassword.jsx
 │   │   ├── dashboard/
 │   │   │   └── Dashboard.jsx
-│   │   ├── vouchers/
-│   │   │   ├── CreateVoucher.jsx
-│   │   │   ├── RedeemVoucher.jsx
-│   │   │   └── VoucherList.jsx
+│   │   ├── vallles/
+│   │   │   ├── CreateVallle.jsx
+│   │   │   ├── RedeemVallle.jsx
+│   │   │   └── VallleList.jsx
 │   │   └── commissions/
 │   │       └── Commissions.jsx
 │   ├── components/
@@ -98,7 +98,8 @@ vallle-app/
 │   ├── main.jsx
 │   └── index.css
 ├── migrations/
-│   └── 0001_init.sql
+│   ├── 0001_init.sql
+│   └── 0002_seed.sql
 ├── public/
 ├── index.html
 ├── package.json
@@ -106,7 +107,7 @@ vallle-app/
 └── wrangler.toml
 ```
 
-Frontend uses a **feature-based folder structure** — each feature owns its components, hooks, and logic. Shared utilities live in `src/shared/`. File paths in `functions/` map directly to API routes. `functions/api/vouchers/index.js` → `/api/vouchers`. D1 is accessed in functions via `context.env.DB`.
+Frontend uses a **feature-based folder structure** — each feature owns its components, hooks, and logic. Shared utilities live in `src/shared/`. File paths in `functions/` map directly to API routes. `functions/api/vallles/index.js` → `/api/vallles`. D1 is accessed in functions via `context.env.DB`.
 
 ### Database: Cloudflare D1
 
@@ -120,23 +121,23 @@ IDs are ULIDs (sortable, time-based, shorter than UUIDs). Dates are ISO 8601 tex
 users                   Who logs in (role: user, admin, or super_admin)
 stores                  Local businesses
 store_users             Many-to-many (user can manage multiple stores, store can have multiple admins)
-vouchers                The core entity — created by stores, redeemed by recipients
-redemptions             Each partial or full use of a voucher
-commissions             One row per voucher created — your 5% cut, with paid_at tracking
+vallles                The core entity — created by stores, redeemed by recipients
+redemptions             Each partial or full use of a vallle
+commissions             One row per vallle created — your 5% cut, with paid_at tracking
 password_reset_tokens   Time-limited tokens for password reset flow
 ```
 
-**users** — `id`, `name`, `email` (unique), `password` (hashed), `role` (user/admin/super_admin), `status`, `created_at`, `updated_at`
+**users** — `id`, `name`, `email` (unique), `password` (hashed), `role` (user/admin/super_admin), `status`, `avatar` (default `paper-bag-head`), `created_at`, `updated_at`
 
-**stores** — `id`, `name`, `slug` (unique), `category`, `email`, `vat_id`, `phone`, `address1`, `address2`, `city`, `postal_code`, `region`, `country` (default PT), `default_voucher_expiry_days` (default 365), `status`, `created_at`, `updated_at`
+**stores** — `id`, `name`, `slug` (unique), `category`, `email`, `vat_id`, `phone`, `address1`, `address2`, `city`, `postal_code`, `region`, `country` (default PT), `default_vallle_expiry_days` (default 365), `status`, `created_at`, `updated_at`
 
 **store_users** — `id`, `store_id`, `user_id`, `role` (admin/staff), `created_at`. Unique constraint on (store_id, user_id).
 
-**vouchers** — `id`, `store_id`, `created_by` (user), `code` (unique, 9 chars, handwriting-friendly), `amount`, `balance`, `buyer`, `status` (active/used/expired), `created_at`, `expires_at` (per-company default, max 5 years), `updated_at`
+**vallles** — `id`, `store_id`, `created_by` (user), `code` (unique, 9 chars, handwriting-friendly), `amount`, `balance`, `buyer`, `status` (active/used/expired), `created_at`, `expires_at` (per-company default, max 5 years), `updated_at`
 
-**redemptions** — `id`, `store_id` (denormalised for fast queries), `voucher_id`, `redeemed_by` (user), `description`, `amount`, `balance_after` (snapshot), `created_at`
+**redemptions** — `id`, `store_id` (denormalised for fast queries), `vallle_id`, `redeemed_by` (user), `description`, `amount`, `balance_after` (snapshot), `created_at`
 
-**commissions** — `id`, `store_id` (denormalised), `voucher_id`, `amount`, `paid_at` (null = unpaid), `created_at`. Partial index on unpaid rows.
+**commissions** — `id`, `store_id` (denormalised), `vallle_id`, `amount`, `paid_at` (null = unpaid), `created_at`. Partial index on unpaid rows.
 
 **password_reset_tokens** — `id`, `user_id`, `token_hash` (SHA-256 of the raw token), `expires_at`, `used_at` (null = unused), `created_at`. Indexed on `token_hash` for fast lookup and `user_id` for invalidation. `ON DELETE CASCADE` on user_id.
 
@@ -144,7 +145,7 @@ password_reset_tokens   Time-limited tokens for password reset flow
 
 Separate `password_reset_tokens` table. Raw token sent in email link, only SHA-256 hash stored in DB. Tokens expire after 30 minutes. On successful reset, all tokens for that user are marked as used. Supports multiple concurrent tokens (e.g. user requests reset on phone then laptop). Provides audit trail of reset attempts.
 
-#### Voucher codes
+#### Vallle codes
 
 9 alphanumeric characters in groups of 3: `XTU-TER-T61`. Uses a 30-character alphabet excluding ambiguous characters (0/O, 1/I/L) to avoid handwriting confusion.
 
@@ -154,7 +155,7 @@ No formal invoicing system. Each commission row has a `paid_at` field. To collec
 
 #### Expiry
 
-Handled in app logic, not via cron. When a voucher is looked up, check `expires_at` against current time. If expired, treat as expired regardless of `status` field. No scheduled worker needed.
+Handled in app logic, not via cron. When a vallle is looked up, check `expires_at` against current time. If expired, treat as expired regardless of `status` field. No scheduled worker needed.
 
 ---
 
@@ -179,7 +180,7 @@ npm install -D wrangler
 # Create folder structure
 mkdir -p functions/api/auth
 mkdir -p functions/api/stores
-mkdir -p functions/api/vouchers
+mkdir -p functions/api/vallles
 mkdir -p functions/api/commissions
 mkdir -p migrations
 mkdir -p src/components src/pages src/hooks src/lib
@@ -214,7 +215,7 @@ npx wrangler d1 execute vallle-db --remote --file=./migrations/0001_init.sql
 
 # Verify
 npx wrangler d1 execute vallle-db --remote --command="SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-# Should show: commissions, redemptions, store_users, stores, users, vouchers
+# Should show: commissions, redemptions, store_users, stores, users, vallles
 ```
 
 ### 5. Local development
@@ -258,7 +259,7 @@ _Cloudflare Pages deployment config to be documented when we deploy._
 ### Postcard layout
 
 - **Front:** Store's branded cover image, store name, Vallle watermark
-- **Back left:** Voucher amount, code, sender name, Vallle logo
+- **Back left:** Vallle amount, code, sender name, Vallle logo
 - **Back right:** Blank space for handwritten message
 - **Bottom rows:** Space for transaction log (date, description, amount)
 
@@ -274,8 +275,8 @@ _Cloudflare Pages deployment config to be documented when we deploy._
 | 2026-03-17 | Structured address fields | Single field too limited for maps/validation/grouping |
 | 2026-03-17 | Many-to-many users ↔ stores | User can manage multiple stores, store can have multiple admins |
 | 2026-03-17 | No formal invoicing | Simple commission tracking with paid_at flag, manual collection |
-| 2026-03-17 | 5-year voucher expiry max | EU legal minimum as safety net, enforced in app logic not cron |
-| 2026-03-31 | Per-company default voucher expiry | Each company sets its own default expiry period (days). Default 365 days (1 year), max 1825 (5 years). Pre-fills voucher create form, allows manual override |
+| 2026-03-17 | 5-year vallle expiry max | EU legal minimum as safety net, enforced in app logic not cron |
+| 2026-03-31 | Per-company default vallle expiry | Each company sets its own default expiry period (days). Default 365 days (1 year), max 1825 (5 years). Pre-fills vallle create form, allows manual override |
 | 2026-03-17 | store_id denormalised on redemptions | Avoids join for common "today's redemptions" query |
 | 2026-03-17 | English codebase, i18n for frontend | Clean code, translations handled separately |
 | 2026-03-17 | Single app with super_admin role | No separate admin app — role field on users controls what you see |
@@ -290,16 +291,16 @@ _Cloudflare Pages deployment config to be documented when we deploy._
 | 2026-03-17 | PBKDF2-SHA256 for password hashing (100k iterations) | Industry standard, available via Web Crypto API in Workers |
 | 2026-03-17 | react-router-dom for client routing | Standard SPA routing, well-supported with React 19 |
 | 2026-03-17 | react-i18next for internationalisation | PT as default language, EN fallback. Translation files in src/i18n/ |
-| 2026-03-17 | Feature-based folder structure | Each feature (auth, vouchers, etc.) owns its components. Shared code in src/shared/ |
+| 2026-03-17 | Feature-based folder structure | Each feature (auth, vallles, etc.) owns its components. Shared code in src/shared/ |
 | 2026-03-17 | BEM naming for CSS classes | Consistent, readable class naming (c-block__element--modifier) |
-| 2026-03-17 | Seed data with Portuguese local businesses | 3 sample stores (café, padaria, garrafeira), 4 users, vouchers, redemptions, and commissions |
-| 2026-03-18 | User roles renamed: 'user' → 'admin' | Clearer naming — 'admin' and 'super_admin'. Migration 0003 handles existing data |
+| 2026-03-17 | Seed data with Portuguese local businesses | 3 sample stores (café, padaria, garrafeira), 4 users, vallles, redemptions, and commissions |
+| 2026-03-18 | User roles renamed: 'user' → 'admin' | Clearer naming — 'admin' and 'super_admin'. Schema baked into 0001_init |
 | 2026-03-18 | Two-layer route protection (AuthGuard + RoleGuard) | Authentication and authorisation are separate concerns. RoleGuard blocks direct URL access to role-restricted pages |
 | 2026-03-18 | react-hook-form for all forms | Uncontrolled inputs, less re-renders, built-in validation. Shared Form + Input components in components/forms/ |
 | 2026-03-18 | Password reset via email link (Resend API) | Tokenised reset flow with 30-min expiry. Only token hash stored in DB. Resend chosen for simplicity — single fetch call from Workers, no SDK |
 | 2026-03-18 | Separate password_reset_tokens table | Audit trail of reset attempts, supports multiple concurrent tokens, cleaner separation from users table. Industry standard (Laravel, NextAuth) |
 | 2026-03-31 | Three-tier user roles: user, admin, super_admin | 'user' role has all admin permissions minus managing company users. 'admin' can manage users within their store. Settings page has tabbed layout (Company + Users) with Users tab restricted to admin role |
 | 2026-03-31 | Company user management API | /api/company/users endpoints let admins list, create, and edit users scoped to their active store. Separate from /api/admin/users which is super_admin-only for cross-company management |
-| 2026-05-15 | Page header image + description in Main layout | Non-modal pages set `image`, `title`, and `description` via `useMain().setHeader`. Image is short name (e.g. `'vouchers'`) and the layout builds `/images/pages/{name}.svg`. Dashboards opt out entirely (`back: false`, no header). Descriptions live under `features.{feature}.description` in i18n |
+| 2026-05-15 | Page header image + description in Main layout | Non-modal pages set `image`, `title`, and `description` via `useMain().setHeader`. Image is short name (e.g. `'vallles'`) and the layout builds `/images/pages/{name}.svg`. Dashboards opt out entirely (`back: false`, no header). Descriptions live under `features.{feature}.description` in i18n |
 | 2026-05-15 | /company moved to /settings with nested tabs | Route is now `/settings/company` (details) and `/settings/users` (admin-only). Settings shell sets the single header and renders tabs as NavLinks with a child `<Outlet />`. `features/company/` folder renamed to `features/settings/` |
 | 2026-05-25 | TanStack Query for client-side data fetching | Replaces homegrown `useRefresh` context + per-page `useEffect` + `fetch` boilerplate. Provides cache, request cancellation via AbortSignal, dedup, refetch on focus, and targeted invalidation per resource. List pages use `useQuery`, mutations use `useMutation` + `queryClient.invalidateQueries(...)` instead of a global refresh counter. Conventions documented in CLAUDE.md §9 |

@@ -3,6 +3,7 @@ import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
 import { useNavigate } from 'react-router-dom'
 
+import Button from '@/components/Button'
 import Form from '@/components/forms/Form'
 import Input from '@/components/forms/Input'
 import { useMain } from '@/hooks/useMain'
@@ -94,13 +95,9 @@ const ChangePassword = () => {
         type="password"
         validate={passwordRules}
       />
-      <button
-        className="c-btn c-btn--primary"
-        disabled={isSubmitting}
-        type="submit"
-      >
-        {isSubmitting ? t('common.loading') : t('features.profile.password.submit')}
-      </button>
+      <Button isProcessing={isSubmitting} type="submit">
+        {t('features.profile.password.submit')}
+      </Button>
       {success && (
         <p className="c-form__success">{t('features.profile.password.success')}</p>
       )}

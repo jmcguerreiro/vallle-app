@@ -1,0 +1,11 @@
+.p-vallle-quick-redeem {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-vallle-quick-redeem__input {
+  margin: 0 auto $spacing-9 auto;
+  max-width: $screen-xs;
+  width: 100%;
+}

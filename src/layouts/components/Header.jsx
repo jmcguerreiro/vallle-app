@@ -149,6 +149,7 @@ const Header = () => {
               />
               <IconEllipsisVertical
                 className="s-header__user-button-toggle-icon"
+                size="20"
                 strokeWidth="1.5"
               />
             </button>
@@ -216,16 +217,16 @@ const Header = () => {
               )}
               <div className="s-header__user-modal-actions">
                 <Button
-                  fullWidth={true}
-                  iconLeft={IconPencil}
+                  display="block"
+                  icon={IconPencil}
                   onClick={handleEditProfile}
-                  variant="outline"
+                  variant="ghost"
                 >
                   {t("nav.editProfile")}
                 </Button>
                 <Button
-                  fullWidth={true}
-                  iconLeft={IconLogOut}
+                  display="block"
+                  icon={IconLogOut}
                   onClick={handleLogout}
                   variant="fill"
                 >

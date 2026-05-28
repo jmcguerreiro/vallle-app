@@ -14,16 +14,31 @@
   font-weight: $font-weight-bold;
 }
 
+.c-form__fieldset-legend {
+  display: block;
+  font-weight: $font-weight-bold;
+  border-bottom: solid 1px $color-parchment;
+  padding-bottom: $spacing-2;
+  margin-bottom: $spacing-4;
+  color: $text-color-highlight;
+  width: 100%;
+}
+
 .c-form__fields {
   display: flex;
   flex-direction: column;
   gap: $spacing-4;
 }
 
+.c-form__field-label {
+  display: block;
+  margin-bottom: $spacing-1;
+}
+
 .c-form__field-input {
   border: solid 1px $color-parchment;
   border-radius: $border-radius-lg;
-  color: $color-espresso;
+  color: $text-color-highlight;
   padding: $spacing-3 $spacing-4;
   transition: $transition-normal;
   width: 100%;
@@ -48,16 +63,16 @@
 }
 
 .c-form__field-label {
-  @include font-size(sm);
-  color: $text-color;
-  display: block;
-  font-weight: $font-weight-bold;
   margin-bottom: $spacing-2;
 }
 
 .c-form__field-error {
   @include font-size(sm);
   color: $color-danger;
+}
+
+.c-form__field-hint {
+  @include font-size(sm);
 }
 
 .c-form__success {

@@ -4,7 +4,7 @@ This file documents the coding conventions for the Vallle project. Agents should
 
 ## Project overview
 
-Vallle is a voucher platform for local businesses built with React + Vite on Cloudflare Pages. The API lives inside `functions/` as Pages Functions with a D1 (SQLite) database. See `documentation.md` for full project context, schema, and decision log.
+Vallle is a vallle platform for local businesses built with React + Vite on Cloudflare Pages. The API lives inside `functions/` as Pages Functions with a D1 (SQLite) database. See `documentation.md` for full project context, schema, and decision log.
 
 ## Stack
 
@@ -19,7 +19,7 @@ We use standard JavaScript `Error` objects with specific properties for better o
 
 - **Throw Standard Errors**: Always `throw new Error("Message")`. Avoid custom error classes unless absolutely necessary.
 - **Error Codes**: Attach a `.code` property to the error object.
-  - Use constants from `@/constants/errors.js` (e.g., `ERROR_CODES.DB_READ_FAILED`, `ERROR_CODES.VOUCHER_EXPIRED`).
+  - Use constants from `@/constants/errors.js` (e.g., `ERROR_CODES.DB_READ_FAILED`, `ERROR_CODES.VALLLE_EXPIRED`).
 - **Cause**: Always attach the original error to the `.cause` property to preserve the stack trace chain.
 
 **Example:**
@@ -28,9 +28,9 @@ We use standard JavaScript `Error` objects with specific properties for better o
 import { ERROR_CODES } from '@/constants/errors.js'
 
 try {
-  await env.DB.prepare('SELECT * FROM vouchers WHERE id = ?').bind(id).first()
+  await env.DB.prepare('SELECT * FROM vallles WHERE id = ?').bind(id).first()
 } catch (error) {
-  const err = new Error('Voucher: Failed to read voucher')
+  const err = new Error('Vallle: Failed to read vallle')
   err.code = ERROR_CODES.DB_READ_FAILED
   err.cause = error
   throw err
@@ -49,7 +49,7 @@ File paths in `functions/` map directly to API routes. D1 is accessed via `conte
 **Example:**
 
 ```javascript
-// functions/api/vouchers/index.js → GET /api/vouchers
+// functions/api/vallles/index.js → GET /api/vallles
 
 export async function onRequestGet(context) {
   const { env } = context
@@ -58,12 +58,12 @@ export async function onRequestGet(context) {
 
   try {
     const { results } = await env.DB.prepare(
-      'SELECT * FROM vouchers WHERE store_id = ? ORDER BY created_at DESC'
+      'SELECT * FROM vallles WHERE store_id = ? ORDER BY created_at DESC'
     ).bind(storeId).all()
 
     return Response.json({ data: results })
   } catch (error) {
-    const err = new Error('Vouchers: Failed to list vouchers')
+    const err = new Error('Vallles: Failed to list vallles')
     err.code = 'DB_READ_FAILED'
     err.cause = error
     throw err
@@ -77,14 +77,14 @@ export async function onRequestGet(context) {
 - **Money**: Always stored as integers in cents (e.g., `5000` = €50.00). Convert only at the presentation layer.
 - **Dates**: ISO 8601 text strings (`2026-03-17T12:00:00Z`). SQLite has no native datetime type.
 - **Parameterised queries**: Always use `.bind()` — never interpolate values into SQL strings.
-- **Voucher expiry**: Checked in app logic when a voucher is looked up (`expires_at < now`), not via cron.
+- **Vallle expiry**: Checked in app logic when a vallle is looked up (`expires_at < now`), not via cron.
 
 ## 4. Internationalization (i18n)
 
 All user-facing strings must be internationalized.
 
 - **Structure**: Organize keys hierarchically by: `features` -> `component/feature` -> `state` -> `key`.
-  - Example: `features.redeemVoucher.errorState.voucherExpired`
+  - Example: `features.redeemVallle.errorState.vallleExpired`
 - **Tone (Portuguese)**: Use formal language (third-person "você" form), not informal "tu". For example: "Introduza o seu email" (not "Introduz o teu email"), "Esqueceu-se da palavra-passe?" (not "Esqueceste a palavra-passe?").
 - **Usage**: Use the `useTranslation` hook from `react-i18next`.
 
@@ -162,14 +162,14 @@ import { User as IconUser } from 'lucide-react'
 import { useAuth } from '@/shared/auth'
 
 /**
- * Component: VoucherCard
- * Displays a single voucher with its current balance and status.
+ * Component: VallleCard
+ * Displays a single vallle with its current balance and status.
  * @component
  * @param {Object} props
- * @param {Object} props.voucher - The voucher object
+ * @param {Object} props.vallle - The vallle object
  * @returns {JSX.Element}
  */
-const VoucherCard = ({ voucher }) => {
+const VallleCard = ({ vallle }) => {
   // Hooks
   const { t } = useTranslation()
   const { user } = useAuth()
@@ -178,8 +178,8 @@ const VoucherCard = ({ voucher }) => {
   const [isExpanded, setIsExpanded] = useState(false)
 
   // Derived State
-  const displayBalance = (voucher.balance / 100).toFixed(2)
-  const isExpired = new Date(voucher.expires_at) < new Date()
+  const displayBalance = (vallle.balance / 100).toFixed(2)
+  const isExpired = new Date(vallle.expires_at) < new Date()
 
   // Handlers
   const handleToggle = useCallback(() => {
@@ -188,17 +188,17 @@ const VoucherCard = ({ voucher }) => {
 
   // Render
   return (
-    <div className="c-voucher-card">
-      <h3 className="c-voucher-card__code">{voucher.code}</h3>
-      <p className="c-voucher-card__balance">€{displayBalance}</p>
-      <button className="c-voucher-card__toggle" onClick={handleToggle}>
+    <div className="c-vallle-card">
+      <h3 className="c-vallle-card__code">{vallle.code}</h3>
+      <p className="c-vallle-card__balance">€{displayBalance}</p>
+      <button className="c-vallle-card__toggle" onClick={handleToggle}>
         {isExpanded ? t('common.collapse') : t('common.expand')}
       </button>
     </div>
   )
 }
 
-export default VoucherCard
+export default VallleCard
 ```
 
 ## 6. Frontend Structure
@@ -210,7 +210,7 @@ src/
 ├── features/
 │   ├── auth/
 │   ├── dashboard/
-│   ├── vouchers/
+│   ├── vallles/
 │   │   ├── pages/           ← route-level components
 │   │   │   ├── Index.jsx    ← list + Outlet for modals
 │   │   │   ├── Create.jsx   ← modal
@@ -258,7 +258,7 @@ src/
 - Custom hooks live in `src/hooks/`. Each hook is a single named export (e.g. `useAuth`).
 - App-wide constants live in `src/constants/` — error codes (`errors.js`), route paths (`routes.js`), and user roles (`user-roles.js`). Never hardcode route strings or role strings inline; always import from these files.
 - Utility functions live in `src/utils/`, split by domain (e.g. `currency.js`, `dates.js`). Add a new file per domain — do not put unrelated utilities in the same file. Only truly app-wide utilities belong here.
-- Feature-specific utilities live in the feature folder as `utils.js` (e.g. `src/features/vouchers/utils.js`). If a utility is only relevant to one feature, keep it co-located with that feature rather than in `src/utils/`.
+- Feature-specific utilities live in the feature folder as `utils.js` (e.g. `src/features/vallles/utils.js`). If a utility is only relevant to one feature, keep it co-located with that feature rather than in `src/utils/`.
 - API and external service abstractions live in `src/services/`. Each file wraps a distinct external concern (e.g. `api.js` for the Vallle API). Add a new file per service — do not mix concerns.
 - Route guards live in `src/router/`.
 
@@ -291,7 +291,7 @@ The sidebar navigation already hides links for routes the user can't access (`is
 CRUD views (create, view, edit) open as URL-driven modals using the native `<dialog>` element. Modals can be opened from **any page** — the current page stays visible behind the modal.
 
 - **Pattern**: Uses react-router's `backgroundLocation` state. When navigating to a modal route, pass `state: { backgroundLocation: location }`. In `App.jsx`, routes render against the background location (keeping the current page mounted), while modal routes render on top at the actual URL.
-- **Routing**: Modal route paths are full paths (e.g. `/vouchers/create`, `/vouchers/:id`). Use helper functions from `constants/routes.js` (e.g. `voucherCreatePath()`, `voucherPath(id)`, `voucherEditPath(id)`) for navigation — always pass `backgroundLocation` in state.
+- **Routing**: Modal route paths are full paths (e.g. `/vallles/create`, `/vallles/:id`). Use helper functions from `constants/routes.js` (e.g. `vallleCreatePath()`, `valllePath(id)`, `vallleEditPath(id)`) for navigation — always pass `backgroundLocation` in state.
 - **Closing**: Pressing Escape, clicking the backdrop, or the close button all call `navigate(-1)` to return to whatever page was behind the modal.
 - **Direct access**: If someone lands on a modal URL directly (no background location), the modal routes don't render and the URL matches the page routes normally — so you should have a fallback page route for each modal URL.
 
@@ -303,26 +303,26 @@ const backgroundLocation = location.state?.backgroundLocation
 
 <Routes location={backgroundLocation || location}>
   {/* Page routes render against the background location */}
-  <Route element={<VouchersIndex />} path={ROUTES.VOUCHERS} />
+  <Route element={<ValllesIndex />} path={ROUTES.VALLLES} />
 </Routes>
 
 {backgroundLocation && (
   <Routes>
     {/* Modal routes render on top at the actual URL */}
-    <Route element={<VoucherCreate />} path={ROUTES.VOUCHERS_MODAL_CREATE} />
+    <Route element={<VallleCreate />} path={ROUTES.VALLLES_MODAL_CREATE} />
   </Routes>
 )}
 
 // When linking to a modal — pass backgroundLocation
 <Link
-  to={voucherCreatePath()}
+  to={vallleCreatePath()}
   state={{ backgroundLocation: location }}
 >
-  Create voucher
+  Create vallle
 </Link>
 
-// In VoucherCreate — wraps content in Modal
-<Modal title={t('features.vouchers.create.heading')}>
+// In VallleCreate — wraps content in Modal
+<Modal title={t('features.vallles.create.heading')}>
   {/* form content */}
 </Modal>
 ```
@@ -335,13 +335,13 @@ All client-side data fetching goes through [TanStack Query](https://tanstack.com
 
 ```javascript
 const { data: response, isPending, isError } = useQuery({
-  queryKey: ['vouchers', { page: pageIndex, pageSize: PAGE_SIZE }],
+  queryKey: ['vallles', { page: pageIndex, pageSize: PAGE_SIZE }],
   queryFn: ({ signal }) =>
-    get(`/api/vouchers?limit=${PAGE_SIZE}&offset=${pageIndex * PAGE_SIZE}`, { signal }),
+    get(`/api/vallles?limit=${PAGE_SIZE}&offset=${pageIndex * PAGE_SIZE}`, { signal }),
 })
 ```
 
-- **`queryKey`**: An array used as the cache key. Include any parameter (id, page, filter) that should produce a separate cache entry. Convention: `[domain, subdomain, params]` — e.g. `['vouchers']`, `['admin', 'companies']`, `['stats']`.
+- **`queryKey`**: An array used as the cache key. Include any parameter (id, page, filter) that should produce a separate cache entry. Convention: `[domain, subdomain, params]` — e.g. `['vallles']`, `['admin', 'companies']`, `['stats']`.
 - **`queryFn`**: Always destructure `signal` and pass it to `get()` — that's how cancellation works.
 - **`isPending` vs `isLoading`**: Use `isPending` (true when there's no data yet). `isFetching` is for showing background refetch indicators.
 - **Pagination**: Add `placeholderData: keepPreviousData` to keep showing the previous page's data while the new page loads.
@@ -351,25 +351,25 @@ const { data: response, isPending, isError } = useQuery({
 ```javascript
 const queryClient = useQueryClient()
 
-const createVoucher = useMutation({
-  mutationFn: (payload) => post('/api/vouchers', payload),
-  onSuccess: ({ data: voucher }) => {
-    queryClient.invalidateQueries({ queryKey: ['vouchers'] })
+const createVallle = useMutation({
+  mutationFn: (payload) => post('/api/vallles', payload),
+  onSuccess: ({ data: vallle }) => {
+    queryClient.invalidateQueries({ queryKey: ['vallles'] })
     queryClient.invalidateQueries({ queryKey: ['stats'] })
-    addToast(t('features.vouchers.create.success'), 'success')
-    navigate(voucherPath(voucher.id), { replace: true, state: { backgroundLocation } })
+    addToast(t('features.vallles.create.success'), 'success')
+    navigate(valllePath(vallle.id), { replace: true, state: { backgroundLocation } })
   },
   onError: (error) => {
-    setServerError(error.message || t('features.vouchers.create.error.generic'))
+    setServerError(error.message || t('features.vallles.create.error.generic'))
   },
 })
 
 // In the form submit handler:
-createVoucher.mutate(payload)
+createVallle.mutate(payload)
 ```
 
 - **Trigger with `.mutate(payload)`**, not by calling `mutationFn` directly.
-- **Use `createVoucher.isPending`** for submit-button loading state instead of a separate `useState`.
+- **Use `createVallle.isPending`** for submit-button loading state instead of a separate `useState`.
 - **`onSuccess` / `onError`** replace the old `try/catch/finally`.
 
 ### 9.3 Cache invalidation
@@ -377,18 +377,18 @@ createVoucher.mutate(payload)
 After a successful mutation, invalidate the queries that should refetch:
 
 ```javascript
-queryClient.invalidateQueries({ queryKey: ['vouchers'] })
+queryClient.invalidateQueries({ queryKey: ['vallles'] })
 ```
 
-`invalidateQueries` matches by prefix — `['vouchers']` matches `['vouchers', { page: 0 }]`, `['vouchers', { page: 1 }]`, etc. Pick the most specific prefix that covers the lists you need refreshed. Avoid invalidating unrelated domains (don't invalidate `['users']` when creating a voucher).
+`invalidateQueries` matches by prefix — `['vallles']` matches `['vallles', { page: 0 }]`, `['vallles', { page: 1 }]`, etc. Pick the most specific prefix that covers the lists you need refreshed. Avoid invalidating unrelated domains (don't invalidate `['users']` when creating a vallle).
 
-Cross-domain invalidations are fine when warranted — e.g. creating a voucher invalidates both `['vouchers']` and `['stats']` because the dashboard stat depends on voucher count.
+Cross-domain invalidations are fine when warranted — e.g. creating a vallle invalidates both `['vallles']` and `['stats']` because the dashboard stat depends on vallle count.
 
 ### 9.4 Query key conventions
 
 | Resource | Key |
 | --- | --- |
-| Voucher list (current store) | `['vouchers', { page, pageSize }]` |
+| Vallle list (current store) | `['vallles', { page, pageSize }]` |
 | Dashboard stats | `['stats']` |
 | Company users | `['company', 'users']` |
 | Admin: users | `['admin', 'users']` |

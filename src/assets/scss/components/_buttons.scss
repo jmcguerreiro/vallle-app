@@ -1,46 +1,23 @@
-/* ─── Shared button base ─────────────────────────────────────── */
-
-%button-base {
+.c-button-fill {
   @include font-size(sm);
-
   align-items: center;
-  border: none;
+  background: $color-terracota;
   border-radius: $border-radius-lg;
+  color: $color-white;
   cursor: pointer;
   display: inline-flex;
-  font-family: $font-family-one;
   font-weight: $font-weight-bold;
   gap: $spacing-2;
   padding: $spacing-3 $spacing-4;
-  transition:
-    background $transition-normal,
-    color $transition-normal,
-    border-color $transition-normal;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-}
-
-/* ─── Fill (primary solid) ───────────────────────────────────── */
-
-.c-button-fill {
-  @extend %button-base;
-
-  background: $color-terracota;
-  color: $color-white;
+  transition: $transition-normal;
 
   &:hover:not(:disabled) {
     background: darken($color-terracota, 8%);
   }
 
-  &--skin-secondary {
-    background: $color-espresso;
-
-    &:hover:not(:disabled) {
-      background: lighten($color-espresso, 8%);
-    }
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 
   &--skin-danger {
@@ -51,19 +28,8 @@
     }
   }
 
-  &--size-sm {
-    @include font-size(xs);
-
-    padding: $spacing-1 $spacing-3;
-  }
-
   &--display-block {
-    display: flex;
     justify-content: center;
-    width: 100%;
-  }
-
-  &--full-width {
     width: 100%;
   }
 
@@ -74,72 +40,28 @@
   }
 }
 
-/* ─── Outline ────────────────────────────────────────────────── */
-
-.c-button-outline {
-  @extend %button-base;
-
-  background: transparent;
-  border: 1px solid $color-terracota;
-  color: $color-terracota;
-
-  &:hover:not(:disabled) {
-    background: rgba($color-terracota, 0.08);
-  }
-
-  &--skin-secondary {
-    border-color: $color-ash;
-    color: $text-color;
-
-    &:hover:not(:disabled) {
-      background: rgba($color-ash, 0.1);
-    }
-  }
-
-  &--skin-danger {
-    border-color: $color-danger;
-    color: $color-danger;
-
-    &:hover:not(:disabled) {
-      background: rgba($color-danger, 0.08);
-    }
-  }
-
-  &--size-sm {
-    @include font-size(xs);
-
-    padding: $spacing-1 $spacing-3;
-  }
-
-  &--display-block {
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-
-  &--full-width {
-    width: 100%;
-  }
-
-  &--is-processing {
-    .c-button-outline__icon {
-      animation: spin 1s linear infinite;
-    }
-  }
-}
-
-/* ─── Ghost ──────────────────────────────────────────────────── */
-
 .c-button-ghost {
-  @extend %button-base;
-
+  @include font-size(sm);
+  align-items: center;
   background: transparent;
+  border-radius: $border-radius-lg;
   color: $text-color;
+  cursor: pointer;
+  display: inline-flex;
+  font-weight: $font-weight-bold;
+  gap: $spacing-2;
+  padding: $spacing-3 $spacing-4;
+  transition: $transition-normal;
 
   &:hover:not(:disabled) {
     background: rgba($color-ash, 0.12);
   }
 
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+  }
+
   &--skin-danger {
     color: $color-danger;
 
@@ -148,19 +70,8 @@
     }
   }
 
-  &--size-sm {
-    @include font-size(xs);
-
-    padding: $spacing-1 $spacing-3;
-  }
-
   &--display-block {
-    display: flex;
     justify-content: center;
-    width: 100%;
-  }
-
-  &--full-width {
     width: 100%;
   }
 
@@ -171,20 +82,21 @@
   }
 }
 
-/* ─── Icon-only ──────────────────────────────────────────────── */
-
 .c-button-icon {
-  border: solid 1px $color-parchment;
-  border-radius: 50%;
-  display: inline-flex;
   align-items: center;
+  background: $color-terracota;
+  border-radius: 50%;
+  color: $color-white;
+  cursor: pointer;
+  display: inline-flex;
+  height: to-rem(48);
   justify-content: center;
-  width: 40px;
-  height: 40px;
+  position: relative;
+  transition: $transition-normal;
+  width: to-rem(48);
 
   &:hover:not(:disabled) {
-    background: rgba($color-ash, 0.12);
-    color: $text-color-highlight;
+    background: darken($color-terracota, 8%);
   }
 
   &:hover:not(:disabled) .c-button-icon__tooltip,
@@ -193,12 +105,9 @@
     transform: translateX(-50%) translateY(0);
   }
 
-  &--skin-transparent {
-    border-color: transparent;
-  }
-
-  &--skin-dark {
-    background: $color-terracota;
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
   }
 }
 
@@ -216,49 +125,7 @@
   position: absolute;
   top: calc(100% + #{$spacing-1});
   transform: translateX(-50%) translateY(-2px);
-  transition:
-    opacity $transition-normal,
-    transform $transition-normal;
+  transition: $transition-normal;
   white-space: nowrap;
   z-index: 10;
-}
-
-/* ─── Layout header action buttons ───────────────────────────── */
-
-.c-btn {
-  @extend %button-base;
-
-  &--primary {
-    background: $color-terracota;
-    color: $color-white;
-
-    &:hover:not(:disabled) {
-      background: darken($color-terracota, 8%);
-    }
-  }
-
-  &--secondary {
-    background: transparent;
-    border: 1px solid rgba($color-ash, 0.3);
-    color: $text-color;
-
-    &:hover:not(:disabled) {
-      border-color: $color-terracota;
-      color: $color-terracota;
-    }
-  }
-
-  &--danger {
-    background: transparent;
-    border: 1px solid $color-danger;
-    color: $color-danger;
-
-    &:hover:not(:disabled) {
-      background: rgba($color-danger, 0.08);
-    }
-  }
-
-  &__icon {
-    flex-shrink: 0;
-  }
 }

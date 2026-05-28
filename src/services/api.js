@@ -18,7 +18,7 @@ export const setApiStoreId = (storeId) => {
 
 /**
  * Makes a request to the API and returns the parsed JSON body.
- * @param {string} path - API path, e.g. '/api/vouchers'
+ * @param {string} path - API path, e.g. '/api/vallles'
  * @param {Object} [options] - Fetch options (method, body, etc.)
  * @returns {Promise<Object>} Parsed response body
  */

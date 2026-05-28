@@ -3,6 +3,7 @@
   position: sticky;
   top: 0;
   width: 100%;
+  z-index: 100;
 }
 
 .s-header__wrapper {
@@ -46,7 +47,14 @@
 
 .s-header__user-button {
   align-items: center;
+  cursor: pointer;
   display: flex;
+
+  &:hover {
+    .s-header__user-button-image {
+      transform: scale(1.05);
+    }
+  }
 }
 
 .s-header__user-button-image {
@@ -54,6 +62,7 @@
   border: solid 1px $color-parchment;
   width: to-rem(48);
   height: to-rem(48);
+  transition: $transition-normal;
 }
 
 .s-header__user-modal {
@@ -131,6 +140,6 @@
 
 @include screen(md) {
   .s-header {
-    padding: $spacing-6 $spacing-9;
+    padding: $spacing-6 $spacing-9 $spacing-9 $spacing-9;
   }
 }

@@ -1,6 +1,6 @@
 import { getAuthUser } from '../../auth/_helpers.js'
 
-const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_voucher_expiry_days, status, created_at FROM stores WHERE id = ?`
+const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, status, created_at FROM stores WHERE id = ?`
 
 const EDITABLE_FIELDS = [
   'name', 'category', 'email', 'vat_id', 'phone',
@@ -40,11 +40,11 @@ export async function onRequestGet(context) {
       )
     }
 
-    const [voucherStats, commissionStats] = await env.DB.batch([
+    const [vallleStats, commissionStats] = await env.DB.batch([
       env.DB.prepare(
-        `SELECT COUNT(*) AS voucher_count,
-                COALESCE(SUM(amount), 0) AS total_voucher_amount
-         FROM vouchers WHERE store_id = ?`,
+        `SELECT COUNT(*) AS vallle_count,
+                COALESCE(SUM(amount), 0) AS total_vallle_amount
+         FROM vallles WHERE store_id = ?`,
       ).bind(id),
       env.DB.prepare(
         `SELECT COALESCE(SUM(amount), 0) AS total_commission,
@@ -54,7 +54,7 @@ export async function onRequestGet(context) {
     ])
 
     const stats = {
-      ...voucherStats.results[0],
+      ...vallleStats.results[0],
       ...commissionStats.results[0],
     }
 
@@ -129,9 +129,9 @@ export async function onRequestPut(context) {
       body.status = 'active'
     }
 
-    // Validate default_voucher_expiry_days if provided
-    if (body.default_voucher_expiry_days !== undefined) {
-      const days = parseInt(body.default_voucher_expiry_days, 10)
+    // Validate default_vallle_expiry_days if provided
+    if (body.default_vallle_expiry_days !== undefined) {
+      const days = parseInt(body.default_vallle_expiry_days, 10)
       if (Number.isNaN(days) || days < 1 || days > 1825) {
         return Response.json(
           { error: { message: 'Default expiry must be between 1 and 1825 days', code: 'VALIDATION_FAILED' } },
@@ -150,11 +150,11 @@ export async function onRequestPut(context) {
       ).bind(...values, now, id),
     ]
 
-    if (body.default_voucher_expiry_days !== undefined) {
+    if (body.default_vallle_expiry_days !== undefined) {
       statements.push(
         env.DB.prepare(
-          'UPDATE stores SET default_voucher_expiry_days = ?, updated_at = ? WHERE id = ?',
-        ).bind(parseInt(body.default_voucher_expiry_days, 10), now, id),
+          'UPDATE stores SET default_vallle_expiry_days = ?, updated_at = ? WHERE id = ?',
+        ).bind(parseInt(body.default_vallle_expiry_days, 10), now, id),
       )
     }
 

@@ -19,7 +19,7 @@ import { formatCurrency } from '@/utils/currency'
 /**
  * Component: StatsIndex
  * Statistics page showing performance metrics for the current store.
- * Displays summary cards and an area chart of vouchers created over time.
+ * Displays summary cards and an area chart of vallles created over time.
  * @component
  * @returns {JSX.Element}
  */
@@ -81,8 +81,8 @@ const StatsIndex = () => {
   return (
     <div className="p-stats">
       <div className="p-stats__cards">
-        <Stat label={t('features.stats.totalVouchers')} value={stats.totalVouchers} />
-        <Stat label={t('features.stats.activeVouchers')} value={stats.activeVouchers} />
+        <Stat label={t('features.stats.totalVallles')} value={stats.totalVallles} />
+        <Stat label={t('features.stats.activeVallles')} value={stats.activeVallles} />
         <Stat label={t('features.stats.totalAmount')} value={formatCurrency(stats.totalAmount)} />
         <Stat label={t('features.stats.totalRedeemed')} value={formatCurrency(stats.totalRedeemed)} />
       </div>
@@ -100,7 +100,7 @@ const StatsIndex = () => {
                 dataKey="count"
                 fill="#c4653a"
                 fillOpacity={0.15}
-                name={t('features.stats.chart.vouchers')}
+                name={t('features.stats.chart.vallles')}
                 stroke="#c4653a"
                 type="monotone"
               />

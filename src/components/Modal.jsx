@@ -100,8 +100,7 @@ const Modal = ({ children, className = "", size = "default" }) => {
                     <Button
                       key={label}
                       display="block"
-                      fullWidth={true}
-                      iconLeft={icon}
+                      icon={icon}
                       onClick={onClick}
                       variant={variant}
                     >
@@ -152,7 +151,7 @@ const Modal = ({ children, className = "", size = "default" }) => {
                 ({ label, icon, onClick, variant = "ghost" }) => (
                   <Button
                     key={label}
-                    iconLeft={icon}
+                    icon={icon}
                     onClick={onClick}
                     variant={variant}
                   >

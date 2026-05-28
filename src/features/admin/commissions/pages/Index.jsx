@@ -63,8 +63,8 @@ const AdminCommissionsIndex = () => {
       header: t('features.admin.commissions.company'),
     },
     {
-      accessorKey: 'total_voucher_amount',
-      header: t('features.admin.commissions.voucherSales'),
+      accessorKey: 'total_vallle_amount',
+      header: t('features.admin.commissions.vallleSales'),
       cell: ({ getValue }) => formatCurrency(getValue()),
     },
     {
@@ -116,18 +116,16 @@ const AdminCommissionsIndex = () => {
   }
 
   const commissionFilters = (
-    <div className="c-datatable__filter-group">
-      <FilterSelect
-        ariaLabel={t('common.filters.allStatuses')}
-        onChange={handlePaymentFilter}
-        options={[
-          { value: 'all', label: t('common.filters.allStatuses') },
-          { value: 'unpaid', label: t('features.admin.commissions.unpaid') },
-          { value: 'paid', label: t('features.admin.commissions.paid') },
-        ]}
-        value={paymentFilter}
-      />
-    </div>
+    <FilterSelect
+      ariaLabel={t('common.filters.allStatuses')}
+      onChange={handlePaymentFilter}
+      options={[
+        { value: 'all', label: t('common.filters.allStatuses') },
+        { value: 'unpaid', label: t('features.admin.commissions.unpaid') },
+        { value: 'paid', label: t('features.admin.commissions.paid') },
+      ]}
+      value={paymentFilter}
+    />
   )
 
   return (

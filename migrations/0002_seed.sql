@@ -131,9 +131,9 @@ VALUES ('01JA0000000000000000000023', '01JA0000000000000000000010', '01JA0000000
 INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, created_at)
 VALUES ('01JA0000000000000000000024', '01JA0000000000000000000011', '01JA0000000000000000000002', 'admin', '2026-03-17T10:00:00Z');
 
--- ─── Vouchers ───────────────────────────────────────────────────
--- Café Flor: active voucher, €25
-INSERT OR IGNORE INTO vouchers (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- ─── Vallles ───────────────────────────────────────────────────
+-- Café Flor: active vallle, €25
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
 VALUES (
   '01JA0000000000000000000030',
   '01JA0000000000000000000010',
@@ -146,8 +146,8 @@ VALUES (
   '2026-03-15T14:00:00Z'
 );
 
--- Café Flor: partially used voucher, €50 (€30 remaining)
-INSERT OR IGNORE INTO vouchers (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- Café Flor: partially used vallle, €50 (€30 remaining)
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
 VALUES (
   '01JA0000000000000000000031',
   '01JA0000000000000000000010',
@@ -160,8 +160,8 @@ VALUES (
   '2026-03-12T16:30:00Z'
 );
 
--- Padaria São Jorge: active voucher, €15
-INSERT OR IGNORE INTO vouchers (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- Padaria São Jorge: active vallle, €15
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
 VALUES (
   '01JA0000000000000000000032',
   '01JA0000000000000000000011',
@@ -174,8 +174,8 @@ VALUES (
   '2026-03-16T09:00:00Z'
 );
 
--- Vinhos do Monte: fully used voucher, €40
-INSERT OR IGNORE INTO vouchers (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- Vinhos do Monte: fully used vallle, €40
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
 VALUES (
   '01JA0000000000000000000033',
   '01JA0000000000000000000012',
@@ -189,8 +189,8 @@ VALUES (
 );
 
 -- ─── Redemptions ────────────────────────────────────────────────
--- Café Flor: partial redemption on the €50 voucher (€20 coffee + pastry)
-INSERT OR IGNORE INTO redemptions (id, store_id, voucher_id, redeemed_by, description, amount, balance_after, created_at)
+-- Café Flor: partial redemption on the €50 vallle (€20 coffee + pastry)
+INSERT OR IGNORE INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at)
 VALUES (
   '01JA0000000000000000000040',
   '01JA0000000000000000000010',
@@ -201,8 +201,8 @@ VALUES (
   '2026-03-12T16:30:00Z'
 );
 
--- Vinhos do Monte: full redemption on the €40 voucher
-INSERT OR IGNORE INTO redemptions (id, store_id, voucher_id, redeemed_by, description, amount, balance_after, created_at)
+-- Vinhos do Monte: full redemption on the €40 vallle
+INSERT OR IGNORE INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at)
 VALUES (
   '01JA0000000000000000000041',
   '01JA0000000000000000000012',
@@ -214,10 +214,10 @@ VALUES (
 );
 
 -- ─── Commissions ────────────────────────────────────────────────
--- 5% of each voucher created (min €0.50, max €2.00)
+-- 5% of each vallle created (min €0.50, max €2.00)
 
--- Café Flor €25 voucher → 5% = €1.25
-INSERT OR IGNORE INTO commissions (id, store_id, voucher_id, amount, paid_at, created_at)
+-- Café Flor €25 vallle → 5% = €1.25
+INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000050',
   '01JA0000000000000000000010',
@@ -226,8 +226,8 @@ VALUES (
   '2026-03-15T14:00:00Z'
 );
 
--- Café Flor €50 voucher → 5% = €2.50, capped at €2.00
-INSERT OR IGNORE INTO commissions (id, store_id, voucher_id, amount, paid_at, created_at)
+-- Café Flor €50 vallle → 5% = €2.50, capped at €2.00
+INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000051',
   '01JA0000000000000000000010',
@@ -236,8 +236,8 @@ VALUES (
   '2026-03-10T11:00:00Z'
 );
 
--- Padaria São Jorge €15 voucher → 5% = €0.75
-INSERT OR IGNORE INTO commissions (id, store_id, voucher_id, amount, paid_at, created_at)
+-- Padaria São Jorge €15 vallle → 5% = €0.75
+INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000052',
   '01JA0000000000000000000011',
@@ -246,8 +246,8 @@ VALUES (
   '2026-03-16T09:00:00Z'
 );
 
--- Vinhos do Monte €40 voucher → 5% = €2.00
-INSERT OR IGNORE INTO commissions (id, store_id, voucher_id, amount, paid_at, created_at)
+-- Vinhos do Monte €40 vallle → 5% = €2.00
+INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000053',
   '01JA0000000000000000000012',

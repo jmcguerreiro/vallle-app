@@ -23,8 +23,8 @@ const MONTH_LABELS = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'S
 
 /**
  * Component: AdminDashboard
- * Super admin home page. Shows platform-level stats (companies, voucher amount,
- * commission revenue) and a yearly line chart of vouchers vs commissions broken down by month.
+ * Super admin home page. Shows platform-level stats (companies, vallle amount,
+ * commission revenue) and a yearly line chart of vallles vs commissions broken down by month.
  * @component
  * @returns {JSX.Element}
  */
@@ -48,7 +48,7 @@ const AdminDashboard = () => {
     return data.chartData.map((d) => ({
       ...d,
       label: MONTH_LABELS[Number.parseInt(d.month.split('-')[1], 10) - 1],
-      voucher_amount: d.voucher_amount / 100,
+      vallle_amount: d.vallle_amount / 100,
       commission_amount: d.commission_amount / 100,
     }))
   }, [data])
@@ -107,8 +107,8 @@ const AdminDashboard = () => {
           <span className="c-stats__card-label">{t('features.adminDashboard.stats.clients')}</span>
         </div>
         <div className="c-stats__card">
-          <span className="c-stats__card-value">{formatCurrency(data.totalVoucherAmount)}</span>
-          <span className="c-stats__card-label">{t('features.adminDashboard.stats.voucherAmount')}</span>
+          <span className="c-stats__card-value">{formatCurrency(data.totalVallleAmount)}</span>
+          <span className="c-stats__card-label">{t('features.adminDashboard.stats.vallleAmount')}</span>
         </div>
         <div className="c-stats__card">
           <span className="c-stats__card-value">{formatCurrency(data.totalCommission)}</span>
@@ -147,8 +147,8 @@ const AdminDashboard = () => {
               <Tooltip formatter={(v) => `€${v.toFixed(2)}`} />
               <Legend />
               <Line
-                dataKey="voucher_amount"
-                name={t('features.adminDashboard.chart.vouchers')}
+                dataKey="vallle_amount"
+                name={t('features.adminDashboard.chart.vallles')}
                 stroke="#C4653A"
                 strokeWidth={2}
                 type="monotone"

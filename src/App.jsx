@@ -32,13 +32,13 @@ import SettingsUserCreate from '@/features/settings/pages/UserCreate'
 import SettingsUserEdit from '@/features/settings/pages/UserEdit'
 import Settings from '@/features/settings/Settings'
 import StatsIndex from '@/features/stats/pages/Index'
-import VoucherCreate from '@/features/vouchers/pages/Create'
-import VoucherEdit from '@/features/vouchers/pages/Edit'
-import VouchersIndex from '@/features/vouchers/pages/Index'
-import QuickLookup from '@/features/vouchers/pages/QuickLookup'
-import QuickRedeem from '@/features/vouchers/pages/QuickRedeem'
-import VoucherRedeem from '@/features/vouchers/pages/Redeem'
-import VoucherView from '@/features/vouchers/pages/View'
+import VallleCreate from '@/features/vallles/pages/Create'
+import VallleEdit from '@/features/vallles/pages/Edit'
+import ValllesIndex from '@/features/vallles/pages/Index'
+import QuickLookup from '@/features/vallles/pages/QuickLookup'
+import QuickRedeem from '@/features/vallles/pages/QuickRedeem'
+import VallleRedeem from '@/features/vallles/pages/Redeem'
+import VallleView from '@/features/vallles/pages/View'
 import { useAuth } from '@/hooks/useAuth'
 import BlankLayout from '@/layouts/Blank'
 import DefaultLayout from '@/layouts/Default'
@@ -96,13 +96,13 @@ const AppRoutes = () => {
           }
         >
           <Route element={<HomeDashboard />} index />
-          <Route element={<VouchersIndex />} path={ROUTES.VOUCHERS} />
-          <Route element={<VoucherCreate />} path={ROUTES.VOUCHERS_MODAL_CREATE} />
-          <Route element={<VoucherView />} path={ROUTES.VOUCHERS_MODAL_VIEW} />
-          <Route element={<VoucherEdit />} path={ROUTES.VOUCHERS_MODAL_EDIT} />
-          <Route element={<VoucherRedeem />} path={ROUTES.VOUCHERS_MODAL_REDEEM} />
-          <Route element={<QuickRedeem />} path={ROUTES.VOUCHERS_MODAL_QUICK_REDEEM} />
-          <Route element={<QuickLookup />} path={ROUTES.VOUCHERS_MODAL_QUICK_LOOKUP} />
+          <Route element={<ValllesIndex />} path={ROUTES.VALLLES} />
+          <Route element={<VallleCreate />} path={ROUTES.VALLLES_MODAL_CREATE} />
+          <Route element={<VallleView />} path={ROUTES.VALLLES_MODAL_VIEW} />
+          <Route element={<VallleEdit />} path={ROUTES.VALLLES_MODAL_EDIT} />
+          <Route element={<VallleRedeem />} path={ROUTES.VALLLES_MODAL_REDEEM} />
+          <Route element={<QuickRedeem />} path={ROUTES.VALLLES_MODAL_QUICK_REDEEM} />
+          <Route element={<QuickLookup />} path={ROUTES.VALLLES_MODAL_QUICK_LOOKUP} />
           <Route element={<StatsIndex />} path={ROUTES.STATS} />
           <Route element={<Profile />} path={ROUTES.PROFILE} />
           <Route element={<ChangePassword />} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
@@ -138,12 +138,12 @@ const AppRoutes = () => {
       {backgroundLocation && (
         <ModalProvider>
           <Routes>
-            <Route element={<Modal><VoucherCreate /></Modal>} path={ROUTES.VOUCHERS_MODAL_CREATE} />
-            <Route element={<Modal><VoucherView /></Modal>} path={ROUTES.VOUCHERS_MODAL_VIEW} />
-            <Route element={<Modal><VoucherEdit /></Modal>} path={ROUTES.VOUCHERS_MODAL_EDIT} />
-            <Route element={<Modal><VoucherRedeem /></Modal>} path={ROUTES.VOUCHERS_MODAL_REDEEM} />
-            <Route element={<Modal><QuickRedeem /></Modal>} path={ROUTES.VOUCHERS_MODAL_QUICK_REDEEM} />
-            <Route element={<Modal><QuickLookup /></Modal>} path={ROUTES.VOUCHERS_MODAL_QUICK_LOOKUP} />
+            <Route element={<Modal><VallleCreate /></Modal>} path={ROUTES.VALLLES_MODAL_CREATE} />
+            <Route element={<Modal><VallleView /></Modal>} path={ROUTES.VALLLES_MODAL_VIEW} />
+            <Route element={<Modal><VallleEdit /></Modal>} path={ROUTES.VALLLES_MODAL_EDIT} />
+            <Route element={<Modal><VallleRedeem /></Modal>} path={ROUTES.VALLLES_MODAL_REDEEM} />
+            <Route element={<Modal><QuickRedeem /></Modal>} path={ROUTES.VALLLES_MODAL_QUICK_REDEEM} />
+            <Route element={<Modal><QuickLookup /></Modal>} path={ROUTES.VALLLES_MODAL_QUICK_LOOKUP} />
             <Route element={<Modal><ChangePassword /></Modal>} path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD} />
 
             {/* Settings user modals */}

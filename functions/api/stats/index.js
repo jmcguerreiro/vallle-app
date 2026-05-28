@@ -52,10 +52,10 @@ export async function onRequestGet(context) {
     const [summaryResult, redeemedResult, chartResult] = await env.DB.batch([
       env.DB.prepare(
         `SELECT
-           COUNT(*) as totalVouchers,
-           SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as activeVouchers,
+           COUNT(*) as totalVallles,
+           SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as activeVallles,
            COALESCE(SUM(amount), 0) as totalAmount
-         FROM vouchers
+         FROM vallles
          WHERE store_id = ?`,
       ).bind(storeId),
       env.DB.prepare(
@@ -65,7 +65,7 @@ export async function onRequestGet(context) {
       ).bind(storeId),
       env.DB.prepare(
         `SELECT strftime('%Y-%m', created_at) as month, COUNT(*) as count
-         FROM vouchers
+         FROM vallles
          WHERE store_id = ? AND created_at >= ?
          GROUP BY month
          ORDER BY month`,
@@ -80,8 +80,8 @@ export async function onRequestGet(context) {
 
     return Response.json({
       data: {
-        totalVouchers: summary.totalVouchers || 0,
-        activeVouchers: summary.activeVouchers || 0,
+        totalVallles: summary.totalVallles || 0,
+        activeVallles: summary.activeVallles || 0,
         totalAmount: summary.totalAmount || 0,
         totalRedeemed: summary.totalRedeemed || 0,
         chartData,

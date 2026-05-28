@@ -31,7 +31,7 @@ export async function onRequestGet(context) {
     // Exclude inactive stores — suspended stores remain accessible (read-only)
     const { results: storeLinks } = await env.DB.prepare(
       `SELECT su.store_id, su.role, s.name AS store_name, s.status AS store_status,
-              s.default_voucher_expiry_days
+              s.default_vallle_expiry_days
        FROM store_users su
        JOIN stores s ON s.id = su.store_id
        WHERE su.user_id = ? AND s.status != 'inactive'`,

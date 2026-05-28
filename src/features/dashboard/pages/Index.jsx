@@ -4,14 +4,14 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
-import { ROUTES, voucherCreatePath } from "@/constants/routes";
+import { ROUTES, vallleCreatePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { get } from "@/services/api";
 import { IconMailMinus, IconMailPlus, IconMailSearch } from "@/utils/icons";
 
 /**
  * Component: Dashboard
- * Welcome screen with active voucher count and three quick-action buttons:
+ * Welcome screen with active vallle count and three quick-action buttons:
  * Create (Emitir), Redeem (Redimir), and Look up (Consultar).
  * @component
  * @returns {JSX.Element}
@@ -32,7 +32,7 @@ const Dashboard = () => {
   // Derived State
   const firstName = user?.name?.split(" ")[0] ?? user?.name;
 
-  const activeCount = stats?.data.activeVouchers ?? null;
+  const activeCount = stats?.data.activeVallles ?? null;
 
   const subtitle =
     activeCount === null
@@ -43,17 +43,17 @@ const Dashboard = () => {
 
   // Handlers
   const handleCreate = useCallback(() => {
-    navigate(voucherCreatePath(), { state: { backgroundLocation: location } });
+    navigate(vallleCreatePath(), { state: { backgroundLocation: location } });
   }, [navigate, location]);
 
   const handleRedeem = useCallback(() => {
-    navigate(ROUTES.VOUCHERS_MODAL_QUICK_REDEEM, {
+    navigate(ROUTES.VALLLES_MODAL_QUICK_REDEEM, {
       state: { backgroundLocation: location },
     });
   }, [navigate, location]);
 
   const handleLookup = useCallback(() => {
-    navigate(ROUTES.VOUCHERS_MODAL_QUICK_LOOKUP, {
+    navigate(ROUTES.VALLLES_MODAL_QUICK_LOOKUP, {
       state: { backgroundLocation: location },
     });
   }, [navigate, location]);

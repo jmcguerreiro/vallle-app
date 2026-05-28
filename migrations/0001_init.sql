@@ -10,28 +10,30 @@ CREATE TABLE IF NOT EXISTS users (
   password   TEXT NOT NULL,
   role       TEXT NOT NULL DEFAULT 'admin',
   status     TEXT NOT NULL DEFAULT 'active',
+  avatar     TEXT NOT NULL DEFAULT 'paper-bag-head',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
 -- ─── Stores ─────────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS stores (
-  id          TEXT PRIMARY KEY,
-  name        TEXT NOT NULL,
-  slug        TEXT NOT NULL UNIQUE,
-  category    TEXT NOT NULL DEFAULT '',
-  email       TEXT NOT NULL DEFAULT '',
-  vat_id      TEXT NOT NULL DEFAULT '',
-  phone       TEXT NOT NULL DEFAULT '',
-  address1    TEXT NOT NULL DEFAULT '',
-  address2    TEXT NOT NULL DEFAULT '',
-  city        TEXT NOT NULL DEFAULT '',
-  postal_code TEXT NOT NULL DEFAULT '',
-  region      TEXT NOT NULL DEFAULT '',
-  country     TEXT NOT NULL DEFAULT 'PT',
-  status      TEXT NOT NULL DEFAULT 'active',
-  created_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-  updated_at  TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+  id                         TEXT PRIMARY KEY,
+  name                       TEXT NOT NULL,
+  slug                       TEXT NOT NULL UNIQUE,
+  category                   TEXT NOT NULL DEFAULT '',
+  email                      TEXT NOT NULL DEFAULT '',
+  vat_id                     TEXT NOT NULL DEFAULT '',
+  phone                      TEXT NOT NULL DEFAULT '',
+  address1                   TEXT NOT NULL DEFAULT '',
+  address2                   TEXT NOT NULL DEFAULT '',
+  city                       TEXT NOT NULL DEFAULT '',
+  postal_code                TEXT NOT NULL DEFAULT '',
+  region                     TEXT NOT NULL DEFAULT '',
+  country                    TEXT NOT NULL DEFAULT 'PT',
+  status                     TEXT NOT NULL DEFAULT 'active',
+  default_vallle_expiry_days INTEGER NOT NULL DEFAULT 365,
+  created_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  updated_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
 -- ─── Store users (many-to-many) ─────────────────────────────────
@@ -46,8 +48,8 @@ CREATE TABLE IF NOT EXISTS store_users (
 CREATE UNIQUE INDEX IF NOT EXISTS idx_store_users_unique ON store_users(store_id, user_id);
 CREATE INDEX IF NOT EXISTS idx_store_users_user ON store_users(user_id);
 
--- ─── Vouchers ───────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS vouchers (
+-- ─── Vallles ───────────────────────────────────────────────────
+CREATE TABLE IF NOT EXISTS vallles (
   id         TEXT PRIMARY KEY,
   store_id   TEXT NOT NULL REFERENCES stores(id),
   created_by TEXT NOT NULL REFERENCES users(id),
@@ -61,14 +63,14 @@ CREATE TABLE IF NOT EXISTS vouchers (
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_vouchers_store  ON vouchers(store_id);
-CREATE INDEX IF NOT EXISTS idx_vouchers_status ON vouchers(status);
+CREATE INDEX IF NOT EXISTS idx_vallles_store  ON vallles(store_id);
+CREATE INDEX IF NOT EXISTS idx_vallles_status ON vallles(status);
 
 -- ─── Redemptions ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS redemptions (
   id            TEXT PRIMARY KEY,
   store_id      TEXT NOT NULL REFERENCES stores(id),
-  voucher_id    TEXT NOT NULL REFERENCES vouchers(id),
+  vallle_id    TEXT NOT NULL REFERENCES vallles(id),
   redeemed_by   TEXT NOT NULL REFERENCES users(id),
   description   TEXT NOT NULL DEFAULT '',
   amount        INTEGER NOT NULL,
@@ -77,13 +79,13 @@ CREATE TABLE IF NOT EXISTS redemptions (
 );
 
 CREATE INDEX IF NOT EXISTS idx_redemptions_store   ON redemptions(store_id);
-CREATE INDEX IF NOT EXISTS idx_redemptions_voucher ON redemptions(voucher_id);
+CREATE INDEX IF NOT EXISTS idx_redemptions_vallle ON redemptions(vallle_id);
 
 -- ─── Commissions ────────────────────────────────────────────────
 CREATE TABLE IF NOT EXISTS commissions (
   id         TEXT PRIMARY KEY,
   store_id   TEXT NOT NULL REFERENCES stores(id),
-  voucher_id TEXT NOT NULL REFERENCES vouchers(id),
+  vallle_id TEXT NOT NULL REFERENCES vallles(id),
   amount     INTEGER NOT NULL,
   paid_at    TEXT,
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))

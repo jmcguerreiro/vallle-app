@@ -93,7 +93,7 @@ const AdminCompanyEdit = () => {
           region: store.region,
           country: store.country,
           status: store.status,
-          default_voucher_expiry_days: store.default_voucher_expiry_days,
+          default_vallle_expiry_days: store.default_vallle_expiry_days,
         })
       } catch {
         addToast(t('features.admin.companies.error.loadFailed'), 'error')
@@ -186,9 +186,9 @@ const AdminCompanyEdit = () => {
           placeholder={t('features.admin.companies.form.country')}
         />
         <Input
-          error={errors.default_voucher_expiry_days}
-          label={t('features.admin.companies.form.defaultVoucherExpiryDays')}
-          name="default_voucher_expiry_days"
+          error={errors.default_vallle_expiry_days}
+          label={t('features.admin.companies.form.defaultVallleExpiryDays')}
+          name="default_vallle_expiry_days"
           register={register}
           required={t('features.admin.companies.form.error.expiryDaysRequired')}
           type="number"

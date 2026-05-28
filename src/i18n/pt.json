@@ -1,6 +1,6 @@
 {
   "common": {
-    "appName": "Voucher",
+    "appName": "Vallle",
     "loading": "A carregar...",
     "save": "Guardar",
     "cancel": "Cancelar",
@@ -25,7 +25,7 @@
   },
   "features": {
     "login": {
-      "heading": "Entrar no Voucher",
+      "heading": "Entrar no Vallle",
       "forgotPassword": "Esqueceu-se da palavra-passe?",
       "form": {
         "email": "Email",
@@ -85,8 +85,8 @@
     "dashboard": {
       "heading": "Painel",
       "welcome": "Olá, {{name}}.",
-      "subtitle": "Tem {{count}} vouchers ativos. Como posso ajudar?",
-      "subtitleNone": "Ainda não tem vouchers ativos. Como posso ajudar?",
+      "subtitle": "Tem {{count}} vallles ativos. Como posso ajudar?",
+      "subtitleNone": "Ainda não tem vallles ativos. Como posso ajudar?",
       "actions": {
         "create": "Emitir",
         "redeem": "Resgatar",
@@ -99,20 +99,20 @@
       "subtitle": "Aqui está uma visão geral da plataforma.",
       "stats": {
         "clients": "Empresas",
-        "voucherAmount": "Total em vouchers",
+        "vallleAmount": "Total em vallles",
         "commission": "Total de comissões"
       },
       "chart": {
         "title": "Visão mensal",
-        "vouchers": "Vouchers",
+        "vallles": "Vallles",
         "commissions": "Comissões"
       }
     },
-    "vouchers": {
-      "heading": "Vouchers",
-      "description": "Emita, resgate ou consulte qualquer voucher da sua loja.",
+    "vallles": {
+      "heading": "Vallles",
+      "description": "Emita, resgate ou consulte qualquer vallle da sua loja.",
       "create": {
-        "heading": "Criar voucher",
+        "heading": "Criar vallle",
         "description": "Defina o valor e o destinatário.",
         "amount": "Valor (€)",
         "amountPlaceholder": "15",
@@ -120,19 +120,19 @@
         "buyerPlaceholder": "José Antunes",
         "expiresAt": "Data de expiração",
         "validUntil": "Válido até {{date}}",
-        "submit": "Criar voucher",
-        "success": "Voucher criado com sucesso!",
+        "submit": "Criar vallle",
+        "success": "Vallle criado com sucesso!",
         "error": {
-          "amountRequired": "Indique o valor deste voucher.",
+          "amountRequired": "Indique o valor deste vallle.",
           "amountPositive": "O valor tem de ser superior a zero.",
-          "buyerRequired": "Quem está a comprar este voucher? Adicione o nome para continuar.",
-          "expiresAtRequired": "Escolha quando este voucher expira.",
+          "buyerRequired": "Quem está a comprar este vallle? Adicione o nome para continuar.",
+          "expiresAtRequired": "Escolha quando este vallle expira.",
           "expiresAtFuture": "A data de expiração tem de ser no futuro.",
-          "generic": "Algo correu mal ao criar o voucher. Tente novamente."
+          "generic": "Algo correu mal ao criar o vallle. Tente novamente."
         }
       },
       "view": {
-        "heading": "Detalhes do voucher",
+        "heading": "Detalhes do vallle",
         "description": "Consulte os detalhes e o histórico de resgates.",
         "code": "Código",
         "amount": "Valor",
@@ -146,54 +146,54 @@
         "edit": "Editar"
       },
       "edit": {
-        "heading": "Editar voucher",
+        "heading": "Editar vallle",
         "description": "Atualize o nome do comprador ou a data de expiração.",
         "buyer": "Nome do comprador",
         "expiresAt": "Data de expiração",
         "currentAmount": "Valor",
         "submit": "Guardar alterações",
-        "success": "Voucher atualizado com sucesso!",
-        "archive": "Arquivar voucher",
-        "restore": "Restaurar voucher",
-        "archiveConfirm": "Arquivar este voucher? Deixará de poder ser resgatado, mas o histórico será mantido. Pode restaurá-lo mais tarde.",
-        "restoreConfirm": "Restaurar este voucher para ativo?",
-        "archiveSuccess": "Voucher arquivado.",
-        "restoreSuccess": "Voucher restaurado.",
+        "success": "Vallle atualizado com sucesso!",
+        "archive": "Arquivar vallle",
+        "restore": "Restaurar vallle",
+        "archiveConfirm": "Arquivar este vallle? Deixará de poder ser resgatado, mas o histórico será mantido. Pode restaurá-lo mais tarde.",
+        "restoreConfirm": "Restaurar este vallle para ativo?",
+        "archiveSuccess": "Vallle arquivado.",
+        "restoreSuccess": "Vallle restaurado.",
         "error": {
-          "generic": "Não foi possível atualizar o voucher.",
-          "loadFailed": "Não foi possível carregar o voucher."
+          "generic": "Não foi possível atualizar o vallle.",
+          "loadFailed": "Não foi possível carregar o vallle."
         }
       },
       "redeem": {
-        "heading": "Resgatar voucher",
-        "description": "Deduza um valor deste voucher.",
-        "code": "Código do voucher",
+        "heading": "Resgatar vallle",
+        "description": "Deduza um valor deste vallle.",
+        "code": "Código do vallle",
         "amount": "Valor a resgatar (€)",
         "description": "Descrição",
         "remaining": "{{balance}} restante",
         "submit": "Resgatar",
-        "success": "Voucher resgatado com sucesso!",
+        "success": "Vallle resgatado com sucesso!",
         "error": {
-          "notFound": "Voucher não encontrado.",
-          "expired": "Este voucher expirou.",
+          "notFound": "Vallle não encontrado.",
+          "expired": "Este vallle expirou.",
           "insufficientBalance": "Saldo insuficiente.",
-          "generic": "Não foi possível resgatar o voucher."
+          "generic": "Não foi possível resgatar o vallle."
         }
       },
       "quickLookup": {
-        "description": "Introduza um código para consultar um voucher.",
-        "submit": "Consultar voucher",
-        "notFound": "Não foi possível encontrar um voucher com o código {{code}}. Verifique o código e tente novamente.",
-        "error": "Algo correu mal ao consultar esse voucher. Tente novamente daqui a um momento."
+        "description": "Introduza um código para consultar um vallle.",
+        "submit": "Consultar vallle",
+        "notFound": "Não foi possível encontrar um vallle com o código {{code}}. Verifique o código e tente novamente.",
+        "error": "Algo correu mal ao consultar esse vallle. Tente novamente daqui a um momento."
       },
       "quickRedeem": {
-        "description": "Introduza um código para resgatar um voucher.",
-        "submit": "Resgatar voucher",
-        "notFound": "Não foi possível encontrar um voucher com o código {{code}}. Confirme o código e tente novamente.",
-        "expired": "O voucher {{code}} já expirou e não pode ser resgatado. Pode abri-lo para consultar o histórico completo.",
-        "usedUp": "O voucher {{code}} já foi totalmente resgatado — não tem saldo disponível. Abra-o para ver como foi utilizado.",
-        "error": "Algo correu mal ao consultar esse voucher. Tente novamente daqui a um momento.",
-        "viewVoucher": "Ver voucher"
+        "description": "Introduza um código para resgatar um vallle.",
+        "submit": "Resgatar vallle",
+        "notFound": "Não foi possível encontrar um vallle com o código {{code}}. Confirme o código e tente novamente.",
+        "expired": "O vallle {{code}} já expirou e não pode ser resgatado. Pode abri-lo para consultar o histórico completo.",
+        "usedUp": "O vallle {{code}} já foi totalmente resgatado — não tem saldo disponível. Abra-o para ver como foi utilizado.",
+        "error": "Algo correu mal ao consultar esse vallle. Tente novamente daqui a um momento.",
+        "viewVallle": "Ver vallle"
       },
       "redemptions": {
         "heading": "Histórico de resgates",
@@ -221,14 +221,14 @@
     },
     "stats": {
       "heading": "Estatísticas",
-      "description": "Acompanhe o desempenho dos seus vouchers ao longo do tempo.",
-      "totalVouchers": "Total de vouchers",
-      "activeVouchers": "Vouchers ativos",
+      "description": "Acompanhe o desempenho dos seus vallles ao longo do tempo.",
+      "totalVallles": "Total de vallles",
+      "activeVallles": "Vallles ativos",
       "totalAmount": "Valor total",
       "totalRedeemed": "Total resgatado",
       "chart": {
-        "title": "Vouchers criados",
-        "vouchers": "Vouchers"
+        "title": "Vallles criados",
+        "vallles": "Vallles"
       }
     },
     "profile": {
@@ -280,7 +280,7 @@
         "general": "Geral",
         "contact": "Contacto",
         "address": "Morada",
-        "vouchers": "Definições de vouchers"
+        "vallles": "Definições de vallles"
       },
       "form": {
         "name": "Nome da empresa",
@@ -294,8 +294,8 @@
         "postalCode": "Código postal",
         "region": "Distrito",
         "country": "País",
-        "defaultVoucherExpiryDays": "Período de expiração predefinido (dias)",
-        "defaultVoucherExpiryDaysHint": "Os vouchers expiram após este número de dias, a contar da data de criação. Entre 1 e 1825 dias (5 anos).",
+        "defaultVallleExpiryDays": "Período de expiração predefinido (dias)",
+        "defaultVallleExpiryDaysHint": "Os vallles expiram após este número de dias, a contar da data de criação. Entre 1 e 1825 dias (5 anos).",
         "error": {
           "nameRequired": "O nome da empresa é obrigatório.",
           "expiryDaysRequired": "O período de expiração é obrigatório.",
@@ -363,7 +363,7 @@
       "store": "Loja",
       "amount": "Valor",
       "date": "Data",
-      "voucherCode": "Voucher",
+      "vallleCode": "Vallle",
       "status": "Estado",
       "paidAt": "Paga em",
       "success": "Comissão marcada como paga.",
@@ -372,7 +372,7 @@
       }
     },
     "storeSuspended": {
-      "banner": "A sua conta foi suspensa. Pode continuar a consultar e resgatar vouchers, mas a criação de novos vouchers está desativada. Contacte o suporte para mais informações."
+      "banner": "A sua conta foi suspensa. Pode continuar a consultar e resgatar vallles, mas a criação de novos vallles está desativada. Contacte o suporte para mais informações."
     },
     "admin": {
       "companies": {
@@ -382,7 +382,7 @@
           "name": "Empresa",
           "category": "Categoria",
           "email": "Email",
-          "vouchers": "Vouchers",
+          "vallles": "Vallles",
           "revenue": "Receita",
           "commission": "Comissão",
           "commissionStatus": "Comissões",
@@ -408,7 +408,7 @@
           "region": "Distrito",
           "country": "País",
           "status": "Estado",
-          "defaultVoucherExpiryDays": "Expiração de vouchers predefinida (dias)",
+          "defaultVallleExpiryDays": "Expiração de vallles predefinida (dias)",
           "error": {
             "nameRequired": "O nome da empresa é obrigatório.",
             "expiryDaysRequired": "O período de expiração é obrigatório.",
@@ -428,7 +428,7 @@
           "heading": "Detalhes da empresa",
           "description": "Consulte os detalhes da empresa e as estatísticas.",
           "edit": "Editar",
-          "vouchers": "Vouchers emitidos",
+          "vallles": "Vallles emitidos",
           "totalSales": "Total de vendas",
           "totalCommission": "Total de comissões",
           "unpaidCommission": "Por pagar",
@@ -517,7 +517,7 @@
         "description": "Acompanhe as comissões geradas por todas as empresas.",
         "companyDetailDescription": "Detalhamento mensal de comissões.",
         "company": "Empresa",
-        "voucherSales": "Vendas de vouchers",
+        "vallleSales": "Vendas de vallles",
         "totalCommission": "Comissão",
         "totalPaid": "Pago",
         "outstanding": "Por pagar",
@@ -565,7 +565,7 @@
   },
   "nav": {
     "dashboard": "Painel",
-    "vouchers": "Vouchers",
+    "vallles": "Vallles",
     "stats": "Estatísticas",
     "profile": "Perfil",
     "settings": "Definições",

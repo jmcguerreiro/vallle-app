@@ -1,8 +1,10 @@
 import { useState, useCallback, useEffect } from 'react'
 import { useForm } from 'react-hook-form'
 import { useTranslation } from 'react-i18next'
-import { Link, useLocation } from 'react-router-dom'
+import { useLocation } from 'react-router-dom'
 
+import Button from '@/components/Button'
+import Fieldset from '@/components/forms/Fieldset'
 import Form from '@/components/forms/Form'
 import Input from '@/components/forms/Input'
 import Select from '@/components/forms/Select'
@@ -208,33 +210,26 @@ const Profile = () => {
           name="language"
           options={LANGUAGE_OPTIONS}
         />
-        <button
-          className="c-btn c-btn--primary"
-          disabled={isSubmitting}
-          type="submit"
-        >
-          {isSubmitting ? t('common.loading') : t('common.save')}
-        </button>
+        <Button isProcessing={isSubmitting} type="submit">
+          {t('common.save')}
+        </Button>
         {success && (
           <p className="c-form__success">{t('features.profile.success')}</p>
         )}
       </Form>
 
-      <fieldset className="c-profile__fieldset">
-        <legend className="c-profile__fieldset-legend">
-          {t('features.profile.password.heading')}
-        </legend>
-        <p className="c-profile__fieldset-description">
+      <Fieldset legend={t('features.profile.password.heading')}>
+        <p className="c-form__fieldset-description">
           {t('features.profile.password.description')}
         </p>
-        <Link
-          className="c-btn c-btn--secondary"
+        <Button
           state={{ backgroundLocation: location }}
           to={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
+          variant="ghost"
         >
           {t('features.profile.password.submit')}
-        </Link>
-      </fieldset>
+        </Button>
+      </Fieldset>
     </div>
   )
 }

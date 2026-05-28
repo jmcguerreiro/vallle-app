@@ -49,8 +49,8 @@ const Navigation = () => {
         : [
             { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconHouseHeart },
             {
-              to: ROUTES.VOUCHERS,
-              label: t("nav.vouchers"),
+              to: ROUTES.VALLLES,
+              label: t("nav.vallles"),
               icon: IconMailbox,
             },
             { to: ROUTES.STATS, label: t("nav.stats"), icon: IconChart },

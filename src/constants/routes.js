@@ -2,9 +2,9 @@
  * Client-side route path constants for the Vallle app.
  * Use these instead of hardcoded strings in <Route>, <NavLink>, navigate(), and <Navigate>.
  *
- * Modal route paths (VOUCHERS_MODAL_*) are full paths used in the top-level
+ * Modal route paths (VALLLES_MODAL_*) are full paths used in the top-level
  * modal <Routes> block — they must match the URL that navigation produces.
- * Use voucherPath(id) / voucherEditPath(id) helpers for <Link> navigation.
+ * Use valllePath(id) / vallleEditPath(id) helpers for <Link> navigation.
  */
 export const ROUTES = {
   HOME: '/',
@@ -12,13 +12,13 @@ export const ROUTES = {
   FORGOT_PASSWORD: '/forgot-password',
   RESET_PASSWORD: '/reset-password',
   SELECT_STORE: '/select-store',
-  VOUCHERS: '/vouchers',
-  VOUCHERS_MODAL_CREATE: '/vouchers/create',
-  VOUCHERS_MODAL_VIEW: '/vouchers/:id',
-  VOUCHERS_MODAL_EDIT: '/vouchers/:id/edit',
-  VOUCHERS_MODAL_REDEEM: '/vouchers/:id/redeem',
-  VOUCHERS_MODAL_QUICK_REDEEM: '/vouchers/quick-redeem',
-  VOUCHERS_MODAL_QUICK_LOOKUP: '/vouchers/quick-lookup',
+  VALLLES: '/vallles',
+  VALLLES_MODAL_CREATE: '/vallles/create',
+  VALLLES_MODAL_VIEW: '/vallles/:id',
+  VALLLES_MODAL_EDIT: '/vallles/:id/edit',
+  VALLLES_MODAL_REDEEM: '/vallles/:id/redeem',
+  VALLLES_MODAL_QUICK_REDEEM: '/vallles/quick-redeem',
+  VALLLES_MODAL_QUICK_LOOKUP: '/vallles/quick-lookup',
   STATS: '/stats',
   PROFILE: '/profile',
   PROFILE_MODAL_CHANGE_PASSWORD: '/profile/change-password',
@@ -42,31 +42,31 @@ export const ROUTES = {
 }
 
 /**
- * Builds a full voucher create path for navigation.
- * @returns {string} '/vouchers/create'
+ * Builds a full vallle create path for navigation.
+ * @returns {string} '/vallles/create'
  */
-export const voucherCreatePath = () => '/vouchers/create'
+export const vallleCreatePath = () => '/vallles/create'
 
 /**
- * Builds a full voucher view path for navigation.
- * @param {string} id - Voucher ID
- * @returns {string} e.g. '/vouchers/abc123'
+ * Builds a full vallle view path for navigation.
+ * @param {string} id - Vallle ID
+ * @returns {string} e.g. '/vallles/abc123'
  */
-export const voucherPath = (id) => `/vouchers/${id}`
+export const valllePath = (id) => `/vallles/${id}`
 
 /**
- * Builds a full voucher edit path for navigation.
- * @param {string} id - Voucher ID
- * @returns {string} e.g. '/vouchers/abc123/edit'
+ * Builds a full vallle edit path for navigation.
+ * @param {string} id - Vallle ID
+ * @returns {string} e.g. '/vallles/abc123/edit'
  */
-export const voucherEditPath = (id) => `/vouchers/${id}/edit`
+export const vallleEditPath = (id) => `/vallles/${id}/edit`
 
 /**
- * Builds a full voucher redeem path for navigation.
- * @param {string} id - Voucher ID
- * @returns {string} e.g. '/vouchers/abc123/redeem'
+ * Builds a full vallle redeem path for navigation.
+ * @param {string} id - Vallle ID
+ * @returns {string} e.g. '/vallles/abc123/redeem'
  */
-export const voucherRedeemPath = (id) => `/vouchers/${id}/redeem`
+export const vallleRedeemPath = (id) => `/vallles/${id}/redeem`
 
 /**
  * Builds a full admin company view path for navigation.

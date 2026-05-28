@@ -36,7 +36,7 @@ const Main = () => {
                 {header.actions.map((action, index) => (
                   <Button
                     key={action.label || index}
-                    iconLeft={action.icon}
+                    icon={action.icon}
                     onClick={action.onClick}
                     state={action.state}
                     to={action.to}

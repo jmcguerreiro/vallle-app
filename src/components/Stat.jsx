@@ -14,7 +14,7 @@ const Stat = ({ value, label }) => {
       <span className="c-stat__value">{value}</span>
       <span className="c-stat__label">{label}</span>
     </div>
-  )
-}
+  );
+};
 
-export default Stat
+export default Stat;

@@ -1,0 +1,76 @@
+/* ─── Vallle detail (view modal) ────────────────────────────── */
+
+.c-vallle-detail {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.c-vallle-detail__field {
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-3;
+}
+
+.c-vallle-detail__label {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.c-vallle-detail__value {
+  @include font-size(sm);
+
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+/* ─── Vallle code input (segmented) ────────────────────────── */
+
+/* ─── Vallle redemptions log ────────────────────────────────── */
+
+.c-vallle-redemptions {
+  border-top: 1px solid rgba($color-ash, 0.2);
+  margin-top: $spacing-6;
+  padding-top: $spacing-4;
+}
+
+.c-vallle-redemptions__heading {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+  font-weight: $font-weight-bold;
+  letter-spacing: 0.03em;
+  margin-bottom: $spacing-3;
+  text-transform: uppercase;
+}
+
+.c-vallle-redemptions__empty {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+}
+
+.c-vallle-redemptions__table {
+  border-collapse: collapse;
+  width: 100%;
+
+  th {
+    @include font-size(xs);
+
+    color: $text-color-muted;
+    font-weight: $font-weight-bold;
+    padding: $spacing-2 $spacing-3;
+    text-align: left;
+  }
+
+  td {
+    @include font-size(sm);
+
+    border-top: 1px solid rgba($color-ash, 0.15);
+    color: $text-color;
+    padding: $spacing-2 $spacing-3;
+  }
+}

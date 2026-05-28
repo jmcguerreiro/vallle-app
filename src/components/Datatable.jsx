@@ -1,4 +1,4 @@
-import { useState, useCallback, useMemo } from "react";
+import { useState, useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 
 import {
@@ -9,8 +9,9 @@ import {
   getPaginationRowModel,
   flexRender,
 } from "@tanstack/react-table";
+
 import Button from "@/components/Button";
-import { IconSearch } from "@/utils/icons";
+import { IconArrowLeft, IconArrowRight, IconSearch } from "@/utils/icons";
 
 /**
  * Component: Datatable
@@ -30,9 +31,14 @@ import { IconSearch } from "@/utils/icons";
  * @param {number} props.serverPagination.total - Total record count from the server
  * @param {number} props.serverPagination.pageIndex - Current zero-based page index
  * @param {Function} props.serverPagination.onPageChange - Callback receiving the new page index
- * @param {Object} [props.serverSearch] - Server-side search config. When provided, the search input is controlled by the parent and local filtering is disabled.
- * @param {string} props.serverSearch.value - Current search value
- * @param {Function} props.serverSearch.onChange - Callback receiving the new search value
+ * @param {Object} [props.serverSearch] - Server-side search config. When provided, local filtering is disabled and the search input is debounced before firing `onChange`.
+ * @param {string} props.serverSearch.value - Initial search value
+ * @param {Function} props.serverSearch.onChange - Callback receiving the new (trimmed) search value after the debounce delay
+ * @param {number} [props.debounceMs=300] - Debounce delay (ms) for the server search input. Only applies when `serverSearch` is provided.
+ * @param {Object} [props.serverSort] - Server-side sort config. When provided, sorting is controlled by the parent and the local sort model is disabled.
+ * @param {string} props.serverSort.id - Currently sorted column id
+ * @param {boolean} props.serverSort.desc - Sort direction (true = descending)
+ * @param {Function} props.serverSort.onChange - Callback receiving `{ id, desc }` when the user changes the sort
  * @returns {JSX.Element}
  */
 const Datatable = ({
@@ -45,40 +51,67 @@ const Datatable = ({
   className = "",
   serverPagination,
   serverSearch,
+  serverSort,
+  debounceMs = 300,
 }) => {
   // Hooks
   const { t } = useTranslation();
 
   // State
   const [localGlobalFilter, setLocalGlobalFilter] = useState("");
+  const [searchInput, setSearchInput] = useState(serverSearch?.value ?? "");
   const [sorting, setSorting] = useState([]);
 
   // Derived State
   const isServerPaginated = !!serverPagination;
   const isServerSearch = !!serverSearch;
-  const globalFilter = isServerSearch ? serverSearch.value : localGlobalFilter;
+  const isServerSort = !!serverSort;
+  const globalFilter = isServerSearch ? searchInput : localGlobalFilter;
+  const sortingState = isServerSort
+    ? [{ id: serverSort.id, desc: serverSort.desc }]
+    : sorting;
   const serverPageCount = isServerPaginated
     ? Math.ceil(serverPagination.total / pageSize)
     : undefined;
+
+  const handleSortingChange = useCallback(
+    (updater) => {
+      if (isServerSort) {
+        const current = [{ id: serverSort.id, desc: serverSort.desc }];
+        const next = typeof updater === "function" ? updater(current) : updater;
+        const first = next[0];
+        // TanStack cycles asc → desc → none. Treat "none" as reverting to the current column desc.
+        const resolved = first
+          ? { id: first.id, desc: !!first.desc }
+          : { id: serverSort.id, desc: true };
+        serverSort.onChange(resolved);
+        return;
+      }
+      setSorting(updater);
+    },
+    [isServerSort, serverSort],
+  );
 
   const table = useReactTable({
     data,
     columns,
     state: {
       globalFilter,
-      sorting,
+      sorting: sortingState,
       ...(isServerPaginated && {
         pagination: { pageIndex: serverPagination.pageIndex, pageSize },
       }),
     },
-    onGlobalFilterChange: isServerSearch ? serverSearch.onChange : setLocalGlobalFilter,
-    onSortingChange: setSorting,
+    onGlobalFilterChange: isServerSearch ? setSearchInput : setLocalGlobalFilter,
+    onSortingChange: handleSortingChange,
     getCoreRowModel: getCoreRowModel(),
-    getFilteredRowModel: isServerSearch || isServerPaginated ? undefined : getFilteredRowModel(),
-    getSortedRowModel: getSortedRowModel(),
+    getFilteredRowModel:
+      isServerSearch || isServerPaginated ? undefined : getFilteredRowModel(),
+    getSortedRowModel: isServerSort ? undefined : getSortedRowModel(),
     getPaginationRowModel: isServerPaginated
       ? undefined
       : getPaginationRowModel(),
+    ...(isServerSort && { manualSorting: true }),
     ...(isServerPaginated
       ? { manualPagination: true, pageCount: serverPageCount }
       : { initialState: { pagination: { pageSize } } }),
@@ -94,12 +127,12 @@ const Datatable = ({
   const handleSearchChange = useCallback(
     (event) => {
       if (isServerSearch) {
-        serverSearch.onChange(event.target.value);
+        setSearchInput(event.target.value);
       } else {
         setLocalGlobalFilter(event.target.value);
       }
     },
-    [isServerSearch, serverSearch],
+    [isServerSearch],
   );
 
   const handleRowClick = useCallback(
@@ -130,6 +163,18 @@ const Datatable = ({
     [],
   );
 
+  // Effects
+  useEffect(() => {
+    if (!isServerSearch) return;
+    const handle = setTimeout(() => {
+      const trimmed = searchInput.trim();
+      if (trimmed !== serverSearch.value) {
+        serverSearch.onChange(trimmed);
+      }
+    }, debounceMs);
+    return () => clearTimeout(handle);
+  }, [searchInput, isServerSearch, serverSearch, debounceMs]);
+
   // Render
   return (
     <div className={`c-datatable${className ? ` ${className}` : ""}`}>
@@ -153,7 +198,7 @@ const Datatable = ({
               <Button
                 key={label}
                 ariaLabel={label}
-                iconLeft={Icon}
+                icon={Icon}
                 onClick={onClick}
                 skin={skin}
                 tooltip={label}
@@ -212,10 +257,11 @@ const Datatable = ({
                   {row.getVisibleCells().map((cell) => {
                     const hideOnMobile =
                       cell.column.columnDef.meta?.hideOnMobile;
+                    const tdClassName = cell.column.columnDef.meta?.tdClassName;
                     return (
                       <td
                         key={cell.id}
-                        className={`c-datatable__td${hideOnMobile ? " c-datatable__td--hide-mobile" : ""}`}
+                        className={`c-datatable__td${hideOnMobile ? " c-datatable__td--hide-mobile" : ""}${tdClassName ? ` ${tdClassName}` : ""}`}
                       >
                         {flexRender(
                           cell.column.columnDef.cell,
@@ -234,7 +280,8 @@ const Datatable = ({
       {pageCount > 1 && (
         <div className="c-datatable__pagination">
           <button
-            className="c-btn c-btn--secondary c-datatable__pagination-btn"
+            aria-label={t("common.pagination.previous")}
+            className="c-datatable__pagination-btn"
             disabled={
               isServerPaginated
                 ? serverPagination.pageIndex === 0
@@ -249,7 +296,7 @@ const Datatable = ({
             }}
             type="button"
           >
-            {t("common.pagination.previous")}
+            <IconArrowLeft size={20} strokeWidth="1.5" />
           </button>
           <span className="c-datatable__pagination-info">
             {t("common.pagination.page", {
@@ -258,7 +305,8 @@ const Datatable = ({
             })}
           </span>
           <button
-            className="c-btn c-btn--secondary c-datatable__pagination-btn"
+            aria-label={t("common.pagination.next")}
+            className="c-datatable__pagination-btn"
             disabled={
               isServerPaginated
                 ? currentPage >= pageCount
@@ -273,7 +321,7 @@ const Datatable = ({
             }}
             type="button"
           >
-            {t("common.pagination.next")}
+            <IconArrowRight size={20} strokeWidth="1.5" />
           </button>
         </div>
       )}

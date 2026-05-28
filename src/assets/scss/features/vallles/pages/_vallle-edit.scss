@@ -1,0 +1,46 @@
+.p-vallle-edit {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-vallle-edit__hero {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  margin-bottom: $spacing-6;
+}
+
+.p-vallle-edit__balance {
+  align-items: baseline;
+  display: flex;
+  gap: $spacing-2;
+  justify-content: center;
+}
+
+.p-vallle-edit__balance-value {
+  @include font-size(8xl);
+
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+  text-align: center;
+
+  &--inactive {
+    color: $text-color-muted;
+  }
+}
+
+.p-vallle-edit__balance-currency {
+  @include font-size(8xl);
+
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+.p-vallle-edit__total {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+  text-align: center;
+}

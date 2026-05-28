@@ -7,18 +7,18 @@
 
 @import "./components/accordion";
 @import "./components/admin";
+@import "./components/badge";
 @import "./components/empty-state";
 @import "./components/error-state";
 @import "./components/buttons";
 @import "./components/commissions";
 @import "./components/datatable";
-@import "./components/filter-select";
 @import "./components/forms";
 @import "./components/loader";
 @import "./components/stat";
 @import "./components/store-select";
 @import "./components/toast";
-@import "./components/vouchers";
+@import "./components/vallles";
 
 @import "./layouts/blank";
 @import "./layouts/default";
@@ -32,7 +32,7 @@
 @import "./structure/modal";
 
 @import "./features/dashboard/pages/index";
-@import "./features/vouchers/pages/index";
+@import "./features/vallles/pages/index";
 
 @import "./features/auth/pages/auth-login";
 @import "./features/auth/pages/auth-forgot-password";
@@ -40,14 +40,14 @@
 @import "./features/auth/pages/auth-select-store";
 
 @import "./features/stats/pages/index";
-@import "./features/vouchers/components/voucher-code-input";
+@import "./features/vallles/components/vallle-code-input";
 
-@import "./features/vouchers/pages/voucher-create";
-@import "./features/vouchers/pages/voucher-view";
-@import "./features/vouchers/pages/voucher-edit";
-@import "./features/vouchers/pages/voucher-redeem";
-@import "./features/vouchers/pages/voucher-quick-lookup";
-@import "./features/vouchers/pages/voucher-quick-redeem";
+@import "./features/vallles/pages/vallle-create";
+@import "./features/vallles/pages/vallle-view";
+@import "./features/vallles/pages/vallle-edit";
+@import "./features/vallles/pages/vallle-redeem";
+@import "./features/vallles/pages/vallle-quick-lookup";
+@import "./features/vallles/pages/vallle-quick-redeem";
 
 html,
 body {

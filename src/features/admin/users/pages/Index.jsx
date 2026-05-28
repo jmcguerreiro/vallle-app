@@ -138,7 +138,7 @@ const AdminUsersIndex = () => {
   }
 
   const userFilters = (
-    <div className="c-datatable__filter-group">
+    <>
       <FilterSelect
         ariaLabel={t('common.filters.allRoles')}
         onChange={handleRoleFilter}
@@ -160,7 +160,7 @@ const AdminUsersIndex = () => {
         ]}
         value={statusFilter}
       />
-    </div>
+    </>
   )
 
   const actions = [

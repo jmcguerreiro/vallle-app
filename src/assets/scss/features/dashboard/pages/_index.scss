@@ -49,6 +49,7 @@
   justify-content: space-between;
   padding: $spacing-6;
   transition: $transition-normal;
+  user-select: none;
 
   &:hover {
     box-shadow: 0 12px 12px -8px rgba($color-black, 0.1);

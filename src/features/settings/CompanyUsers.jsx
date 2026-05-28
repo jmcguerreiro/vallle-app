@@ -108,24 +108,22 @@ const CompanyUsers = () => {
   }
 
   const userFilters = (
-    <div className="c-datatable__filter-group">
-      <FilterSelect
-        ariaLabel={t('common.filters.allStatuses')}
-        onChange={handleStatusFilter}
-        options={[
-          { value: 'all', label: t('common.filters.allStatuses') },
-          { value: 'active', label: t('features.company.users.list.active') },
-          { value: 'inactive', label: t('features.company.users.list.inactive') },
-        ]}
-        value={statusFilter}
-      />
-    </div>
+    <FilterSelect
+      ariaLabel={t('common.filters.allStatuses')}
+      onChange={handleStatusFilter}
+      options={[
+        { value: 'all', label: t('common.filters.allStatuses') },
+        { value: 'active', label: t('features.company.users.list.active') },
+        { value: 'inactive', label: t('features.company.users.list.inactive') },
+      ]}
+      value={statusFilter}
+    />
   )
 
   return (
     <div className="c-company-users">
       <div className="c-company-users__header">
-        <Button iconLeft={IconPlus} onClick={handleCreate} size="sm">
+        <Button icon={IconPlus} onClick={handleCreate}>
           {t('features.company.users.create.heading')}
         </Button>
       </div>

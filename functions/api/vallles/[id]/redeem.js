@@ -1,0 +1,138 @@
+import { getAuthUser } from '../../auth/_helpers.js'
+import { requireStore } from '../../_store.js'
+import { generateUlid } from '../../_ulid.js'
+
+/**
+ * POST /api/vallles/:id/redeem — Redeem a vallle (partial or full).
+ * Creates a redemption record, updates the vallle balance.
+ * @param {Object} context - Cloudflare Pages Function context
+ * @returns {Promise<Response>}
+ */
+export async function onRequestPost(context) {
+  const { request, env, params } = context
+  const { id } = params
+
+  // Auth
+  const user = await getAuthUser(request, env.JWT_SECRET)
+  if (!user) {
+    return Response.json(
+      { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
+      { status: 401 },
+    )
+  }
+
+  // Store
+  const storeResult = await requireStore(request, env, user.sub)
+  if (storeResult instanceof Response) return storeResult
+  const { storeId } = storeResult
+
+  // Body
+  let body
+  try {
+    body = await request.json()
+  } catch {
+    return Response.json(
+      { error: { message: 'Invalid JSON body', code: 'VALIDATION_FAILED' } },
+      { status: 400 },
+    )
+  }
+
+  const { amount, description } = body
+
+  // Validate amount (max €50,000 = 5_000_000 cents)
+  if (!amount || typeof amount !== 'number' || !Number.isInteger(amount) || amount <= 0 || amount > 5_000_000) {
+    return Response.json(
+      { error: { message: 'Amount must be a positive integer (cents) up to 5000000', code: 'VALIDATION_FAILED' } },
+      { status: 400 },
+    )
+  }
+
+  // Validate description length
+  if (description !== undefined && description !== null && (typeof description !== 'string' || description.length > 500)) {
+    return Response.json(
+      { error: { message: 'Description must be a string of 500 characters or fewer', code: 'VALIDATION_FAILED' } },
+      { status: 400 },
+    )
+  }
+
+  try {
+    // Fetch vallle
+    const vallle = await env.DB.prepare(
+      'SELECT * FROM vallles WHERE id = ? AND store_id = ?',
+    ).bind(id, storeId).first()
+
+    if (!vallle) {
+      return Response.json(
+        { error: { message: 'Vallle not found', code: 'VALLLE_NOT_FOUND' } },
+        { status: 404 },
+      )
+    }
+
+    // Check status
+    if (vallle.status !== 'active') {
+      return Response.json(
+        { error: { message: 'Vallle is not active', code: 'VALLLE_INACTIVE' } },
+        { status: 400 },
+      )
+    }
+
+    // Check expiry
+    if (new Date(vallle.expires_at) < new Date()) {
+      return Response.json(
+        { error: { message: 'This vallle has expired', code: 'VALLLE_EXPIRED' } },
+        { status: 400 },
+      )
+    }
+
+    // Check balance
+    if (amount > vallle.balance) {
+      return Response.json(
+        { error: { message: 'Insufficient balance', code: 'VALLLE_INSUFFICIENT_BALANCE' } },
+        { status: 400 },
+      )
+    }
+
+    const now = new Date().toISOString()
+    const redemptionId = generateUlid()
+    const balanceAfter = vallle.balance - amount
+
+    // Atomically deduct balance and mark as 'used' when fully redeemed.
+    // The WHERE clause enforces both balance and expiry to prevent double-spend
+    // and last-millisecond expiry races. A 0-row UPDATE is NOT a DB error in
+    // D1, so we check changes before inserting the redemption record.
+    const updateResult = await env.DB.prepare(
+      `UPDATE vallles
+         SET balance    = balance - ?,
+             status     = CASE WHEN (balance - ?) = 0 THEN 'used' ELSE status END,
+             updated_at = ?
+       WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
+    ).bind(amount, amount, now, id, storeId, amount, now).run()
+
+    if (!updateResult.meta.changes) {
+      return Response.json(
+        { error: { message: 'Insufficient balance (concurrent redemption)', code: 'VALLLE_INSUFFICIENT_BALANCE' } },
+        { status: 409 },
+      )
+    }
+
+    await env.DB.prepare(
+      'INSERT INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
+    ).bind(redemptionId, storeId, id, user.sub, description || null, amount, balanceAfter, now).run()
+
+    return Response.json({
+      data: {
+        id: redemptionId,
+        vallle_id: id,
+        amount,
+        balance_after: balanceAfter,
+        description: description || null,
+        created_at: now,
+      },
+    })
+  } catch (error) {
+    const err = new Error('Vallles: Failed to redeem vallle')
+    err.code = 'DB_WRITE_FAILED'
+    err.cause = error
+    throw err
+  }
+}

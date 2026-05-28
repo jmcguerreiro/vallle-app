@@ -1,26 +1,24 @@
-import { IconChevronDown } from '@/utils/icons'
+import { IconChevronDown } from "@/utils/icons";
 
 /**
  * Component: FilterSelect
  * Native <select> wrapped with a lucide ChevronDown indicator.
- * Designed for the Datatable toolbar `filters` slot, but reusable anywhere
- * a lightweight, dependency-free dropdown is needed.
+ * Designed for the Datatable toolbar `filters` slot.
  * @component
  * @param {Object} props
  * @param {string} props.value - Current selected value
  * @param {Function} props.onChange - Native change handler, receives the change event
  * @param {Array<{value: string, label: string}>} props.options - Option list
  * @param {string} [props.ariaLabel] - Accessible label for the select
- * @param {string} [props.className] - Additional CSS class on the wrapper
  * @returns {JSX.Element}
  */
-const FilterSelect = ({ value, onChange, options, ariaLabel, className = '' }) => {
+const FilterSelect = ({ value, onChange, options, ariaLabel }) => {
   // Render
   return (
-    <div className={`c-filter-select${className ? ` ${className}` : ''}`}>
+    <div className="c-datatable__filter">
       <select
         aria-label={ariaLabel}
-        className="c-filter-select__select"
+        className="c-datatable__filter-select"
         onChange={onChange}
         value={value}
       >
@@ -30,9 +28,9 @@ const FilterSelect = ({ value, onChange, options, ariaLabel, className = '' }) =
           </option>
         ))}
       </select>
-      <IconChevronDown className="c-filter-select__icon" size={14} />
+      <IconChevronDown className="c-datatable__filter-icon" size={16} />
     </div>
-  )
-}
+  );
+};
 
-export default FilterSelect
+export default FilterSelect;

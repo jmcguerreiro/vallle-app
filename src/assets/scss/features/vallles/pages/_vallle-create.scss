@@ -1,0 +1,68 @@
+.p-vallle-create {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-9;
+  width: 100%;
+}
+
+.p-vallle-create__amount {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-vallle-create__amount-input {
+  align-items: baseline;
+  display: flex;
+  gap: $spacing-2;
+  justify-content: center;
+  width: 100%;
+
+  &:not(:last-child) {
+    margin-bottom: $spacing-1;
+  }
+}
+
+.p-vallle-create__amount-input-amount {
+  @include font-size(8xl);
+  color: $text-color-highlight;
+  field-sizing: content;
+  font-weight: $font-weight-bold;
+
+  &::placeholder {
+    color: $text-color-muted;
+  }
+}
+
+.p-vallle-create__amount-input-currency {
+  @include font-size(8xl);
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+}
+
+.p-vallle-create__amount-error {
+  @extend .c-form__field-error;
+  text-align: center;
+}
+
+.p-vallle-create__buyer {
+  display: flex;
+  flex-direction: column;
+}
+
+.p-vallle-create__buyer-label {
+  @extend .c-form__field-label;
+}
+
+.p-vallle-create__buyer-input {
+  @extend .c-form__field-input;
+}
+
+.p-vallle-create__buyer-error {
+  @extend .c-form__field-error;
+}
+
+.p-vallle-create__expiry {
+  @include font-size(sm);
+  color: $text-color-muted;
+  text-align: center;
+}

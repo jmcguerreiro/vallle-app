@@ -151,9 +151,8 @@ const AdminCommissionsCompanyDetail = () => {
                       <Button
                         isProcessing={markingPaid === month.year_month}
                         onClick={() => handleMarkMonthPaid(month.year_month)}
-                        size="sm"
                         skin="primary"
-                        variant="outline"
+                        variant="ghost"
                       >
                         {t('features.admin.commissions.markPaid')}
                       </Button>

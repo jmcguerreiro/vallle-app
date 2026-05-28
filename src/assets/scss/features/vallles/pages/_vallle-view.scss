@@ -1,0 +1,43 @@
+.p-vallle-view {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.p-vallle-view__hero {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
+  margin-bottom: $spacing-6;
+}
+
+.p-vallle-view__code {
+  @include font-size(6xl);
+
+  color: $text-color-highlight;
+  font-family: "DM Serif Display", serif;
+  font-weight: $font-weight-regular;
+  letter-spacing: 0.05em;
+  margin: 0;
+  text-align: center;
+  text-transform: uppercase;
+
+  &--inactive {
+    color: $text-color-muted;
+  }
+}
+
+.p-vallle-view__subtitle {
+  @include font-size(sm);
+
+  color: $text-color-muted;
+  text-align: center;
+}
+
+.p-vallle-view__error {
+  @include font-size(sm);
+
+  color: $color-danger;
+  text-align: center;
+}

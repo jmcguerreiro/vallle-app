@@ -33,10 +33,10 @@ export async function onRequestGet(context) {
     const [countResult, dataResult] = await env.DB.batch([
       env.DB.prepare('SELECT COUNT(*) as total FROM commissions').bind(),
       env.DB.prepare(
-        `SELECT c.*, s.name as store_name, v.code as voucher_code
+        `SELECT c.*, s.name as store_name, v.code as vallle_code
          FROM commissions c
          JOIN stores s ON c.store_id = s.id
-         JOIN vouchers v ON c.voucher_id = v.id
+         JOIN vallles v ON c.vallle_id = v.id
          ORDER BY c.created_at DESC
          LIMIT ? OFFSET ?`,
       ).bind(limit, offset),

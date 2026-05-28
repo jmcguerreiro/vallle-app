@@ -86,8 +86,8 @@ const AdminCompaniesIndex = () => {
       cell: ({ getValue }) => getValue() || '—',
     },
     {
-      accessorKey: 'voucher_count',
-      header: t('features.admin.companies.list.vouchers'),
+      accessorKey: 'vallle_count',
+      header: t('features.admin.companies.list.vallles'),
     },
     {
       accessorKey: 'total_revenue',
@@ -151,7 +151,7 @@ const AdminCompaniesIndex = () => {
   }
 
   const companyFilters = (
-    <div className="c-datatable__filter-group">
+    <>
       <FilterSelect
         ariaLabel={t('common.filters.allStatuses')}
         onChange={handleStatusFilter}
@@ -175,7 +175,7 @@ const AdminCompaniesIndex = () => {
         ]}
         value={categoryFilter}
       />
-    </div>
+    </>
   )
 
   const actions = [
