@@ -139,7 +139,11 @@ const ValllesIndex = () => {
     return (
       <div className="p-vallles">
         <div className="p-vallles__error">
-          <EmptyState description={t("common.error")} image="vallles--error" />
+          <EmptyState
+            description={t("common.error")}
+            hideImageOnMobile
+            image="vallles--error"
+          />
         </div>
       </div>
     );
@@ -151,6 +155,7 @@ const ValllesIndex = () => {
         <div className="p-vallles__empty">
           <EmptyState
             description={t("features.vallles.list.empty")}
+            hideImageOnMobile
             image="vallles"
           />
         </div>

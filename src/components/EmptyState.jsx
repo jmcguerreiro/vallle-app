@@ -7,6 +7,7 @@ import Button from "@/components/Button";
  * @param {Object} props
  * @param {string} props.image - Image filename without extension (resolved from /images/empty-states/).
  * @param {string} props.description - Text describing the empty state.
+ * @param {boolean} [props.hideImageOnMobile] - When true, hides the image at mobile breakpoints (use on pages where the layout header already shows an image).
  * @param {Object} [props.action] - Optional action rendered as a full-width fill button.
  * @param {string} props.action.text - Button label.
  * @param {Function} [props.action.onClick] - Click handler.
@@ -15,7 +16,7 @@ import Button from "@/components/Button";
  * @param {string} [props.action.href] - External href. Renders the button as an anchor.
  * @returns {JSX.Element}
  */
-const EmptyState = ({ image, description, action }) => {
+const EmptyState = ({ image, description, hideImageOnMobile, action }) => {
   // Render
   return (
     <div className="c-empty-state">
@@ -23,7 +24,7 @@ const EmptyState = ({ image, description, action }) => {
         <img
           alt=""
           aria-hidden="true"
-          className="c-empty-state__image"
+          className={`c-empty-state__image${hideImageOnMobile ? " c-empty-state__image--hidden-mobile" : ""}`}
           src={`/images/empty-states/${image}.svg`}
         />
       )}

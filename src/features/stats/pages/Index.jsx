@@ -1,115 +1,139 @@
-import { useState, useEffect, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
+import { useState, useEffect, useCallback } from "react";
+import { useTranslation } from "react-i18next";
 
 import {
   ResponsiveContainer,
-  AreaChart,
-  Area,
+  BarChart,
+  Bar,
   XAxis,
   YAxis,
   Tooltip,
   CartesianGrid,
-} from 'recharts'
+} from "recharts";
 
-import Stat from '@/components/Stat'
-import { useMain } from '@/hooks/useMain'
-import { get } from '@/services/api'
-import { formatCurrency } from '@/utils/currency'
+import Card from "@/components/Card";
+import EmptyState from "@/components/EmptyState";
+import Loader from "@/components/Loader";
+import Stat from "@/components/Stat";
+import { useMain } from "@/hooks/useMain";
+import { get } from "@/services/api";
+import { formatCurrency } from "@/utils/currency";
+import { IconCalendarDays } from "@/utils/icons";
 
 /**
  * Component: StatsIndex
  * Statistics page showing performance metrics for the current store.
- * Displays summary cards and an area chart of vallles created over time.
+ * Displays summary cards and a bar chart of vallles created over time.
  * @component
  * @returns {JSX.Element}
  */
 const StatsIndex = () => {
   // Hooks
-  const { t } = useTranslation()
-  const { setHeader } = useMain()
+  const { t } = useTranslation();
+  const { setHeader } = useMain();
 
   // State
-  const [stats, setStats] = useState(null)
-  const [isLoading, setIsLoading] = useState(true)
-  const [error, setError] = useState(null)
+  const [stats, setStats] = useState(null);
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState(null);
 
   // Handlers
   const fetchStats = useCallback(async () => {
     try {
-      setIsLoading(true)
-      setError(null)
-      const response = await get('/api/stats')
-      setStats(response.data)
+      setIsLoading(true);
+      setError(null);
+      const response = await get("/api/stats");
+      setStats(response.data);
     } catch (error_) {
-      setError(error_)
+      setError(error_);
     } finally {
-      setIsLoading(false)
+      setIsLoading(false);
     }
-  }, [])
+  }, []);
 
   // Effects
   useEffect(() => {
     setHeader({
-      title: t('features.stats.heading'),
-      description: t('features.stats.description'),
-      image: 'stats',
-    })
-    return () => setHeader()
-  }, [setHeader, t])
+      title: t("features.stats.heading"),
+      description: t("features.stats.description"),
+      image: "stats",
+    });
+    return () => setHeader();
+  }, [setHeader, t]);
 
   useEffect(() => {
-    fetchStats()
-  }, [fetchStats])
+    fetchStats();
+  }, [fetchStats]);
 
   // Render
   if (isLoading) {
     return (
       <div className="p-stats">
-        <p>{t('common.loading')}</p>
+        <div className="p-stats__loading">
+          <Loader />
+        </div>
       </div>
-    )
+    );
   }
 
   if (error) {
     return (
       <div className="p-stats">
-        <p>{t('common.error')}</p>
+        <div className="p-stats__error">
+          <EmptyState
+            description={t("common.error")}
+            hideImageOnMobile
+            image="stats--error"
+          />
+        </div>
       </div>
-    )
+    );
   }
 
   return (
     <div className="p-stats">
       <div className="p-stats__cards">
-        <Stat label={t('features.stats.totalVallles')} value={stats.totalVallles} />
-        <Stat label={t('features.stats.activeVallles')} value={stats.activeVallles} />
-        <Stat label={t('features.stats.totalAmount')} value={formatCurrency(stats.totalAmount)} />
-        <Stat label={t('features.stats.totalRedeemed')} value={formatCurrency(stats.totalRedeemed)} />
+        <Stat
+          label={t("features.stats.totalVallles")}
+          value={stats.totalVallles}
+        />
+        <Stat
+          label={t("features.stats.activeVallles")}
+          value={stats.activeVallles}
+        />
+        <Stat
+          label={t("features.stats.totalAmount")}
+          value={formatCurrency(stats.totalAmount)}
+        />
+        <Stat
+          label={t("features.stats.totalRedeemed")}
+          value={formatCurrency(stats.totalRedeemed)}
+        />
       </div>
 
-      <div className="p-stats__chart">
-        <h3 className="p-stats__chart-title">{t('features.stats.chart.title')}</h3>
+      <Card icon={IconCalendarDays} title={t("features.stats.chart.title")}>
         <div style={{ height: 300 }}>
           <ResponsiveContainer height="100%" width="100%">
-            <AreaChart data={stats.chartData}>
+            <BarChart
+              data={stats.chartData}
+              margin={{ top: 5, right: 5, left: -20, bottom: 0 }}
+            >
               <CartesianGrid strokeDasharray="3 3" />
               <XAxis dataKey="month" />
-              <YAxis />
+              <YAxis allowDecimals={false} width={40} />
               <Tooltip />
-              <Area
+              <Bar
                 dataKey="count"
                 fill="#c4653a"
-                fillOpacity={0.15}
-                name={t('features.stats.chart.vallles')}
-                stroke="#c4653a"
-                type="monotone"
+                name={t("features.stats.chart.vallles")}
+                radius={[4, 4, 0, 0]}
               />
-            </AreaChart>
+            </BarChart>
           </ResponsiveContainer>
         </div>
-      </div>
+      </Card>
     </div>
-  )
-}
+  );
+};
 
-export default StatsIndex
+export default StatsIndex;

@@ -7,6 +7,10 @@
 .c-empty-state__image {
   height: to-rem(240);
   width: to-rem(240);
+
+  &--hidden-mobile {
+    display: none;
+  }
 }
 
 .c-empty-state__description {
@@ -26,5 +30,9 @@
   .c-empty-state__image {
     height: to-rem(360);
     width: to-rem(360);
+
+    &--hidden-mobile {
+      display: unset;
+    }
   }
 }

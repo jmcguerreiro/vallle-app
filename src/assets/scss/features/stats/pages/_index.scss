@@ -1,8 +1,14 @@
 .p-stats {
   display: flex;
   flex-direction: column;
+  flex: 1;
   gap: $spacing-8;
   width: 100%;
+}
+
+.p-stats__loading,
+.p-stats__error {
+  margin: auto;
 }
 
 .p-stats__cards {

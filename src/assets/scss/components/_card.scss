@@ -1,0 +1,29 @@
+.c-card {
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-3xl;
+  display: flex;
+  flex-direction: column;
+}
+
+.c-card__header {
+  align-items: center;
+  border-bottom: solid 1px $color-parchment;
+  display: flex;
+  gap: $spacing-2;
+  padding: $spacing-4 $spacing-6;
+}
+
+.c-card__header-icon {
+  color: $text-color-muted;
+  flex-shrink: 0;
+  height: 1.125rem;
+  width: 1.125rem;
+}
+
+.c-card__header-title {
+  color: $text-color-muted;
+}
+
+.c-card__body {
+  padding: $spacing-6;
+}

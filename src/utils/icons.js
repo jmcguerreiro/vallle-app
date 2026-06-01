@@ -3,6 +3,7 @@ export {
   Archive as IconArchive,
   ArrowLeft as IconArrowLeft,
   ArrowRight as IconArrowRight,
+  CalendarDays as IconCalendarDays,
   ChartNoAxesCombined as IconChart,
   Check as IconCheck,
   ChevronDown as IconChevronDown,

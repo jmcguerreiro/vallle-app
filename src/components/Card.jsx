@@ -1,0 +1,28 @@
+/**
+ * Component: Card
+ * Generic card container with an optional title header and a body region.
+ * @component
+ * @param {Object} props
+ * @param {string} [props.title] - Optional title rendered in the card header.
+ * @param {React.ElementType} [props.icon] - Optional icon component rendered next to the title.
+ * @param {React.ReactNode} props.children - Content rendered inside the card body.
+ * @returns {JSX.Element}
+ */
+const Card = ({ title, icon: Icon, children }) => {
+  // Render
+  const hasHeader = title || Icon;
+
+  return (
+    <div className="c-card">
+      {hasHeader && (
+        <div className="c-card__header">
+          {Icon && <Icon className="c-card__header-icon" strokeWidth={1.5} />}
+          {title && <h3 className="c-card__header-title">{title}</h3>}
+        </div>
+      )}
+      <div className="c-card__body">{children}</div>
+    </div>
+  );
+};
+
+export default Card;
