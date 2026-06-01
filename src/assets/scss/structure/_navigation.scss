@@ -19,6 +19,20 @@
   gap: $spacing-4;
   padding: $spacing-1;
   pointer-events: all;
+  position: relative;
+}
+
+.s-navigation__indicator {
+  background: $color-terracota;
+  border-radius: to-rem(48);
+  height: to-rem(48);
+  left: 0;
+  pointer-events: none;
+  position: absolute;
+  top: 0;
+  transition: $transition-normal cubic-bezier(0.65, 0, 0.35, 1);
+  width: to-rem(48);
+  will-change: transform;
 }
 
 .s-navigation__item {
@@ -26,21 +40,20 @@
   display: flex;
   justify-content: center;
   border-radius: to-rem(48);
-  border: solid 1px transparent;
   width: to-rem(48);
   height: to-rem(48);
+  position: relative;
+  z-index: 1;
 
-  &.is-active {
-    background: $color-terracota;
-
-    .s-navigation__item-icon {
-      color: $color-white;
-    }
+  &.is-active .s-navigation__item-icon {
+    color: $color-white;
   }
 }
 
 .s-navigation__item-icon {
   color: $icon-color-muted;
+  transform: translateZ(0);
+  transition: $transition-slow;
 }
 
 @include screen(md) {

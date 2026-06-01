@@ -1,6 +1,13 @@
-import { useMemo } from "react";
+import {
+  useCallback,
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import { useTranslation } from "react-i18next";
-import { NavLink } from "react-router-dom";
+import { NavLink, useLocation } from "react-router-dom";
 
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
@@ -23,6 +30,13 @@ const Navigation = () => {
   // Hooks
   const { t } = useTranslation();
   const { isSuperAdmin } = useAuth();
+  const location = useLocation();
+
+  // State
+  const [indicator, setIndicator] = useState({ x: 0, y: 0, visible: false });
+
+  // Refs
+  const listRef = useRef(null);
 
   // Derived State
   const navItems = useMemo(
@@ -59,10 +73,44 @@ const Navigation = () => {
     [isSuperAdmin, t],
   );
 
+  // Handlers
+  const updateIndicator = useCallback(() => {
+    const list = listRef.current;
+    if (!list) return;
+    const activeEl = list.querySelector(".s-navigation__item.is-active");
+    if (!activeEl) {
+      setIndicator((prev) => ({ ...prev, visible: false }));
+      return;
+    }
+    setIndicator({
+      x: activeEl.offsetLeft,
+      y: activeEl.offsetTop,
+      visible: true,
+    });
+  }, []);
+
+  // Effects
+  useLayoutEffect(() => {
+    updateIndicator();
+  }, [location.pathname, navItems, updateIndicator]);
+
+  useEffect(() => {
+    window.addEventListener("resize", updateIndicator);
+    return () => window.removeEventListener("resize", updateIndicator);
+  }, [updateIndicator]);
+
   // Render
   return (
     <nav aria-label={t("nav.mainMenu")} className="s-navigation">
-      <ul className="s-navigation__items">
+      <ul className="s-navigation__items" ref={listRef}>
+        <span
+          aria-hidden="true"
+          className="s-navigation__indicator"
+          style={{
+            opacity: indicator.visible ? 1 : 0,
+            transform: `translate(${indicator.x}px, ${indicator.y}px)`,
+          }}
+        />
         {navItems.map(({ to, label, icon: Icon }) => (
           <li key={to}>
             <NavLink
