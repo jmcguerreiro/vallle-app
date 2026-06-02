@@ -7,7 +7,7 @@
  * - USER: Store staff — same as admin minus user management.
  */
 export const USER_ROLES = {
-  USER: 'user',
-  ADMIN: 'admin',
-  SUPER_ADMIN: 'super_admin',
-}
+  USER: "user",
+  ADMIN: "admin",
+  SUPER_ADMIN: "super_admin",
+};

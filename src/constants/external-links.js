@@ -3,5 +3,5 @@
  * Use these instead of hardcoded URLs throughout the codebase.
  */
 export const EXTERNAL_LINKS = {
-  WEBSITE: 'https://www.vallle.com',
-}
+  WEBSITE: "https://www.vallle.com",
+};

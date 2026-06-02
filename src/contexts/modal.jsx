@@ -1,6 +1,6 @@
-import { createContext, useCallback, useMemo, useState } from 'react'
+import { createContext, useCallback, useMemo, useState } from "react";
 
-export const ModalContext = createContext(null)
+export const ModalContext = createContext(null);
 
 /**
  * Provides layout state for the modal content area.
@@ -15,26 +15,39 @@ export const ModalContext = createContext(null)
  */
 export const ModalProvider = ({ children }) => {
   // State
-  const [header, setHeaderState] = useState({ title: '', description: '', actions: [] })
+  const [header, setHeaderState] = useState({
+    title: "",
+    description: "",
+    actions: [],
+  });
 
   // Handlers
-  const setHeader = useCallback(({ title = '', description = '', actions = [] } = {}) => {
-    setHeaderState((prev) => {
-      if (prev.title === title && prev.description === description && prev.actions === actions) return prev
-      return { title, description, actions }
-    })
-  }, [])
+  const setHeader = useCallback(
+    ({ title = "", description = "", actions = [] } = {}) => {
+      setHeaderState((prev) => {
+        if (
+          prev.title === title &&
+          prev.description === description &&
+          prev.actions === actions
+        )
+          return prev;
+        return { title, description, actions };
+      });
+    },
+    [],
+  );
 
   // Derived State
-  const value = useMemo(() => ({
-    header,
-    setHeader,
-  }), [header, setHeader])
+  const value = useMemo(
+    () => ({
+      header,
+      setHeader,
+    }),
+    [header, setHeader],
+  );
 
   // Render
   return (
-    <ModalContext.Provider value={value}>
-      {children}
-    </ModalContext.Provider>
-  )
-}
+    <ModalContext.Provider value={value}>{children}</ModalContext.Provider>
+  );
+};

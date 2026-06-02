@@ -7,10 +7,10 @@
  * @param {string} [props.className] - Additional CSS class
  * @returns {JSX.Element}
  */
-const FormActions = ({ children, className = '' }) => (
-  <div className={`c-form__actions${className ? ` ${className}` : ''}`}>
+const FormActions = ({ children, className = "" }) => (
+  <div className={`c-form__actions${className ? ` ${className}` : ""}`}>
     {children}
   </div>
-)
+);
 
-export default FormActions
+export default FormActions;

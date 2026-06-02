@@ -1,7 +1,7 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate } from "react-router-dom";
 
-import { ROUTES } from '@/constants/routes'
-import { useAuth } from '@/hooks/useAuth'
+import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Component: RoleGuard
@@ -16,14 +16,14 @@ import { useAuth } from '@/hooks/useAuth'
  */
 const RoleGuard = ({ allowedRoles, children }) => {
   // Hooks
-  const { user } = useAuth()
+  const { user } = useAuth();
 
   // Render
   if (!user || !allowedRoles.includes(user.role)) {
-    return <Navigate replace to={ROUTES.HOME} />
+    return <Navigate replace to={ROUTES.HOME} />;
   }
 
-  return children
-}
+  return children;
+};
 
-export default RoleGuard
+export default RoleGuard;

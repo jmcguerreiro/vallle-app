@@ -55,7 +55,7 @@ const ForgotPassword = () => {
       <div className="p-auth-forgot-password">
         <div className="p-auth-forgot-password__header">
           <h1 className="p-auth-forgot-password__header-title">
-             {t("features.forgotPassword.successState.heading")}
+            {t("features.forgotPassword.successState.heading")}
           </h1>
           <div className="p-auth-forgot-password__header-description">
             {t("features.forgotPassword.successState.message")}

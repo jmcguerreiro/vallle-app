@@ -423,8 +423,7 @@ Use the Vallle brand palette in all UI work:
 
 - **JavaScript, not TypeScript** — keep it simple.
 - **ES Modules** — `import`/`export`, no CommonJS.
-- **Single quotes** for strings.
-- **No semicolons** (unless required for disambiguation).
+- **Formatting is Prettier's job** — run `npm run format` (config in `.prettierrc.json`). We use Prettier defaults: double quotes and semicolons. Don't hand-format against it.
 - **Functional components only** — no class components.
 - **Default exports** for components, named exports for utilities.
 - **Keep files small** — if a component exceeds ~150 lines, consider splitting.

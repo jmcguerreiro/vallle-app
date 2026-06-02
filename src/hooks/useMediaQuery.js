@@ -1,4 +1,4 @@
-import { useCallback, useSyncExternalStore } from 'react'
+import { useCallback, useSyncExternalStore } from "react";
 
 /**
  * Hook: useMediaQuery
@@ -7,16 +7,19 @@ import { useCallback, useSyncExternalStore } from 'react'
  * @returns {boolean}
  */
 export const useMediaQuery = (query) => {
-  const subscribe = useCallback((callback) => {
-    const mql = globalThis.matchMedia(query)
-    mql.addEventListener('change', callback)
-    return () => mql.removeEventListener('change', callback)
-  }, [query])
+  const subscribe = useCallback(
+    (callback) => {
+      const mql = globalThis.matchMedia(query);
+      mql.addEventListener("change", callback);
+      return () => mql.removeEventListener("change", callback);
+    },
+    [query],
+  );
 
   const getSnapshot = useCallback(
     () => globalThis.matchMedia(query).matches,
     [query],
-  )
+  );
 
-  return useSyncExternalStore(subscribe, getSnapshot, () => false)
-}
+  return useSyncExternalStore(subscribe, getSnapshot, () => false);
+};

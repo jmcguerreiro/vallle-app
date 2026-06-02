@@ -34,4 +34,4 @@ export {
   UserPlus as IconUserPlus,
   Users as IconUsers,
   X as IconX,
-} from 'lucide-react'
+} from "lucide-react";

@@ -1,6 +1,6 @@
-import { useTranslation } from 'react-i18next'
+import { useTranslation } from "react-i18next";
 
-import { useAuth } from '@/hooks/useAuth'
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Layout: Banner
@@ -10,17 +10,17 @@ import { useAuth } from '@/hooks/useAuth'
  */
 const Banner = () => {
   // Hooks
-  const { t } = useTranslation()
-  const { isStoreSuspended } = useAuth()
+  const { t } = useTranslation();
+  const { isStoreSuspended } = useAuth();
 
   // Render
-  if (!isStoreSuspended) return null
+  if (!isStoreSuspended) return null;
 
   return (
     <div className="s-banner" role="alert">
-      {t('features.storeSuspended.banner')}
+      {t("features.storeSuspended.banner")}
     </div>
-  )
-}
+  );
+};
 
-export default Banner
+export default Banner;

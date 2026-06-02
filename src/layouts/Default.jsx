@@ -1,7 +1,7 @@
-import Banner from './components/Banner'
-import Header from './components/Header'
-import Main from './components/Main'
-import Navigation from './components/Navigation'
+import Banner from "./components/Banner";
+import Header from "./components/Header";
+import Main from "./components/Main";
+import Navigation from "./components/Navigation";
 
 /**
  * Layout: Default
@@ -17,6 +17,6 @@ const DefaultLayout = () => (
     <Navigation />
     <Main />
   </div>
-)
+);
 
-export default DefaultLayout
+export default DefaultLayout;

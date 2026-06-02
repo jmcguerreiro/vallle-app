@@ -345,14 +345,12 @@
           }
         },
         "error": {
-          "generic": "Could not load users.",
           "loadFailed": "Could not load user details.",
           "emailTaken": "This email is already in use."
         }
       },
       "success": "Company details updated successfully!",
       "error": {
-        "loadFailed": "Could not load company details.",
         "generic": "Could not update company details. Please try again."
       }
     },

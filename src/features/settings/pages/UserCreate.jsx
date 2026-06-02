@@ -1,20 +1,20 @@
-import { useCallback, useEffect, useState } from 'react'
-import { useForm } from 'react-hook-form'
-import { useTranslation } from 'react-i18next'
-import { useNavigate } from 'react-router-dom'
+import { useCallback, useEffect, useState } from "react";
+import { useForm } from "react-hook-form";
+import { useTranslation } from "react-i18next";
+import { useNavigate } from "react-router-dom";
 
-import Button from '@/components/Button'
-import Form from '@/components/forms/Form'
-import FormActions from '@/components/forms/FormActions'
-import FormFields from '@/components/forms/FormFields'
-import Input from '@/components/forms/Input'
-import { useQueryClient } from '@tanstack/react-query'
+import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import { useMain } from '@/hooks/useMain'
-import { useModal } from '@/hooks/useModal'
-import { useToast } from '@/hooks/useToast'
-import { post } from '@/services/api'
-import { validatePassword } from '@/utils/password'
+import Button from "@/components/Button";
+import Form from "@/components/forms/Form";
+import FormActions from "@/components/forms/FormActions";
+import FormFields from "@/components/forms/FormFields";
+import Input from "@/components/forms/Input";
+import { useMain } from "@/hooks/useMain";
+import { useModal } from "@/hooks/useModal";
+import { useToast } from "@/hooks/useToast";
+import { post } from "@/services/api";
+import { validatePassword } from "@/utils/password";
 
 /**
  * Component: CompanyUserCreate
@@ -25,54 +25,63 @@ import { validatePassword } from '@/utils/password'
  */
 const CompanyUserCreate = () => {
   // Hooks
-  const { t } = useTranslation()
-  const navigate = useNavigate()
-  const { setHeader: setMainHeader } = useMain()
-  const { setHeader: setModalHeader, isModal } = useModal()
-  const queryClient = useQueryClient()
-  const { addToast } = useToast()
-  const { register, handleSubmit, formState: { errors } } = useForm()
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const { setHeader: setMainHeader } = useMain();
+  const { setHeader: setModalHeader, isModal } = useModal();
+  const queryClient = useQueryClient();
+  const { addToast } = useToast();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm();
 
-  // State
-  const [serverError, setServerError] = useState(null)
-  const [isSubmitting, setIsSubmitting] = useState(false)
-
-  // Derived State
-  const title = t('features.company.users.create.heading')
-  const description = t('features.company.users.create.description')
-  const setHeader = isModal ? setModalHeader : setMainHeader
-
-  // Handlers
-  const onSubmit = useCallback(async (values) => {
-    setServerError(null)
-    setIsSubmitting(true)
-
-    try {
-      await post('/api/company/users', {
+  // Mutations
+  const createUser = useMutation({
+    mutationFn: (values) =>
+      post("/api/company/users", {
         name: values.name,
         email: values.email,
         password: values.password,
         role: values.role,
-      })
-      queryClient.invalidateQueries({ queryKey: ['company', 'users'] })
-      addToast(t('features.company.users.create.success'), 'success')
-      navigate(-1)
-    } catch (error) {
-      if (error.code === 'EMAIL_TAKEN') {
-        setServerError(t('features.company.users.error.emailTaken'))
-      } else {
-        setServerError(error.message || t('features.company.users.create.error.generic'))
-      }
-    } finally {
-      setIsSubmitting(false)
-    }
-  }, [addToast, navigate, t, queryClient])
+      }),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["company", "users"] });
+      addToast(t("features.company.users.create.success"), "success");
+      navigate(-1);
+    },
+    onError: (error) => {
+      setServerError(
+        error.code === "EMAIL_TAKEN"
+          ? t("features.company.users.error.emailTaken")
+          : error.message || t("features.company.users.create.error.generic"),
+      );
+    },
+  });
+
+  // State
+  const [serverError, setServerError] = useState(null);
+
+  // Derived State
+  const title = t("features.company.users.create.heading");
+  const description = t("features.company.users.create.description");
+  const setHeader = isModal ? setModalHeader : setMainHeader;
+
+  // Handlers
+  const onSubmit = useCallback(
+    (values) => {
+      setServerError(null);
+      createUser.mutate(values);
+    },
+    [createUser],
+  );
 
   // Effects
   useEffect(() => {
-    setHeader({ title, description })
-    return () => setHeader()
-  }, [title, description, setHeader])
+    setHeader({ title, description });
+    return () => setHeader();
+  }, [title, description, setHeader]);
 
   // Render
   return (
@@ -80,52 +89,56 @@ const CompanyUserCreate = () => {
       <FormFields>
         <Input
           error={errors.name}
-          label={t('features.company.users.form.name')}
+          label={t("features.company.users.form.name")}
           name="name"
           register={register}
-          required={t('features.company.users.form.error.nameRequired')}
+          required={t("features.company.users.form.error.nameRequired")}
         />
         <Input
           error={errors.email}
-          label={t('features.company.users.form.email')}
+          label={t("features.company.users.form.email")}
           name="email"
           register={register}
-          required={t('features.company.users.form.error.emailRequired')}
+          required={t("features.company.users.form.error.emailRequired")}
           type="email"
         />
         <Input
           error={errors.password}
-          label={t('features.company.users.form.password')}
+          label={t("features.company.users.form.password")}
           name="password"
           register={register}
-          required={t('features.company.users.form.error.passwordRequired')}
+          required={t("features.company.users.form.error.passwordRequired")}
           type="password"
           validate={validatePassword(t)}
         />
         <div className="c-form__field">
           <label className="c-form__field-label" htmlFor="role">
-            {t('features.company.users.form.role')}
+            {t("features.company.users.form.role")}
           </label>
           <select
             className="c-form__field-input"
             id="role"
-            {...register('role')}
+            {...register("role")}
           >
-            <option value="user">{t('features.company.users.list.role_user')}</option>
-            <option value="admin">{t('features.company.users.list.role_admin')}</option>
+            <option value="user">
+              {t("features.company.users.list.role_user")}
+            </option>
+            <option value="admin">
+              {t("features.company.users.list.role_admin")}
+            </option>
           </select>
         </div>
       </FormFields>
       <FormActions>
-        <Button isProcessing={isSubmitting} type="submit">
-          {t('features.company.users.create.submit')}
+        <Button isProcessing={createUser.isPending} type="submit">
+          {t("features.company.users.create.submit")}
         </Button>
         <Button onClick={() => navigate(-1)} variant="ghost">
-          {t('common.cancel')}
+          {t("common.cancel")}
         </Button>
       </FormActions>
     </Form>
-  )
-}
+  );
+};
 
-export default CompanyUserCreate
+export default CompanyUserCreate;

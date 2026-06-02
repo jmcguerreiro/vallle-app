@@ -1,4 +1,4 @@
-import { IconChevronDown } from '@/utils/icons'
+import { IconChevronDown } from "@/utils/icons";
 
 /**
  * Component: Accordion
@@ -11,16 +11,24 @@ import { IconChevronDown } from '@/utils/icons'
  * @param {string} [props.className] - Additional CSS class on the root element
  * @returns {JSX.Element}
  */
-const Accordion = ({ title, children, defaultOpen = false, className = '' }) => {
+const Accordion = ({
+  title,
+  children,
+  defaultOpen = false,
+  className = "",
+}) => {
   return (
-    <details className={`c-accordion${className ? ` ${className}` : ''}`} open={defaultOpen}>
+    <details
+      className={`c-accordion${className ? ` ${className}` : ""}`}
+      open={defaultOpen}
+    >
       <summary className="c-accordion__trigger">
         <span className="c-accordion__title">{title}</span>
         <IconChevronDown className="c-accordion__icon" size={16} />
       </summary>
       <div className="c-accordion__body">{children}</div>
     </details>
-  )
-}
+  );
+};
 
-export default Accordion
+export default Accordion;

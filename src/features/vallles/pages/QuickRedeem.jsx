@@ -2,6 +2,8 @@ import { useCallback, useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
+import { useMutation } from "@tanstack/react-query";
+
 import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import { valllePath, vallleRedeemPath } from "@/constants/routes";
@@ -29,32 +31,17 @@ const QuickRedeem = () => {
   const { setHeader: setMainHeader } = useMain();
   const { setHeader: setModalHeader, isModal } = useModal();
 
-  // State
-  const [code, setCode] = useState("");
-  const [isLooking, setIsLooking] = useState(false);
-  const [lookupResult, setLookupResult] = useState(null);
-
   // Derived State
   const title = t("features.vallles.redeem.heading");
   const description = t("features.vallles.quickRedeem.description");
   const setHeader = isModal ? setModalHeader : setMainHeader;
   const backgroundLocation = location.state?.backgroundLocation || location;
 
-  // Handlers
-  const handleCodeChange = useCallback((raw) => {
-    setCode(raw);
-  }, []);
-
-  const handleLookup = useCallback(async () => {
-    setIsLooking(true);
-
-    const formatted = formatVallleCode(code);
-
-    try {
-      const { data } = await get(
-        `/api/vallles/lookup?code=${encodeURIComponent(formatted)}`,
-      );
-
+  // Mutations
+  const lookupVallle = useMutation({
+    mutationFn: (formatted) =>
+      get(`/api/vallles/lookup?code=${encodeURIComponent(formatted)}`),
+    onSuccess: ({ data }, formatted) => {
       if (isVallleExpired(data.expires_at)) {
         setLookupResult({
           status: "expired",
@@ -63,7 +50,6 @@ const QuickRedeem = () => {
         });
         return;
       }
-
       if (data.balance === 0) {
         setLookupResult({
           status: "used-up",
@@ -72,21 +58,31 @@ const QuickRedeem = () => {
         });
         return;
       }
-
       navigate(vallleRedeemPath(data.id), {
         replace: true,
         state: { backgroundLocation },
       });
-    } catch (error) {
-      if (error.code === "VALLLE_NOT_FOUND") {
-        setLookupResult({ status: "not-found", code: formatted });
-      } else {
-        setLookupResult({ status: "error", code: formatted });
-      }
-    } finally {
-      setIsLooking(false);
-    }
-  }, [code, navigate, backgroundLocation]);
+    },
+    onError: (error, formatted) => {
+      setLookupResult({
+        status: error.code === "VALLLE_NOT_FOUND" ? "not-found" : "error",
+        code: formatted,
+      });
+    },
+  });
+
+  // State
+  const [code, setCode] = useState("");
+  const [lookupResult, setLookupResult] = useState(null);
+
+  // Handlers
+  const handleCodeChange = useCallback((raw) => {
+    setCode(raw);
+  }, []);
+
+  const handleLookup = useCallback(() => {
+    lookupVallle.mutate(formatVallleCode(code));
+  }, [code, lookupVallle]);
 
   const handleTryAgain = useCallback(() => {
     setLookupResult(null);
@@ -170,7 +166,7 @@ const QuickRedeem = () => {
         <Button
           disabled={code.length !== CODE_LENGTH}
           display="block"
-          isProcessing={isLooking}
+          isProcessing={lookupVallle.isPending}
           onClick={handleLookup}
         >
           {t("features.vallles.quickRedeem.submit")}

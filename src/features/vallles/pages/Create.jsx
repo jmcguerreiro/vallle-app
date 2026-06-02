@@ -69,8 +69,7 @@ const VallleCreate = () => {
       queryClient.invalidateQueries({ queryKey: ["vallles"] });
       queryClient.invalidateQueries({ queryKey: ["stats"] });
       addToast(t("features.vallles.create.success"), "success");
-      const backgroundLocation =
-        location.state?.backgroundLocation || location;
+      const backgroundLocation = location.state?.backgroundLocation || location;
       navigate(valllePath(vallle.id), {
         replace: true,
         state: { backgroundLocation },

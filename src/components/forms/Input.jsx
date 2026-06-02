@@ -22,7 +22,7 @@ const Input = ({
   label,
   hideLabel = false,
   placeholder,
-  type = 'text',
+  type = "text",
   register,
   required,
   validate,
@@ -32,16 +32,16 @@ const Input = ({
   readOnly = false,
 }) => {
   // Derived State
-  const rules = {}
+  const rules = {};
 
-  if (typeof required === 'string') {
-    rules.required = required
+  if (typeof required === "string") {
+    rules.required = required;
   } else if (required === true) {
-    rules.required = `${label || name} is required`
+    rules.required = `${label || name} is required`;
   }
 
   if (validate) {
-    rules.validate = validate
+    rules.validate = validate;
   }
 
   // Render
@@ -49,7 +49,7 @@ const Input = ({
     <div className="c-form__field">
       {label && (
         <label
-          className={`c-form__field-label${hideLabel ? ' u-sr-only' : ''}`}
+          className={`c-form__field-label${hideLabel ? " u-sr-only" : ""}`}
           htmlFor={name}
         >
           {label}
@@ -57,7 +57,7 @@ const Input = ({
       )}
       <input
         autoComplete={autoComplete}
-        className={`c-form__field-input${error ? ' c-form__field-input--error' : ''}${readOnly ? ' c-form__field-input--readonly' : ''}`}
+        className={`c-form__field-input${error ? " c-form__field-input--error" : ""}${readOnly ? " c-form__field-input--readonly" : ""}`}
         id={name}
         placeholder={placeholder}
         readOnly={readOnly}
@@ -67,7 +67,7 @@ const Input = ({
       {hint && !error && <p className="c-form__field-hint">{hint}</p>}
       {error && <p className="c-form__field-error">{error.message}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default Input
+export default Input;

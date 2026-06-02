@@ -6,7 +6,7 @@
  */
 const Loader = () => {
   // Render
-  return <div className="c-loader" />
-}
+  return <div className="c-loader" />;
+};
 
-export default Loader
+export default Loader;

@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useMemo, useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -6,12 +6,13 @@ import { useQuery } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
 import Datatable from "@/components/Datatable";
+import EmptyState from "@/components/EmptyState";
 import FilterSelect from "@/components/forms/FilterSelect";
+import Loader from "@/components/Loader";
 import {
   settingsUserCreatePath,
   settingsUserEditPath,
 } from "@/constants/routes";
-import { useToast } from "@/hooks/useToast";
 import { get } from "@/services/api";
 import { formatDateTime } from "@/utils/dates";
 import { IconUserPlus } from "@/utils/icons";
@@ -25,17 +26,16 @@ const STATUS_VARIANTS = {
 };
 
 /**
- * Component: CompanyUsers
+ * Component: CompanyUserList
  * Lists users belonging to the active store. Allows admins to create and edit users.
  * @component
  * @returns {JSX.Element}
  */
-const CompanyUsers = () => {
+const CompanyUserList = () => {
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { addToast } = useToast();
 
   // State
   const [statusFilter, setStatusFilter] = useState("all");
@@ -121,14 +121,29 @@ const CompanyUsers = () => {
     [t],
   );
 
-  // Effects
-  useEffect(() => {
-    if (isError) addToast(t("features.company.users.error.generic"), "error");
-  }, [isError, addToast, t]);
-
   // Render
   if (isPending) {
-    return <p>{t("common.loading")}</p>;
+    return (
+      <div className="p-company-users">
+        <div className="p-company-users__loading">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
+  if (isError) {
+    return (
+      <div className="p-company-users">
+        <div className="p-company-users__error">
+          <EmptyState
+            description={t("common.error")}
+            hideImageOnMobile
+            image="company-users--error"
+          />
+        </div>
+      </div>
+    );
   }
 
   const userFilters = (
@@ -145,7 +160,7 @@ const CompanyUsers = () => {
   );
 
   return (
-    <div className="c-company-users">
+    <div className="p-company-users">
       <Datatable
         actions={[
           {
@@ -163,4 +178,4 @@ const CompanyUsers = () => {
   );
 };
 
-export default CompanyUsers;
+export default CompanyUserList;

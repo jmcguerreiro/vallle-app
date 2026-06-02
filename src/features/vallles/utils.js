@@ -8,7 +8,7 @@
  * @returns {boolean}
  */
 export function isVallleExpired(expiresAt) {
-  return new Date(expiresAt) < new Date()
+  return new Date(expiresAt) < new Date();
 }
 
 /**
@@ -17,7 +17,7 @@ export function isVallleExpired(expiresAt) {
  * @returns {string}
  */
 export function formatVallleCode(raw) {
-  return `${raw.slice(0, 3)}-${raw.slice(3, 6)}-${raw.slice(6, 9)}`
+  return `${raw.slice(0, 3)}-${raw.slice(3, 6)}-${raw.slice(6, 9)}`;
 }
 
 /**
@@ -26,8 +26,8 @@ export function formatVallleCode(raw) {
  * @returns {'active'|'used'|'expired'|'archived'}
  */
 export function deriveVallleStatus(vallle) {
-  if (vallle.status === 'archived') return 'archived'
-  if (isVallleExpired(vallle.expires_at)) return 'expired'
-  if (vallle.balance === 0) return 'used'
-  return 'active'
+  if (vallle.status === "archived") return "archived";
+  if (isVallleExpired(vallle.expires_at)) return "expired";
+  if (vallle.balance === 0) return "used";
+  return "active";
 }

@@ -1,9 +1,9 @@
-import { useCallback, useContext } from 'react'
+import { useCallback, useContext } from "react";
 
-import { ModalContext } from '@/contexts/modal'
+import { ModalContext } from "@/contexts/modal";
 
-const EMPTY_HEADER = { title: '', description: '', actions: [] }
-const noop = () => {}
+const EMPTY_HEADER = { title: "", description: "", actions: [] };
+const noop = () => {};
 
 /**
  * Hook: useModal
@@ -13,11 +13,11 @@ const noop = () => {}
  * @returns {{ header: { title: string, description: string, actions: Array }, setHeader: Function, isModal: boolean }}
  */
 export const useModal = () => {
-  const context = useContext(ModalContext)
+  const context = useContext(ModalContext);
 
   if (context) {
-    return { ...context, isModal: true }
+    return { ...context, isModal: true };
   }
 
-  return { header: EMPTY_HEADER, setHeader: noop, isModal: false }
-}
+  return { header: EMPTY_HEADER, setHeader: noop, isModal: false };
+};

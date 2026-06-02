@@ -1,6 +1,6 @@
-import { createContext, useCallback, useMemo, useState } from 'react'
+import { createContext, useCallback, useMemo, useState } from "react";
 
-export const MainContext = createContext(null)
+export const MainContext = createContext(null);
 
 /**
  * Provides layout state for the main content area.
@@ -13,31 +13,39 @@ export const MainContext = createContext(null)
  */
 export const MainProvider = ({ children }) => {
   // State
-  const [header, setHeaderState] = useState({ title: '', description: '', image: '', actions: [] })
+  const [header, setHeaderState] = useState({
+    title: "",
+    description: "",
+    image: "",
+    actions: [],
+  });
 
   // Handlers
-  const setHeader = useCallback(({ title = '', description = '', image = '', actions = [] } = {}) => {
-    setHeaderState((prev) => {
-      if (
-        prev.title === title &&
-        prev.description === description &&
-        prev.image === image &&
-        prev.actions === actions
-      ) return prev
-      return { title, description, image, actions }
-    })
-  }, [])
+  const setHeader = useCallback(
+    ({ title = "", description = "", image = "", actions = [] } = {}) => {
+      setHeaderState((prev) => {
+        if (
+          prev.title === title &&
+          prev.description === description &&
+          prev.image === image &&
+          prev.actions === actions
+        )
+          return prev;
+        return { title, description, image, actions };
+      });
+    },
+    [],
+  );
 
   // Derived State
-  const value = useMemo(() => ({
-    header,
-    setHeader,
-  }), [header, setHeader])
+  const value = useMemo(
+    () => ({
+      header,
+      setHeader,
+    }),
+    [header, setHeader],
+  );
 
   // Render
-  return (
-    <MainContext.Provider value={value}>
-      {children}
-    </MainContext.Provider>
-  )
-}
+  return <MainContext.Provider value={value}>{children}</MainContext.Provider>;
+};

@@ -1,0 +1,11 @@
+// Centered loading / error state for modal forms that have no page block
+// of their own. Pages with a `p-*` block style their own `__loading`/`__error`.
+.c-page-state {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  margin: auto;
+  padding: $spacing-8 0;
+  width: 100%;
+}

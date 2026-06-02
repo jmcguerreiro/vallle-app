@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer,
   LineChart,
@@ -55,10 +56,21 @@ const AdminDashboardIndex = () => {
   const { setHeader } = useMain();
 
   // State
-  const [data, setData] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
   const [year, setYear] = useState(() => new Date().getFullYear());
+
+  // Queries
+  const {
+    data: response,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["admin", "dashboard", year],
+    queryFn: ({ signal }) =>
+      get(`/api/admin/dashboard?year=${year}`, { signal }),
+    placeholderData: keepPreviousData,
+  });
+
+  const data = response?.data;
 
   // Derived State
   const currentYear = useMemo(() => new Date().getFullYear(), []);
@@ -74,19 +86,6 @@ const AdminDashboardIndex = () => {
   }, [data]);
 
   // Handlers
-  const fetchDashboard = useCallback(async (fetchYear) => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await get(`/api/admin/dashboard?year=${fetchYear}`);
-      setData(response.data);
-    } catch (error_) {
-      setError(error_);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
-
   const handlePrevYear = useCallback(() => {
     setYear((prev) => prev - 1);
   }, []);
@@ -105,12 +104,8 @@ const AdminDashboardIndex = () => {
     return () => setHeader();
   }, [setHeader, t, user?.name]);
 
-  useEffect(() => {
-    fetchDashboard(year);
-  }, [fetchDashboard, year]);
-
   // Render
-  if (isLoading && !data) {
+  if (isPending) {
     return (
       <div className="p-admin-dashboard">
         <div className="p-admin-dashboard__loading">
@@ -120,7 +115,7 @@ const AdminDashboardIndex = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="p-admin-dashboard">
         <div className="p-admin-dashboard__error">

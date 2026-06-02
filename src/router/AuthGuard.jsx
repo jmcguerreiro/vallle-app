@@ -1,8 +1,8 @@
-import { Navigate } from 'react-router-dom'
+import { Navigate } from "react-router-dom";
 
-import Loader from '@/components/Loader'
-import { ROUTES } from '@/constants/routes'
-import { useAuth } from '@/hooks/useAuth'
+import Loader from "@/components/Loader";
+import { ROUTES } from "@/constants/routes";
+import { useAuth } from "@/hooks/useAuth";
 
 /**
  * Component: AuthGuard
@@ -16,22 +16,22 @@ import { useAuth } from '@/hooks/useAuth'
  */
 const AuthGuard = ({ children }) => {
   // Hooks
-  const { isAuthenticated, needsStoreSelection, isLoading } = useAuth()
+  const { isAuthenticated, needsStoreSelection, isLoading } = useAuth();
 
   // Render
   if (isLoading) {
-    return <Loader />
+    return <Loader />;
   }
 
   if (!isAuthenticated) {
-    return <Navigate replace to={ROUTES.LOGIN} />
+    return <Navigate replace to={ROUTES.LOGIN} />;
   }
 
   if (needsStoreSelection) {
-    return <Navigate replace to={ROUTES.SELECT_STORE} />
+    return <Navigate replace to={ROUTES.SELECT_STORE} />;
   }
 
-  return children
-}
+  return children;
+};
 
-export default AuthGuard
+export default AuthGuard;

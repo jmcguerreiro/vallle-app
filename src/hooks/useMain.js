@@ -1,6 +1,6 @@
-import { useContext } from 'react'
+import { useContext } from "react";
 
-import { MainContext } from '@/contexts/main'
+import { MainContext } from "@/contexts/main";
 
 /**
  * Hook: useMain
@@ -9,9 +9,9 @@ import { MainContext } from '@/contexts/main'
  * @returns {{ header: { title: string, description: string, image: string }, setHeader: Function }}
  */
 export const useMain = () => {
-  const context = useContext(MainContext)
+  const context = useContext(MainContext);
   if (!context) {
-    throw new Error('useMain must be used within a MainProvider')
+    throw new Error("useMain must be used within a MainProvider");
   }
-  return context
-}
+  return context;
+};

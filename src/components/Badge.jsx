@@ -10,18 +10,14 @@
  * @param {string} [props.className] - Additional CSS class.
  * @returns {JSX.Element}
  */
-const Badge = ({ children, variant, className = '' }) => {
+const Badge = ({ children, variant, className = "" }) => {
   // Derived State
-  const classes = [
-    'c-badge',
-    variant ? `c-badge--${variant}` : '',
-    className,
-  ]
+  const classes = ["c-badge", variant ? `c-badge--${variant}` : "", className]
     .filter(Boolean)
-    .join(' ')
+    .join(" ");
 
   // Render
-  return <span className={classes}>{children}</span>
-}
+  return <span className={classes}>{children}</span>;
+};
 
-export default Badge
+export default Badge;

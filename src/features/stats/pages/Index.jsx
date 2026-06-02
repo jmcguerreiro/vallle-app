@@ -1,6 +1,7 @@
-import { useState, useEffect, useCallback } from "react";
+import { useEffect } from "react";
 import { useTranslation } from "react-i18next";
 
+import { useQuery } from "@tanstack/react-query";
 import {
   ResponsiveContainer,
   BarChart,
@@ -32,24 +33,17 @@ const StatsIndex = () => {
   const { t } = useTranslation();
   const { setHeader } = useMain();
 
-  // State
-  const [stats, setStats] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState(null);
+  // Queries
+  const {
+    data: response,
+    isPending,
+    isError,
+  } = useQuery({
+    queryKey: ["stats"],
+    queryFn: ({ signal }) => get("/api/stats", { signal }),
+  });
 
-  // Handlers
-  const fetchStats = useCallback(async () => {
-    try {
-      setIsLoading(true);
-      setError(null);
-      const response = await get("/api/stats");
-      setStats(response.data);
-    } catch (error_) {
-      setError(error_);
-    } finally {
-      setIsLoading(false);
-    }
-  }, []);
+  const stats = response?.data;
 
   // Effects
   useEffect(() => {
@@ -61,12 +55,8 @@ const StatsIndex = () => {
     return () => setHeader();
   }, [setHeader, t]);
 
-  useEffect(() => {
-    fetchStats();
-  }, [fetchStats]);
-
   // Render
-  if (isLoading) {
+  if (isPending) {
     return (
       <div className="p-stats">
         <div className="p-stats__loading">
@@ -76,7 +66,7 @@ const StatsIndex = () => {
     );
   }
 
-  if (error) {
+  if (isError) {
     return (
       <div className="p-stats">
         <div className="p-stats__error">

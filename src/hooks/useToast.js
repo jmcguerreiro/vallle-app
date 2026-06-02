@@ -1,6 +1,6 @@
-import { useContext } from 'react'
+import { useContext } from "react";
 
-import { ToastContext } from '@/contexts/toast'
+import { ToastContext } from "@/contexts/toast";
 
 /**
  * Hook: useToast
@@ -9,9 +9,9 @@ import { ToastContext } from '@/contexts/toast'
  * @returns {{ toasts: Array<{id: number, message: string, type: string}>, addToast: Function, removeToast: Function }}
  */
 export const useToast = () => {
-  const context = useContext(ToastContext)
+  const context = useContext(ToastContext);
   if (!context) {
-    throw new Error('useToast must be used within a ToastProvider')
+    throw new Error("useToast must be used within a ToastProvider");
   }
-  return context
-}
+  return context;
+};

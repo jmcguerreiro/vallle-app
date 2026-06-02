@@ -7,10 +7,10 @@
  * @param {string} [props.className] - Additional CSS class
  * @returns {JSX.Element}
  */
-const FormFields = ({ children, className = '' }) => (
-  <div className={`c-form__fields${className ? ` ${className}` : ''}`}>
+const FormFields = ({ children, className = "" }) => (
+  <div className={`c-form__fields${className ? ` ${className}` : ""}`}>
     {children}
   </div>
-)
+);
 
-export default FormFields
+export default FormFields;

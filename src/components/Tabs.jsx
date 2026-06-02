@@ -1,4 +1,4 @@
-import { NavLink } from 'react-router-dom'
+import { NavLink } from "react-router-dom";
 
 /**
  * Component: Tabs
@@ -12,15 +12,15 @@ import { NavLink } from 'react-router-dom'
  * @param {string} [props.className] - Additional CSS class on the root element
  * @returns {JSX.Element}
  */
-const Tabs = ({ tabs, children, className = '' }) => {
+const Tabs = ({ tabs, children, className = "" }) => {
   return (
-    <div className={`c-tabs${className ? ` ${className}` : ''}`}>
+    <div className={`c-tabs${className ? ` ${className}` : ""}`}>
       <nav className="c-tabs__list" role="tablist">
         {tabs.map(({ to, label, end = true }) => (
           <NavLink
             key={to}
             className={({ isActive }) =>
-              `c-tabs__tab${isActive ? ' is-active' : ''}`
+              `c-tabs__tab${isActive ? " is-active" : ""}`
             }
             end={end}
             role="tab"
@@ -34,7 +34,7 @@ const Tabs = ({ tabs, children, className = '' }) => {
         {children}
       </div>
     </div>
-  )
-}
+  );
+};
 
-export default Tabs
+export default Tabs;

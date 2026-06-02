@@ -1,8 +1,8 @@
-import { createContext, useCallback, useMemo, useState } from 'react'
+import { createContext, useCallback, useMemo, useState } from "react";
 
-export const ToastContext = createContext(null)
+export const ToastContext = createContext(null);
 
-const AUTO_DISMISS_MS = 4000
+const AUTO_DISMISS_MS = 4000;
 
 /**
  * Provides toast notification state to the app.
@@ -14,33 +14,37 @@ const AUTO_DISMISS_MS = 4000
  */
 export const ToastProvider = ({ children }) => {
   // State
-  const [toasts, setToasts] = useState([])
+  const [toasts, setToasts] = useState([]);
 
   // Handlers
   const removeToast = useCallback((id) => {
-    setToasts((prev) => prev.filter((toast) => toast.id !== id))
-  }, [])
+    setToasts((prev) => prev.filter((toast) => toast.id !== id));
+  }, []);
 
-  const addToast = useCallback((message, type = 'success') => {
-    const id = Date.now()
-    setToasts((prev) => [...prev, { id, message, type }])
+  const addToast = useCallback(
+    (message, type = "success") => {
+      const id = Date.now();
+      setToasts((prev) => [...prev, { id, message, type }]);
 
-    setTimeout(() => {
-      removeToast(id)
-    }, AUTO_DISMISS_MS)
-  }, [removeToast])
+      setTimeout(() => {
+        removeToast(id);
+      }, AUTO_DISMISS_MS);
+    },
+    [removeToast],
+  );
 
   // Derived State
-  const value = useMemo(() => ({
-    toasts,
-    addToast,
-    removeToast,
-  }), [toasts, addToast, removeToast])
+  const value = useMemo(
+    () => ({
+      toasts,
+      addToast,
+      removeToast,
+    }),
+    [toasts, addToast, removeToast],
+  );
 
   // Render
   return (
-    <ToastContext.Provider value={value}>
-      {children}
-    </ToastContext.Provider>
-  )
-}
+    <ToastContext.Provider value={value}>{children}</ToastContext.Provider>
+  );
+};

@@ -7,6 +7,7 @@
 
 @import "./components/accordion";
 @import "./components/admin";
+@import "./components/page-state";
 @import "./components/badge";
 @import "./components/empty-state";
 @import "./components/error-state";
@@ -42,7 +43,12 @@
 @import "./features/auth/pages/auth-select-store";
 
 @import "./features/admin/dashboard/pages/index";
+@import "./features/admin/users/pages/index";
+@import "./features/admin/companies/pages/index";
+@import "./features/admin/commissions/pages/index";
 @import "./features/stats/pages/index";
+@import "./features/settings/pages/index";
+@import "./features/profile/pages/index";
 @import "./features/vallles/components/vallle-code-input";
 
 @import "./features/vallles/pages/vallle-create";
@@ -240,14 +246,6 @@ body {
   text-align: center;
   margin-top: var(--space-md);
   font-size: 0.875rem;
-}
-
-/* ─── Company users ─────────────────────────────────────────── */
-
-.c-company-users__header {
-  display: flex;
-  justify-content: flex-end;
-  margin-bottom: var(--space-lg);
 }
 
 /* ─── Loading ─────────────────────────────────────────────────── */

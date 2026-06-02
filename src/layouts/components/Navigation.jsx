@@ -44,7 +44,11 @@ const Navigation = () => {
     () =>
       isSuperAdmin
         ? [
-            { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconHouseHeart },
+            {
+              to: ROUTES.HOME,
+              label: t("nav.dashboard"),
+              icon: IconHouseHeart,
+            },
             {
               to: ROUTES.ADMIN_COMPANIES,
               label: t("nav.adminCompanies"),
@@ -62,14 +66,22 @@ const Navigation = () => {
             },
           ]
         : [
-            { to: ROUTES.HOME, label: t("nav.dashboard"), icon: IconHouseHeart },
+            {
+              to: ROUTES.HOME,
+              label: t("nav.dashboard"),
+              icon: IconHouseHeart,
+            },
             {
               to: ROUTES.VALLLES,
               label: t("nav.vallles"),
               icon: IconMailbox,
             },
             { to: ROUTES.STATS, label: t("nav.stats"), icon: IconChart },
-            { to: ROUTES.SETTINGS, label: t("nav.settings"), icon: IconSettings },
+            {
+              to: ROUTES.SETTINGS,
+              label: t("nav.settings"),
+              icon: IconSettings,
+            },
           ],
     [isSuperAdmin, t],
   );

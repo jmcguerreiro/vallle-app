@@ -1,5 +1,5 @@
-import { Controller } from 'react-hook-form'
-import ReactSelect from 'react-select'
+import { Controller } from "react-hook-form";
+import ReactSelect from "react-select";
 
 /**
  * Component: Select
@@ -30,12 +30,12 @@ const Select = ({
   formatOptionLabel,
 }) => {
   // Derived State
-  const rules = {}
+  const rules = {};
 
-  if (typeof required === 'string') {
-    rules.required = required
+  if (typeof required === "string") {
+    rules.required = required;
   } else if (required === true) {
-    rules.required = `${label || name} is required`
+    rules.required = `${label || name} is required`;
   }
 
   // Render
@@ -66,7 +66,7 @@ const Select = ({
       />
       {error && <p className="c-form__field-error">{error.message}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default Select
+export default Select;

@@ -1,0 +1,21 @@
+.p-company {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.p-company__loading,
+.p-company__error {
+  margin: auto;
+}
+
+.p-company-users {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.p-company-users__loading,
+.p-company-users__error {
+  margin: auto;
+}

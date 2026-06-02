@@ -4,6 +4,15 @@
   width: 100%;
 }
 
+.p-vallle-edit__loading,
+.p-vallle-edit__error {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: $spacing-8 0;
+}
+
 .p-vallle-edit__hero {
   align-items: center;
   display: flex;

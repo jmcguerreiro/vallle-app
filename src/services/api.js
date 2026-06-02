@@ -5,7 +5,7 @@
  * Returns `{ data }` on success, throws on error.
  */
 
-let activeStoreId = null
+let activeStoreId = null;
 
 /**
  * Sets the active store ID that will be sent with every API request.
@@ -13,8 +13,8 @@ let activeStoreId = null
  * @param {string|null} storeId
  */
 export const setApiStoreId = (storeId) => {
-  activeStoreId = storeId
-}
+  activeStoreId = storeId;
+};
 
 /**
  * Makes a request to the API and returns the parsed JSON body.
@@ -23,30 +23,30 @@ export const setApiStoreId = (storeId) => {
  * @returns {Promise<Object>} Parsed response body
  */
 export const api = async (path, options = {}) => {
-  const headers = { 'Content-Type': 'application/json' }
+  const headers = { "Content-Type": "application/json" };
 
   if (activeStoreId) {
-    headers['X-Store-Id'] = activeStoreId
+    headers["X-Store-Id"] = activeStoreId;
   }
 
   const response = await fetch(path, {
-    credentials: 'same-origin',
+    credentials: "same-origin",
     headers,
     ...options,
     body: options.body ? JSON.stringify(options.body) : undefined,
-  })
+  });
 
-  const body = await response.json()
+  const body = await response.json();
 
   if (!response.ok) {
-    const error = new Error(body?.error?.message || 'Request failed')
-    error.code = body?.error?.code || 'UNKNOWN'
-    error.status = response.status
-    throw error
+    const error = new Error(body?.error?.message || "Request failed");
+    error.code = body?.error?.code || "UNKNOWN";
+    error.status = response.status;
+    throw error;
   }
 
-  return body
-}
+  return body;
+};
 
 /**
  * GET helper.
@@ -55,7 +55,7 @@ export const api = async (path, options = {}) => {
  * @param {AbortSignal} [options.signal]
  * @returns {Promise<Object>}
  */
-export const get = (path, { signal } = {}) => api(path, { signal })
+export const get = (path, { signal } = {}) => api(path, { signal });
 
 /**
  * POST helper.
@@ -66,7 +66,7 @@ export const get = (path, { signal } = {}) => api(path, { signal })
  * @returns {Promise<Object>}
  */
 export const post = (path, body, { signal } = {}) =>
-  api(path, { method: 'POST', body, signal })
+  api(path, { method: "POST", body, signal });
 
 /**
  * PUT helper.
@@ -77,7 +77,7 @@ export const post = (path, body, { signal } = {}) =>
  * @returns {Promise<Object>}
  */
 export const put = (path, body, { signal } = {}) =>
-  api(path, { method: 'PUT', body, signal })
+  api(path, { method: "PUT", body, signal });
 
 /**
  * PATCH helper.
@@ -88,4 +88,4 @@ export const put = (path, body, { signal } = {}) =>
  * @returns {Promise<Object>}
  */
 export const patch = (path, body, { signal } = {}) =>
-  api(path, { method: 'PATCH', body, signal })
+  api(path, { method: "PATCH", body, signal });

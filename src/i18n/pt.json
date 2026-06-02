@@ -345,14 +345,12 @@
           }
         },
         "error": {
-          "generic": "Não foi possível carregar os utilizadores.",
           "loadFailed": "Não foi possível carregar os dados do utilizador.",
           "emailTaken": "Este email já está a ser utilizado."
         }
       },
       "success": "Dados da empresa atualizados com sucesso!",
       "error": {
-        "loadFailed": "Não foi possível carregar os dados da empresa.",
         "generic": "Não foi possível atualizar os dados da empresa. Tente novamente."
       }
     },

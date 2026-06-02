@@ -8,11 +8,11 @@
  * @param {string} [props.className] - Additional CSS class
  * @returns {JSX.Element}
  */
-const Fieldset = ({ legend, children, className = '' }) => (
-  <fieldset className={`c-form__fieldset${className ? ` ${className}` : ''}`}>
+const Fieldset = ({ legend, children, className = "" }) => (
+  <fieldset className={`c-form__fieldset${className ? ` ${className}` : ""}`}>
     <legend className="c-form__fieldset-legend">{legend}</legend>
     {children}
   </fieldset>
-)
+);
 
-export default Fieldset
+export default Fieldset;

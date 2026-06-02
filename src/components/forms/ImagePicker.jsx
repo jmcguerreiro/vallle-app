@@ -1,4 +1,4 @@
-import { Controller } from 'react-hook-form'
+import { Controller } from "react-hook-form";
 
 /**
  * Component: ImagePicker
@@ -14,29 +14,20 @@ import { Controller } from 'react-hook-form'
  * @param {Object} [props.error] - Field error object from react-hook-form
  * @returns {JSX.Element}
  */
-const ImagePicker = ({
-  name,
-  label,
-  images,
-  control,
-  required,
-  error,
-}) => {
+const ImagePicker = ({ name, label, images, control, required, error }) => {
   // Derived State
-  const rules = {}
+  const rules = {};
 
-  if (typeof required === 'string') {
-    rules.required = required
+  if (typeof required === "string") {
+    rules.required = required;
   } else if (required === true) {
-    rules.required = `${label || name} is required`
+    rules.required = `${label || name} is required`;
   }
 
   // Render
   return (
     <div className="c-form__field">
-      {label && (
-        <label className="c-form__field-label">{label}</label>
-      )}
+      {label && <label className="c-form__field-label">{label}</label>}
       <Controller
         control={control}
         name={name}
@@ -47,7 +38,7 @@ const ImagePicker = ({
                 key={image.value}
                 aria-label={image.alt}
                 aria-pressed={value === image.value}
-                className={`c-image-picker__item${value === image.value ? ' c-image-picker__item--selected' : ''}`}
+                className={`c-image-picker__item${value === image.value ? " c-image-picker__item--selected" : ""}`}
                 onClick={() => onChange(image.value)}
                 type="button"
               >
@@ -64,7 +55,7 @@ const ImagePicker = ({
       />
       {error && <p className="c-form__field-error">{error.message}</p>}
     </div>
-  )
-}
+  );
+};
 
-export default ImagePicker
+export default ImagePicker;

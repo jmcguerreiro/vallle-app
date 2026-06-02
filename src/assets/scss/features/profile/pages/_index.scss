@@ -1,0 +1,7 @@
+.p-profile__loading,
+.p-profile__error {
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  padding: $spacing-8 0;
+}

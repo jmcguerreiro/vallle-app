@@ -1,6 +1,6 @@
-import { useContext } from 'react'
+import { useContext } from "react";
 
-import { AuthContext } from '@/contexts/auth'
+import { AuthContext } from "@/contexts/auth";
 
 /**
  * Hook: useAuth
@@ -9,9 +9,9 @@ import { AuthContext } from '@/contexts/auth'
  * @returns {{ user: Object|null, setUser: Function, isLoading: boolean, login: Function, logout: Function, activeStore: Object|null, selectStore: Function, needsStoreSelection: boolean, isAuthenticated: boolean, isSuperAdmin: boolean, isAdmin: boolean }}
  */
 export const useAuth = () => {
-  const context = useContext(AuthContext)
+  const context = useContext(AuthContext);
   if (!context) {
-    throw new Error('useAuth must be used within an AuthProvider')
+    throw new Error("useAuth must be used within an AuthProvider");
   }
-  return context
-}
+  return context;
+};

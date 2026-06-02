@@ -1,0 +1,10 @@
+.p-admin-companies {
+  display: flex;
+  flex: 1;
+  width: 100%;
+}
+
+.p-admin-companies__loading,
+.p-admin-companies__error {
+  margin: auto;
+}

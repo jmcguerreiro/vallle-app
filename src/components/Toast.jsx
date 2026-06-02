@@ -1,13 +1,13 @@
-import { useCallback } from 'react'
+import { useCallback } from "react";
 
-import { useToast } from '@/hooks/useToast'
-import { IconAlertCircle, IconCheck, IconInfo, IconX } from '@/utils/icons'
+import { useToast } from "@/hooks/useToast";
+import { IconAlertCircle, IconCheck, IconInfo, IconX } from "@/utils/icons";
 
 const ICON_MAP = {
   success: IconCheck,
   error: IconAlertCircle,
   info: IconInfo,
-}
+};
 
 /**
  * Component: Toast
@@ -17,26 +17,26 @@ const ICON_MAP = {
  */
 const Toast = () => {
   // Hooks
-  const { toasts, removeToast } = useToast()
+  const { toasts, removeToast } = useToast();
 
   // Handlers
-  const handleClose = useCallback((id) => {
-    removeToast(id)
-  }, [removeToast])
+  const handleClose = useCallback(
+    (id) => {
+      removeToast(id);
+    },
+    [removeToast],
+  );
 
   // Render
-  if (toasts.length === 0) return null
+  if (toasts.length === 0) return null;
 
   return (
     <div className="c-toast-container">
       {toasts.map((toast) => {
-        const Icon = ICON_MAP[toast.type] || IconInfo
+        const Icon = ICON_MAP[toast.type] || IconInfo;
 
         return (
-          <div
-            key={toast.id}
-            className={`c-toast c-toast--${toast.type}`}
-          >
+          <div key={toast.id} className={`c-toast c-toast--${toast.type}`}>
             <Icon className="c-toast__icon" size={18} />
             <span className="c-toast__message">{toast.message}</span>
             <button
@@ -47,10 +47,10 @@ const Toast = () => {
               <IconX size={16} />
             </button>
           </div>
-        )
+        );
       })}
     </div>
-  )
-}
+  );
+};
 
-export default Toast
+export default Toast;

@@ -35,9 +35,11 @@
   text-align: center;
 }
 
+.p-vallle-view__loading,
 .p-vallle-view__error {
-  @include font-size(sm);
-
-  color: $color-danger;
-  text-align: center;
+  align-items: center;
+  display: flex;
+  flex-direction: column;
+  margin: auto;
+  padding: $spacing-8 0;
 }
