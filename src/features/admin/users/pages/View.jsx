@@ -2,6 +2,7 @@ import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
 import { Link, useLocation, useNavigate, useParams } from 'react-router-dom'
 
+import Badge from '@/components/Badge'
 import { adminCompanyPath, adminUserEditPath } from '@/constants/routes'
 import { useAuth } from '@/hooks/useAuth'
 import { useMain } from '@/hooks/useMain'
@@ -9,6 +10,14 @@ import { useModal } from '@/hooks/useModal'
 import { useToast } from '@/hooks/useToast'
 import { get, put } from '@/services/api'
 import { formatDate } from '@/utils/dates'
+
+/**
+ * Maps user status values to Badge variants. Statuses without a
+ * mapping render with the neutral base style.
+ */
+const STATUS_VARIANTS = {
+  active: 'success',
+}
 
 /**
  * Component: AdminUserView
@@ -113,15 +122,13 @@ const AdminUserView = () => {
         </div>
         <div className="c-admin-detail__row">
           <span className="c-admin-detail__label">{t('features.admin.users.list.role')}</span>
-          <span className={`c-admin-badge c-admin-badge--role-${user.role}`}>
-            {t(`features.admin.users.list.role_${user.role}`)}
-          </span>
+          <Badge>{t(`features.admin.users.list.role_${user.role}`)}</Badge>
         </div>
         <div className="c-admin-detail__row">
           <span className="c-admin-detail__label">{t('features.admin.users.list.status')}</span>
-          <span className={`c-admin-badge c-admin-badge--${user.status}`}>
+          <Badge variant={STATUS_VARIANTS[user.status]}>
             {t(`features.admin.users.list.${user.status}`)}
-          </span>
+          </Badge>
         </div>
         <div className="c-admin-detail__row">
           <span className="c-admin-detail__label">{t('features.admin.users.list.createdAt')}</span>
@@ -138,9 +145,9 @@ const AdminUserView = () => {
             {user.stores.map((s) => (
               <li key={s.store_id} className="c-admin-company-users__item">
                 <Link
-                  to={adminCompanyPath(s.store_id)}
-                  state={{ backgroundLocation: location.state?.backgroundLocation || location }}
                   className="c-admin-company-users__link"
+                  state={{ backgroundLocation: location.state?.backgroundLocation || location }}
+                  to={adminCompanyPath(s.store_id)}
                 >
                   <span className="c-admin-company-users__name">{s.store_name}</span>
                 </Link>

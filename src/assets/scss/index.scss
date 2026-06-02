@@ -18,6 +18,7 @@
 @import "./components/loader";
 @import "./components/stat";
 @import "./components/store-select";
+@import "./components/tabs";
 @import "./components/toast";
 @import "./components/vallles";
 
@@ -40,6 +41,7 @@
 @import "./features/auth/pages/auth-reset-password";
 @import "./features/auth/pages/auth-select-store";
 
+@import "./features/admin/dashboard/pages/index";
 @import "./features/stats/pages/index";
 @import "./features/vallles/components/vallle-code-input";
 
@@ -156,13 +158,13 @@ body {
 }
 
 .drawer__header-title {
-  @include font-size(lg);
+  @include font-size(xl);
   font-weight: $font-weight-bold;
   color: $text-color-highlight;
 }
 
 .drawer__header-description {
-  @include font-size(sm);
+  @include font-size(lg);
   color: $text-color-muted;
   margin: 0;
 }
@@ -238,57 +240,6 @@ body {
   text-align: center;
   margin-top: var(--space-md);
   font-size: 0.875rem;
-}
-
-/* ─── Settings tabs ──────────────────────────────────────────── */
-
-.c-settings {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-lg);
-  width: 100%;
-}
-
-.c-settings__tabs {
-  display: flex;
-  gap: var(--space-xs);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.c-settings__tab {
-  background: none;
-  border: none;
-  border-bottom: 2px solid transparent;
-  color: var(--color-text-muted);
-  cursor: pointer;
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-  font-weight: 400;
-  margin-bottom: -1px;
-  padding: var(--space-sm) var(--space-md);
-  text-decoration: none;
-  transition:
-    border-color 0.15s,
-    color 0.15s;
-}
-
-.c-settings__tab:hover {
-  color: var(--color-text);
-}
-
-.c-settings__tab--active {
-  border-bottom-color: var(--color-primary);
-  color: var(--color-primary);
-  font-weight: 500;
-}
-
-.c-settings__tab--active:hover {
-  color: var(--color-primary);
-}
-
-.c-settings__content {
-  flex: 1;
-  min-width: 0;
 }
 
 /* ─── Company users ─────────────────────────────────────────── */

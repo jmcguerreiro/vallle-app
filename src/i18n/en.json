@@ -312,7 +312,8 @@
           "active": "Active",
           "inactive": "Inactive",
           "role_user": "User",
-          "role_admin": "Admin"
+          "role_admin": "Admin",
+          "role_super_admin": "Super Admin"
         },
         "form": {
           "name": "Name",

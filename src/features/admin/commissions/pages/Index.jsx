@@ -61,11 +61,13 @@ const AdminCommissionsIndex = () => {
     {
       accessorKey: 'store_name',
       header: t('features.admin.commissions.company'),
+      meta: { tdClassName: 'c-datatable__td--text-highlight' },
     },
     {
       accessorKey: 'total_vallle_amount',
       header: t('features.admin.commissions.vallleSales'),
       cell: ({ getValue }) => formatCurrency(getValue()),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'total_commission',
@@ -76,6 +78,7 @@ const AdminCommissionsIndex = () => {
       accessorKey: 'total_paid',
       header: t('features.admin.commissions.totalPaid'),
       cell: ({ getValue }) => formatCurrency(getValue()),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'total_unpaid',
@@ -93,6 +96,7 @@ const AdminCommissionsIndex = () => {
       accessorKey: 'last_paid_at',
       header: t('features.admin.commissions.lastPaid'),
       cell: ({ getValue }) => getValue() ? formatDate(getValue()) : '—',
+      meta: { hideOnMobile: true },
     },
   ], [t])
 

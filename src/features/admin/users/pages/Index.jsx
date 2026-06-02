@@ -4,6 +4,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useQuery } from '@tanstack/react-query'
 
+import Badge from '@/components/Badge'
 import Datatable from '@/components/Datatable'
 import FilterSelect from '@/components/forms/FilterSelect'
 import { ROUTES, adminUserPath } from '@/constants/routes'
@@ -12,6 +13,14 @@ import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatDateTime } from '@/utils/dates'
 import { IconPlus } from '@/utils/icons'
+
+/**
+ * Maps user status values to Badge variants. Statuses without a
+ * mapping render with the neutral base style.
+ */
+const STATUS_VARIANTS = {
+  active: 'success',
+}
 
 /**
  * Component: AdminUsersIndex
@@ -76,38 +85,42 @@ const AdminUsersIndex = () => {
     {
       accessorKey: 'name',
       header: t('features.admin.users.list.name'),
+      meta: { tdClassName: 'c-datatable__td--text-highlight' },
     },
     {
       accessorKey: 'email',
       header: t('features.admin.users.list.email'),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'role',
       header: t('features.admin.users.list.role'),
+      enableSorting: false,
       cell: ({ getValue }) => (
-        <span className={`c-admin-badge c-admin-badge--role-${getValue()}`}>
-          {t(`features.admin.users.list.role_${getValue()}`)}
-        </span>
+        <Badge>{t(`features.admin.users.list.role_${getValue()}`)}</Badge>
       ),
     },
     {
       id: 'stores',
       header: t('features.admin.users.list.companies'),
+      enableSorting: false,
       cell: ({ row }) => {
         const stores = row.original.stores ?? []
         if (stores.length === 0) return '—'
         return stores.map((s) => s.store_name).join(', ')
       },
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'status',
       header: t('features.admin.users.list.status'),
+      enableSorting: false,
       cell: ({ getValue }) => {
         const status = getValue()
         return (
-          <span className={`c-admin-badge c-admin-badge--${status}`}>
+          <Badge variant={STATUS_VARIANTS[status]}>
             {t(`features.admin.users.list.${status}`)}
-          </span>
+          </Badge>
         )
       },
     },
@@ -115,6 +128,7 @@ const AdminUsersIndex = () => {
       accessorKey: 'updated_at',
       header: t('features.admin.users.list.updatedAt'),
       cell: ({ getValue }) => formatDateTime(getValue()),
+      meta: { hideOnMobile: true },
     },
   ], [t])
 

@@ -11,51 +11,6 @@
   margin-top: var(--space-sm);
 }
 
-/* ─── Admin badge ──────────────────────────────────────────────── */
-
-.c-admin-badge {
-  display: inline-block;
-  padding: 2px var(--space-sm);
-  border-radius: var(--radius-sm);
-  font-size: 0.75rem;
-  font-weight: 500;
-}
-
-.c-admin-badge--active {
-  background: rgba(122, 155, 118, 0.15);
-  color: var(--color-sage);
-}
-
-.c-admin-badge--inactive {
-  background: rgba(196, 101, 58, 0.1);
-  color: var(--color-primary);
-}
-
-.c-admin-badge--suspended {
-  background: rgba(212, 165, 116, 0.2);
-  color: #8a6520;
-}
-
-.c-admin-badge--paid {
-  background: rgba(122, 155, 118, 0.15);
-  color: var(--color-sage);
-}
-
-.c-admin-badge--unpaid {
-  background: rgba(212, 165, 116, 0.2);
-  color: #b07d3a;
-}
-
-.c-admin-badge--role-admin {
-  background: rgba(44, 37, 32, 0.08);
-  color: var(--color-text-muted);
-}
-
-.c-admin-badge--role-super_admin {
-  background: rgba(196, 101, 58, 0.12);
-  color: var(--color-primary);
-}
-
 /* ─── Admin stat cards ─────────────────────────────────────────── */
 
 .c-admin-stats-grid {
@@ -67,34 +22,6 @@
 
 .c-admin-stats-grid--3 {
   grid-template-columns: repeat(3, 1fr);
-}
-
-.c-admin-stat {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  padding: var(--space-md) var(--space-lg);
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.c-admin-stat--highlight {
-  border-color: var(--color-honey);
-  background: rgba(212, 165, 116, 0.06);
-}
-
-.c-admin-stat__label {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-}
-
-.c-admin-stat__value {
-  font-size: 1.375rem;
-  font-weight: 500;
-  color: var(--color-text);
 }
 
 /* ─── Admin detail rows ────────────────────────────────────────── */

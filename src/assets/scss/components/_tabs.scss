@@ -1,0 +1,43 @@
+.c-tabs {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-6;
+  width: 100%;
+}
+
+.c-tabs__list {
+  border-bottom: 1px solid $color-parchment;
+  display: flex;
+  gap: $spacing-3;
+  justify-content: center;
+}
+
+.c-tabs__tab {
+  border-bottom: 1px solid transparent;
+  color: $text-color-muted;
+  cursor: pointer;
+  font-weight: $font-weight-bold;
+  margin-bottom: -1px;
+  padding: $spacing-3;
+  transition: $transition-normal;
+
+  &:hover {
+    color: $text-color;
+  }
+
+  &.is-active {
+    border-bottom-color: $color-terracota;
+    color: $text-color-highlight;
+  }
+}
+
+.c-tabs__panel {
+  flex: 1;
+  min-width: 0;
+}
+
+@include screen(md) {
+  .c-tabs__list {
+    justify-content: flex-start;
+  }
+}

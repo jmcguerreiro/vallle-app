@@ -24,6 +24,10 @@
   color: $text-color-muted;
 }
 
+.c-card__header-action {
+  margin-left: auto;
+}
+
 .c-card__body {
   padding: $spacing-6;
 }

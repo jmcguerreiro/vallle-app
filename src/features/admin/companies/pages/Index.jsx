@@ -4,16 +4,34 @@ import { useLocation, useNavigate } from 'react-router-dom'
 
 import { useQuery } from '@tanstack/react-query'
 
+import Badge from '@/components/Badge'
 import Datatable from '@/components/Datatable'
 import FilterSelect from '@/components/forms/FilterSelect'
 import { COMPANY_CATEGORIES } from '@/constants/company-categories'
-import { ROUTES, adminCompanyEditPath, adminCompanyPath } from '@/constants/routes'
+import { ROUTES, adminCompanyPath } from '@/constants/routes'
 import { useMain } from '@/hooks/useMain'
 import { useToast } from '@/hooks/useToast'
 import { get } from '@/services/api'
 import { formatCurrency } from '@/utils/currency'
 import { formatDateTime } from '@/utils/dates'
 import { IconPlus } from '@/utils/icons'
+
+/**
+ * Maps company status values to Badge variants. Statuses without a
+ * mapping render with the neutral base style.
+ */
+const STATUS_VARIANTS = {
+  active: 'success',
+  suspended: 'warning',
+}
+
+/**
+ * Maps commission payment states to Badge variants.
+ */
+const COMMISSION_VARIANTS = {
+  paid: 'success',
+  unpaid: 'warning',
+}
 
 /**
  * Component: AdminCompaniesIndex
@@ -79,48 +97,54 @@ const AdminCompaniesIndex = () => {
     {
       accessorKey: 'name',
       header: t('features.admin.companies.list.name'),
+      meta: { tdClassName: 'c-datatable__td--text-highlight' },
     },
     {
       accessorKey: 'category',
       header: t('features.admin.companies.list.category'),
       cell: ({ getValue }) => getValue() || '—',
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'vallle_count',
       header: t('features.admin.companies.list.vallles'),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'total_revenue',
       header: t('features.admin.companies.list.revenue'),
       cell: ({ getValue }) => formatCurrency(getValue()),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'total_commission',
       header: t('features.admin.companies.list.commission'),
       cell: ({ getValue }) => formatCurrency(getValue()),
+      meta: { hideOnMobile: true },
     },
     {
       accessorKey: 'unpaid_commission',
       header: t('features.admin.companies.list.commissionStatus'),
+      enableSorting: false,
       cell: ({ getValue }) => {
-        const hasUnpaid = getValue() > 0
-        const status = hasUnpaid ? 'unpaid' : 'paid'
+        const status = getValue() > 0 ? 'unpaid' : 'paid'
         return (
-          <span className={`c-admin-badge c-admin-badge--${status}`}>
+          <Badge variant={COMMISSION_VARIANTS[status]}>
             {t(`features.admin.companies.list.${status}`)}
-          </span>
+          </Badge>
         )
       },
     },
     {
       accessorKey: 'status',
       header: t('features.admin.companies.list.status'),
+      enableSorting: false,
       cell: ({ getValue }) => {
         const status = getValue()
         return (
-          <span className={`c-admin-badge c-admin-badge--${status}`}>
+          <Badge variant={STATUS_VARIANTS[status]}>
             {t(`features.admin.companies.list.${status}`)}
-          </span>
+          </Badge>
         )
       },
     },
@@ -128,6 +152,7 @@ const AdminCompaniesIndex = () => {
       accessorKey: 'updated_at',
       header: t('features.admin.companies.list.updatedAt'),
       cell: ({ getValue }) => formatDateTime(getValue()),
+      meta: { hideOnMobile: true },
     },
   ], [t])
 

@@ -102,7 +102,9 @@ const Datatable = ({
         pagination: { pageIndex: serverPagination.pageIndex, pageSize },
       }),
     },
-    onGlobalFilterChange: isServerSearch ? setSearchInput : setLocalGlobalFilter,
+    onGlobalFilterChange: isServerSearch
+      ? setSearchInput
+      : setLocalGlobalFilter,
     onSortingChange: handleSortingChange,
     getCoreRowModel: getCoreRowModel(),
     getFilteredRowModel:
@@ -179,19 +181,6 @@ const Datatable = ({
   return (
     <div className={`c-datatable${className ? ` ${className}` : ""}`}>
       <div className="c-datatable__toolbar">
-        <div className="c-datatable__toolbar-search">
-          <IconSearch className="c-datatable__toolbar-search-icon" size={16} />
-          <input
-            className="c-datatable__toolbar-search-input"
-            onChange={handleSearchChange}
-            placeholder={t("common.search")}
-            type="text"
-            value={globalFilter}
-          />
-        </div>
-        {filters && (
-          <div className="c-datatable__toolbar-filters">{filters}</div>
-        )}
         {actions && actions.length > 0 && (
           <div className="c-datatable__toolbar-actions">
             {actions.map(({ label, icon: Icon, onClick, skin }) => (
@@ -206,6 +195,19 @@ const Datatable = ({
               />
             ))}
           </div>
+        )}
+        <div className="c-datatable__toolbar-search">
+          <IconSearch className="c-datatable__toolbar-search-icon" size={16} />
+          <input
+            className="c-datatable__toolbar-search-input"
+            onChange={handleSearchChange}
+            placeholder={t("common.search")}
+            type="text"
+            value={globalFilter}
+          />
+        </div>
+        {filters && (
+          <div className="c-datatable__toolbar-filters">{filters}</div>
         )}
       </div>
 

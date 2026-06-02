@@ -3,6 +3,7 @@ export {
   Archive as IconArchive,
   ArrowLeft as IconArrowLeft,
   ArrowRight as IconArrowRight,
+  Building2 as IconBuilding,
   CalendarDays as IconCalendarDays,
   ChartNoAxesCombined as IconChart,
   Check as IconCheck,
@@ -12,6 +13,7 @@ export {
   CircleAlert as IconCircleAlert,
   CircleHelp as IconCircleHelp,
   EllipsisVertical as IconEllipsisVertical,
+  HandCoins as IconHandCoins,
   HouseHeart as IconHouseHeart,
   Info as IconInfo,
   Loader2 as IconLoader,
@@ -29,6 +31,7 @@ export {
   Search as IconSearch,
   Settings2 as IconSettings,
   Store as IconStore,
+  UserPlus as IconUserPlus,
   Users as IconUsers,
   X as IconX,
 } from 'lucide-react'

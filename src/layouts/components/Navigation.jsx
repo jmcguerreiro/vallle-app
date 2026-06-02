@@ -12,10 +12,11 @@ import { NavLink, useLocation } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import {
+  IconBuilding,
   IconChart,
+  IconHandCoins,
   IconHouseHeart,
   IconMailbox,
-  IconReceiptText,
   IconSettings,
   IconUsers,
 } from "@/utils/icons";
@@ -47,7 +48,7 @@ const Navigation = () => {
             {
               to: ROUTES.ADMIN_COMPANIES,
               label: t("nav.adminCompanies"),
-              icon: IconSettings,
+              icon: IconBuilding,
             },
             {
               to: ROUTES.ADMIN_USERS,
@@ -57,7 +58,7 @@ const Navigation = () => {
             {
               to: ROUTES.ADMIN_COMMISSIONS,
               label: t("nav.adminCommissions"),
-              icon: IconReceiptText,
+              icon: IconHandCoins,
             },
           ]
         : [

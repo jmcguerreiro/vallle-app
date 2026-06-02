@@ -1,0 +1,58 @@
+.p-admin-dashboard {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  gap: $spacing-8;
+  width: 100%;
+}
+
+.p-admin-dashboard__loading,
+.p-admin-dashboard__error {
+  margin: auto;
+}
+
+.p-admin-dashboard__cards {
+  display: grid;
+  gap: $spacing-4;
+  grid-template-columns: repeat(3, 1fr);
+
+  @media (max-width: $screen-md) {
+    grid-template-columns: 1fr;
+  }
+}
+
+.p-admin-dashboard__year-nav {
+  align-items: center;
+  display: flex;
+  gap: $spacing-2;
+}
+
+.p-admin-dashboard__year-btn {
+  align-items: center;
+  background: none;
+  border: solid 1px $color-parchment;
+  border-radius: 50%;
+  color: $icon-color;
+  cursor: pointer;
+  display: flex;
+  height: to-rem(28);
+  justify-content: center;
+  transition: $transition-normal;
+  width: to-rem(28);
+
+  &:hover:not(:disabled) {
+    border-color: $color-driftwood;
+  }
+
+  &:disabled {
+    cursor: not-allowed;
+    opacity: 0.4;
+  }
+}
+
+.p-admin-dashboard__year-label {
+  color: $text-color-highlight;
+  font-weight: $font-weight-bold;
+  min-width: to-rem(48);
+  text-align: center;
+}

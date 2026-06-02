@@ -1,10 +1,12 @@
 import { useCallback, useEffect, useState } from 'react'
 import { useTranslation } from 'react-i18next'
-import { useNavigate, useParams } from 'react-router-dom'
+import { useParams } from 'react-router-dom'
 
-import Button from '@/components/Button'
 import { useQueryClient } from '@tanstack/react-query'
 
+import Badge from '@/components/Badge'
+import Button from '@/components/Button'
+import Stat from '@/components/Stat'
 import { useMain } from '@/hooks/useMain'
 import { useModal } from '@/hooks/useModal'
 import { useToast } from '@/hooks/useToast'
@@ -33,7 +35,6 @@ const AdminCommissionsCompanyDetail = () => {
   // Hooks
   const { t } = useTranslation()
   const { storeId } = useParams()
-  const navigate = useNavigate()
   const { setHeader: setMainHeader } = useMain()
   const { setHeader: setModalHeader, isModal } = useModal()
   const queryClient = useQueryClient()
@@ -100,18 +101,18 @@ const AdminCommissionsCompanyDetail = () => {
   return (
     <div className="c-admin-commissions-detail">
       <div className="c-admin-stats-grid c-admin-stats-grid--3">
-        <div className="c-admin-stat">
-          <span className="c-admin-stat__label">{t('features.admin.commissions.totalCommission')}</span>
-          <span className="c-admin-stat__value">{formatCurrency(summary.total_commission)}</span>
-        </div>
-        <div className="c-admin-stat">
-          <span className="c-admin-stat__label">{t('features.admin.commissions.totalPaid')}</span>
-          <span className="c-admin-stat__value">{formatCurrency(summary.total_paid)}</span>
-        </div>
-        <div className={`c-admin-stat${summary.total_unpaid > 0 ? ' c-admin-stat--highlight' : ''}`}>
-          <span className="c-admin-stat__label">{t('features.admin.commissions.outstanding')}</span>
-          <span className="c-admin-stat__value">{formatCurrency(summary.total_unpaid)}</span>
-        </div>
+        <Stat
+          label={t('features.admin.commissions.totalCommission')}
+          value={formatCurrency(summary.total_commission)}
+        />
+        <Stat
+          label={t('features.admin.commissions.totalPaid')}
+          value={formatCurrency(summary.total_paid)}
+        />
+        <Stat
+          label={t('features.admin.commissions.outstanding')}
+          value={formatCurrency(summary.total_unpaid)}
+        />
       </div>
 
       {months.length === 0 ? (
@@ -137,13 +138,13 @@ const AdminCommissionsCompanyDetail = () => {
                   <td>{formatCurrency(month.total_commission)}</td>
                   <td>
                     {isPaid ? (
-                      <span className="c-admin-badge c-admin-badge--paid">
+                      <Badge variant="success">
                         {t('features.admin.commissions.paid')}
-                      </span>
+                      </Badge>
                     ) : (
-                      <span className="c-admin-badge c-admin-badge--unpaid">
+                      <Badge variant="warning">
                         {t('features.admin.commissions.unpaid')} ({month.unpaid_count})
-                      </span>
+                      </Badge>
                     )}
                   </td>
                   <td className="c-admin-table__actions">
