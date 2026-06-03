@@ -8,6 +8,7 @@ import { useMutation, useQueryClient } from "@tanstack/react-query";
 import Button from "@/components/Button";
 import { ROUTES, valllePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { useConfetti } from "@/hooks/useConfetti";
 import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -29,6 +30,7 @@ const VallleCreate = () => {
   const { setHeader: setMainHeader } = useMain();
   const { setHeader: setModalHeader, isModal } = useModal();
   const { addToast } = useToast();
+  const { fire: fireConfetti } = useConfetti();
   const queryClient = useQueryClient();
 
   const {
@@ -68,7 +70,8 @@ const VallleCreate = () => {
     onSuccess: ({ data: vallle }) => {
       queryClient.invalidateQueries({ queryKey: ["vallles"] });
       queryClient.invalidateQueries({ queryKey: ["stats"] });
-      addToast(t("features.vallles.create.success"), "success");
+      //addToast(t("features.vallles.create.success"), "success");
+      fireConfetti();
       const backgroundLocation = location.state?.backgroundLocation || location;
       navigate(valllePath(vallle.id), {
         replace: true,

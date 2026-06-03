@@ -40,7 +40,7 @@
   transition: $transition-normal;
   width: to-rem(28);
 
-  &:hover:not(:disabled) {
+  @include hover(":not(:disabled)") {
     border-color: $color-driftwood;
   }
 

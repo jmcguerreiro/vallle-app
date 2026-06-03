@@ -22,7 +22,6 @@ const SelectStore = () => {
   // Handlers
   const handleSelect = useCallback(
     (store) => {
-      // selectStore persists the choice and hard-reloads into the app.
       selectStore(store);
     },
     [selectStore],
@@ -30,7 +29,13 @@ const SelectStore = () => {
 
   // Render
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="p-auth-select-store">
+        <div className="p-auth-select-store__loading">
+          <Loader />
+        </div>
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

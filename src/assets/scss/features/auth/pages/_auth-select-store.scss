@@ -1,7 +1,13 @@
 .p-auth-select-store {
+  display: flex;
+  flex-direction: column;
   margin: auto;
   max-width: $screen-1xs;
   width: 100%;
+}
+
+.p-auth-select-store__loading {
+  margin: auto;
 }
 
 .p-auth-select-store__header {

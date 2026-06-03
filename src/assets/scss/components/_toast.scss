@@ -65,7 +65,7 @@
 		padding: $spacing-1;
 		transition: color $transition-normal;
 
-		&:hover {
+		@include hover {
 			color: $text-color-highlight;
 		}
 	}

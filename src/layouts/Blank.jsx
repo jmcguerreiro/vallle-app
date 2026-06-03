@@ -1,8 +1,5 @@
-import { Outlet, useLocation } from "react-router-dom";
-
-import { ROUTES } from "@/constants/routes";
-import Background from "@/layouts/components/Background";
-import BackTo from "@/layouts/components/BackTo";
+import Background from "./components/Background";
+import Main from "./components/Main";
 
 /**
  * Layout: Blank
@@ -12,19 +9,10 @@ import BackTo from "@/layouts/components/BackTo";
  * @returns {JSX.Element}
  */
 const BlankLayout = () => {
-  // Hooks
-  const location = useLocation();
-
-  // Derived State
-  const showBackTo = location.pathname === ROUTES.LOGIN;
-
   // Render
   return (
     <div className="l-blank">
-      {showBackTo && <BackTo />}
-      <main className="s-main s-main--has-padding">
-        <Outlet />
-      </main>
+      <Main />
       <Background />
     </div>
   );

@@ -16,13 +16,22 @@
   transition: $transition-normal;
   width: 100%;
 
-  &:hover {
+  @include hover {
     box-shadow: 0 12px 12px -8px rgba($color-black, 0.1);
 
     .c-store-select__option-arrow {
       color: $color-terracota;
       transform: translateX(12.5%);
     }
+  }
+
+  @include focus-visible {
+    border-color: transparent;
+    outline: solid 2px $color-driftwood;
+  }
+
+  @include active {
+    transform: scale(0.98);
   }
 }
 

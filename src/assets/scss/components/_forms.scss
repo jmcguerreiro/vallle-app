@@ -5,13 +5,11 @@
 }
 
 .c-form__error {
-  @include font-size(sm);
-  border: dashed 1px $color-ash;
+  background: rgba($color-danger, 0.1);
   border-radius: $border-radius-lg;
-  color: $text-color-highlight;
+  color: $color-danger;
   padding: $spacing-3 $spacing-4;
   text-align: center;
-  font-weight: $font-weight-bold;
 }
 
 .c-form__fieldset-legend {
@@ -43,7 +41,7 @@
   transition: $transition-normal;
   width: 100%;
 
-  &:focus {
+  @include focus {
     border-color: $color-ash;
   }
 
@@ -120,7 +118,7 @@
   padding: $spacing-1;
   transition: background $transition-normal;
 
-  &:hover {
+  @include hover {
     background: $color-linen;
   }
 

@@ -11,7 +11,7 @@
   padding: $spacing-3 $spacing-4;
   transition: $transition-normal;
 
-  &:hover:not(:disabled) {
+  @include hover(":not(:disabled)") {
     background: darken($color-terracota, 8%);
   }
 
@@ -23,7 +23,7 @@
   &--skin-danger {
     background: $color-danger;
 
-    &:hover:not(:disabled) {
+    @include hover(":not(:disabled)") {
       background: darken($color-danger, 8%);
     }
   }
@@ -53,7 +53,7 @@
   padding: $spacing-3 $spacing-4;
   transition: $transition-normal;
 
-  &:hover:not(:disabled) {
+  @include hover(":not(:disabled)") {
     background: rgba($color-ash, 0.12);
   }
 
@@ -65,7 +65,7 @@
   &--skin-danger {
     color: $color-danger;
 
-    &:hover:not(:disabled) {
+    @include hover(":not(:disabled)") {
       background: rgba($color-danger, 0.08);
     }
   }
@@ -95,14 +95,20 @@
   transition: $transition-normal;
   width: to-rem(48);
 
-  &:hover:not(:disabled) {
+  @include hover(":not(:disabled)") {
     background: darken($color-terracota, 8%);
+
+    .c-button-icon__tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 
-  &:hover:not(:disabled) .c-button-icon__tooltip,
-  &:focus-visible:not(:disabled) .c-button-icon__tooltip {
-    opacity: 1;
-    transform: translateX(-50%) translateY(0);
+  @include focus-visible(":not(:disabled)") {
+    .c-button-icon__tooltip {
+      opacity: 1;
+      transform: translateX(-50%) translateY(0);
+    }
   }
 
   &:disabled {

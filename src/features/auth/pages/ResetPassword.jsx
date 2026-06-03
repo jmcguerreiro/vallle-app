@@ -143,12 +143,7 @@ const ResetPassword = () => {
             </FormFields>
 
             <FormActions>
-              <Button
-                className="p-auth-reset-password__submit"
-                display="block"
-                isProcessing={submitting}
-                type="submit"
-              >
+              <Button display="block" isProcessing={submitting} type="submit">
                 {t("features.resetPassword.form.submit")}
               </Button>
             </FormActions>

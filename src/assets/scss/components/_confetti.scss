@@ -1,0 +1,16 @@
+// Confetti is promoted into the top layer via the Popover API (popover="manual")
+// so it paints above native <dialog> modals and the Vaul drawer. These rules
+// reset the user-agent popover defaults (border, padding, background, centered
+// fit-content sizing) so the canvas pins flush to the full viewport. position
+// is forced because react-confetti applies an inline `position: absolute`.
+.c-confetti {
+  position: fixed !important;
+  inset: 0;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  pointer-events: none;
+  overflow: hidden;
+  z-index: 10000;
+}

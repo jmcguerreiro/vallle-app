@@ -6,8 +6,8 @@
   gap: $spacing-6;
   width: 100%;
 
-  &--has-padding {
-    padding: $spacing-12 $spacing-8;
+  &:first-child {
+    padding: $spacing-6;
   }
 }
 

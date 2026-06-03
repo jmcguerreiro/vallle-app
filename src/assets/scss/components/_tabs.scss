@@ -21,7 +21,7 @@
   padding: $spacing-3;
   transition: $transition-normal;
 
-  &:hover {
+  @include hover {
     color: $text-color;
   }
 

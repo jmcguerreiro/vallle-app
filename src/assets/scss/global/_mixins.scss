@@ -38,6 +38,42 @@
   }
 }
 
+// Apply :hover styles only on devices with a true hover-capable pointer
+// (mouse/trackpad). Prevents hover effects from sticking after a tap on
+// touch screens. Pass a modifier to extend the selector, e.g.
+// `@include hover(":not(:disabled)")`.
+@mixin hover($modifier: "") {
+  @media (hover: hover) {
+    &:hover#{$modifier} {
+      @content;
+    }
+  }
+}
+
+// Apply :focus styles. Pass a modifier to extend the selector,
+// e.g. `@include focus(":not(:disabled)")`.
+@mixin focus($modifier: "") {
+  &:focus#{$modifier} {
+    @content;
+  }
+}
+
+// Apply :focus-visible styles (keyboard/assistive focus only). Pass a
+// modifier to extend the selector, e.g. `@include focus-visible(":not(:disabled)")`.
+@mixin focus-visible($modifier: "") {
+  &:focus-visible#{$modifier} {
+    @content;
+  }
+}
+
+// Apply :active styles. Pass a modifier to extend the selector,
+// e.g. `@include active(":not(:disabled)")`.
+@mixin active($modifier: "") {
+  &:active#{$modifier} {
+    @content;
+  }
+}
+
 @mixin no-user-select {
   -ms-user-select: none;
   -webkit-user-select: none;

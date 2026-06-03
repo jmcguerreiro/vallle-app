@@ -1,8 +1,9 @@
 import { useCallback, useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import Drawer from "@/components/Drawer";
 import Modal from "@/components/Modal";
+import { ROUTES } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useModal } from "@/hooks/useModal";
 
@@ -22,29 +23,39 @@ const CLOSE_ANIMATION_MS = 350;
 const RouteModal = ({ children }) => {
   // Hooks
   const navigate = useNavigate();
+  const location = useLocation();
   const { header } = useModal();
   const isDesktop = useMediaQuery("(min-width: 1024px)");
 
   // State
   const [isOpen, setIsOpen] = useState(true);
 
+  // Derived State
+  // Opened via in-app navigation (background page behind us) vs. opened
+  // directly (no history to return to — fall back to the dashboard).
+  const hasBackground = Boolean(location.state?.backgroundLocation);
+
   // Handlers
-  const handleClose = useCallback(() => {
-    // Desktop dialogs have no exit animation, so navigate straight back. On
-    // mobile, close the drawer first and let it animate out before navigating.
-    if (isDesktop) {
+  const goBack = useCallback(() => {
+    if (hasBackground) {
       navigate(-1);
     } else {
-      setIsOpen(false);
+      navigate(ROUTES.HOME, { replace: true });
     }
-  }, [isDesktop, navigate]);
+  }, [hasBackground, navigate]);
+
+  const handleClose = useCallback(() => {
+    // Close first and let the modal/drawer animate out; the effect below
+    // navigates back once the exit animation has finished.
+    setIsOpen(false);
+  }, []);
 
   // Effects
   useEffect(() => {
     if (isOpen) return;
-    const timer = setTimeout(() => navigate(-1), CLOSE_ANIMATION_MS);
+    const timer = setTimeout(goBack, CLOSE_ANIMATION_MS);
     return () => clearTimeout(timer);
-  }, [isOpen, navigate]);
+  }, [isOpen, goBack]);
 
   // Render
   return isDesktop ? (

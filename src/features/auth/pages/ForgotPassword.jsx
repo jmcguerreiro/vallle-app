@@ -107,12 +107,7 @@ const ForgotPassword = () => {
             </FormFields>
 
             <FormActions>
-              <Button
-                className="p-auth-forgot-password__submit"
-                display="block"
-                isProcessing={submitting}
-                type="submit"
-              >
+              <Button display="block" isProcessing={submitting} type="submit">
                 {t("features.forgotPassword.form.submit")}
               </Button>
             </FormActions>

@@ -17,7 +17,7 @@
     gap: $spacing-2;
     color: $text-color-highlight;
 
-    &:hover {
+    @include hover {
       .s-back-to__link-icon {
         transform: translateX(-20%);
       }

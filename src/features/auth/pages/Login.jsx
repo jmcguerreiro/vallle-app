@@ -11,7 +11,6 @@ import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
-import { IconLogIn } from "@/utils/icons";
 
 /**
  * Component: Login
@@ -119,12 +118,7 @@ const Login = () => {
             </FormFields>
 
             <FormActions>
-              <Button
-                display="block"
-                icon={IconLogIn}
-                isProcessing={submitting}
-                type="submit"
-              >
+              <Button display="block" isProcessing={submitting} type="submit">
                 {t("features.login.form.submit")}
               </Button>
             </FormActions>

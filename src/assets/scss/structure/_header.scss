@@ -23,6 +23,7 @@
   align-items: center;
   display: flex;
   gap: $spacing-3;
+  margin-left: auto;
 }
 
 .s-header__help-icon {
@@ -56,7 +57,7 @@
   cursor: pointer;
   display: flex;
 
-  &:hover {
+  @include hover {
     .s-header__user-button-image {
       transform: scale(1.05);
     }

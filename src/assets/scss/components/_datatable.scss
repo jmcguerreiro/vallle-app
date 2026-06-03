@@ -147,7 +147,7 @@
   &--sortable {
     cursor: pointer;
 
-    &:hover {
+    @include hover {
       color: $text-color-highlight;
     }
   }
@@ -201,7 +201,7 @@
   &--clickable {
     cursor: pointer;
 
-    &:hover {
+    @include hover {
       color: rgba($color-white, 0.6);
     }
   }

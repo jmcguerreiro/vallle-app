@@ -51,16 +51,20 @@
   transition: $transition-normal;
   user-select: none;
 
-  &:hover {
+  @include hover {
     box-shadow: 0 12px 12px -8px rgba($color-black, 0.1);
+
+    .p-dashboard__body-actions-action-icon {
+      color: $color-terracota;
+    }
   }
 
-  &:focus-visible {
+  @include focus-visible {
     border-color: transparent;
     outline: solid 2px $color-driftwood;
   }
 
-  &:active {
+  @include active {
     transform: scale(0.98);
   }
 }
@@ -69,6 +73,7 @@
   color: $icon-color;
   flex-shrink: 0;
   height: to-rem(20);
+  transition: $transition-normal;
   width: to-rem(20);
 }
 

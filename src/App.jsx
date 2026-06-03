@@ -1,15 +1,18 @@
 import {
   BrowserRouter,
+  matchPath,
   Navigate,
   Route,
   Routes,
   useLocation,
 } from "react-router-dom";
 
+import Confetti from "@/components/Confetti";
 import Toast from "@/components/Toast";
 import { ROUTES } from "@/constants/routes";
 import { USER_ROLES } from "@/constants/user-roles";
 import { AuthProvider } from "@/contexts/auth";
+import { ConfettiProvider } from "@/contexts/confetti";
 import { MainProvider } from "@/contexts/main";
 import { ModalProvider } from "@/contexts/modal";
 import { ToastProvider } from "@/contexts/toast";
@@ -24,10 +27,10 @@ import AdminUserCreate from "@/features/admin/users/pages/Create";
 import AdminUserEdit from "@/features/admin/users/pages/Edit";
 import AdminUsersIndex from "@/features/admin/users/pages/Index";
 import AdminUserView from "@/features/admin/users/pages/View";
-import ForgotPassword from "@/features/auth/ForgotPassword";
-import Login from "@/features/auth/Login";
-import ResetPassword from "@/features/auth/ResetPassword";
-import SelectStore from "@/features/auth/SelectStore";
+import ForgotPassword from "@/features/auth/pages/ForgotPassword";
+import Login from "@/features/auth/pages/Login";
+import ResetPassword from "@/features/auth/pages/ResetPassword";
+import SelectStore from "@/features/auth/pages/SelectStore";
 import Dashboard from "@/features/dashboard/pages/Index";
 import ChangePassword from "@/features/profile/pages/ChangePassword";
 import Profile from "@/features/profile/Profile";
@@ -57,6 +60,31 @@ const AdminRoute = ({ children }) => (
 );
 
 /**
+ * Path patterns that render as URL-driven modals. When one of these is opened
+ * directly (no `backgroundLocation` in router state), we synthesize the home
+ * dashboard as the background so it still renders in a modal rather than as a
+ * full page.
+ */
+const MODAL_ROUTE_PATHS = [
+  ROUTES.VALLLES_MODAL_CREATE,
+  ROUTES.VALLLES_MODAL_VIEW,
+  ROUTES.VALLLES_MODAL_EDIT,
+  ROUTES.VALLLES_MODAL_REDEEM,
+  ROUTES.VALLLES_MODAL_QUICK_REDEEM,
+  ROUTES.VALLLES_MODAL_QUICK_LOOKUP,
+  ROUTES.PROFILE_MODAL_CHANGE_PASSWORD,
+  ROUTES.SETTINGS_USERS_MODAL_CREATE,
+  ROUTES.SETTINGS_USERS_MODAL_EDIT,
+  ROUTES.ADMIN_COMPANIES_MODAL_CREATE,
+  ROUTES.ADMIN_COMPANIES_MODAL_VIEW,
+  ROUTES.ADMIN_COMPANIES_MODAL_EDIT,
+  ROUTES.ADMIN_USERS_MODAL_CREATE,
+  ROUTES.ADMIN_USERS_MODAL_VIEW,
+  ROUTES.ADMIN_USERS_MODAL_EDIT,
+  ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL,
+];
+
+/**
  * Component: HomeDashboard
  * Renders the correct dashboard based on the user's role.
  * Super admins see the platform overview; regular admins see the store dashboard.
@@ -82,7 +110,15 @@ const AppRoutes = () => {
   const location = useLocation();
 
   // Derived State
-  const backgroundLocation = location.state?.backgroundLocation;
+  // When a modal route is opened directly (no background passed via state),
+  // synthesize the home dashboard as the background so it still renders as a
+  // modal on top of the dashboard rather than as a standalone page.
+  const isModalRoute = MODAL_ROUTE_PATHS.some((path) =>
+    matchPath(path, location.pathname),
+  );
+  const backgroundLocation =
+    location.state?.backgroundLocation ??
+    (isModalRoute ? { pathname: ROUTES.HOME } : null);
 
   // Render
   return (
@@ -103,30 +139,8 @@ const AppRoutes = () => {
         >
           <Route element={<HomeDashboard />} index />
           <Route element={<ValllesIndex />} path={ROUTES.VALLLES} />
-          <Route
-            element={<VallleCreate />}
-            path={ROUTES.VALLLES_MODAL_CREATE}
-          />
-          <Route element={<VallleView />} path={ROUTES.VALLLES_MODAL_VIEW} />
-          <Route element={<VallleEdit />} path={ROUTES.VALLLES_MODAL_EDIT} />
-          <Route
-            element={<VallleRedeem />}
-            path={ROUTES.VALLLES_MODAL_REDEEM}
-          />
-          <Route
-            element={<QuickRedeem />}
-            path={ROUTES.VALLLES_MODAL_QUICK_REDEEM}
-          />
-          <Route
-            element={<QuickLookup />}
-            path={ROUTES.VALLLES_MODAL_QUICK_LOOKUP}
-          />
           <Route element={<StatsIndex />} path={ROUTES.STATS} />
           <Route element={<Profile />} path={ROUTES.PROFILE} />
-          <Route
-            element={<ChangePassword />}
-            path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
-          />
           <Route element={<Settings />} path={ROUTES.SETTINGS}>
             <Route
               element={<Navigate replace to={ROUTES.SETTINGS_COMPANY} />}
@@ -144,14 +158,6 @@ const AppRoutes = () => {
               path={ROUTES.SETTINGS_USERS}
             />
           </Route>
-          <Route
-            element={<CompanyUserCreate />}
-            path={ROUTES.SETTINGS_USERS_MODAL_CREATE}
-          />
-          <Route
-            element={<CompanyUserEdit />}
-            path={ROUTES.SETTINGS_USERS_MODAL_EDIT}
-          />
 
           {/* Admin routes (super_admin only) */}
           <Route
@@ -165,58 +171,10 @@ const AppRoutes = () => {
           <Route
             element={
               <AdminRoute>
-                <AdminCompanyCreate />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_COMPANIES_MODAL_CREATE}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminCompanyView />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_COMPANIES_MODAL_VIEW}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminCompanyEdit />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_COMPANIES_MODAL_EDIT}
-          />
-          <Route
-            element={
-              <AdminRoute>
                 <AdminUsersIndex />
               </AdminRoute>
             }
             path={ROUTES.ADMIN_USERS}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminUserCreate />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_USERS_MODAL_CREATE}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminUserView />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_USERS_MODAL_VIEW}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminUserEdit />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_USERS_MODAL_EDIT}
           />
           <Route
             element={
@@ -226,153 +184,161 @@ const AppRoutes = () => {
             }
             path={ROUTES.ADMIN_COMMISSIONS}
           />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminCommissionsView />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL}
-          />
         </Route>
       </Routes>
 
       {backgroundLocation && (
         <ModalProvider>
-          <Routes>
-            <Route
-              element={
-                <RouteModal>
-                  <VallleCreate />
-                </RouteModal>
-              }
-              path={ROUTES.VALLLES_MODAL_CREATE}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <VallleView />
-                </RouteModal>
-              }
-              path={ROUTES.VALLLES_MODAL_VIEW}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <VallleEdit />
-                </RouteModal>
-              }
-              path={ROUTES.VALLLES_MODAL_EDIT}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <VallleRedeem />
-                </RouteModal>
-              }
-              path={ROUTES.VALLLES_MODAL_REDEEM}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <QuickRedeem />
-                </RouteModal>
-              }
-              path={ROUTES.VALLLES_MODAL_QUICK_REDEEM}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <QuickLookup />
-                </RouteModal>
-              }
-              path={ROUTES.VALLLES_MODAL_QUICK_LOOKUP}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <ChangePassword />
-                </RouteModal>
-              }
-              path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
-            />
+          <AuthGuard>
+            <Routes>
+              <Route
+                element={
+                  <RouteModal>
+                    <VallleCreate />
+                  </RouteModal>
+                }
+                path={ROUTES.VALLLES_MODAL_CREATE}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <VallleView />
+                  </RouteModal>
+                }
+                path={ROUTES.VALLLES_MODAL_VIEW}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <VallleEdit />
+                  </RouteModal>
+                }
+                path={ROUTES.VALLLES_MODAL_EDIT}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <VallleRedeem />
+                  </RouteModal>
+                }
+                path={ROUTES.VALLLES_MODAL_REDEEM}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <QuickRedeem />
+                  </RouteModal>
+                }
+                path={ROUTES.VALLLES_MODAL_QUICK_REDEEM}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <QuickLookup />
+                  </RouteModal>
+                }
+                path={ROUTES.VALLLES_MODAL_QUICK_LOOKUP}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <ChangePassword />
+                  </RouteModal>
+                }
+                path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
+              />
 
-            {/* Settings user modals */}
-            <Route
-              element={
-                <RouteModal>
-                  <CompanyUserCreate />
-                </RouteModal>
-              }
-              path={ROUTES.SETTINGS_USERS_MODAL_CREATE}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <CompanyUserEdit />
-                </RouteModal>
-              }
-              path={ROUTES.SETTINGS_USERS_MODAL_EDIT}
-            />
+              {/* Settings user modals */}
+              <Route
+                element={
+                  <RouteModal>
+                    <CompanyUserCreate />
+                  </RouteModal>
+                }
+                path={ROUTES.SETTINGS_USERS_MODAL_CREATE}
+              />
+              <Route
+                element={
+                  <RouteModal>
+                    <CompanyUserEdit />
+                  </RouteModal>
+                }
+                path={ROUTES.SETTINGS_USERS_MODAL_EDIT}
+              />
 
-            {/* Admin modals */}
-            <Route
-              element={
-                <RouteModal>
-                  <AdminCompanyCreate />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_COMPANIES_MODAL_CREATE}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <AdminCompanyView />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_COMPANIES_MODAL_VIEW}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <AdminCompanyEdit />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_COMPANIES_MODAL_EDIT}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <AdminUserCreate />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_USERS_MODAL_CREATE}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <AdminUserView />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_USERS_MODAL_VIEW}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <AdminUserEdit />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_USERS_MODAL_EDIT}
-            />
-            <Route
-              element={
-                <RouteModal>
-                  <AdminCommissionsView />
-                </RouteModal>
-              }
-              path={ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL}
-            />
-          </Routes>
+              {/* Admin modals (super_admin only — guarded for direct access) */}
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminCompanyCreate />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMPANIES_MODAL_CREATE}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminCompanyView />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMPANIES_MODAL_VIEW}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminCompanyEdit />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMPANIES_MODAL_EDIT}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminUserCreate />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_USERS_MODAL_CREATE}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminUserView />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_USERS_MODAL_VIEW}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminUserEdit />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_USERS_MODAL_EDIT}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminCommissionsView />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL}
+              />
+            </Routes>
+          </AuthGuard>
         </ModalProvider>
       )}
     </>
@@ -393,8 +359,11 @@ const App = () => {
       <AuthProvider>
         <MainProvider>
           <ToastProvider>
-            <AppRoutes />
-            <Toast />
+            <ConfettiProvider>
+              <AppRoutes />
+              <Toast />
+              <Confetti />
+            </ConfettiProvider>
           </ToastProvider>
         </MainProvider>
       </AuthProvider>
