@@ -1,19 +1,14 @@
 {
   "common": {
-    "appName": "Vallle",
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
-    "confirm": "Confirm",
-    "expand": "Expand",
-    "collapse": "Collapse",
     "noResults": "No results.",
     "error": "Something went wrong. Please try again.",
     "tryAgain": "Try again",
     "search": "Search...",
     "filters": {
       "allStatuses": "All statuses",
-      "allStores": "All stores",
       "allCategories": "All categories",
       "allRoles": "All roles"
     },
@@ -25,7 +20,6 @@
   },
   "features": {
     "login": {
-      "heading": "Sign in to Vallle",
       "forgotPassword": "Forgot your password?",
       "form": {
         "email": "Email",
@@ -83,7 +77,6 @@
       "description": "You have access to multiple stores. Select which one you'd like to work with."
     },
     "dashboard": {
-      "heading": "Dashboard",
       "welcome": "Hi, {{name}}.",
       "subtitle": "You have {{count}} active vallles. How can I help you?",
       "subtitleNone": "You have no active vallles yet. How can I help you?",
@@ -94,7 +87,6 @@
       }
     },
     "adminDashboard": {
-      "heading": "Dashboard",
       "welcome": "Hi, {{name}}!",
       "subtitle": "Here's a snapshot of the platform.",
       "stats": {
@@ -118,7 +110,6 @@
         "amountPlaceholder": "15",
         "buyer": "Buyer name",
         "buyerPlaceholder": "John Smith",
-        "expiresAt": "Expiry date",
         "validUntil": "Valid until {{date}}",
         "submit": "Create vallle",
         "success": "Vallle created successfully!",
@@ -134,14 +125,10 @@
       "view": {
         "heading": "Vallle details",
         "description": "See details and redemption history.",
-        "code": "Code",
-        "amount": "Amount",
         "balance": "Balance",
         "buyer": "Buyer",
-        "status": "Status",
         "createdAt": "Created",
         "expiresAt": "Expires",
-        "ofTotal": "of {{total}}",
         "balanceSummary": "{{total}} • Available: {{balance}}",
         "edit": "Edit"
       },
@@ -160,21 +147,17 @@
         "archiveSuccess": "Vallle archived.",
         "restoreSuccess": "Vallle restored.",
         "error": {
-          "generic": "Could not update the vallle.",
-          "loadFailed": "Could not load the vallle."
+          "generic": "Could not update the vallle."
         }
       },
       "redeem": {
         "heading": "Redeem vallle",
-        "description": "Deduct an amount from this vallle.",
-        "code": "Vallle code",
-        "amount": "Amount to redeem (€)",
         "description": "Description",
+        "amount": "Amount to redeem (€)",
         "remaining": "{{balance}} remaining",
         "submit": "Redeem",
         "success": "Vallle redeemed successfully!",
         "error": {
-          "notFound": "Vallle not found.",
           "expired": "This vallle has expired.",
           "insufficientBalance": "Insufficient balance.",
           "generic": "Could not redeem the vallle."
@@ -201,7 +184,6 @@
         "amount": "Amount",
         "description": "Description",
         "redeemedBy": "Redeemed by",
-        "balanceAfter": "Balance after",
         "empty": "No redemptions yet."
       },
       "list": {
@@ -261,7 +243,6 @@
       },
       "success": "Profile updated successfully!",
       "error": {
-        "loadFailed": "Could not load your profile.",
         "emailTaken": "This email is already in use.",
         "generic": "Could not update your profile. Please try again."
       }
@@ -345,29 +326,12 @@
           }
         },
         "error": {
-          "loadFailed": "Could not load user details.",
           "emailTaken": "This email is already in use."
         }
       },
       "success": "Company details updated successfully!",
       "error": {
         "generic": "Could not update company details. Please try again."
-      }
-    },
-    "commissions": {
-      "heading": "Commissions",
-      "markPaid": "Mark as paid",
-      "unpaid": "Unpaid",
-      "paid": "Paid",
-      "store": "Store",
-      "amount": "Amount",
-      "date": "Date",
-      "vallleCode": "Vallle",
-      "status": "Status",
-      "paidAt": "Paid at",
-      "success": "Commission marked as paid.",
-      "error": {
-        "generic": "Could not update the commission."
       }
     },
     "storeSuspended": {
@@ -441,10 +405,6 @@
           "error": {
             "generic": "Could not update the company."
           }
-        },
-        "error": {
-          "generic": "Could not load companies.",
-          "loadFailed": "Could not load company details."
         }
       },
       "users": {
@@ -507,7 +467,6 @@
         },
         "error": {
           "generic": "Could not load users.",
-          "loadFailed": "Could not load user details.",
           "emailTaken": "This email is already in use."
         }
       },
@@ -566,17 +525,14 @@
     "dashboard": "Dashboard",
     "vallles": "Vallles",
     "stats": "Stats",
-    "profile": "Profile",
     "settings": "Settings",
-    "commissions": "Commissions",
     "admin": "Admin",
     "adminCompanies": "Companies",
     "adminUsers": "Users",
     "adminCommissions": "Commissions",
     "switchStore": "Switch store",
     "switchStoreModal": {
-      "heading": "Switch store",
-      "current": "(current)"
+      "heading": "Switch store"
     },
     "logout": "Sign out",
     "mainMenu": "Main menu",

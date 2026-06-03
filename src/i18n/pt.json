@@ -1,19 +1,14 @@
 {
   "common": {
-    "appName": "Vallle",
     "loading": "A carregar...",
     "save": "Guardar",
     "cancel": "Cancelar",
-    "confirm": "Confirmar",
-    "expand": "Expandir",
-    "collapse": "Recolher",
     "noResults": "Sem resultados.",
     "error": "Algo correu mal. Tente novamente.",
     "tryAgain": "Tentar novamente",
     "search": "Pesquisar...",
     "filters": {
       "allStatuses": "Todos os estados",
-      "allStores": "Todas as lojas",
       "allCategories": "Todas as categorias",
       "allRoles": "Todas as funções"
     },
@@ -25,7 +20,6 @@
   },
   "features": {
     "login": {
-      "heading": "Entrar no Vallle",
       "forgotPassword": "Esqueceu-se da palavra-passe?",
       "form": {
         "email": "Email",
@@ -83,7 +77,6 @@
       "description": "Tem acesso a várias lojas. Selecione a loja com que pretende trabalhar."
     },
     "dashboard": {
-      "heading": "Painel",
       "welcome": "Olá, {{name}}.",
       "subtitle": "Tem {{count}} vallles ativos. Como posso ajudar?",
       "subtitleNone": "Ainda não tem vallles ativos. Como posso ajudar?",
@@ -94,7 +87,6 @@
       }
     },
     "adminDashboard": {
-      "heading": "Painel",
       "welcome": "Olá, {{name}}!",
       "subtitle": "Aqui está uma visão geral da plataforma.",
       "stats": {
@@ -118,7 +110,6 @@
         "amountPlaceholder": "15",
         "buyer": "Nome do comprador",
         "buyerPlaceholder": "José Antunes",
-        "expiresAt": "Data de expiração",
         "validUntil": "Válido até {{date}}",
         "submit": "Criar vallle",
         "success": "Vallle criado com sucesso!",
@@ -134,14 +125,10 @@
       "view": {
         "heading": "Detalhes do vallle",
         "description": "Consulte os detalhes e o histórico de resgates.",
-        "code": "Código",
-        "amount": "Valor",
         "balance": "Saldo",
         "buyer": "Comprador",
-        "status": "Estado",
         "createdAt": "Criado em",
         "expiresAt": "Expira em",
-        "ofTotal": "de {{total}}",
         "balanceSummary": "{{total}} • Disponível: {{balance}}",
         "edit": "Editar"
       },
@@ -160,21 +147,17 @@
         "archiveSuccess": "Vallle arquivado.",
         "restoreSuccess": "Vallle restaurado.",
         "error": {
-          "generic": "Não foi possível atualizar o vallle.",
-          "loadFailed": "Não foi possível carregar o vallle."
+          "generic": "Não foi possível atualizar o vallle."
         }
       },
       "redeem": {
         "heading": "Resgatar vallle",
-        "description": "Deduza um valor deste vallle.",
-        "code": "Código do vallle",
-        "amount": "Valor a resgatar (€)",
         "description": "Descrição",
+        "amount": "Valor a resgatar (€)",
         "remaining": "{{balance}} restante",
         "submit": "Resgatar",
         "success": "Vallle resgatado com sucesso!",
         "error": {
-          "notFound": "Vallle não encontrado.",
           "expired": "Este vallle expirou.",
           "insufficientBalance": "Saldo insuficiente.",
           "generic": "Não foi possível resgatar o vallle."
@@ -201,7 +184,6 @@
         "amount": "Valor",
         "description": "Descrição",
         "redeemedBy": "Resgatado por",
-        "balanceAfter": "Saldo após",
         "empty": "Sem resgates."
       },
       "list": {
@@ -261,7 +243,6 @@
       },
       "success": "Perfil atualizado com sucesso!",
       "error": {
-        "loadFailed": "Não foi possível carregar o perfil.",
         "emailTaken": "Este email já está a ser utilizado.",
         "generic": "Não foi possível atualizar o perfil. Tente novamente."
       }
@@ -345,29 +326,12 @@
           }
         },
         "error": {
-          "loadFailed": "Não foi possível carregar os dados do utilizador.",
           "emailTaken": "Este email já está a ser utilizado."
         }
       },
       "success": "Dados da empresa atualizados com sucesso!",
       "error": {
         "generic": "Não foi possível atualizar os dados da empresa. Tente novamente."
-      }
-    },
-    "commissions": {
-      "heading": "Comissões",
-      "markPaid": "Marcar como paga",
-      "unpaid": "Por pagar",
-      "paid": "Paga",
-      "store": "Loja",
-      "amount": "Valor",
-      "date": "Data",
-      "vallleCode": "Vallle",
-      "status": "Estado",
-      "paidAt": "Paga em",
-      "success": "Comissão marcada como paga.",
-      "error": {
-        "generic": "Não foi possível atualizar a comissão."
       }
     },
     "storeSuspended": {
@@ -441,10 +405,6 @@
           "error": {
             "generic": "Não foi possível atualizar a empresa."
           }
-        },
-        "error": {
-          "generic": "Não foi possível carregar as empresas.",
-          "loadFailed": "Não foi possível carregar os dados da empresa."
         }
       },
       "users": {
@@ -507,7 +467,6 @@
         },
         "error": {
           "generic": "Não foi possível carregar os utilizadores.",
-          "loadFailed": "Não foi possível carregar os dados do utilizador.",
           "emailTaken": "Este email já está a ser utilizado."
         }
       },
@@ -566,17 +525,14 @@
     "dashboard": "Painel",
     "vallles": "Vallles",
     "stats": "Estatísticas",
-    "profile": "Perfil",
     "settings": "Definições",
-    "commissions": "Comissões",
     "admin": "Admin",
     "adminCompanies": "Empresas",
     "adminUsers": "Utilizadores",
     "adminCommissions": "Comissões",
     "switchStore": "Trocar de loja",
     "switchStoreModal": {
-      "heading": "Trocar de loja",
-      "current": "(atual)"
+      "heading": "Trocar de loja"
     },
     "logout": "Sair",
     "mainMenu": "Menu principal",
