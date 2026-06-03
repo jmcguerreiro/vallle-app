@@ -532,7 +532,8 @@
     "adminCommissions": "Commissions",
     "switchStore": "Switch store",
     "switchStoreModal": {
-      "heading": "Switch store"
+      "heading": "Switch store",
+      "description": "Currently working with {{store}}. Select another store to work with."
     },
     "logout": "Sign out",
     "mainMenu": "Main menu",

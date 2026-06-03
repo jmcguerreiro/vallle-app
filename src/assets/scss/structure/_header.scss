@@ -45,6 +45,12 @@
   height: to-rem(20);
 }
 
+.s-header__store-modal-intro {
+  margin: 0 0 $spacing-4;
+  color: $color-espresso;
+  opacity: 0.7;
+}
+
 .s-header__user-button {
   align-items: center;
   cursor: pointer;
@@ -65,51 +71,16 @@
   transition: $transition-normal;
 }
 
-.s-header__user-modal {
-  background: transparent;
-  border: none;
-  inset: 0;
-  margin: auto;
-  max-width: to-rem(380);
-  padding: 0;
-  width: calc(100% - #{$spacing-6});
-}
+// User menu — content shown inside a <Modal> (which owns the dialog shell).
 
-.s-header__user-modal[open] {
-  animation: s-modal-fade-in 0.2s ease-out;
-}
-
-.s-header__user-modal[open]::backdrop {
-  animation: s-modal-backdrop-fade 0.2s ease-out forwards;
-  background: rgba($color-espresso, 0.5);
-}
-
-.s-header__user-modal-content {
+.s-header__user-menu {
   align-items: center;
-  background: $color-linen;
-  border-radius: $border-radius-3xl;
   display: flex;
   flex-direction: column;
-  padding: $spacing-8 $spacing-6 $spacing-6;
-  position: relative;
   text-align: center;
 }
 
-.s-header__user-modal-close {
-  align-items: center;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  height: to-rem(32);
-  justify-content: center;
-  position: absolute;
-  right: $spacing-3;
-  top: $spacing-3;
-  width: to-rem(32);
-}
-
-.s-header__user-modal-avatar {
+.s-header__user-menu-avatar {
   border: solid 1px $color-parchment;
   border-radius: 50%;
   height: to-rem(96);
@@ -117,20 +88,20 @@
   width: to-rem(96);
 }
 
-.s-header__user-modal-name {
+.s-header__user-menu-name {
   @include font-size(xl);
   font-weight: $font-weight-bold;
   margin: 0;
 }
 
-.s-header__user-modal-role {
+.s-header__user-menu-role {
   @include font-size(sm);
   color: rgba($color-espresso, 0.7);
   margin: $spacing-1 0 0;
   text-transform: capitalize;
 }
 
-.s-header__user-modal-actions {
+.s-header__user-menu-actions {
   display: flex;
   flex-direction: column;
   gap: $spacing-2;

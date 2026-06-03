@@ -12,11 +12,14 @@
 @import "./components/empty-state";
 @import "./components/error-state";
 @import "./components/buttons";
+@import "./components/button-group";
 @import "./components/card";
 @import "./components/commissions";
 @import "./components/datatable";
+@import "./components/drawer";
 @import "./components/forms";
 @import "./components/loader";
+@import "./components/modal";
 @import "./components/stat";
 @import "./components/store-select";
 @import "./components/tabs";
@@ -32,7 +35,6 @@
 @import "./structure/header";
 @import "./structure/navigation";
 @import "./structure/main";
-@import "./structure/modal";
 
 @import "./features/dashboard/pages/index";
 @import "./features/vallles/pages/index";
@@ -121,115 +123,6 @@ body {
 
   /* Layout */
   --sidebar-width: 240px;
-}
-
-// Drawer (< 1024px, powered by Vaul)
-.drawer__overlay {
-  background: rgba($color-espresso, 0.5);
-  inset: 0;
-  position: fixed;
-  z-index: 999;
-}
-
-.drawer {
-  background: $color-linen;
-  border-radius: $border-radius-3xl $border-radius-3xl 0 0;
-  bottom: 0 !important;
-  display: flex;
-  flex-direction: column;
-  height: auto !important;
-  left: 0;
-  max-height: 90dvh;
-  outline: none;
-  overflow: hidden;
-  position: fixed;
-  right: 0;
-  z-index: 1000;
-}
-
-.drawer__handle {
-  background: $color-parchment !important;
-  margin: $spacing-3 auto $spacing-1;
-  opacity: 1 !important;
-}
-
-.drawer__header {
-  align-items: center;
-  border-bottom: solid 1px $color-parchment;
-  display: flex;
-  flex-direction: column;
-  text-align: center;
-  gap: $spacing-1;
-  padding: $spacing-4 $spacing-6;
-}
-
-.drawer__header-title {
-  @include font-size(xl);
-  font-weight: $font-weight-bold;
-  color: $text-color-highlight;
-}
-
-.drawer__header-description {
-  @include font-size(lg);
-  color: $text-color-muted;
-  margin: 0;
-}
-
-.drawer__body {
-  flex: 1;
-  overflow-y: auto;
-  padding: $spacing-6;
-}
-
-.drawer__footer {
-  border-top: solid 1px $color-parchment;
-  display: flex;
-  flex-shrink: 0;
-  gap: $spacing-3;
-  justify-content: flex-end;
-  padding: $spacing-4 $spacing-6;
-}
-
-/* ─── Store switcher ─────────────────────────────────────────── */
-
-.c-store-switcher__list {
-  list-style: none;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.c-store-switcher__option {
-  background: none;
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-md);
-  color: var(--color-text);
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  font-family: var(--font-body);
-  font-size: 0.9375rem;
-  padding: var(--space-sm) var(--space-md);
-  transition:
-    border-color 0.15s,
-    background 0.15s;
-  width: 100%;
-}
-
-.c-store-switcher__option:hover:not(:disabled) {
-  border-color: var(--color-primary);
-  background: rgba(196, 101, 58, 0.04);
-}
-
-.c-store-switcher__option--current {
-  border-color: var(--color-primary);
-  cursor: default;
-}
-
-.c-store-switcher__option-badge {
-  font-size: 0.75rem;
-  color: var(--color-text-muted);
 }
 
 /* ─── Login extras ───────────────────────────────────────────── */

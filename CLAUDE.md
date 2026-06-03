@@ -219,7 +219,8 @@ src/
 │   │   └── utils.js         ← feature-specific utils
 │   └── commissions/
 ├── components/
-│   ├── Modal.jsx            ← URL-driven modal (native <dialog>)
+│   ├── Modal.jsx            ← standalone state-driven modal (native <dialog>)
+│   ├── Drawer.jsx           ← standalone state-driven drawer (Vaul); same props as Modal
 │   └── forms/
 │       ├── Form.jsx         ← form wrapper (react-hook-form)
 │       └── Input.jsx        ← reusable input field
@@ -241,7 +242,8 @@ src/
 │   └── api.js            ← fetch wrapper (get, post, put, patch)
 ├── router/
 │   ├── AuthGuard.jsx
-│   └── RoleGuard.jsx
+│   ├── RoleGuard.jsx
+│   └── RouteModal.jsx   ← URL-driven modal (dialog desktop / drawer mobile)
 ├── i18n/
 │   ├── index.js
 │   ├── en.json
@@ -288,8 +290,11 @@ The sidebar navigation already hides links for routes the user can't access (`is
 
 ## 8. Modal Routes
 
-CRUD views (create, view, edit) open as URL-driven modals using the native `<dialog>` element. Modals can be opened from **any page** — the current page stays visible behind the modal.
+CRUD views (create, view, edit) open as URL-driven modals rendered by `RouteModal` (in `src/router/` — it's routing infrastructure, not a presentational component). It shows a native `<dialog>` on desktop and a Vaul bottom-drawer on mobile. Modals can be opened from **any page** — the current page stays visible behind the modal.
 
+> Not to be confused with the standalone `components/Modal.jsx` — a simple state-driven (`open`/`onClose`) `<dialog>` for in-page modals that aren't tied to a URL. Use that one when you don't need a routed modal.
+
+- **Header**: `RouteModal` reads its title/description/actions from `ModalContext` via `useModal()`. Route pages set these in an effect (`setHeader({ title, description })`); the page itself doesn't render `RouteModal` — `App.jsx` wraps it.
 - **Pattern**: Uses react-router's `backgroundLocation` state. When navigating to a modal route, pass `state: { backgroundLocation: location }`. In `App.jsx`, routes render against the background location (keeping the current page mounted), while modal routes render on top at the actual URL.
 - **Routing**: Modal route paths are full paths (e.g. `/vallles/create`, `/vallles/:id`). Use helper functions from `constants/routes.js` (e.g. `vallleCreatePath()`, `valllePath(id)`, `vallleEditPath(id)`) for navigation — always pass `backgroundLocation` in state.
 - **Closing**: Pressing Escape, clicking the backdrop, or the close button all call `navigate(-1)` to return to whatever page was behind the modal.
@@ -308,8 +313,8 @@ const backgroundLocation = location.state?.backgroundLocation
 
 {backgroundLocation && (
   <Routes>
-    {/* Modal routes render on top at the actual URL */}
-    <Route element={<VallleCreate />} path={ROUTES.VALLLES_MODAL_CREATE} />
+    {/* Modal routes render on top at the actual URL, wrapped in RouteModal */}
+    <Route element={<RouteModal><VallleCreate /></RouteModal>} path={ROUTES.VALLLES_MODAL_CREATE} />
   </Routes>
 )}
 
@@ -321,10 +326,12 @@ const backgroundLocation = location.state?.backgroundLocation
   Create vallle
 </Link>
 
-// In VallleCreate — wraps content in Modal
-<Modal title={t('features.vallles.create.heading')}>
-  {/* form content */}
-</Modal>
+// In VallleCreate — set the modal header via useModal (RouteModal renders it)
+const { setHeader } = useModal()
+useEffect(() => {
+  setHeader({ title: t('features.vallles.create.heading') })
+  return () => setHeader()
+}, [setHeader, t])
 ```
 
 ## 9. Data Fetching (TanStack Query)

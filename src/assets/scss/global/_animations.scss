@@ -7,3 +7,25 @@
     transform: rotate(360deg);
   }
 }
+
+// Shared dialog animations (c-modal, header user-menu)
+
+@keyframes modal-fade-in {
+  from {
+    opacity: 0;
+    transform: scale(0.96);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes modal-backdrop-fade {
+  from {
+    background: rgba($color-espresso, 0);
+  }
+  to {
+    background: rgba($color-espresso, 0.5);
+  }
+}

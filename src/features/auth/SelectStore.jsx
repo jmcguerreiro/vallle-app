@@ -1,6 +1,6 @@
 import { useCallback } from "react";
 import { useTranslation } from "react-i18next";
-import { Navigate, useNavigate } from "react-router-dom";
+import { Navigate } from "react-router-dom";
 
 import Loader from "@/components/Loader";
 import StoreSelect from "@/components/StoreSelect";
@@ -18,15 +18,14 @@ const SelectStore = () => {
   // Hooks
   const { t } = useTranslation();
   const { user, isAuthenticated, isLoading, selectStore } = useAuth();
-  const navigate = useNavigate();
 
   // Handlers
   const handleSelect = useCallback(
     (store) => {
+      // selectStore persists the choice and hard-reloads into the app.
       selectStore(store);
-      navigate(ROUTES.HOME);
     },
-    [selectStore, navigate],
+    [selectStore],
   );
 
   // Render

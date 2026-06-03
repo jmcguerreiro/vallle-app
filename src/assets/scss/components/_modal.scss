@@ -1,0 +1,76 @@
+// Standalone state-driven modal component (c-modal).
+// Native <dialog>, identical on mobile and desktop.
+
+.c-modal {
+  background: transparent;
+  border: none;
+  inset: 0;
+  margin: auto;
+  max-height: 90dvh;
+  max-width: $screen-sm;
+  padding: 0;
+  width: 100%;
+}
+
+.c-modal[open] {
+  animation: modal-fade-in 0.2s ease-out;
+}
+
+.c-modal[open]::backdrop {
+  animation: modal-backdrop-fade 0.2s ease-out forwards;
+  background: rgba($color-espresso, 0.5);
+}
+
+.c-modal__wrapper {
+  background: $color-linen;
+  border-radius: $border-radius-3xl;
+  display: flex;
+  flex-direction: column;
+  max-height: 90dvh;
+  overflow: hidden;
+  position: relative;
+}
+
+.c-modal__close {
+  position: absolute;
+  right: $spacing-3;
+  top: $spacing-3;
+  z-index: 1;
+}
+
+.c-modal__close-icon {
+  height: to-rem(24);
+  width: to-rem(24);
+}
+
+.c-modal__header {
+  border-bottom: solid 1px $color-parchment;
+  display: flex;
+  flex-direction: column;
+  flex-shrink: 0;
+  gap: $spacing-1;
+  padding: $spacing-4 $spacing-12 $spacing-4 $spacing-6;
+}
+
+.c-modal__header-title {
+  @include font-size(2xl);
+  font-weight: $font-weight-bold;
+}
+
+.c-modal__header-description {
+  @include font-size(sm);
+  color: rgba($color-espresso, 0.7);
+  margin: 0;
+}
+
+.c-modal__body {
+  flex: 1;
+  overflow-y: auto;
+  padding: $spacing-6;
+}
+
+.c-modal__footer {
+  border-top: solid 1px $color-parchment;
+  flex-shrink: 0;
+  padding: $spacing-4 $spacing-6;
+}

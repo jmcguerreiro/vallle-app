@@ -123,7 +123,7 @@ const VallleView = () => {
         label: t("features.vallles.redeem.submit"),
         icon: IconReceipt,
         onClick: handleRedeem,
-        variant: "outline",
+        variant: "ghost",
       });
     }
 

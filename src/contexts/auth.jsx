@@ -88,11 +88,15 @@ export const AuthProvider = ({ children }) => {
   }, []);
 
   const selectStore = useCallback((store) => {
-    setActiveStoreState(store);
     setApiStoreId(store?.store_id || null);
     if (userIdRef.current && store?.store_id) {
       saveStoreId(userIdRef.current, store.store_id);
     }
+    // Hard reload to guarantee a clean slate for the new store. Query keys are
+    // store-agnostic (the store is only carried in the X-Store-Id header), so an
+    // in-app switch would otherwise serve the previous store's cached data. The
+    // reloaded app re-hydrates the active store from localStorage on mount.
+    globalThis.location.assign("/");
   }, []);
 
   // Effects

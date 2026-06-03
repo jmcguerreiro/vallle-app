@@ -1,0 +1,25 @@
+// Button layout group (c-button-group).
+// Spaces buttons consistently; direction and alignment are modifier-driven.
+
+.c-button-group {
+  display: flex;
+  flex-direction: row;
+  gap: $spacing-3;
+  justify-content: flex-start;
+}
+
+.c-button-group--direction-column {
+  flex-direction: column;
+}
+
+.c-button-group--align-center {
+  justify-content: center;
+}
+
+.c-button-group--align-end {
+  justify-content: flex-end;
+}
+
+.c-button-group--align-between {
+  justify-content: space-between;
+}

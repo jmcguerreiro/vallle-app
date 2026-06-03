@@ -532,7 +532,8 @@
     "adminCommissions": "Comissões",
     "switchStore": "Trocar de loja",
     "switchStoreModal": {
-      "heading": "Trocar de loja"
+      "heading": "Trocar de loja",
+      "description": "De momento está a trabalhar com {{store}}. Selecione outra loja com que pretende trabalhar."
     },
     "logout": "Sair",
     "mainMenu": "Menu principal",
