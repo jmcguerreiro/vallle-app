@@ -1,12 +1,8 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback } from "react";
 
 import { Drawer as VaulDrawer } from "vaul";
 
 import Button from "@/components/Button";
-
-// Roughly matches Vaul's content slide-out so the backdrop stays put until the
-// drawer has finished animating away, then unmounts (no fade-out).
-const EXIT_DURATION_MS = 500;
 
 /**
  * Component: Drawer
@@ -33,22 +29,6 @@ const Drawer = ({
   description,
   actions = [],
 }) => {
-  // State
-  // `isExiting` keeps our own backdrop mounted through the slide-out (Vaul's
-  // animated overlay had an iOS 26 Safari paint bug on close, so we render a
-  // static backdrop instead). `wasOpen` tracks the open->close edge so we can
-  // start the exit during render rather than in an effect.
-  const [isExiting, setIsExiting] = useState(false);
-  const [wasOpen, setWasOpen] = useState(open);
-
-  if (wasOpen !== open) {
-    setWasOpen(open);
-    if (!open) setIsExiting(true);
-  }
-
-  // Derived State
-  const showBackdrop = open || isExiting;
-
   // Handlers
   const handleOpenChange = useCallback(
     (next) => {
@@ -57,33 +37,15 @@ const Drawer = ({
     [onClose],
   );
 
-  const handleBackdropClick = useCallback(() => {
-    onClose?.();
-  }, [onClose]);
-
-  // Effects
-  useEffect(() => {
-    if (!isExiting) return;
-    const timer = setTimeout(() => setIsExiting(false), EXIT_DURATION_MS);
-    return () => clearTimeout(timer);
-  }, [isExiting]);
-
   // Render
   return (
-    <VaulDrawer.Root
-      onOpenChange={handleOpenChange}
-      open={open}
-      repositionInputs={false}
-    >
+    <VaulDrawer.Root onOpenChange={handleOpenChange} open={open}>
       <VaulDrawer.Portal>
-        {showBackdrop && (
-          <div className="c-drawer__backdrop" onClick={handleBackdropClick} />
-        )}
+        <VaulDrawer.Overlay className="c-drawer__overlay" />
         <VaulDrawer.Content
           aria-describedby={undefined}
           aria-label={title || "Dialog"}
           className="c-drawer"
-          onOpenAutoFocus={(event) => event.preventDefault()}
         >
           <VaulDrawer.Handle className="c-drawer__handle" />
           {(title || description) && (
