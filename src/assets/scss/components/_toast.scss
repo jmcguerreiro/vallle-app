@@ -6,7 +6,7 @@
   left: 0;
   padding: $spacing-8 $spacing-6;
   position: fixed;
-  top: 0;
+  top: env(safe-area-inset-top);
   width: 100%;
   z-index: 9999;
 
