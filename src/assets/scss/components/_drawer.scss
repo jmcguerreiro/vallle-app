@@ -1,6 +1,9 @@
-.c-drawer__overlay {
+.c-drawer__backdrop {
   background: rgba($color-espresso, 0.5);
-  inset: 0;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: 100%;
   position: fixed;
   z-index: 999;
 }

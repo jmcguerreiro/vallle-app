@@ -10,7 +10,6 @@ import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
@@ -27,8 +26,7 @@ const CompanyUserCreate = () => {
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -66,7 +64,6 @@ const CompanyUserCreate = () => {
   // Derived State
   const title = t("features.company.users.create.heading");
   const description = t("features.company.users.create.description");
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   // Handlers
   const onSubmit = useCallback(

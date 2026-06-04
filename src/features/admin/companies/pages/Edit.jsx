@@ -14,7 +14,6 @@ import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -30,8 +29,7 @@ const AdminCompanyEdit = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -71,7 +69,6 @@ const AdminCompanyEdit = () => {
   const [serverError, setServerError] = useState(null);
 
   // Derived State
-  const setHeader = isModal ? setModalHeader : setMainHeader;
   const categoryOptions = COMPANY_CATEGORIES.map((key) => ({
     value: key,
     label: t(`constants.companyCategories.${key}`),

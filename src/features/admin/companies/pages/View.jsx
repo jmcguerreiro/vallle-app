@@ -9,7 +9,6 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Stat from "@/components/Stat";
 import { adminCompanyEditPath, adminUserPath } from "@/constants/routes";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
@@ -43,8 +42,7 @@ const AdminCompanyView = () => {
   const { id } = useParams();
   const navigate = useNavigate();
   const location = useLocation();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
 
   // Queries
   const {
@@ -57,7 +55,6 @@ const AdminCompanyView = () => {
   });
 
   // Derived State
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   // Handlers
   const handleEdit = useCallback(() => {

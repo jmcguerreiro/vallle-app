@@ -12,7 +12,6 @@ import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -29,8 +28,7 @@ const AdminUserEdit = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -73,7 +71,6 @@ const AdminUserEdit = () => {
   const [serverError, setServerError] = useState(null);
 
   // Derived State
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   // Handlers
   const onSubmit = useCallback(

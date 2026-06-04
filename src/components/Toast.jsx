@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef } from "react";
 
 import { useToast } from "@/hooks/useToast";
 import { IconAlertCircle, IconCheck, IconInfo, IconX } from "@/utils/icons";
@@ -11,13 +11,20 @@ const ICON_MAP = {
 
 /**
  * Component: Toast
- * Renders all active toast notifications in a fixed container at the top-right of the viewport.
+ * Renders all active toast notifications in a fixed container at the top-right of
+ * the viewport. The container is a manual popover so it lives in the browser's
+ * top layer and paints above native <dialog> modals (z-index can't beat the top
+ * layer). It re-promotes on every toast change so it stays above a modal that was
+ * opened after the toast fired.
  * @component
  * @returns {JSX.Element}
  */
 const Toast = () => {
   // Hooks
   const { toasts, removeToast } = useToast();
+
+  // Refs
+  const containerRef = useRef(null);
 
   // Handlers
   const handleClose = useCallback(
@@ -27,11 +34,24 @@ const Toast = () => {
     [removeToast],
   );
 
-  // Render
-  if (toasts.length === 0) return null;
+  // Effects
+  useEffect(() => {
+    const container = containerRef.current;
+    if (!container) return;
 
+    if (toasts.length > 0) {
+      // Re-promote to the top of the top layer so we sit above any modal that
+      // was opened after the toast fired (top-layer order, not z-index, wins).
+      if (container.matches(":popover-open")) container.hidePopover();
+      container.showPopover();
+    } else if (container.matches(":popover-open")) {
+      container.hidePopover();
+    }
+  }, [toasts]);
+
+  // Render
   return (
-    <div className="c-toast-container">
+    <div ref={containerRef} className="c-toast-container" popover="manual">
       {toasts.map((toast) => {
         const Icon = ICON_MAP[toast.type] || IconInfo;
 

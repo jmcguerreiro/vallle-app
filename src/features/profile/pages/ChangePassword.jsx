@@ -8,7 +8,6 @@ import { useMutation } from "@tanstack/react-query";
 import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
 import Input from "@/components/forms/Input";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { put } from "@/services/api";
 import { validatePassword } from "@/utils/password";
@@ -16,7 +15,7 @@ import { validatePassword } from "@/utils/password";
 /**
  * Component: ChangePassword
  * Modal content for changing the user's password.
- * Sets the header title on the modal or main layout depending on context.
+ * Sets the modal header title.
  * @component
  * @returns {JSX.Element}
  */
@@ -24,8 +23,7 @@ const ChangePassword = () => {
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const {
     register,
     handleSubmit,
@@ -59,7 +57,6 @@ const ChangePassword = () => {
   // Derived State
   const title = t("features.profile.password.heading");
   const description = t("features.profile.password.description");
-  const setHeader = isModal ? setModalHeader : setMainHeader;
   const passwordRules = useMemo(() => validatePassword(t), [t]);
 
   // Handlers

@@ -14,7 +14,6 @@ import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
 import { isVallleExpired } from "@/features/vallles/utils";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, post } from "@/services/api";
@@ -38,8 +37,7 @@ const VallleRedeem = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { id } = useParams();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -90,7 +88,6 @@ const VallleRedeem = () => {
   // Derived State
   const title = t("features.vallles.redeem.heading");
   const description = vallle?.code || "";
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   const statusKey = useMemo(() => {
     if (!vallle) return "active";

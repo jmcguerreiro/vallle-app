@@ -9,7 +9,6 @@ import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Stat from "@/components/Stat";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, patch } from "@/services/api";
@@ -37,8 +36,7 @@ const AdminCommissionsView = () => {
   // Hooks
   const { t } = useTranslation();
   const { storeId } = useParams();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
 
@@ -69,7 +67,6 @@ const AdminCommissionsView = () => {
   });
 
   // Derived State
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   // Handlers
   const handleMarkMonthPaid = useCallback(

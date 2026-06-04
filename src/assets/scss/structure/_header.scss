@@ -1,7 +1,8 @@
 .s-header {
+  margin-top: env(safe-area-inset-top);
   padding: $spacing-6;
   position: sticky;
-  top: 0;
+  top: env(safe-area-inset-top);
   width: 100%;
   z-index: 100;
 }

@@ -18,6 +18,7 @@
 
 .c-modal[open]::backdrop {
   animation: modal-backdrop-fade 0.2s ease-out forwards;
+  height: 100vh;
   background: rgba($color-espresso, 0.5);
 }
 

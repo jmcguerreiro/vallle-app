@@ -13,7 +13,6 @@ import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
 import { adminCompanyPath } from "@/constants/routes";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
@@ -29,8 +28,7 @@ const AdminCompanyCreate = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -65,7 +63,6 @@ const AdminCompanyCreate = () => {
   // Derived State
   const title = t("features.admin.companies.create.heading");
   const description = t("features.admin.companies.create.description");
-  const setHeader = isModal ? setModalHeader : setMainHeader;
   const categoryOptions = COMPANY_CATEGORIES.map((key) => ({
     value: key,
     label: t(`constants.companyCategories.${key}`),

@@ -20,7 +20,11 @@ const AuthGuard = ({ children }) => {
 
   // Render
   if (isLoading) {
-    return <Loader />;
+    return (
+      <div className="app__loading">
+        <Loader />
+      </div>
+    );
   }
 
   if (!isAuthenticated) {

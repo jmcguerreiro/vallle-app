@@ -14,7 +14,6 @@ import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
 import { isVallleExpired } from "@/features/vallles/utils";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -39,8 +38,7 @@ const VallleEdit = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -102,7 +100,6 @@ const VallleEdit = () => {
   // Derived State
   const title = t("features.vallles.edit.heading");
   const description = vallle?.code || "";
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   const statusKey = useMemo(() => {
     if (!vallle) return "active";

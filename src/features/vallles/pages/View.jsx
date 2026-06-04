@@ -10,7 +10,6 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import { vallleEditPath, vallleRedeemPath } from "@/constants/routes";
 import { isVallleExpired } from "@/features/vallles/utils";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
@@ -34,8 +33,7 @@ const VallleView = () => {
   const { id } = useParams();
   const location = useLocation();
   const navigate = useNavigate();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
 
   // Queries
   const { data, isPending, isError } = useQuery({
@@ -55,7 +53,6 @@ const VallleView = () => {
   // Derived State
   const title = t("features.vallles.view.heading");
   const description = t("features.vallles.view.description");
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   const statusKey = useMemo(() => {
     if (!vallle) return "active";

@@ -9,7 +9,6 @@ import Button from "@/components/Button";
 import { ROUTES, valllePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { useConfetti } from "@/hooks/useConfetti";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
@@ -27,8 +26,7 @@ const VallleCreate = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { isStoreSuspended, activeStore } = useAuth();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const { addToast } = useToast();
   const { fire: fireConfetti } = useConfetti();
   const queryClient = useQueryClient();
@@ -45,7 +43,6 @@ const VallleCreate = () => {
   // Derived State
   const title = t("features.vallles.create.heading");
   const description = t("features.vallles.create.description");
-  const setHeader = isModal ? setModalHeader : setMainHeader;
 
   const expiryDate = useMemo(() => {
     const days = activeStore?.default_vallle_expiry_days || 365;
@@ -70,7 +67,7 @@ const VallleCreate = () => {
     onSuccess: ({ data: vallle }) => {
       queryClient.invalidateQueries({ queryKey: ["vallles"] });
       queryClient.invalidateQueries({ queryKey: ["stats"] });
-      //addToast(t("features.vallles.create.success"), "success");
+      addToast(t("features.vallles.create.success"), "success");
       fireConfetti();
       const backgroundLocation = location.state?.backgroundLocation || location;
       navigate(valllePath(vallle.id), {

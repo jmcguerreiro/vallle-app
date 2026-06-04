@@ -9,7 +9,6 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import { adminCompanyPath, adminUserEditPath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -36,8 +35,7 @@ const AdminUserView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { user: currentUser } = useAuth();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
 
@@ -67,7 +65,6 @@ const AdminUserView = () => {
   });
 
   // Derived State
-  const setHeader = isModal ? setModalHeader : setMainHeader;
   const isSelf = currentUser?.id === id;
 
   // Handlers

@@ -11,7 +11,6 @@ import VallleCodeInput, {
   CODE_LENGTH,
 } from "@/features/vallles/components/VallleCodeInput";
 import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
-import { useMain } from "@/hooks/useMain";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 
@@ -28,13 +27,11 @@ const QuickRedeem = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
-  const { setHeader: setMainHeader } = useMain();
-  const { setHeader: setModalHeader, isModal } = useModal();
+  const { setHeader } = useModal();
 
   // Derived State
   const title = t("features.vallles.redeem.heading");
   const description = t("features.vallles.quickRedeem.description");
-  const setHeader = isModal ? setModalHeader : setMainHeader;
   const backgroundLocation = location.state?.backgroundLocation || location;
 
   // Mutations
