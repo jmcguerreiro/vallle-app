@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import Datatable from "@/components/Datatable";
 import EmptyState from "@/components/EmptyState";
@@ -16,12 +16,18 @@ import { formatDate } from "@/utils/dates";
 
 /**
  * Component: AdminCommissionsIndex
- * Shows a commission overview per company — total earnings, commissions, and outstanding balance.
- * Clicking a row opens the company's monthly commission detail modal.
+ * Shows a commission overview per company — total earnings, commissions, and
+ * outstanding balance. Clicking a row opens the company's monthly commission
+ * detail modal. Pagination, search, sorting, and the payment filter are
+ * server-side.
  * @component
  * @returns {JSX.Element}
  */
 const AdminCommissionsIndex = () => {
+  // Constants
+  const FILTER_ALL = "all";
+  const PAGE_SIZE = 20;
+
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -29,7 +35,10 @@ const AdminCommissionsIndex = () => {
   const { setHeader } = useMain();
 
   // State
-  const [paymentFilter, setPaymentFilter] = useState("all");
+  const [paymentFilter, setPaymentFilter] = useState(FILTER_ALL);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState({ id: "total_unpaid", desc: true });
 
   // Queries
   const {
@@ -37,33 +46,36 @@ const AdminCommissionsIndex = () => {
     isPending,
     isError,
   } = useQuery({
-    queryKey: ["admin", "commissions"],
-    queryFn: ({ signal }) => get("/api/admin/commissions", { signal }),
+    queryKey: [
+      "admin",
+      "commissions",
+      {
+        page: pageIndex,
+        pageSize: PAGE_SIZE,
+        payment: paymentFilter,
+        search,
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      },
+    ],
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(pageIndex * PAGE_SIZE),
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      });
+      if (paymentFilter !== FILTER_ALL) params.set("payment", paymentFilter);
+      if (search) params.set("search", search);
+      return get(`/api/admin/commissions?${params.toString()}`, { signal });
+    },
+    placeholderData: keepPreviousData,
   });
 
-  const companies = useMemo(() => response?.data ?? [], [response]);
-
-  // Handlers
-  const handleRowClick = useCallback(
-    (row) => {
-      navigate(adminCommissionsDetailPath(row.store_id), {
-        state: { backgroundLocation: location },
-      });
-    },
-    [navigate, location],
-  );
-
-  const handlePaymentFilter = useCallback((event) => {
-    setPaymentFilter(event.target.value);
-  }, []);
+  const totalCount = response?.meta?.total ?? 0;
 
   // Derived State
-  const filteredCompanies = useMemo(() => {
-    if (paymentFilter === "all") return companies;
-    if (paymentFilter === "unpaid")
-      return companies.filter((c) => c.total_unpaid > 0);
-    return companies.filter((c) => c.total_unpaid === 0);
-  }, [companies, paymentFilter]);
+  const companies = useMemo(() => response?.data ?? [], [response]);
 
   const columns = useMemo(
     () => [
@@ -115,6 +127,35 @@ const AdminCommissionsIndex = () => {
     [t],
   );
 
+  // Handlers
+  const handleRowClick = useCallback(
+    (row) => {
+      navigate(adminCommissionsDetailPath(row.store_id), {
+        state: { backgroundLocation: location },
+      });
+    },
+    [navigate, location],
+  );
+
+  const handlePaymentFilter = useCallback((event) => {
+    setPaymentFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+    setPageIndex(0);
+  }, []);
+
+  const handlePageChange = useCallback((newPageIndex) => {
+    setPageIndex(newPageIndex);
+  }, []);
+
+  const handleSortChange = useCallback((next) => {
+    setSort(next);
+    setPageIndex(0);
+  }, []);
+
   // Effects
   useEffect(() => {
     setHeader({
@@ -155,7 +196,7 @@ const AdminCommissionsIndex = () => {
       ariaLabel={t("common.filters.allStatuses")}
       onChange={handlePaymentFilter}
       options={[
-        { value: "all", label: t("common.filters.allStatuses") },
+        { value: FILTER_ALL, label: t("common.filters.allStatuses") },
         { value: "unpaid", label: t("features.admin.commissions.unpaid") },
         { value: "paid", label: t("features.admin.commissions.paid") },
       ]}
@@ -167,9 +208,24 @@ const AdminCommissionsIndex = () => {
     <div className="p-admin-commissions">
       <Datatable
         columns={columns}
-        data={filteredCompanies}
+        data={companies}
         filters={commissionFilters}
         onRowClick={handleRowClick}
+        pageSize={PAGE_SIZE}
+        serverPagination={{
+          total: totalCount,
+          pageIndex,
+          onPageChange: handlePageChange,
+        }}
+        serverSearch={{
+          value: search,
+          onChange: handleSearchChange,
+        }}
+        serverSort={{
+          id: sort.id,
+          desc: sort.desc,
+          onChange: handleSortChange,
+        }}
       />
     </div>
   );

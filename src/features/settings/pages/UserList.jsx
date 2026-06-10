@@ -2,7 +2,7 @@ import { useCallback, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
 import Datatable from "@/components/Datatable";
@@ -27,18 +27,26 @@ const STATUS_VARIANTS = {
 
 /**
  * Component: CompanyUserList
- * Lists users belonging to the active store. Allows admins to create and edit users.
+ * Lists users belonging to the active store. Allows admins to create and edit
+ * users. Pagination, search, sorting, and the status filter are server-side.
  * @component
  * @returns {JSX.Element}
  */
 const CompanyUserList = () => {
+  // Constants
+  const STATUS_ALL = "all";
+  const PAGE_SIZE = 20;
+
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
 
   // State
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState({ id: "name", desc: false });
 
   // Queries
   const {
@@ -46,37 +54,36 @@ const CompanyUserList = () => {
     isPending,
     isError,
   } = useQuery({
-    queryKey: ["company", "users"],
-    queryFn: ({ signal }) => get("/api/company/users", { signal }),
+    queryKey: [
+      "company",
+      "users",
+      {
+        page: pageIndex,
+        pageSize: PAGE_SIZE,
+        status: statusFilter,
+        search,
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      },
+    ],
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(pageIndex * PAGE_SIZE),
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      });
+      if (statusFilter !== STATUS_ALL) params.set("status", statusFilter);
+      if (search) params.set("search", search);
+      return get(`/api/company/users?${params.toString()}`, { signal });
+    },
+    placeholderData: keepPreviousData,
   });
 
-  const users = useMemo(() => response?.data ?? [], [response]);
-
-  // Handlers
-  const handleRowClick = useCallback(
-    (row) => {
-      navigate(settingsUserEditPath(row.id), {
-        state: { backgroundLocation: location },
-      });
-    },
-    [navigate, location],
-  );
-
-  const handleCreate = useCallback(() => {
-    navigate(settingsUserCreatePath(), {
-      state: { backgroundLocation: location },
-    });
-  }, [navigate, location]);
-
-  const handleStatusFilter = useCallback((event) => {
-    setStatusFilter(event.target.value);
-  }, []);
+  const totalCount = response?.meta?.total ?? 0;
 
   // Derived State
-  const filteredUsers = useMemo(() => {
-    if (statusFilter === "all") return users;
-    return users.filter((u) => u.status === statusFilter);
-  }, [users, statusFilter]);
+  const users = useMemo(() => response?.data ?? [], [response]);
 
   const columns = useMemo(
     () => [
@@ -121,6 +128,41 @@ const CompanyUserList = () => {
     [t],
   );
 
+  // Handlers
+  const handleRowClick = useCallback(
+    (row) => {
+      navigate(settingsUserEditPath(row.id), {
+        state: { backgroundLocation: location },
+      });
+    },
+    [navigate, location],
+  );
+
+  const handleCreate = useCallback(() => {
+    navigate(settingsUserCreatePath(), {
+      state: { backgroundLocation: location },
+    });
+  }, [navigate, location]);
+
+  const handleStatusFilter = useCallback((event) => {
+    setStatusFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+    setPageIndex(0);
+  }, []);
+
+  const handlePageChange = useCallback((newPageIndex) => {
+    setPageIndex(newPageIndex);
+  }, []);
+
+  const handleSortChange = useCallback((next) => {
+    setSort(next);
+    setPageIndex(0);
+  }, []);
+
   // Render
   if (isPending) {
     return (
@@ -151,7 +193,7 @@ const CompanyUserList = () => {
       ariaLabel={t("common.filters.allStatuses")}
       onChange={handleStatusFilter}
       options={[
-        { value: "all", label: t("common.filters.allStatuses") },
+        { value: STATUS_ALL, label: t("common.filters.allStatuses") },
         { value: "active", label: t("features.company.users.list.active") },
         { value: "inactive", label: t("features.company.users.list.inactive") },
       ]}
@@ -170,9 +212,24 @@ const CompanyUserList = () => {
           },
         ]}
         columns={columns}
-        data={filteredUsers}
+        data={users}
         filters={userFilters}
         onRowClick={handleRowClick}
+        pageSize={PAGE_SIZE}
+        serverPagination={{
+          total: totalCount,
+          pageIndex,
+          onPageChange: handlePageChange,
+        }}
+        serverSearch={{
+          value: search,
+          onChange: handleSearchChange,
+        }}
+        serverSort={{
+          id: sort.id,
+          desc: sort.desc,
+          onChange: handleSortChange,
+        }}
       />
     </div>
   );

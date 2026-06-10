@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
 import Datatable from "@/components/Datatable";
@@ -25,11 +25,16 @@ const STATUS_VARIANTS = {
 
 /**
  * Component: AdminUsersIndex
- * Lists all users across all companies for the super admin.
+ * Lists all users across all companies for the super admin. Pagination,
+ * search, sorting, and the status/role filters are server-side.
  * @component
  * @returns {JSX.Element}
  */
 const AdminUsersIndex = () => {
+  // Constants
+  const FILTER_ALL = "all";
+  const PAGE_SIZE = 20;
+
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -37,8 +42,11 @@ const AdminUsersIndex = () => {
   const { setHeader } = useMain();
 
   // State
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [roleFilter, setRoleFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(FILTER_ALL);
+  const [roleFilter, setRoleFilter] = useState(FILTER_ALL);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState({ id: "name", desc: false });
 
   // Queries
   const {
@@ -46,47 +54,38 @@ const AdminUsersIndex = () => {
     isPending,
     isError,
   } = useQuery({
-    queryKey: ["admin", "users"],
-    queryFn: ({ signal }) => get("/api/admin/users", { signal }),
+    queryKey: [
+      "admin",
+      "users",
+      {
+        page: pageIndex,
+        pageSize: PAGE_SIZE,
+        status: statusFilter,
+        role: roleFilter,
+        search,
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      },
+    ],
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(pageIndex * PAGE_SIZE),
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      });
+      if (statusFilter !== FILTER_ALL) params.set("status", statusFilter);
+      if (roleFilter !== FILTER_ALL) params.set("role", roleFilter);
+      if (search) params.set("search", search);
+      return get(`/api/admin/users?${params.toString()}`, { signal });
+    },
+    placeholderData: keepPreviousData,
   });
 
-  const users = useMemo(() => response?.data ?? [], [response]);
-
-  // Handlers
-  const handleRowClick = useCallback(
-    (row) => {
-      navigate(adminUserPath(row.id), {
-        state: { backgroundLocation: location },
-      });
-    },
-    [navigate, location],
-  );
-
-  const handleCreate = useCallback(() => {
-    navigate(ROUTES.ADMIN_USERS_MODAL_CREATE, {
-      state: { backgroundLocation: location },
-    });
-  }, [navigate, location]);
-
-  const handleStatusFilter = useCallback((event) => {
-    setStatusFilter(event.target.value);
-  }, []);
-
-  const handleRoleFilter = useCallback((event) => {
-    setRoleFilter(event.target.value);
-  }, []);
+  const totalCount = response?.meta?.total ?? 0;
 
   // Derived State
-  const filteredUsers = useMemo(() => {
-    let result = users;
-    if (statusFilter !== "all") {
-      result = result.filter((u) => u.status === statusFilter);
-    }
-    if (roleFilter !== "all") {
-      result = result.filter((u) => u.role === roleFilter);
-    }
-    return result;
-  }, [users, statusFilter, roleFilter]);
+  const users = useMemo(() => response?.data ?? [], [response]);
 
   const columns = useMemo(
     () => [
@@ -142,6 +141,46 @@ const AdminUsersIndex = () => {
     [t],
   );
 
+  // Handlers
+  const handleRowClick = useCallback(
+    (row) => {
+      navigate(adminUserPath(row.id), {
+        state: { backgroundLocation: location },
+      });
+    },
+    [navigate, location],
+  );
+
+  const handleCreate = useCallback(() => {
+    navigate(ROUTES.ADMIN_USERS_MODAL_CREATE, {
+      state: { backgroundLocation: location },
+    });
+  }, [navigate, location]);
+
+  const handleStatusFilter = useCallback((event) => {
+    setStatusFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleRoleFilter = useCallback((event) => {
+    setRoleFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+    setPageIndex(0);
+  }, []);
+
+  const handlePageChange = useCallback((newPageIndex) => {
+    setPageIndex(newPageIndex);
+  }, []);
+
+  const handleSortChange = useCallback((next) => {
+    setSort(next);
+    setPageIndex(0);
+  }, []);
+
   // Effects
   useEffect(() => {
     setHeader({
@@ -183,7 +222,7 @@ const AdminUsersIndex = () => {
         ariaLabel={t("common.filters.allRoles")}
         onChange={handleRoleFilter}
         options={[
-          { value: "all", label: t("common.filters.allRoles") },
+          { value: FILTER_ALL, label: t("common.filters.allRoles") },
           { value: "user", label: t("features.admin.users.list.role_user") },
           { value: "admin", label: t("features.admin.users.list.role_admin") },
           {
@@ -197,7 +236,7 @@ const AdminUsersIndex = () => {
         ariaLabel={t("common.filters.allStatuses")}
         onChange={handleStatusFilter}
         options={[
-          { value: "all", label: t("common.filters.allStatuses") },
+          { value: FILTER_ALL, label: t("common.filters.allStatuses") },
           { value: "active", label: t("features.admin.users.list.active") },
           { value: "inactive", label: t("features.admin.users.list.inactive") },
         ]}
@@ -219,9 +258,24 @@ const AdminUsersIndex = () => {
       <Datatable
         actions={actions}
         columns={columns}
-        data={filteredUsers}
+        data={users}
         filters={userFilters}
         onRowClick={handleRowClick}
+        pageSize={PAGE_SIZE}
+        serverPagination={{
+          total: totalCount,
+          pageIndex,
+          onPageChange: handlePageChange,
+        }}
+        serverSearch={{
+          value: search,
+          onChange: handleSearchChange,
+        }}
+        serverSort={{
+          id: sort.id,
+          desc: sort.desc,
+          onChange: handleSortChange,
+        }}
       />
     </div>
   );

@@ -1,8 +1,10 @@
+import { buildLikePattern, parseListQuery } from '../../_list.js'
 import { generateUlid } from '../../_ulid.js'
 import { getAuthUser, hashPassword } from '../../auth/_helpers.js'
 
 /**
  * GET /api/admin/users — List all users with their store associations (super_admin only).
+ * Server-side pagination, search (name/email), sort, and status/role filters.
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
@@ -24,25 +26,70 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const { results: users } = await env.DB.prepare(
-      `SELECT id, name, email, role, status, created_at, updated_at FROM users ORDER BY name`,
-    ).all()
+    const url = new URL(request.url)
+    const { limit, offset, search, sort, order } = parseListQuery(url, {
+      sortableColumns: new Set(['name', 'email', 'created_at', 'updated_at']),
+      defaultSort: 'name',
+      defaultOrder: 'ASC',
+    })
+    const status = url.searchParams.get('status') || 'all'
+    const role = url.searchParams.get('role') || 'all'
 
-    const { results: storeLinks } = await env.DB.prepare(
-      `SELECT su.user_id, su.store_id, s.name AS store_name
-       FROM store_users su
-       JOIN stores s ON s.id = su.store_id`,
-    ).all()
+    const where = []
+    const params = []
 
+    if (search) {
+      const like = buildLikePattern(search)
+      where.push(String.raw`(name LIKE ? ESCAPE '\' OR email LIKE ? ESCAPE '\')`)
+      params.push(like, like)
+    }
+
+    if (status !== 'all') {
+      where.push('status = ?')
+      params.push(status)
+    }
+
+    if (role !== 'all') {
+      where.push('role = ?')
+      params.push(role)
+    }
+
+    const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : ''
+
+    const [countResult, dataResult] = await env.DB.batch([
+      env.DB.prepare(`SELECT COUNT(*) AS total FROM users ${whereSql}`).bind(...params),
+      env.DB.prepare(
+        `SELECT id, name, email, role, status, created_at, updated_at
+         FROM users
+         ${whereSql}
+         ORDER BY ${sort} ${order}
+         LIMIT ? OFFSET ?`,
+      ).bind(...params, limit, offset),
+    ])
+
+    const total = countResult.results[0].total
+    const users = dataResult.results
+
+    // Store associations only for the users on this page.
     const storesByUser = {}
-    for (const link of storeLinks) {
-      if (!storesByUser[link.user_id]) storesByUser[link.user_id] = []
-      storesByUser[link.user_id].push({ store_id: link.store_id, store_name: link.store_name })
+    if (users.length > 0) {
+      const placeholders = users.map(() => '?').join(', ')
+      const { results: storeLinks } = await env.DB.prepare(
+        `SELECT su.user_id, su.store_id, s.name AS store_name
+         FROM store_users su
+         JOIN stores s ON s.id = su.store_id
+         WHERE su.user_id IN (${placeholders})`,
+      ).bind(...users.map((u) => u.id)).all()
+
+      for (const link of storeLinks) {
+        if (!storesByUser[link.user_id]) storesByUser[link.user_id] = []
+        storesByUser[link.user_id].push({ store_id: link.store_id, store_name: link.store_name })
+      }
     }
 
     const result = users.map((u) => ({ ...u, stores: storesByUser[u.id] ?? [] }))
 
-    return Response.json({ data: result })
+    return Response.json({ data: result, meta: { total, limit, offset } })
   } catch (error) {
     const err = new Error('Admin: Failed to list users')
     err.code = 'DB_READ_FAILED'

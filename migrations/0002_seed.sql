@@ -214,7 +214,7 @@ VALUES (
 );
 
 -- ─── Commissions ────────────────────────────────────────────────
--- 5% of each vallle created (min €0.50, max €2.00)
+-- 5% of each vallle created (min €0.50)
 
 -- Café Flor €25 vallle → 5% = €1.25
 INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
@@ -226,13 +226,13 @@ VALUES (
   '2026-03-15T14:00:00Z'
 );
 
--- Café Flor €50 vallle → 5% = €2.50, capped at €2.00
+-- Café Flor €50 vallle → 5% = €2.50
 INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000051',
   '01JA0000000000000000000010',
   '01JA0000000000000000000031',
-  200, '2026-03-13T10:00:00Z',
+  250, '2026-03-13T10:00:00Z',
   '2026-03-10T11:00:00Z'
 );
 

@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { useLocation, useNavigate } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { keepPreviousData, useQuery } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
 import Datatable from "@/components/Datatable";
@@ -36,12 +36,17 @@ const COMMISSION_VARIANTS = {
 
 /**
  * Component: AdminCompaniesIndex
- * Lists all companies (stores) for the super admin.
- * Each row links to the company view modal.
+ * Lists all companies (stores) for the super admin. Each row links to the
+ * company view modal. Pagination, search, sorting, and the status/category
+ * filters are server-side.
  * @component
  * @returns {JSX.Element}
  */
 const AdminCompaniesIndex = () => {
+  // Constants
+  const FILTER_ALL = "all";
+  const PAGE_SIZE = 20;
+
   // Hooks
   const { t } = useTranslation();
   const navigate = useNavigate();
@@ -49,8 +54,11 @@ const AdminCompaniesIndex = () => {
   const { setHeader } = useMain();
 
   // State
-  const [statusFilter, setStatusFilter] = useState("all");
-  const [categoryFilter, setCategoryFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(FILTER_ALL);
+  const [categoryFilter, setCategoryFilter] = useState(FILTER_ALL);
+  const [pageIndex, setPageIndex] = useState(0);
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState({ id: "name", desc: false });
 
   // Queries
   const {
@@ -58,47 +66,38 @@ const AdminCompaniesIndex = () => {
     isPending,
     isError,
   } = useQuery({
-    queryKey: ["admin", "companies"],
-    queryFn: ({ signal }) => get("/api/admin/companies", { signal }),
+    queryKey: [
+      "admin",
+      "companies",
+      {
+        page: pageIndex,
+        pageSize: PAGE_SIZE,
+        status: statusFilter,
+        category: categoryFilter,
+        search,
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      },
+    ],
+    queryFn: ({ signal }) => {
+      const params = new URLSearchParams({
+        limit: String(PAGE_SIZE),
+        offset: String(pageIndex * PAGE_SIZE),
+        sort: sort.id,
+        order: sort.desc ? "desc" : "asc",
+      });
+      if (statusFilter !== FILTER_ALL) params.set("status", statusFilter);
+      if (categoryFilter !== FILTER_ALL) params.set("category", categoryFilter);
+      if (search) params.set("search", search);
+      return get(`/api/admin/companies?${params.toString()}`, { signal });
+    },
+    placeholderData: keepPreviousData,
   });
 
-  const companies = useMemo(() => response?.data ?? [], [response]);
-
-  // Handlers
-  const handleRowClick = useCallback(
-    (row) => {
-      navigate(adminCompanyPath(row.id), {
-        state: { backgroundLocation: location },
-      });
-    },
-    [navigate, location],
-  );
-
-  const handleCreate = useCallback(() => {
-    navigate(ROUTES.ADMIN_COMPANIES_MODAL_CREATE, {
-      state: { backgroundLocation: location },
-    });
-  }, [navigate, location]);
-
-  const handleStatusFilter = useCallback((event) => {
-    setStatusFilter(event.target.value);
-  }, []);
-
-  const handleCategoryFilter = useCallback((event) => {
-    setCategoryFilter(event.target.value);
-  }, []);
+  const totalCount = response?.meta?.total ?? 0;
 
   // Derived State
-  const filteredCompanies = useMemo(() => {
-    let result = companies;
-    if (statusFilter !== "all") {
-      result = result.filter((c) => c.status === statusFilter);
-    }
-    if (categoryFilter !== "all") {
-      result = result.filter((c) => c.category === categoryFilter);
-    }
-    return result;
-  }, [companies, statusFilter, categoryFilter]);
+  const companies = useMemo(() => response?.data ?? [], [response]);
 
   const columns = useMemo(
     () => [
@@ -166,6 +165,46 @@ const AdminCompaniesIndex = () => {
     [t],
   );
 
+  // Handlers
+  const handleRowClick = useCallback(
+    (row) => {
+      navigate(adminCompanyPath(row.id), {
+        state: { backgroundLocation: location },
+      });
+    },
+    [navigate, location],
+  );
+
+  const handleCreate = useCallback(() => {
+    navigate(ROUTES.ADMIN_COMPANIES_MODAL_CREATE, {
+      state: { backgroundLocation: location },
+    });
+  }, [navigate, location]);
+
+  const handleStatusFilter = useCallback((event) => {
+    setStatusFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleCategoryFilter = useCallback((event) => {
+    setCategoryFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handleSearchChange = useCallback((value) => {
+    setSearch(value);
+    setPageIndex(0);
+  }, []);
+
+  const handlePageChange = useCallback((newPageIndex) => {
+    setPageIndex(newPageIndex);
+  }, []);
+
+  const handleSortChange = useCallback((next) => {
+    setSort(next);
+    setPageIndex(0);
+  }, []);
+
   // Effects
   useEffect(() => {
     setHeader({
@@ -207,7 +246,7 @@ const AdminCompaniesIndex = () => {
         ariaLabel={t("common.filters.allStatuses")}
         onChange={handleStatusFilter}
         options={[
-          { value: "all", label: t("common.filters.allStatuses") },
+          { value: FILTER_ALL, label: t("common.filters.allStatuses") },
           { value: "active", label: t("features.admin.companies.list.active") },
           {
             value: "suspended",
@@ -224,7 +263,7 @@ const AdminCompaniesIndex = () => {
         ariaLabel={t("common.filters.allCategories")}
         onChange={handleCategoryFilter}
         options={[
-          { value: "all", label: t("common.filters.allCategories") },
+          { value: FILTER_ALL, label: t("common.filters.allCategories") },
           ...COMPANY_CATEGORIES.map((key) => ({
             value: key,
             label: t(`constants.companyCategories.${key}`),
@@ -248,9 +287,24 @@ const AdminCompaniesIndex = () => {
       <Datatable
         actions={actions}
         columns={columns}
-        data={filteredCompanies}
+        data={companies}
         filters={companyFilters}
         onRowClick={handleRowClick}
+        pageSize={PAGE_SIZE}
+        serverPagination={{
+          total: totalCount,
+          pageIndex,
+          onPageChange: handlePageChange,
+        }}
+        serverSearch={{
+          value: search,
+          onChange: handleSearchChange,
+        }}
+        serverSort={{
+          id: sort.id,
+          desc: sort.desc,
+          onChange: handleSortChange,
+        }}
       />
     </div>
   );

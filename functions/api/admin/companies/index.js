@@ -1,3 +1,4 @@
+import { buildLikePattern, parseListQuery } from '../../_list.js'
 import { generateUlid } from '../../_ulid.js'
 import { getAuthUser } from '../../auth/_helpers.js'
 
@@ -8,6 +9,7 @@ const STORE_FIELDS = [
 
 /**
  * GET /api/admin/companies — List all stores with vallle stats (super_admin only).
+ * Server-side pagination, search (name), sort, and status/category filters.
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
@@ -29,26 +31,68 @@ export async function onRequestGet(context) {
   }
 
   try {
-    const { results } = await env.DB.prepare(
-      `SELECT s.id, s.name, s.category, s.status, s.created_at, s.updated_at,
-              COUNT(v.id) AS vallle_count,
-              COALESCE(SUM(v.amount), 0) AS total_revenue,
-              COALESCE(cs.total_commission, 0) AS total_commission,
-              COALESCE(cs.unpaid_commission, 0) AS unpaid_commission
-       FROM stores s
-       LEFT JOIN vallles v ON v.store_id = s.id
-       LEFT JOIN (
-         SELECT store_id,
-                SUM(amount) AS total_commission,
-                SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END) AS unpaid_commission
-         FROM commissions
-         GROUP BY store_id
-       ) cs ON cs.store_id = s.id
-       GROUP BY s.id
-       ORDER BY s.name`,
-    ).all()
+    const url = new URL(request.url)
+    const { limit, offset, search, sort, order } = parseListQuery(url, {
+      sortableColumns: new Set([
+        'name', 'category', 'vallle_count', 'total_revenue', 'total_commission', 'updated_at',
+      ]),
+      defaultSort: 'name',
+      defaultOrder: 'ASC',
+    })
+    const status = url.searchParams.get('status') || 'all'
+    const category = url.searchParams.get('category') || 'all'
 
-    return Response.json({ data: results })
+    const where = []
+    const params = []
+
+    if (search) {
+      where.push(String.raw`name LIKE ? ESCAPE '\'`)
+      params.push(buildLikePattern(search))
+    }
+
+    if (status !== 'all') {
+      where.push('status = ?')
+      params.push(status)
+    }
+
+    if (category !== 'all') {
+      where.push('category = ?')
+      params.push(category)
+    }
+
+    const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : ''
+
+    // Aggregate per store first; search/filter/sort/pagination apply to the
+    // summary so aggregate columns are sortable like any other.
+    const summarySql = `
+      WITH summary AS (
+        SELECT s.id, s.name, s.category, s.status, s.created_at, s.updated_at,
+               COUNT(v.id) AS vallle_count,
+               COALESCE(SUM(v.amount), 0) AS total_revenue,
+               COALESCE(cs.total_commission, 0) AS total_commission,
+               COALESCE(cs.unpaid_commission, 0) AS unpaid_commission
+        FROM stores s
+        LEFT JOIN vallles v ON v.store_id = s.id
+        LEFT JOIN (
+          SELECT store_id,
+                 SUM(amount) AS total_commission,
+                 SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END) AS unpaid_commission
+          FROM commissions
+          GROUP BY store_id
+        ) cs ON cs.store_id = s.id
+        GROUP BY s.id
+      )`
+
+    const [countResult, dataResult] = await env.DB.batch([
+      env.DB.prepare(`${summarySql} SELECT COUNT(*) AS total FROM summary ${whereSql}`).bind(...params),
+      env.DB.prepare(
+        `${summarySql} SELECT * FROM summary ${whereSql} ORDER BY ${sort} ${order} LIMIT ? OFFSET ?`,
+      ).bind(...params, limit, offset),
+    ])
+
+    const total = countResult.results[0].total
+
+    return Response.json({ data: dataResult.results, meta: { total, limit, offset } })
   } catch (error) {
     const err = new Error('Admin: Failed to list companies')
     err.code = 'DB_READ_FAILED'

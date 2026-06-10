@@ -1,9 +1,11 @@
-import { generateUlid } from '../../_ulid.js'
+import { buildLikePattern, parseListQuery } from '../../_list.js'
 import { requireStore } from '../../_store.js'
+import { generateUlid } from '../../_ulid.js'
 import { getAuthUser, hashPassword } from '../../auth/_helpers.js'
 
 /**
  * GET /api/company/users — List users for the active store.
+ * Server-side pagination, search (name/email), sort, and status filter.
  * Requires admin role (admin or super_admin).
  */
 export async function onRequestGet(context) {
@@ -29,15 +31,45 @@ export async function onRequestGet(context) {
   if (result instanceof Response) return result
 
   try {
-    const { results } = await env.DB.prepare(
-      `SELECT u.id, u.name, u.email, u.role, u.status, u.created_at, u.updated_at
-       FROM store_users su
-       JOIN users u ON u.id = su.user_id
-       WHERE su.store_id = ?
-       ORDER BY u.name`,
-    ).bind(result.storeId).all()
+    const url = new URL(request.url)
+    const { limit, offset, search, sort, order } = parseListQuery(url, {
+      sortableColumns: new Set(['name', 'email', 'created_at', 'updated_at']),
+      defaultSort: 'name',
+      defaultOrder: 'ASC',
+    })
+    const status = url.searchParams.get('status') || 'all'
 
-    return Response.json({ data: results })
+    const where = ['su.store_id = ?']
+    const params = [result.storeId]
+
+    if (search) {
+      const like = buildLikePattern(search)
+      where.push(String.raw`(u.name LIKE ? ESCAPE '\' OR u.email LIKE ? ESCAPE '\')`)
+      params.push(like, like)
+    }
+
+    if (status !== 'all') {
+      where.push('u.status = ?')
+      params.push(status)
+    }
+
+    const whereSql = where.join(' AND ')
+    const fromSql = 'FROM store_users su JOIN users u ON u.id = su.user_id'
+
+    const [countResult, dataResult] = await env.DB.batch([
+      env.DB.prepare(`SELECT COUNT(*) AS total ${fromSql} WHERE ${whereSql}`).bind(...params),
+      env.DB.prepare(
+        `SELECT u.id, u.name, u.email, u.role, u.status, u.created_at, u.updated_at
+         ${fromSql}
+         WHERE ${whereSql}
+         ORDER BY u.${sort} ${order}
+         LIMIT ? OFFSET ?`,
+      ).bind(...params, limit, offset),
+    ])
+
+    const total = countResult.results[0].total
+
+    return Response.json({ data: dataResult.results, meta: { total, limit, offset } })
   } catch (error) {
     const err = new Error('Company: Failed to list users')
     err.code = 'DB_READ_FAILED'

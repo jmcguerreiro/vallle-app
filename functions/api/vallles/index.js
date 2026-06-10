@@ -1,3 +1,4 @@
+import { buildLikePattern, parseListQuery } from '../_list.js'
 import { getStoreStatus, requireStore } from '../_store.js'
 import { generateUlid } from '../_ulid.js'
 import { getAuthUser } from '../auth/_helpers.js'
@@ -46,24 +47,17 @@ export async function onRequestGet(context) {
 
   try {
     const url = new URL(request.url)
-    const limit = Math.min(Math.max(Number.parseInt(url.searchParams.get('limit'), 10) || 50, 1), 200)
-    const offset = Math.max(Number.parseInt(url.searchParams.get('offset'), 10) || 0, 0)
-    const search = (url.searchParams.get('search') || '').trim()
+    const { limit, offset, search, sort, order } = parseListQuery(url, {
+      sortableColumns: new Set(['code', 'buyer', 'amount', 'balance', 'created_at', 'expires_at']),
+      defaultSort: 'created_at',
+    })
     const status = url.searchParams.get('status') || 'all'
-
-    // Column names cannot be parameterised, so map against an allowlist.
-    const SORTABLE_COLUMNS = new Set([
-      'code', 'buyer', 'amount', 'balance', 'created_at', 'expires_at',
-    ])
-    const sortParam = url.searchParams.get('sort')
-    const sort = SORTABLE_COLUMNS.has(sortParam) ? sortParam : 'created_at'
-    const order = url.searchParams.get('order') === 'asc' ? 'ASC' : 'DESC'
 
     const where = ['store_id = ?']
     const params = [storeId]
 
     if (search) {
-      const like = `%${search.replaceAll(/[\\%_]/g, (c) => `\\${c}`)}%`
+      const like = buildLikePattern(search)
       const clauses = [
         String.raw`code LIKE ? ESCAPE '\'`,
         String.raw`buyer LIKE ? ESCAPE '\'`,
@@ -228,7 +222,7 @@ export async function onRequestPost(context) {
   const vallleId = generateUlid()
   const code = generateVallleCode()
   const commissionId = generateUlid()
-  const commissionAmount = Math.min(250, Math.max(50, Math.round(amount * 0.05)))
+  const commissionAmount = Math.max(50, Math.round(amount * 0.05))
 
   const vallle = {
     id: vallleId,
