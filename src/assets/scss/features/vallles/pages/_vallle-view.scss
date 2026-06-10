@@ -14,12 +14,8 @@
 
 .p-vallle-view__code {
   @include font-size(6xl);
-
   color: $text-color-highlight;
-  font-family: "DM Serif Display", serif;
-  font-weight: $font-weight-regular;
-  letter-spacing: 0.05em;
-  margin: 0;
+  font-weight: $font-weight-bold;
   text-align: center;
   text-transform: uppercase;
 
@@ -29,8 +25,6 @@
 }
 
 .p-vallle-view__subtitle {
-  @include font-size(sm);
-
   color: $text-color-muted;
   text-align: center;
 }

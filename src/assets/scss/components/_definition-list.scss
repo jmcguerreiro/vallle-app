@@ -1,0 +1,23 @@
+.c-definition-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-4;
+}
+
+.c-definition-list__field {
+  border-bottom: solid 1px $color-parchment;
+  display: flex;
+  align-items: baseline;
+  gap: $spacing-3;
+  padding-bottom: $spacing-2;
+}
+
+.c-definition-list__label {
+  color: $text-color-muted;
+  flex-shrink: 0;
+  min-width: 100px;
+}
+
+.c-definition-list__value {
+  color: $text-color;
+}

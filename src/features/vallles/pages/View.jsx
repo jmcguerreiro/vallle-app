@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import Accordion from "@/components/Accordion";
 import Badge from "@/components/Badge";
+import DefinitionList from "@/components/DefinitionList";
 import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import { vallleEditPath, vallleRedeemPath } from "@/constants/routes";
@@ -178,14 +179,7 @@ const VallleView = () => {
         <p className="p-vallle-view__subtitle">{heroSubtitle}</p>
       </div>
 
-      <dl className="c-vallle-detail">
-        {fields.map(({ label, value }) => (
-          <div key={label} className="c-vallle-detail__field">
-            <dt className="c-vallle-detail__label">{label}</dt>
-            <dd className="c-vallle-detail__value">{value}</dd>
-          </div>
-        ))}
-      </dl>
+      <DefinitionList items={fields} />
 
       <Accordion
         className="c-vallle-redemptions"

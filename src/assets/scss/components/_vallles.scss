@@ -1,32 +1,3 @@
-/* ─── Vallle detail (view modal) ────────────────────────────── */
-
-.c-vallle-detail {
-  display: flex;
-  flex-direction: column;
-  gap: $spacing-4;
-}
-
-.c-vallle-detail__field {
-  display: flex;
-  align-items: baseline;
-  gap: $spacing-3;
-}
-
-.c-vallle-detail__label {
-  @include font-size(sm);
-
-  color: $text-color-muted;
-  flex-shrink: 0;
-  min-width: 100px;
-}
-
-.c-vallle-detail__value {
-  @include font-size(sm);
-
-  color: $text-color-highlight;
-  font-weight: $font-weight-bold;
-}
-
 /* ─── Vallle code input (segmented) ────────────────────────── */
 
 /* ─── Vallle redemptions log ────────────────────────────────── */

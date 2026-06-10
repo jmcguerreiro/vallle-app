@@ -48,19 +48,21 @@ const Drawer = ({
           className="c-drawer"
         >
           <VaulDrawer.Handle className="c-drawer__handle" />
-          {(title || description) && (
+          {title || description ? (
             <div className="c-drawer__header">
-              {title && (
-                <VaulDrawer.Title className="c-drawer__header-title">
-                  {title}
-                </VaulDrawer.Title>
-              )}
+              <VaulDrawer.Title
+                className={title ? "c-drawer__header-title" : "u-sr-only"}
+              >
+                {title || "Dialog"}
+              </VaulDrawer.Title>
               {description && (
                 <VaulDrawer.Description className="c-drawer__header-description">
                   {description}
                 </VaulDrawer.Description>
               )}
             </div>
+          ) : (
+            <VaulDrawer.Title className="u-sr-only">Dialog</VaulDrawer.Title>
           )}
           <div className="c-drawer__body">{children}</div>
           {actions.length > 0 && (

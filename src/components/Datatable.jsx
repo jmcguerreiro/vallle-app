@@ -138,8 +138,12 @@ const Datatable = ({
   );
 
   const handleRowClick = useCallback(
-    (row) => {
+    (event, row) => {
       if (onRowClick) {
+        // Drop focus from the row before it opens a route modal. Otherwise the
+        // row keeps focus inside the background subtree the modal marks
+        // aria-hidden, which assistive tech blocks.
+        event.currentTarget?.blur();
         onRowClick(row.original);
       }
     },
@@ -150,7 +154,7 @@ const Datatable = ({
     (event, row) => {
       if (event.key === "Enter" || event.key === " ") {
         event.preventDefault();
-        handleRowClick(row);
+        handleRowClick(event, row);
       }
     },
     [handleRowClick],
@@ -251,7 +255,7 @@ const Datatable = ({
                 <tr
                   key={row.id}
                   className={`c-datatable__row${onRowClick ? " c-datatable__row--clickable" : ""}`}
-                  onClick={() => handleRowClick(row)}
+                  onClick={(event) => handleRowClick(event, row)}
                   onKeyDown={(event) => handleRowKeyDown(event, row)}
                   role={onRowClick ? "button" : undefined}
                   tabIndex={onRowClick ? 0 : undefined}

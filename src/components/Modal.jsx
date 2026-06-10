@@ -67,7 +67,7 @@ const Modal = ({
           onClick={handleClose}
           type="button"
         >
-          <IconX className="c-modal__close-icon" size={18} />
+          <IconX className="c-modal__close-icon" size={20} strokeWidth={1.5} />
         </button>
         {(title || description) && (
           <div className="c-modal__header">

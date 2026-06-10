@@ -34,12 +34,23 @@
 
 .s-header__store-switch {
   align-items: center;
+  border-radius: $border-radius-3xl;
+  border: solid 1px $color-parchment;
+  cursor: pointer;
   display: inline-flex;
   gap: $spacing-2;
-  border: solid 1px $color-parchment;
-  border-radius: $border-radius-3xl;
-  padding: 0 $spacing-3;
   height: to-rem(48);
+  padding: 0 $spacing-3;
+  transition: $transition-normal;
+
+  @include focus-visible {
+    border-color: transparent;
+    outline: solid 2px $color-driftwood;
+  }
+
+  @include active {
+    transform: scale(0.98);
+  }
 }
 
 .s-header__store-switch-icon {
