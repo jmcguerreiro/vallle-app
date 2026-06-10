@@ -19,6 +19,7 @@ import Button from "@/components/Button";
  * @param {string} [props.title] - Header title
  * @param {string} [props.description] - Header description
  * @param {Array<{label: string, icon?: React.ComponentType, onClick: Function, variant?: string}>} [props.actions=[]] - Footer action buttons
+ * @param {Function} [props.onAnimationEnd] - Called by Vaul when the open/close animation finishes, with the resulting open state. Unmount only after this reports closed — earlier, and Vaul can't restore the body's pointer-events.
  * @returns {JSX.Element}
  */
 const Drawer = ({
@@ -28,6 +29,7 @@ const Drawer = ({
   title,
   description,
   actions = [],
+  onAnimationEnd,
 }) => {
   // Handlers
   const handleOpenChange = useCallback(
@@ -39,7 +41,11 @@ const Drawer = ({
 
   // Render
   return (
-    <VaulDrawer.Root onOpenChange={handleOpenChange} open={open}>
+    <VaulDrawer.Root
+      onAnimationEnd={onAnimationEnd}
+      onOpenChange={handleOpenChange}
+      open={open}
+    >
       <VaulDrawer.Portal>
         <VaulDrawer.Overlay className="c-drawer__overlay" />
         <VaulDrawer.Content

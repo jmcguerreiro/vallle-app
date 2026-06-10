@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
 
 import Drawer from "@/components/Drawer";
@@ -6,8 +6,6 @@ import Modal from "@/components/Modal";
 import { ROUTES } from "@/constants/routes";
 import { useMediaQuery } from "@/hooks/useMediaQuery";
 import { useModal } from "@/hooks/useModal";
-
-const CLOSE_ANIMATION_MS = 350;
 
 /**
  * Component: RouteModal
@@ -30,32 +28,70 @@ const RouteModal = ({ children }) => {
   // State
   const [isOpen, setIsOpen] = useState(true);
 
+  // Refs
+  // Dismissal can be reported more than once (close button click plus the
+  // dialog's native close event, rapid double-clicks); only the first may
+  // navigate, otherwise we'd go back through history twice.
+  const hasNavigatedRef = useRef(false);
+  // Vaul's onAnimationEnd timer outlives the component — when a new modal is
+  // opened while this one is animating out, the stale callback must not
+  // navigate on behalf of an unmounted instance.
+  const isUnmountedRef = useRef(false);
+
   // Derived State
   // Opened via in-app navigation (background page behind us) vs. opened
   // directly (no history to return to — fall back to the dashboard).
-  const hasBackground = Boolean(location.state?.backgroundLocation);
+  // A modal opened while another was closing chains background locations
+  // (its background is the previous modal's URL); the chain depth is how many
+  // history entries to pop to land back on the original page.
+  const backDelta = useMemo(() => {
+    let depth = 0;
+    let state = location.state;
+    while (state?.backgroundLocation) {
+      depth += 1;
+      state = state.backgroundLocation.state;
+    }
+    return depth;
+  }, [location.state]);
 
   // Handlers
   const goBack = useCallback(() => {
-    if (hasBackground) {
-      navigate(-1);
+    if (hasNavigatedRef.current) return;
+    hasNavigatedRef.current = true;
+    if (backDelta > 0) {
+      navigate(-backDelta);
     } else {
       navigate(ROUTES.HOME, { replace: true });
     }
-  }, [hasBackground, navigate]);
+  }, [backDelta, navigate]);
 
   const handleClose = useCallback(() => {
-    // Close first and let the modal/drawer animate out; the effect below
-    // navigates back once the exit animation has finished.
-    setIsOpen(false);
-  }, []);
+    if (isDesktop) {
+      // The native <dialog> has no exit animation — navigate right away;
+      // unmounting drops it from the top layer.
+      goBack();
+    } else {
+      // Let Vaul play its exit animation; handleAnimationEnd navigates once
+      // it finishes and Vaul has restored the body's scroll lock.
+      // Unmounting mid-animation would leave the page unclickable.
+      setIsOpen(false);
+    }
+  }, [isDesktop, goBack]);
+
+  const handleAnimationEnd = useCallback(
+    (open) => {
+      if (!open && !isUnmountedRef.current) goBack();
+    },
+    [goBack],
+  );
 
   // Effects
   useEffect(() => {
-    if (isOpen) return;
-    const timer = setTimeout(goBack, CLOSE_ANIMATION_MS);
-    return () => clearTimeout(timer);
-  }, [isOpen, goBack]);
+    isUnmountedRef.current = false;
+    return () => {
+      isUnmountedRef.current = true;
+    };
+  }, []);
 
   // Render
   return isDesktop ? (
@@ -72,6 +108,7 @@ const RouteModal = ({ children }) => {
     <Drawer
       actions={header.actions}
       description={header.description}
+      onAnimationEnd={handleAnimationEnd}
       onClose={handleClose}
       open={isOpen}
       title={header.title}

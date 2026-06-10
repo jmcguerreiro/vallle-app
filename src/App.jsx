@@ -190,7 +190,10 @@ const AppRoutes = () => {
       {backgroundLocation && (
         <ModalProvider>
           <AuthGuard>
-            <Routes>
+            {/* Keyed by location so navigating modal-to-modal (e.g. tapping a
+                row while the previous drawer animates out) mounts a fresh
+                RouteModal instead of reusing one whose open state is stale. */}
+            <Routes key={location.key}>
               <Route
                 element={
                   <RouteModal>

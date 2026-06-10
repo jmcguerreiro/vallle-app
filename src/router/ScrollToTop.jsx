@@ -1,23 +1,38 @@
-import { useEffect } from "react";
-import { useLocation } from "react-router-dom";
+import { useEffect, useRef } from "react";
+import { useLocation, useNavigationType } from "react-router-dom";
 
 /**
  * Component: ScrollToTop
- * Resets window scroll to the top on pathname change.
- * Skips the reset when a modal is opening over a background location, so the
- * underlying page keeps its scroll position while the modal is on top.
+ * Resets window scroll to the top when the user navigates to a different page.
+ * Modal routes render on top of a background page, so the relevant pathname is
+ * the background's when one is present — opening or closing a modal never
+ * changes it and therefore never moves the page underneath. POP navigations
+ * (browser back/forward, modal close) are also skipped so the browser's own
+ * scroll restoration can do its job.
  * @component
  * @returns {null}
  */
 const ScrollToTop = () => {
   // Hooks
   const location = useLocation();
+  const navigationType = useNavigationType();
+
+  // Refs
+  const previousPagePathname = useRef(null);
+
+  // Derived State
+  // The page actually on screen: the background's pathname when a modal is
+  // open, the location's own pathname otherwise.
+  const pagePathname =
+    location.state?.backgroundLocation?.pathname ?? location.pathname;
 
   // Effects
   useEffect(() => {
-    if (location.state?.backgroundLocation) return;
+    if (pagePathname === previousPagePathname.current) return;
+    previousPagePathname.current = pagePathname;
+    if (navigationType === "POP") return;
     window.scrollTo(0, 0);
-  }, [location.pathname, location.state?.backgroundLocation]);
+  }, [pagePathname, navigationType]);
 
   // Render
   return null;
