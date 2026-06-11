@@ -83,7 +83,7 @@ const User = () => {
                 display="block"
                 icon={IconPencil}
                 onClick={handleEditProfile}
-                variant="ghost"
+                skin="ghost"
               >
                 {t("nav.editProfile")}
               </Button>

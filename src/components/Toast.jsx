@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useRef } from "react";
 
+import { EVENTS } from "@/constants/events";
 import { useToast } from "@/hooks/useToast";
 import { IconAlertCircle, IconCheck, IconInfo, IconX } from "@/utils/icons";
 
@@ -14,8 +15,9 @@ const ICON_MAP = {
  * Renders all active toast notifications in a fixed container at the top-right of
  * the viewport. The container is a manual popover so it lives in the browser's
  * top layer and paints above native <dialog> modals (z-index can't beat the top
- * layer). It re-promotes on every toast change so it stays above a modal that was
- * opened after the toast fired.
+ * layer). Top-layer order is insertion order, so it re-promotes on every toast
+ * change and whenever a modal opens (EVENTS.MODAL_OPENED) — a dialog shown after
+ * the toast fired would otherwise sit on top of it.
  * @component
  * @returns {JSX.Element}
  */
@@ -39,14 +41,23 @@ const Toast = () => {
     const container = containerRef.current;
     if (!container) return;
 
-    if (toasts.length > 0) {
-      // Re-promote to the top of the top layer so we sit above any modal that
-      // was opened after the toast fired (top-layer order, not z-index, wins).
+    if (toasts.length === 0) {
+      if (container.matches(":popover-open")) container.hidePopover();
+      return;
+    }
+
+    // Re-promote to the top of the top layer so we sit above any open modal
+    // (top-layer order, not z-index, wins).
+    const promote = () => {
       if (container.matches(":popover-open")) container.hidePopover();
       container.showPopover();
-    } else if (container.matches(":popover-open")) {
-      container.hidePopover();
-    }
+    };
+
+    promote();
+    // A modal opened while the toast is visible (e.g. create → success →
+    // navigate to view) enters the top layer above us — re-promote then too.
+    globalThis.addEventListener(EVENTS.MODAL_OPENED, promote);
+    return () => globalThis.removeEventListener(EVENTS.MODAL_OPENED, promote);
   }, [toasts]);
 
   // Render

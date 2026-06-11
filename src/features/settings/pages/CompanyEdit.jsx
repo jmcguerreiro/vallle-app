@@ -10,7 +10,9 @@ import Fieldset from "@/components/forms/Fieldset";
 import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
+import { COMPANY_CATEGORIES } from "@/constants/company-categories";
 import { useAuth } from "@/hooks/useAuth";
 import { get, put } from "@/services/api";
 
@@ -28,11 +30,16 @@ const CompanyEdit = () => {
     register,
     handleSubmit,
     reset,
+    control,
     formState: { errors },
   } = useForm();
 
   // Derived State
   const storeId = activeStore?.store_id;
+  const categoryOptions = COMPANY_CATEGORIES.map((key) => ({
+    value: key,
+    label: t(`constants.companyCategories.${key}`),
+  }));
 
   // Queries
   const {
@@ -84,7 +91,7 @@ const CompanyEdit = () => {
       setSuccess(false);
       saveCompany.mutate(values);
     },
-    [saveCompany],
+    [saveCompany, setServerError, setSuccess],
   );
 
   // Effects
@@ -148,11 +155,13 @@ const CompanyEdit = () => {
               register={register}
               required={t("features.company.form.error.nameRequired")}
             />
-            <Input
+            <Select
+              control={control}
               error={errors.category}
               label={t("features.company.form.category")}
               name="category"
-              register={register}
+              options={categoryOptions}
+              placeholder={t("features.company.form.category")}
             />
           </FormFields>
         </Fieldset>

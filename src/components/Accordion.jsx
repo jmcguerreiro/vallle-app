@@ -24,7 +24,7 @@ const Accordion = ({
     >
       <summary className="c-accordion__trigger">
         <span className="c-accordion__title">{title}</span>
-        <IconChevronDown className="c-accordion__icon" size={16} />
+        <IconChevronDown className="c-accordion__icon" strokeWidth={2} />
       </summary>
       <div className="c-accordion__body">{children}</div>
     </details>

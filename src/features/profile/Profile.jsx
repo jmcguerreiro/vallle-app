@@ -261,7 +261,7 @@ const Profile = () => {
         <Button
           state={{ backgroundLocation: location }}
           to={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
-          variant="ghost"
+          skin="ghost"
         >
           {t("features.profile.password.submit")}
         </Button>

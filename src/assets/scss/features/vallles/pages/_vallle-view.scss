@@ -12,6 +12,10 @@
   margin-bottom: $spacing-6;
 }
 
+.p-vallle-view__details {
+  margin-bottom: $spacing-6;
+}
+
 .p-vallle-view__code {
   @include font-size(6xl);
   color: $text-color-highlight;
@@ -27,6 +31,46 @@
 .p-vallle-view__subtitle {
   color: $text-color-muted;
   text-align: center;
+}
+
+.p-vallle-view__redemptions-empty {
+  color: $text-color-muted;
+}
+
+.p-vallle-view__redemptions-list {
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-3;
+}
+
+.p-vallle-view__redemptions-list-item {
+  display: flex;
+  flex-direction: column;
+  padding-bottom: $spacing-3;
+
+  &:not(:last-child) {
+    border-bottom: 1px solid $color-parchment;
+  }
+}
+
+.p-vallle-view__redemptions-list-item-description-amount {
+  align-items: baseline;
+  display: flex;
+  gap: $spacing-3;
+  justify-content: space-between;
+}
+
+.p-vallle-view__redemptions-list-item-description {
+  color: $text-color;
+}
+
+.p-vallle-view__redemptions-list-item-amount {
+  color: $text-color-highlight;
+  white-space: nowrap;
+}
+
+.p-vallle-view__redemptions-list-item-meta {
+  color: $text-color-muted;
 }
 
 .p-vallle-view__loading,

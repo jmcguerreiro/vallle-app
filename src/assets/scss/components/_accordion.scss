@@ -1,10 +1,15 @@
+.c-accordion {
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-lg;
+}
+
 .c-accordion__trigger {
   align-items: center;
   cursor: pointer;
   display: flex;
   justify-content: space-between;
   list-style: none;
-  padding: 0;
+  padding: $spacing-3;
 
   &::-webkit-details-marker {
     display: none;
@@ -12,18 +17,16 @@
 }
 
 .c-accordion__title {
-  @include font-size(sm);
-
-  color: $text-color-muted;
+  color: $text-color;
   font-weight: $font-weight-bold;
-  letter-spacing: 0.03em;
-  text-transform: uppercase;
 }
 
 .c-accordion__icon {
-  color: $text-color-muted;
+  color: $text-color;
   flex-shrink: 0;
-  transition: transform 200ms ease;
+  transition: $transition-normal;
+  width: to-rem(20);
+  height: to-rem(20);
 
   details[open] & {
     transform: rotate(180deg);
@@ -31,5 +34,5 @@
 }
 
 .c-accordion__body {
-  margin-top: $spacing-3;
+  padding: $spacing-3;
 }

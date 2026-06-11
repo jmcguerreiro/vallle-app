@@ -47,10 +47,10 @@ export async function onRequestPost(context) {
     )
   }
 
-  // Validate description length
-  if (description !== undefined && description !== null && (typeof description !== 'string' || description.length > 500)) {
+  // Validate description (required)
+  if (typeof description !== 'string' || description.trim().length === 0 || description.length > 500) {
     return Response.json(
-      { error: { message: 'Description must be a string of 500 characters or fewer', code: 'VALIDATION_FAILED' } },
+      { error: { message: 'Description is required and must be 500 characters or fewer', code: 'VALIDATION_FAILED' } },
       { status: 400 },
     )
   }
@@ -117,7 +117,7 @@ export async function onRequestPost(context) {
 
     await env.DB.prepare(
       'INSERT INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)',
-    ).bind(redemptionId, storeId, id, user.sub, description || null, amount, balanceAfter, now).run()
+    ).bind(redemptionId, storeId, id, user.sub, description.trim(), amount, balanceAfter, now).run()
 
     return Response.json({
       data: {
@@ -125,7 +125,7 @@ export async function onRequestPost(context) {
         vallle_id: id,
         amount,
         balance_after: balanceAfter,
-        description: description || null,
+        description: description.trim(),
         created_at: now,
       },
     })

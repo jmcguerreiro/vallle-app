@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import ReactConfetti from "react-confetti";
 
+import { EVENTS } from "@/constants/events";
 import { useConfetti } from "@/hooks/useConfetti";
 
 /**
@@ -17,9 +18,10 @@ const CONFETTI_COLORS = ["#C4653A", "#2c2520", "#7A9B76", "#E8DDD3", "#D4A574"];
  *
  * The canvas is promoted into the browser top layer via the Popover API so it
  * paints above everything — including native `<dialog>` modals (which also live
- * in the top layer) and the Vaul drawer (a high-z-index portal). `showPopover()`
- * runs in a passive effect, which React flushes after the modal/drawer's own
- * mount effects, so the confetti is promoted last and always sits on top.
+ * in the top layer) and the Vaul drawer (a high-z-index portal). Top-layer
+ * order is insertion order, so the canvas re-promotes whenever a modal opens
+ * (EVENTS.MODAL_OPENED) — e.g. router navigations commit in a transition after
+ * the burst fired, and the freshly shown dialog would otherwise cover it.
  * @component
  * @returns {JSX.Element|null}
  */
@@ -52,15 +54,24 @@ const Confetti = () => {
 
   useEffect(() => {
     if (!burst) return;
-    const canvas = canvasRef.current;
-    if (typeof canvas?.showPopover === "function") {
+
+    const promote = () => {
+      const canvas = canvasRef.current;
+      if (typeof canvas?.showPopover !== "function") return;
       try {
+        if (canvas.matches(":popover-open")) canvas.hidePopover();
         canvas.showPopover();
       } catch {
-        // Already shown, or the Popover API is unsupported — the confetti still
+        // Popover API unsupported or the canvas is gone — the confetti still
         // renders, just not promoted into the top layer.
       }
-    }
+    };
+
+    promote();
+    // A modal opened mid-burst (e.g. create → success → navigate to view)
+    // enters the top layer above the canvas — re-promote then too.
+    globalThis.addEventListener(EVENTS.MODAL_OPENED, promote);
+    return () => globalThis.removeEventListener(EVENTS.MODAL_OPENED, promote);
   }, [burst]);
 
   // Render

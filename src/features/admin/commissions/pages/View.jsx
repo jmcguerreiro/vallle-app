@@ -173,8 +173,7 @@ const AdminCommissionsView = () => {
                           markPaid.variables === month.year_month
                         }
                         onClick={() => handleMarkMonthPaid(month.year_month)}
-                        skin="primary"
-                        variant="ghost"
+                        skin="ghost"
                       >
                         {t("features.admin.commissions.markPaid")}
                       </Button>

@@ -7,7 +7,8 @@ export const ModalContext = createContext(null);
  * Modal pages use the useModal hook to set the header title and actions,
  * which the Modal component reads and renders in its header bar.
  *
- * Actions shape: Array<{ label: string, icon: Component, onClick: Function, variant?: 'primary' | 'secondary' }>
+ * Actions shape: Array<{ label: string, icon: Component, onClick: Function, skin?: 'primary' | 'sand' | 'ghost' | 'danger', isProcessing?: boolean }>
+ * Skin defaults to 'sand' (secondary action); the main CTA passes 'primary'.
  * @component
  * @param {Object} props
  * @param {React.ReactNode} props.children

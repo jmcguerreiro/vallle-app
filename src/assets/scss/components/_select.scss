@@ -1,0 +1,50 @@
+.c-select__control {
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-lg;
+  color: $text-color-highlight;
+  cursor: pointer;
+  padding: $spacing-3 $spacing-4;
+  transition: $transition-normal;
+  width: 100%;
+
+  &--is-focused {
+    border-color: $color-ash;
+  }
+}
+
+.c-select__placeholder {
+  color: $text-color-muted;
+}
+
+.c-select__dropdown-indicator {
+  color: $icon-color-muted;
+  transition: $transition-normal;
+
+  .c-select__control--menu-is-open & {
+    transform: rotate(180deg);
+  }
+}
+
+.c-select__menu {
+  background: $color-white;
+  border: solid 1px $color-parchment;
+  border-radius: $border-radius-lg;
+  margin-top: $spacing-1;
+  overflow: hidden;
+  z-index: 2;
+}
+
+.c-select__option {
+  cursor: pointer;
+  padding: $spacing-3 $spacing-4;
+  transition: background $transition-normal;
+
+  &--is-focused {
+    background: $color-linen;
+  }
+
+  &--is-selected {
+    background: $color-linen;
+    color: $text-color-highlight;
+  }
+}

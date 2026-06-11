@@ -8,6 +8,9 @@
  * @param {boolean} [props.hideLabel=false] - Visually hides the label (sr-only) while keeping it accessible
  * @param {string} [props.placeholder] - Input placeholder
  * @param {string} [props.type='text'] - Input type (text, email, password, etc.)
+ * @param {string} [props.inputMode] - HTML inputmode attribute (e.g. 'decimal')
+ * @param {boolean} [props.multiline=false] - Renders a <textarea> instead of an <input>
+ * @param {number} [props.rows=3] - Visible rows when multiline
  * @param {Function} props.register - react-hook-form's register function
  * @param {boolean|string} [props.required] - Pass true for default message, or a string for custom
  * @param {Object} [props.validate] - Custom validate rules for react-hook-form
@@ -23,6 +26,9 @@ const Input = ({
   hideLabel = false,
   placeholder,
   type = "text",
+  inputMode,
+  multiline = false,
+  rows = 3,
   register,
   required,
   validate,
@@ -55,15 +61,28 @@ const Input = ({
           {label}
         </label>
       )}
-      <input
-        autoComplete={autoComplete}
-        className={`c-form__field-input${error ? " c-form__field-input--error" : ""}${readOnly ? " c-form__field-input--readonly" : ""}`}
-        id={name}
-        placeholder={placeholder}
-        readOnly={readOnly}
-        type={type}
-        {...register(name, rules)}
-      />
+      {multiline ? (
+        <textarea
+          autoComplete={autoComplete}
+          className={`c-form__field-input c-form__field-input--textarea${error ? " c-form__field-input--error" : ""}${readOnly ? " c-form__field-input--readonly" : ""}`}
+          id={name}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          rows={rows}
+          {...register(name, rules)}
+        />
+      ) : (
+        <input
+          autoComplete={autoComplete}
+          className={`c-form__field-input${error ? " c-form__field-input--error" : ""}${readOnly ? " c-form__field-input--readonly" : ""}`}
+          id={name}
+          inputMode={inputMode}
+          placeholder={placeholder}
+          readOnly={readOnly}
+          type={type}
+          {...register(name, rules)}
+        />
+      )}
       {hint && !error && <p className="c-form__field-hint">{hint}</p>}
       {error && <p className="c-form__field-error">{error.message}</p>}
     </div>

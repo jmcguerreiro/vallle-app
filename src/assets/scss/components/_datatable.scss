@@ -44,21 +44,6 @@
   margin-left: auto;
 }
 
-.c-datatable__toolbar-actions {
-  > * {
-    background: $color-terracota;
-    border: solid 1px transparent;
-    width: 48px;
-    height: 48px;
-  }
-
-  .c-button-icon__icon {
-    color: $color-white;
-    width: 20px;
-    height: 20px;
-  }
-}
-
 .c-datatable__toolbar-filters {
   display: flex;
   gap: $spacing-2;
@@ -200,13 +185,13 @@
 }
 
 .c-datatable__row {
-  transition: background $transition-normal;
+  transition: $transition-normal;
 
   &--clickable {
     cursor: pointer;
 
-    @include hover {
-      color: rgba($color-white, 0.6);
+    @include active {
+      transform: scale(0.99);
     }
   }
 
@@ -240,5 +225,9 @@
 @include screen(md) {
   .c-datatable__toolbar {
     flex-direction: row;
+  }
+
+  .c-datatable__toolbar-actions {
+    order: 1;
   }
 }

@@ -1,5 +1,20 @@
 import { Controller } from "react-hook-form";
-import ReactSelect from "react-select";
+import ReactSelect, { components } from "react-select";
+
+import { IconChevronDown } from "@/utils/icons";
+
+/**
+ * Component: DropdownIndicator
+ * Replaces react-select's default SVG indicator with the Lucide chevron.
+ * @component
+ * @param {Object} props - react-select indicator props
+ * @returns {JSX.Element}
+ */
+const DropdownIndicator = (props) => (
+  <components.DropdownIndicator {...props}>
+    <IconChevronDown size={16} />
+  </components.DropdownIndicator>
+);
 
 /**
  * Component: Select
@@ -53,12 +68,14 @@ const Select = ({
           <ReactSelect
             ref={ref}
             classNamePrefix="c-select"
+            components={{ DropdownIndicator, IndicatorSeparator: null }}
             formatOptionLabel={formatOptionLabel}
             inputId={name}
             isSearchable={isSearchable}
             onChange={(option) => onChange(option?.value)}
             options={options}
             placeholder={placeholder}
+            unstyled
             value={options.find((o) => o.value === value) || null}
           />
         )}

@@ -2,6 +2,7 @@ import { useCallback, useEffect, useRef } from "react";
 
 import Button from "@/components/Button";
 import ButtonGroup from "@/components/ButtonGroup";
+import { EVENTS } from "@/constants/events";
 import { IconX } from "@/utils/icons";
 
 /**
@@ -18,7 +19,7 @@ import { IconX } from "@/utils/icons";
  * @param {React.ReactNode} props.children - Modal body content
  * @param {string} [props.title] - Header title
  * @param {string} [props.description] - Header description
- * @param {Array<{label: string, icon?: React.ComponentType, onClick: Function, variant?: string}>} [props.actions=[]] - Footer action buttons
+ * @param {Array<{label: string, icon?: React.ComponentType, onClick: Function, skin?: string, isProcessing?: boolean}>} [props.actions=[]] - Footer action buttons. Skin defaults to 'sand' (secondary); pass 'primary' for the main CTA.
  * @returns {JSX.Element}
  */
 const Modal = ({
@@ -48,8 +49,14 @@ const Modal = ({
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog) return;
-    if (open && !dialog.open) dialog.showModal();
-    else if (!open && dialog.open) dialog.close();
+    if (open && !dialog.open) {
+      dialog.showModal();
+      // The dialog just entered the top layer above any open popovers
+      // (toasts, confetti) — tell them so they can re-promote themselves.
+      globalThis.dispatchEvent(new Event(EVENTS.MODAL_OPENED));
+    } else if (!open && dialog.open) {
+      dialog.close();
+    }
   }, [open]);
 
   // Render
@@ -81,16 +88,19 @@ const Modal = ({
         {actions.length > 0 && (
           <div className="c-modal__footer">
             <ButtonGroup direction="column">
-              {actions.map(({ label, icon, onClick, variant = "ghost" }) => (
-                <Button
-                  key={label}
-                  icon={icon}
-                  onClick={onClick}
-                  variant={variant}
-                >
-                  {label}
-                </Button>
-              ))}
+              {actions.map(
+                ({ label, icon, onClick, skin = "sand", isProcessing }) => (
+                  <Button
+                    key={label}
+                    icon={icon}
+                    isProcessing={isProcessing}
+                    onClick={onClick}
+                    skin={skin}
+                  >
+                    {label}
+                  </Button>
+                ),
+              )}
             </ButtonGroup>
           </div>
         )}

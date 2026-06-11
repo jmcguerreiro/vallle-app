@@ -1,13 +1,15 @@
 .c-button-fill {
+  // Structure only — every colour (background, text, hover) belongs to a
+  // skin modifier. The skin class is always present (Button defaults to
+  // --skin-primary), so skins never compete with block-level rules.
   @include font-size(sm);
   align-items: center;
-  background: $color-terracota;
   border-radius: $border-radius-lg;
-  color: $color-white;
   cursor: pointer;
   display: inline-flex;
   font-weight: $font-weight-bold;
   gap: $spacing-2;
+  justify-content: center;
   padding: $spacing-3 $spacing-4;
   transition: $transition-normal;
 
@@ -16,11 +18,39 @@
     opacity: 0.5;
   }
 
+  &--skin-primary {
+    background: $color-terracota;
+    color: $color-white;
+
+    @include hover(":not(:disabled)") {
+      background: darken($color-terracota, 8%);
+    }
+  }
+
   &--skin-danger {
     background: $color-danger;
+    color: $color-white;
 
     @include hover(":not(:disabled)") {
       background: darken($color-danger, 8%);
+    }
+  }
+
+  &--skin-sand {
+    background: $color-sand;
+    color: $text-color-highlight;
+
+    @include hover(":not(:disabled)") {
+      background: darken($color-sand, 8%);
+    }
+  }
+
+  &--skin-ghost {
+    background: transparent;
+    color: $text-color;
+
+    @include hover(":not(:disabled)") {
+      background: rgba($color-ash, 0.12);
     }
   }
 
@@ -35,56 +65,6 @@
     }
   }
 
-  @include hover(":not(:disabled)") {
-    background: darken($color-terracota, 8%);
-  }
-
-  @include active {
-    transform: scale(0.98);
-  }
-}
-
-.c-button-ghost {
-  @include font-size(sm);
-  align-items: center;
-  background: transparent;
-  border-radius: $border-radius-lg;
-  color: $text-color;
-  cursor: pointer;
-  display: inline-flex;
-  font-weight: $font-weight-bold;
-  gap: $spacing-2;
-  padding: $spacing-3 $spacing-4;
-  transition: $transition-normal;
-
-  &:disabled {
-    cursor: not-allowed;
-    opacity: 0.5;
-  }
-
-  &--skin-danger {
-    color: $color-danger;
-
-    @include hover(":not(:disabled)") {
-      background: rgba($color-danger, 0.08);
-    }
-  }
-
-  &--display-block {
-    justify-content: center;
-    width: 100%;
-  }
-
-  &--is-processing {
-    .c-button-ghost__icon {
-      animation: spin 1s linear infinite;
-    }
-  }
-
-  @include hover(":not(:disabled)") {
-    background: rgba($color-ash, 0.12);
-  }
-
   @include active {
     transform: scale(0.98);
   }
@@ -92,9 +72,7 @@
 
 .c-button-icon {
   align-items: center;
-  background: $color-terracota;
   border-radius: 50%;
-  color: $color-white;
   cursor: pointer;
   display: inline-flex;
   height: to-rem(48);
@@ -108,9 +86,16 @@
     opacity: 0.5;
   }
 
-  @include hover(":not(:disabled)") {
-    background: darken($color-terracota, 8%);
+  &--skin-primary {
+    background: $color-terracota;
+    color: $color-white;
 
+    @include hover(":not(:disabled)") {
+      background: darken($color-terracota, 8%);
+    }
+  }
+
+  @include hover(":not(:disabled)") {
     .c-button-icon__tooltip {
       opacity: 1;
       transform: translateX(-50%) translateY(0);

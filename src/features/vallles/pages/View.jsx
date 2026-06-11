@@ -15,7 +15,6 @@ import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
 import { formatDate } from "@/utils/dates";
-import { IconPencil, IconReceipt } from "@/utils/icons";
 
 const STATUS_VARIANTS = {
   active: "success",
@@ -110,18 +109,15 @@ const VallleView = () => {
     const actions = [
       {
         label: t("features.vallles.view.edit"),
-        icon: IconPencil,
         onClick: handleEdit,
-        variant: "ghost",
       },
     ];
 
     if (canRedeem) {
-      actions.unshift({
+      actions.push({
         label: t("features.vallles.redeem.submit"),
-        icon: IconReceipt,
         onClick: handleRedeem,
-        variant: "ghost",
+        skin: "primary",
       });
     }
 
@@ -179,39 +175,38 @@ const VallleView = () => {
         <p className="p-vallle-view__subtitle">{heroSubtitle}</p>
       </div>
 
-      <DefinitionList items={fields} />
+      <div className="p-vallle-view__details">
+        <DefinitionList items={fields} />
+      </div>
 
-      <Accordion
-        className="c-vallle-redemptions"
-        title={t("features.vallles.redemptions.heading")}
-      >
-        {redemptions.length === 0 ? (
-          <p className="c-vallle-redemptions__empty">
-            {t("features.vallles.redemptions.empty")}
-          </p>
-        ) : (
-          <table className="c-vallle-redemptions__table">
-            <thead>
-              <tr>
-                <th>{t("features.vallles.redemptions.date")}</th>
-                <th>{t("features.vallles.redemptions.amount")}</th>
-                <th>{t("features.vallles.redemptions.description")}</th>
-                <th>{t("features.vallles.redemptions.redeemedBy")}</th>
-              </tr>
-            </thead>
-            <tbody>
+      <div className="p-vallle-view__redemptions">
+        <Accordion title={t("features.vallles.redemptions.heading")}>
+          {redemptions.length === 0 ? (
+            <p className="p-vallle-view__redemptions-empty">
+              {t("features.vallles.redemptions.empty")}
+            </p>
+          ) : (
+            <ul className="p-vallle-view__redemptions-list">
               {redemptions.map((r) => (
-                <tr key={r.id}>
-                  <td>{formatDate(r.created_at)}</td>
-                  <td>{formatCurrency(r.amount)}</td>
-                  <td>{r.description || "—"}</td>
-                  <td>{r.redeemed_by_name || "—"}</td>
-                </tr>
+                <li key={r.id} className="p-vallle-view__redemptions-list-item">
+                  <div className="p-vallle-view__redemptions-list-item-description-amount">
+                    <span className="p-vallle-view__redemptions-list-item-description">
+                      {r.description || "—"}
+                    </span>
+                    <span className="p-vallle-view__redemptions-list-item-amount">
+                      {formatCurrency(r.amount)}
+                    </span>
+                  </div>
+                  <p className="p-vallle-view__redemptions-list-item-meta">
+                    {formatDate(r.created_at)}
+                    {r.redeemed_by_name ? ` · ${r.redeemed_by_name}` : ""}
+                  </p>
+                </li>
               ))}
-            </tbody>
-          </table>
-        )}
-      </Accordion>
+            </ul>
+          )}
+        </Accordion>
+      </div>
     </div>
   );
 };

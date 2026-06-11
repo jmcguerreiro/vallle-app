@@ -3,6 +3,7 @@ import { useCallback } from "react";
 import { Drawer as VaulDrawer } from "vaul";
 
 import Button from "@/components/Button";
+import ButtonGroup from "@/components/ButtonGroup";
 
 /**
  * Component: Drawer
@@ -18,7 +19,7 @@ import Button from "@/components/Button";
  * @param {React.ReactNode} props.children - Drawer body content
  * @param {string} [props.title] - Header title
  * @param {string} [props.description] - Header description
- * @param {Array<{label: string, icon?: React.ComponentType, onClick: Function, variant?: string}>} [props.actions=[]] - Footer action buttons
+ * @param {Array<{label: string, icon?: React.ComponentType, onClick: Function, skin?: string, isProcessing?: boolean}>} [props.actions=[]] - Footer action buttons. Skin defaults to 'sand' (secondary); pass 'primary' for the main CTA.
  * @param {Function} [props.onAnimationEnd] - Called by Vaul when the open/close animation finishes, with the resulting open state. Unmount only after this reports closed — earlier, and Vaul can't restore the body's pointer-events.
  * @returns {JSX.Element}
  */
@@ -73,17 +74,22 @@ const Drawer = ({
           <div className="c-drawer__body">{children}</div>
           {actions.length > 0 && (
             <div className="c-drawer__footer">
-              {actions.map(({ label, icon, onClick, variant = "ghost" }) => (
-                <Button
-                  key={label}
-                  display="block"
-                  icon={icon}
-                  onClick={onClick}
-                  variant={variant}
-                >
-                  {label}
-                </Button>
-              ))}
+              <ButtonGroup direction="column">
+                {actions.map(
+                  ({ label, icon, onClick, skin = "sand", isProcessing }) => (
+                    <Button
+                      key={label}
+                      display="block"
+                      icon={icon}
+                      isProcessing={isProcessing}
+                      onClick={onClick}
+                      skin={skin}
+                    >
+                      {label}
+                    </Button>
+                  ),
+                )}
+              </ButtonGroup>
             </div>
           )}
         </VaulDrawer.Content>

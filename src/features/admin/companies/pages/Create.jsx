@@ -126,7 +126,7 @@ const AdminCompanyCreate = () => {
         <Button isProcessing={createCompany.isPending} type="submit">
           {t("features.admin.companies.create.submit")}
         </Button>
-        <Button onClick={() => navigate(-1)} variant="ghost">
+        <Button onClick={() => navigate(-1)} skin="ghost">
           {t("common.cancel")}
         </Button>
       </FormActions>

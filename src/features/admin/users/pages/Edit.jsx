@@ -199,7 +199,7 @@ const AdminUserEdit = () => {
         <Button isProcessing={updateUser.isPending} type="submit">
           {t("features.admin.users.edit.submit")}
         </Button>
-        <Button onClick={() => navigate(-1)} variant="ghost">
+        <Button onClick={() => navigate(-1)} skin="ghost">
           {t("common.cancel")}
         </Button>
       </FormActions>

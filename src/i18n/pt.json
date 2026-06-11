@@ -78,7 +78,8 @@
     },
     "dashboard": {
       "welcome": "Olá, {{name}}.",
-      "subtitle": "Tem {{count}} vallles ativos. Como posso ajudar?",
+      "subtitle_one": "Tem {{count}} vallle ativo. Como posso ajudar?",
+      "subtitle_other": "Tem {{count}} vallles ativos. Como posso ajudar?",
       "subtitleNone": "Ainda não tem vallles ativos. Como posso ajudar?",
       "actions": {
         "create": "Emitir",
@@ -105,7 +106,7 @@
       "description": "Emita, resgate ou consulte qualquer vallle da sua loja.",
       "create": {
         "heading": "Criar vallle",
-        "description": "Defina o valor e o destinatário.",
+        "description": "Defina o valor e o comprador.",
         "amount": "Valor (€)",
         "amountPlaceholder": "15",
         "buyer": "Nome do comprador",
@@ -137,7 +138,6 @@
         "description": "Atualize o nome do comprador ou a data de expiração.",
         "buyer": "Nome do comprador",
         "expiresAt": "Data de expiração",
-        "currentAmount": "Valor",
         "submit": "Guardar alterações",
         "success": "Vallle atualizado com sucesso!",
         "archive": "Arquivar vallle",
@@ -152,14 +152,18 @@
       },
       "redeem": {
         "heading": "Resgatar vallle",
-        "description": "Descrição",
+        "description": "Indique o valor a descontar deste vallle.",
+        "descriptionLabel": "Descrição",
+        "descriptionHint": "Em que foi utilizado? Ficará registado no histórico do vallle.",
         "amount": "Valor a resgatar (€)",
-        "remaining": "{{balance}} restante",
+        "amountPlaceholder": "10",
+        "amountHint": "Pode resgatar até {{balance}}.",
         "submit": "Resgatar",
         "success": "Vallle resgatado com sucesso!",
         "error": {
           "expired": "Este vallle expirou.",
           "insufficientBalance": "Saldo insuficiente.",
+          "descriptionRequired": "Introduza uma descrição.",
           "generic": "Não foi possível resgatar o vallle."
         }
       },
@@ -180,10 +184,6 @@
       },
       "redemptions": {
         "heading": "Histórico de resgates",
-        "date": "Data",
-        "amount": "Valor",
-        "description": "Descrição",
-        "redeemedBy": "Resgatado por",
         "empty": "Sem resgates."
       },
       "list": {

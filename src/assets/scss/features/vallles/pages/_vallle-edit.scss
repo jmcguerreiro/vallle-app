@@ -21,35 +21,19 @@
   margin-bottom: $spacing-6;
 }
 
-.p-vallle-edit__balance {
-  align-items: baseline;
-  display: flex;
-  gap: $spacing-2;
-  justify-content: center;
-}
-
-.p-vallle-edit__balance-value {
-  @include font-size(8xl);
-
+.p-vallle-edit__code {
+  @include font-size(6xl);
   color: $text-color-highlight;
   font-weight: $font-weight-bold;
   text-align: center;
+  text-transform: uppercase;
 
   &--inactive {
     color: $text-color-muted;
   }
 }
 
-.p-vallle-edit__balance-currency {
-  @include font-size(8xl);
-
-  color: $text-color-highlight;
-  font-weight: $font-weight-bold;
-}
-
-.p-vallle-edit__total {
-  @include font-size(sm);
-
+.p-vallle-edit__subtitle {
   color: $text-color-muted;
   text-align: center;
 }

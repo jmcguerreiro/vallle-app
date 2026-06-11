@@ -1,6 +1,3 @@
-// Standalone state-driven modal component (c-modal).
-// Native <dialog>, identical on mobile and desktop.
-
 .c-modal {
   background: transparent;
   border: none;
@@ -10,6 +7,7 @@
   max-width: $screen-sm;
   padding: 0;
   width: 100%;
+  padding: $spacing-6;
 }
 
 .c-modal[open] {

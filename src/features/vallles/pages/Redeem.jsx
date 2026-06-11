@@ -6,10 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
-import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import Form from "@/components/forms/Form";
-import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
@@ -27,8 +25,9 @@ const STATUS_VARIANTS = {
 /**
  * Component: VallleRedeem
  * Form for redeeming (partially or fully) a vallle.
- * Shows the vallle code and current balance, then accepts
- * an amount and optional description.
+ * Shows the vallle code and status, then accepts an amount and a
+ * mandatory description. The submit button lives in the modal/drawer
+ * footer (via the header actions), not in the form body.
  * @component
  * @returns {JSX.Element}
  */
@@ -82,12 +81,17 @@ const VallleRedeem = () => {
     },
   });
 
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: redeem } = redeemVallle;
+
   // State
   const [serverError, setServerError] = useState(null);
 
   // Derived State
   const title = t("features.vallles.redeem.heading");
-  const description = vallle?.code || "";
+  const description = t("features.vallles.redeem.description");
 
   const statusKey = useMemo(() => {
     if (!vallle) return "active";
@@ -104,9 +108,9 @@ const VallleRedeem = () => {
     return t("features.vallles.list.active");
   }, [vallle, t]);
 
-  const remainingLabel = useMemo(() => {
+  const amountHint = useMemo(() => {
     if (!vallle) return "";
-    return t("features.vallles.redeem.remaining", {
+    return t("features.vallles.redeem.amountHint", {
       balance: formatCurrency(vallle.balance),
     });
   }, [vallle, t]);
@@ -115,19 +119,39 @@ const VallleRedeem = () => {
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      redeemVallle.mutate({
+      redeem({
         amount: Math.round(Number.parseFloat(values.amount) * 100),
-        description: values.description || null,
+        description: values.description.trim(),
       });
     },
-    [redeemVallle],
+    [redeem],
   );
 
   // Effects
   useEffect(() => {
-    setHeader({ title, description });
+    const actions = vallle
+      ? [
+          {
+            label: t("features.vallles.redeem.submit"),
+            onClick: handleSubmit(onSubmit),
+            skin: "primary",
+            isProcessing: redeemVallle.isPending,
+          },
+        ]
+      : [];
+
+    setHeader({ title, description, actions });
     return () => setHeader();
-  }, [title, description, setHeader]);
+  }, [
+    title,
+    description,
+    setHeader,
+    vallle,
+    handleSubmit,
+    onSubmit,
+    redeemVallle.isPending,
+    t,
+  ]);
 
   // Render
   if (isPending) {
@@ -158,52 +182,49 @@ const VallleRedeem = () => {
     <div className="p-vallle-redeem">
       <Form error={serverError} handleSubmit={handleSubmit} onSubmit={onSubmit}>
         <div className="p-vallle-redeem__hero">
-          <div className="p-vallle-redeem__balance">
-            <input
-              aria-label={t("features.vallles.redeem.amount")}
-              className="p-vallle-redeem__balance-value"
-              inputMode="decimal"
-              placeholder={t("features.vallles.create.amountPlaceholder")}
-              type="text"
-              {...register("amount", {
-                required: t("features.vallles.create.error.amountRequired"),
-                validate: {
-                  positive: (v) =>
-                    Number.parseFloat(v) > 0 ||
-                    t("features.vallles.create.error.amountPositive"),
-                  max: (v) =>
-                    Math.round(Number.parseFloat(v) * 100) <= vallle.balance ||
-                    t("features.vallles.redeem.error.insufficientBalance"),
-                },
-              })}
-            />
-            <span className="p-vallle-redeem__balance-currency">{"€"}</span>
-          </div>
-          {errors.amount && (
-            <p className="p-vallle-redeem__amount-error">
-              {errors.amount.message}
-            </p>
-          )}
-          <p className="p-vallle-redeem__total">{remainingLabel}</p>
           <Badge variant={STATUS_VARIANTS[statusKey]}>{statusLabel}</Badge>
+          <h2
+            className={`p-vallle-redeem__code${statusKey === "active" ? "" : " p-vallle-redeem__code--inactive"}`}
+          >
+            {vallle.code}
+          </h2>
         </div>
 
         <FormFields>
           <Input
+            autoComplete="off"
+            error={errors.amount}
+            hint={amountHint}
+            inputMode="decimal"
+            label={t("features.vallles.redeem.amount")}
+            name="amount"
+            placeholder={t("features.vallles.redeem.amountPlaceholder")}
+            register={register}
+            required={t("features.vallles.create.error.amountRequired")}
+            validate={{
+              positive: (v) =>
+                Number.parseFloat(v) > 0 ||
+                t("features.vallles.create.error.amountPositive"),
+              max: (v) =>
+                Math.round(Number.parseFloat(v) * 100) <= vallle.balance ||
+                t("features.vallles.redeem.error.insufficientBalance"),
+            }}
+          />
+          <Input
             error={errors.description}
-            label={t("features.vallles.redeem.description")}
+            hint={t("features.vallles.redeem.descriptionHint")}
+            label={t("features.vallles.redeem.descriptionLabel")}
+            multiline
             name="description"
             register={register}
+            required={t("features.vallles.redeem.error.descriptionRequired")}
+            validate={{
+              notBlank: (v) =>
+                v.trim().length > 0 ||
+                t("features.vallles.redeem.error.descriptionRequired"),
+            }}
           />
         </FormFields>
-        <FormActions>
-          <Button isProcessing={redeemVallle.isPending} type="submit">
-            {t("features.vallles.redeem.submit")}
-          </Button>
-          <Button onClick={() => navigate(-1)} variant="ghost">
-            {t("common.cancel")}
-          </Button>
-        </FormActions>
       </Form>
     </div>
   );

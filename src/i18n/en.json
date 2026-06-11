@@ -78,7 +78,8 @@
     },
     "dashboard": {
       "welcome": "Hi, {{name}}.",
-      "subtitle": "You have {{count}} active vallles. How can I help you?",
+      "subtitle_one": "You have {{count}} active vallle. How can I help you?",
+      "subtitle_other": "You have {{count}} active vallles. How can I help you?",
       "subtitleNone": "You have no active vallles yet. How can I help you?",
       "actions": {
         "create": "Create",
@@ -105,7 +106,7 @@
       "description": "Issue, redeem, or look up any vallle in your store.",
       "create": {
         "heading": "Create vallle",
-        "description": "Set the amount and who it's for.",
+        "description": "Set the amount and the buyer.",
         "amount": "Amount (€)",
         "amountPlaceholder": "15",
         "buyer": "Buyer name",
@@ -137,7 +138,6 @@
         "description": "Update the buyer name or expiry date.",
         "buyer": "Buyer name",
         "expiresAt": "Expiry date",
-        "currentAmount": "Amount",
         "submit": "Save changes",
         "success": "Vallle updated successfully!",
         "archive": "Archive vallle",
@@ -152,14 +152,18 @@
       },
       "redeem": {
         "heading": "Redeem vallle",
-        "description": "Description",
+        "description": "Enter how much to deduct from this vallle.",
+        "descriptionLabel": "Description",
+        "descriptionHint": "What was it spent on? This shows up in the vallle's history.",
         "amount": "Amount to redeem (€)",
-        "remaining": "{{balance}} remaining",
+        "amountPlaceholder": "10",
+        "amountHint": "You can redeem up to {{balance}}.",
         "submit": "Redeem",
         "success": "Vallle redeemed successfully!",
         "error": {
           "expired": "This vallle has expired.",
           "insufficientBalance": "Insufficient balance.",
+          "descriptionRequired": "Please add a description.",
           "generic": "Could not redeem the vallle."
         }
       },
@@ -180,10 +184,6 @@
       },
       "redemptions": {
         "heading": "Redemption history",
-        "date": "Date",
-        "amount": "Amount",
-        "description": "Description",
-        "redeemedBy": "Redeemed by",
         "empty": "No redemptions yet."
       },
       "list": {

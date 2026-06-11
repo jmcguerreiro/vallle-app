@@ -90,7 +90,7 @@ const AdminUserView = () => {
           ? t("features.admin.users.view.disable")
           : t("features.admin.users.view.enable"),
         onClick: handleToggleStatus,
-        variant: isActive ? "danger" : "primary",
+        skin: isActive ? "danger" : "primary",
       });
     }
     setHeader({

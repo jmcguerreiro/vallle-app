@@ -6,14 +6,15 @@ import { IconLoader } from "@/utils/icons";
 /**
  * Component: Button
  * Flexible button that renders as a <button>, <a>, or react-router <Link>
- * depending on the props provided. Each visual style is its own BEM block
- * (c-button-fill, c-button-ghost, c-button-icon) to keep modifier chains
+ * depending on the props provided. Each button type is its own BEM block
+ * (c-button-fill, c-button-icon); colour treatments are skin modifiers on
+ * the block (e.g. c-button-fill--skin-ghost) to keep modifier chains
  * flat and composable.
  * @component
  * @param {Object} props
  * @param {React.ReactNode} [props.children] - Button label / content
- * @param {'fill'|'ghost'|'icon'} [props.variant='fill'] - Visual style block
- * @param {'primary'|'danger'} [props.skin='primary'] - Colour skin modifier
+ * @param {'fill'|'icon'} [props.variant='fill'] - Button type block
+ * @param {'primary'|'sand'|'ghost'|'danger'} [props.skin='primary'] - Colour skin modifier
  * @param {string} [props.href] - If provided, renders as an <a> tag
  * @param {string} [props.to] - If provided, renders as a react-router <Link>
  * @param {Object} [props.state] - State passed to react-router <Link> (e.g. backgroundLocation)
@@ -50,7 +51,7 @@ const Button = ({
 
   const classes = [
     block,
-    skin !== "primary" && `${block}--skin-${skin}`,
+    `${block}--skin-${skin}`,
     display !== "inline" && `${block}--display-${display}`,
     isProcessing && `${block}--is-processing`,
   ]

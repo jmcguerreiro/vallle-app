@@ -6,10 +6,8 @@ import { useNavigate, useParams } from "react-router-dom";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
-import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import Form from "@/components/forms/Form";
-import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
@@ -18,7 +16,6 @@ import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
-import { IconArchive, IconRotateCcw } from "@/utils/icons";
 
 const STATUS_VARIANTS = {
   active: "success",
@@ -28,8 +25,9 @@ const STATUS_VARIANTS = {
 /**
  * Component: VallleEdit
  * Form for editing an existing vallle. Only buyer and expiry date
- * are editable; amount is shown read-only. Provides an archive/restore
- * action in the modal header to toggle the vallle's status.
+ * are editable; amount is shown read-only. The save and archive/restore
+ * buttons live in the modal/drawer footer (via the header actions),
+ * not in the form body.
  * @component
  * @returns {JSX.Element}
  */
@@ -94,12 +92,18 @@ const VallleEdit = () => {
     },
   });
 
+  // The mutation result objects are fresh references every render; only the
+  // stable mutate functions may be hook dependencies, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: update } = updateVallle;
+  const { mutate: toggleArchiveStatus } = toggleArchive;
+
   // State
   const [serverError, setServerError] = useState(null);
 
   // Derived State
   const title = t("features.vallles.edit.heading");
-  const description = vallle?.code || "";
+  const description = t("features.vallles.edit.description");
 
   const statusKey = useMemo(() => {
     if (!vallle) return "active";
@@ -119,14 +123,10 @@ const VallleEdit = () => {
     return t("features.vallles.list.active");
   }, [vallle, t]);
 
-  const amountDisplay = useMemo(() => {
-    if (!vallle) return "0.00";
-    return (vallle.amount / 100).toFixed(2);
-  }, [vallle]);
-
-  const availableLabel = useMemo(() => {
+  const heroSubtitle = useMemo(() => {
     if (!vallle) return "";
-    return t("features.vallles.view.available", {
+    return t("features.vallles.view.balanceSummary", {
+      total: formatCurrency(vallle.amount),
       balance: formatCurrency(vallle.balance),
     });
   }, [vallle, t]);
@@ -139,20 +139,20 @@ const VallleEdit = () => {
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      updateVallle.mutate({
+      update({
         buyer: values.buyer || null,
         expires_at: new Date(values.expires_at).toISOString(),
       });
     },
-    [updateVallle],
+    [update],
   );
 
   const handleToggleArchive = useCallback(() => {
     const nextStatus = isArchived ? "active" : "archived";
     const confirmKey = isArchived ? "restoreConfirm" : "archiveConfirm";
     if (!globalThis.confirm(t(`features.vallles.edit.${confirmKey}`))) return;
-    toggleArchive.mutate(nextStatus);
-  }, [isArchived, t, toggleArchive]);
+    toggleArchiveStatus(nextStatus);
+  }, [isArchived, t, toggleArchiveStatus]);
 
   // Effects
   useEffect(() => {
@@ -165,18 +165,23 @@ const VallleEdit = () => {
   }, [vallle, reset]);
 
   useEffect(() => {
-    const actions = canToggleArchive
-      ? [
-          {
-            label: t(
-              `features.vallles.edit.${isArchived ? "restore" : "archive"}`,
-            ),
-            icon: isArchived ? IconRotateCcw : IconArchive,
-            onClick: handleToggleArchive,
-            variant: "ghost",
-          },
-        ]
-      : [];
+    const actions = [];
+
+    if (canToggleArchive) {
+      actions.push({
+        label: t(`features.vallles.edit.${isArchived ? "restore" : "archive"}`),
+        onClick: handleToggleArchive,
+      });
+    }
+
+    if (vallle) {
+      actions.push({
+        label: t("features.vallles.edit.submit"),
+        onClick: handleSubmit(onSubmit),
+        skin: "primary",
+        isProcessing: updateVallle.isPending,
+      });
+    }
 
     setHeader({ title, description, actions });
     return () => setHeader();
@@ -184,9 +189,13 @@ const VallleEdit = () => {
     title,
     description,
     setHeader,
+    vallle,
     canToggleArchive,
     isArchived,
     handleToggleArchive,
+    handleSubmit,
+    onSubmit,
+    updateVallle.isPending,
     t,
   ]);
 
@@ -217,20 +226,17 @@ const VallleEdit = () => {
 
   return (
     <div className="p-vallle-edit">
-      <div className="p-vallle-edit__hero">
-        <Badge variant={STATUS_VARIANTS[statusKey]}>{statusLabel}</Badge>
-        <div className="p-vallle-edit__balance">
-          <span
-            className={`p-vallle-edit__balance-value${statusKey === "active" ? "" : " p-vallle-edit__balance-value--inactive"}`}
-          >
-            {amountDisplay}
-          </span>
-          <span className="p-vallle-edit__balance-currency">{"€"}</span>
-        </div>
-        <p className="p-vallle-edit__total">{availableLabel}</p>
-      </div>
-
       <Form error={serverError} handleSubmit={handleSubmit} onSubmit={onSubmit}>
+        <div className="p-vallle-edit__hero">
+          <Badge variant={STATUS_VARIANTS[statusKey]}>{statusLabel}</Badge>
+          <h2
+            className={`p-vallle-edit__code${statusKey === "active" ? "" : " p-vallle-edit__code--inactive"}`}
+          >
+            {vallle.code}
+          </h2>
+          <p className="p-vallle-edit__subtitle">{heroSubtitle}</p>
+        </div>
+
         <FormFields>
           <Input
             error={errors.buyer}
@@ -252,14 +258,6 @@ const VallleEdit = () => {
             }}
           />
         </FormFields>
-        <FormActions>
-          <Button isProcessing={updateVallle.isPending} type="submit">
-            {t("features.vallles.edit.submit")}
-          </Button>
-          <Button onClick={() => navigate(-1)} variant="ghost">
-            {t("common.cancel")}
-          </Button>
-        </FormActions>
       </Form>
     </div>
   );

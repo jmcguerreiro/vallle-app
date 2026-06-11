@@ -160,7 +160,7 @@ const AdminUserCreate = () => {
         <Button isProcessing={createUser.isPending} type="submit">
           {t("features.admin.users.create.submit")}
         </Button>
-        <Button onClick={() => navigate(-1)} variant="ghost">
+        <Button onClick={() => navigate(-1)} skin="ghost">
           {t("common.cancel")}
         </Button>
       </FormActions>
