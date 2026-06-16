@@ -11,6 +11,7 @@ import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
+import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
 import { isVallleExpired } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -94,10 +95,10 @@ const VallleRedeem = () => {
   const description = t("features.vallles.redeem.description");
 
   const statusKey = useMemo(() => {
-    if (!vallle) return "active";
-    if (isVallleExpired(vallle.expires_at)) return "expired";
-    if (vallle.balance === 0) return "used";
-    return "active";
+    if (!vallle) return VALLLE_STATUSES.ACTIVE;
+    if (isVallleExpired(vallle.expires_at)) return VALLLE_STATUSES.EXPIRED;
+    if (vallle.balance === 0) return VALLLE_STATUSES.USED;
+    return VALLLE_STATUSES.ACTIVE;
   }, [vallle]);
 
   const statusLabel = useMemo(() => {
@@ -184,7 +185,7 @@ const VallleRedeem = () => {
         <div className="p-vallle-redeem__hero">
           <Badge variant={STATUS_VARIANTS[statusKey]}>{statusLabel}</Badge>
           <h2
-            className={`p-vallle-redeem__code${statusKey === "active" ? "" : " p-vallle-redeem__code--inactive"}`}
+            className={`p-vallle-redeem__code${statusKey === VALLLE_STATUSES.ACTIVE ? "" : " p-vallle-redeem__code--inactive"}`}
           >
             {vallle.code}
           </h2>

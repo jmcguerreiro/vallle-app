@@ -25,15 +25,15 @@ We use standard JavaScript `Error` objects with specific properties for better o
 **Example:**
 
 ```javascript
-import { ERROR_CODES } from '@/constants/errors.js'
+import { ERROR_CODES } from "@/constants/errors.js";
 
 try {
-  await env.DB.prepare('SELECT * FROM vallles WHERE id = ?').bind(id).first()
+  await env.DB.prepare("SELECT * FROM vallles WHERE id = ?").bind(id).first();
 } catch (error) {
-  const err = new Error('Vallle: Failed to read vallle')
-  err.code = ERROR_CODES.DB_READ_FAILED
-  err.cause = error
-  throw err
+  const err = new Error("Vallle: Failed to read vallle");
+  err.code = ERROR_CODES.DB_READ_FAILED;
+  err.cause = error;
+  throw err;
 }
 ```
 
@@ -44,29 +44,45 @@ File paths in `functions/` map directly to API routes. D1 is accessed via `conte
 - **One handler per file**: Each file exports an `onRequest` array or individual method handlers (`onRequestGet`, `onRequestPost`, etc.).
 - **Always return `Response` objects**: Use `new Response(JSON.stringify(data), { headers })` or the `Response.json()` helper.
 - **Consistent JSON responses**: Success responses use `{ data }`. Error responses use `{ error: { message, code } }`.
-- **Auth checks at the top**: Validate the session/token before any business logic.
+- **Auth checks at the top**: Validate the session/token before any business logic. Use the shared guards from `functions/api/auth/_helpers.js` — never re-inline the `getAuthUser` + `Response.json` boilerplate:
+  - `requireAuth(request, secret)` — requires a valid session. Returns a 401 `Response` or `{ user }`.
+  - `requireRole(request, secret, roles)` — requires a role. `roles` is a string or array (e.g. `"super_admin"` or `["admin", "super_admin"]`). Returns a 401/403 `Response` or `{ user }`.
+  - Both follow the same return-`Response`-or-value convention as `requireStore` (see §below): short-circuit with `if (result instanceof Response) return result`.
+- **Directory-scoped gates**: When an entire directory shares one auth rule, enforce it once in a Cloudflare `_middleware.js` instead of repeating the guard per handler. `functions/api/admin/_middleware.js` gates the whole `admin/` tree to `super_admin`; `functions/api/company/users/_middleware.js` gates that tree to `["admin", "super_admin"]`. The middleware runs `requireRole`, returns the `Response` on failure, else sets `context.data.user` and calls `context.next()`. Handlers in those trees **don't** call the guard themselves — read `context.data.user` if you need the caller. Add new routes under a gated directory and they're protected automatically. Keep the per-handler `requireAuth`/`requireRole` for trees that aren't uniformly gated (a blanket middleware would also catch public routes like `login`).
 
 **Example:**
 
 ```javascript
 // functions/api/vallles/index.js → GET /api/vallles
+import { requireAuth } from "../auth/_helpers.js";
+import { requireStore } from "../_store.js";
 
 export async function onRequestGet(context) {
-  const { env } = context
+  const { request, env } = context;
+
   // Auth check first
-  // ...
+  const auth = await requireAuth(request, env.JWT_SECRET);
+  if (auth instanceof Response) return auth;
+  const { user } = auth;
+
+  // Resolve + authorise the active store
+  const store = await requireStore(request, env, user.sub);
+  if (store instanceof Response) return store;
+  const { storeId } = store;
 
   try {
     const { results } = await env.DB.prepare(
-      'SELECT * FROM vallles WHERE store_id = ? ORDER BY created_at DESC'
-    ).bind(storeId).all()
+      "SELECT * FROM vallles WHERE store_id = ? ORDER BY created_at DESC",
+    )
+      .bind(storeId)
+      .all();
 
-    return Response.json({ data: results })
+    return Response.json({ data: results });
   } catch (error) {
-    const err = new Error('Vallles: Failed to list vallles')
-    err.code = 'DB_READ_FAILED'
-    err.cause = error
-    throw err
+    const err = new Error("Vallles: Failed to list vallles");
+    err.code = "DB_READ_FAILED";
+    err.cause = error;
+    throw err;
   }
 }
 ```
@@ -156,10 +172,10 @@ Queries and Mutations sit above local State because they represent remote/server
 **Example:**
 
 ```javascript
-import { useState, useCallback } from 'react'
-import { useTranslation } from 'react-i18next'
-import { User as IconUser } from 'lucide-react'
-import { useAuth } from '@/shared/auth'
+import { useState, useCallback } from "react";
+import { useTranslation } from "react-i18next";
+import { User as IconUser } from "lucide-react";
+import { useAuth } from "@/shared/auth";
 
 /**
  * Component: VallleCard
@@ -171,20 +187,20 @@ import { useAuth } from '@/shared/auth'
  */
 const VallleCard = ({ vallle }) => {
   // Hooks
-  const { t } = useTranslation()
-  const { user } = useAuth()
+  const { t } = useTranslation();
+  const { user } = useAuth();
 
   // State
-  const [isExpanded, setIsExpanded] = useState(false)
+  const [isExpanded, setIsExpanded] = useState(false);
 
   // Derived State
-  const displayBalance = (vallle.balance / 100).toFixed(2)
-  const isExpired = new Date(vallle.expires_at) < new Date()
+  const displayBalance = (vallle.balance / 100).toFixed(2);
+  const isExpired = new Date(vallle.expires_at) < new Date();
 
   // Handlers
   const handleToggle = useCallback(() => {
-    setIsExpanded((prev) => !prev)
-  }, [])
+    setIsExpanded((prev) => !prev);
+  }, []);
 
   // Render
   return (
@@ -192,13 +208,13 @@ const VallleCard = ({ vallle }) => {
       <h3 className="c-vallle-card__code">{vallle.code}</h3>
       <p className="c-vallle-card__balance">€{displayBalance}</p>
       <button className="c-vallle-card__toggle" onClick={handleToggle}>
-        {isExpanded ? t('common.collapse') : t('common.expand')}
+        {isExpanded ? t("common.collapse") : t("common.expand")}
       </button>
     </div>
-  )
-}
+  );
+};
 
-export default VallleCard
+export default VallleCard;
 ```
 
 ## 6. Frontend Structure
@@ -278,7 +294,7 @@ User roles on the `users` table are `admin` (store owners/staff) and `super_admi
 ```jsx
 <Route
   element={
-    <RoleGuard allowedRoles={['super_admin']}>
+    <RoleGuard allowedRoles={["super_admin"]}>
       <Commissions />
     </RoleGuard>
   }
@@ -341,11 +357,17 @@ All client-side data fetching goes through [TanStack Query](https://tanstack.com
 ### 9.1 Reads — `useQuery`
 
 ```javascript
-const { data: response, isPending, isError } = useQuery({
-  queryKey: ['vallles', { page: pageIndex, pageSize: PAGE_SIZE }],
+const {
+  data: response,
+  isPending,
+  isError,
+} = useQuery({
+  queryKey: ["vallles", { page: pageIndex, pageSize: PAGE_SIZE }],
   queryFn: ({ signal }) =>
-    get(`/api/vallles?limit=${PAGE_SIZE}&offset=${pageIndex * PAGE_SIZE}`, { signal }),
-})
+    get(`/api/vallles?limit=${PAGE_SIZE}&offset=${pageIndex * PAGE_SIZE}`, {
+      signal,
+    }),
+});
 ```
 
 - **`queryKey`**: An array used as the cache key. Include any parameter (id, page, filter) that should produce a separate cache entry. Convention: `[domain, subdomain, params]` — e.g. `['vallles']`, `['admin', 'companies']`, `['stats']`.
@@ -356,23 +378,26 @@ const { data: response, isPending, isError } = useQuery({
 ### 9.2 Writes — `useMutation`
 
 ```javascript
-const queryClient = useQueryClient()
+const queryClient = useQueryClient();
 
 const createVallle = useMutation({
-  mutationFn: (payload) => post('/api/vallles', payload),
+  mutationFn: (payload) => post("/api/vallles", payload),
   onSuccess: ({ data: vallle }) => {
-    queryClient.invalidateQueries({ queryKey: ['vallles'] })
-    queryClient.invalidateQueries({ queryKey: ['stats'] })
-    addToast(t('features.vallles.create.success'), 'success')
-    navigate(valllePath(vallle.id), { replace: true, state: { backgroundLocation } })
+    queryClient.invalidateQueries({ queryKey: ["vallles"] });
+    queryClient.invalidateQueries({ queryKey: ["stats"] });
+    addToast(t("features.vallles.create.success"), "success");
+    navigate(valllePath(vallle.id), {
+      replace: true,
+      state: { backgroundLocation },
+    });
   },
   onError: (error) => {
-    setServerError(error.message || t('features.vallles.create.error.generic'))
+    setServerError(error.message || t("features.vallles.create.error.generic"));
   },
-})
+});
 
 // In the form submit handler:
-createVallle.mutate(payload)
+createVallle.mutate(payload);
 ```
 
 - **Trigger with `.mutate(payload)`**, not by calling `mutationFn` directly.
@@ -384,7 +409,7 @@ createVallle.mutate(payload)
 After a successful mutation, invalidate the queries that should refetch:
 
 ```javascript
-queryClient.invalidateQueries({ queryKey: ['vallles'] })
+queryClient.invalidateQueries({ queryKey: ["vallles"] });
 ```
 
 `invalidateQueries` matches by prefix — `['vallles']` matches `['vallles', { page: 0 }]`, `['vallles', { page: 1 }]`, etc. Pick the most specific prefix that covers the lists you need refreshed. Avoid invalidating unrelated domains (don't invalidate `['users']` when creating a vallle).
@@ -393,14 +418,14 @@ Cross-domain invalidations are fine when warranted — e.g. creating a vallle in
 
 ### 9.4 Query key conventions
 
-| Resource | Key |
-| --- | --- |
+| Resource                    | Key                               |
+| --------------------------- | --------------------------------- |
 | Vallle list (current store) | `['vallles', { page, pageSize }]` |
-| Dashboard stats | `['stats']` |
-| Company users | `['company', 'users']` |
-| Admin: users | `['admin', 'users']` |
-| Admin: companies | `['admin', 'companies']` |
-| Admin: commissions | `['admin', 'commissions']` |
+| Dashboard stats             | `['stats']`                       |
+| Company users               | `['company', 'users']`            |
+| Admin: users                | `['admin', 'users']`              |
+| Admin: companies            | `['admin', 'companies']`          |
+| Admin: commissions          | `['admin', 'commissions']`        |
 
 When adding a new resource, follow the pattern: namespace first (e.g. `'admin'`), then the resource name, then any parameters as a plain object.
 

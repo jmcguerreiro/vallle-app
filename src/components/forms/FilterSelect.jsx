@@ -13,12 +13,20 @@ import { IconChevronDown } from "@/utils/icons";
  * @returns {JSX.Element}
  */
 const FilterSelect = ({ value, onChange, options, ariaLabel }) => {
+  // Derived State
+  const fieldId = `filter-${(ariaLabel || "select")
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/(^-|-$)/g, "")}`;
+
   // Render
   return (
     <div className="c-datatable__filter">
       <select
         aria-label={ariaLabel}
         className="c-datatable__filter-select"
+        id={fieldId}
+        name={fieldId}
         onChange={onChange}
         value={value}
       >

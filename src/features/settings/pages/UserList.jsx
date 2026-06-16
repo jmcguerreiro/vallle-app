@@ -13,6 +13,7 @@ import {
   settingsUserCreatePath,
   settingsUserEditPath,
 } from "@/constants/routes";
+import { USER_STATUSES } from "@/constants/user-statuses";
 import { get } from "@/services/api";
 import { formatDateTime } from "@/utils/dates";
 import { IconUserPlus } from "@/utils/icons";
@@ -194,8 +195,14 @@ const CompanyUserList = () => {
       onChange={handleStatusFilter}
       options={[
         { value: STATUS_ALL, label: t("common.filters.allStatuses") },
-        { value: "active", label: t("features.company.users.list.active") },
-        { value: "inactive", label: t("features.company.users.list.inactive") },
+        {
+          value: USER_STATUSES.ACTIVE,
+          label: t("features.company.users.list.active"),
+        },
+        {
+          value: USER_STATUSES.INACTIVE,
+          label: t("features.company.users.list.inactive"),
+        },
       ]}
       value={statusFilter}
     />

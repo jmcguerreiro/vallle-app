@@ -1,38 +1,24 @@
-import { getAuthUser } from '../../auth/_helpers.js'
-
 /**
  * GET /api/admin/commissions/:storeId — Monthly commission breakdown for a store (super_admin only).
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env, params } = context
-  const { storeId } = params
-
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
-    return Response.json(
-      { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
-      { status: 401 },
-    )
-  }
-  if (user.role !== 'super_admin') {
-    return Response.json(
-      { error: { message: 'Forbidden', code: 'AUTH_FORBIDDEN' } },
-      { status: 403 },
-    )
-  }
+  const { env, params } = context;
+  const { storeId } = params;
 
   try {
     const store = await env.DB.prepare(
-      'SELECT id, name FROM stores WHERE id = ?',
-    ).bind(storeId).first()
+      "SELECT id, name FROM stores WHERE id = ?",
+    )
+      .bind(storeId)
+      .first();
 
     if (!store) {
       return Response.json(
-        { error: { message: 'Store not found', code: 'STORE_NOT_FOUND' } },
+        { error: { message: "Store not found", code: "STORE_NOT_FOUND" } },
         { status: 404 },
-      )
+      );
     }
 
     const { results: months } = await env.DB.prepare(
@@ -47,7 +33,9 @@ export async function onRequestGet(context) {
        WHERE c.store_id = ?
        GROUP BY year_month
        ORDER BY year_month DESC`,
-    ).bind(storeId).all()
+    )
+      .bind(storeId)
+      .all();
 
     const summary = await env.DB.prepare(
       `SELECT COALESCE(SUM(c.amount), 0) AS total_commission,
@@ -55,13 +43,15 @@ export async function onRequestGet(context) {
               COALESCE(SUM(CASE WHEN c.paid_at IS NULL THEN c.amount ELSE 0 END), 0) AS total_unpaid
        FROM commissions c
        WHERE c.store_id = ?`,
-    ).bind(storeId).first()
+    )
+      .bind(storeId)
+      .first();
 
-    return Response.json({ data: { store, summary, months } })
+    return Response.json({ data: { store, summary, months } });
   } catch (error) {
-    const err = new Error('Admin: Failed to get store commissions')
-    err.code = 'DB_READ_FAILED'
-    err.cause = error
-    throw err
+    const err = new Error("Admin: Failed to get store commissions");
+    err.code = "DB_READ_FAILED";
+    err.cause = error;
+    throw err;
   }
 }

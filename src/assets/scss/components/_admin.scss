@@ -24,48 +24,20 @@
   grid-template-columns: repeat(3, 1fr);
 }
 
+.c-admin-stats-grid--2 {
+  grid-template-columns: repeat(2, 1fr);
+}
+
 /* ─── Admin detail rows ────────────────────────────────────────── */
 
-.c-admin-detail-grid {
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
+.c-admin-detail-list {
   margin-bottom: var(--space-xl);
-}
-
-.c-admin-detail__row {
-  display: flex;
-  align-items: baseline;
-  gap: var(--space-md);
-  padding: var(--space-sm) 0;
-  border-bottom: 1px solid var(--color-border);
-}
-
-.c-admin-detail__row:last-child {
-  border-bottom: none;
-}
-
-.c-admin-detail__label {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  min-width: 140px;
-  flex-shrink: 0;
-}
-
-.c-admin-detail__value {
-  color: var(--color-text);
-  font-size: 0.9375rem;
 }
 
 /* ─── Admin company users list ─────────────────────────────────── */
 
-.c-admin-company-users__heading {
-  font-size: 0.875rem;
-  font-weight: 600;
+.c-admin-company-users__empty {
   color: var(--color-text-muted);
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  margin-bottom: var(--space-sm);
 }
 
 .c-admin-company-users__list {
@@ -76,63 +48,41 @@
 }
 
 .c-admin-company-users__item {
-  background: var(--color-bg);
   border-radius: var(--radius-sm);
+
+  &:not(:last-child) {
+    border-bottom: 1px solid var(--color-border);
+  }
 }
 
 .c-admin-company-users__link {
   display: flex;
-  align-items: center;
-  gap: var(--space-md);
-  padding: var(--space-sm) var(--space-md);
+  flex-direction: column;
+  gap: var(--space-xs);
+  padding: var(--space-sm) 0;
   color: inherit;
   text-decoration: none;
-  border-radius: var(--radius-sm);
-  transition: background 0.15s ease;
+  transition: opacity 0.15s ease;
 
   @include hover {
-    background: var(--color-surface);
+    opacity: 0.7;
   }
+}
+
+.c-admin-company-users__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: var(--space-md);
 }
 
 .c-admin-company-users__name {
   font-weight: 500;
-  flex: 1;
 }
 
 .c-admin-company-users__email {
   font-size: 0.875rem;
   color: var(--color-text-muted);
-}
-
-/* ─── Admin user stores list ───────────────────────────────────── */
-
-.c-admin-user-stores {
-  margin: var(--space-md) 0;
-  padding: var(--space-md);
-  background: var(--color-bg);
-  border-radius: var(--radius-md);
-}
-
-.c-admin-user-stores__label {
-  font-size: 0.8125rem;
-  color: var(--color-text-muted);
-  margin-bottom: var(--space-sm);
-}
-
-.c-admin-user-stores__list {
-  list-style: none;
-  display: flex;
-  flex-wrap: wrap;
-  gap: var(--space-sm);
-}
-
-.c-admin-user-stores__item {
-  background: var(--color-surface);
-  border: 1px solid var(--color-border);
-  border-radius: var(--radius-sm);
-  padding: var(--space-xs) var(--space-sm);
-  font-size: 0.875rem;
 }
 
 /* ─── Admin commission amounts ─────────────────────────────────── */
@@ -159,38 +109,10 @@
   text-align: center;
 }
 
-.c-admin-table {
-  width: 100%;
-  border-collapse: collapse;
-  font-size: 0.9375rem;
+.c-admin-commissions-detail__table {
+  margin-top: var(--space-lg);
 }
 
-.c-admin-table th {
-  text-align: left;
-  padding: var(--space-sm) var(--space-md);
-  font-size: 0.75rem;
-  font-weight: 600;
-  text-transform: uppercase;
-  letter-spacing: 0.05em;
-  color: var(--color-text-muted);
-  border-bottom: 1px solid var(--color-border);
-}
-
-.c-admin-table td {
-  padding: var(--space-md);
-  border-bottom: 1px solid var(--color-border);
-  vertical-align: middle;
-}
-
-.c-admin-table tbody tr:last-child td {
-  border-bottom: none;
-}
-
-.c-admin-table__row--paid td {
+.c-admin-commissions-detail__row--paid {
   opacity: 0.6;
-}
-
-.c-admin-table__actions {
-  text-align: right;
-  white-space: nowrap;
 }

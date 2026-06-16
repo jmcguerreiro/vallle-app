@@ -6,7 +6,7 @@ import Button from "@/components/Button";
 import Modal from "@/components/Modal";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
-import { IconEllipsisVertical, IconLogOut, IconPencil } from "@/utils/icons";
+import { IconEllipsisVertical } from "@/utils/icons";
 
 /**
  * Component: User
@@ -81,17 +81,14 @@ const User = () => {
             <div className="s-header__user-menu-actions">
               <Button
                 display="block"
-                icon={IconPencil}
                 onClick={handleEditProfile}
-                skin="ghost"
+                skin="sand"
               >
                 {t("nav.editProfile")}
               </Button>
               <Button
                 display="block"
-                icon={IconLogOut}
                 onClick={handleLogout}
-                variant="fill"
               >
                 {t("nav.logout")}
               </Button>

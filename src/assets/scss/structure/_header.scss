@@ -58,6 +58,16 @@
   height: to-rem(20);
 }
 
+.s-header__admin-badge {
+  align-items: center;
+  border-radius: $border-radius-3xl;
+  border: solid 1px $color-parchment;
+  display: inline-flex;
+  gap: $spacing-2;
+  height: to-rem(48);
+  padding: 0 $spacing-3;
+}
+
 .s-header__store-modal-intro {
   margin: 0 0 $spacing-4;
   color: $color-espresso;

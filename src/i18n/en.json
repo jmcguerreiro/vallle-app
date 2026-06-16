@@ -3,6 +3,7 @@
     "loading": "Loading...",
     "save": "Save",
     "cancel": "Cancel",
+    "confirm": "Confirm",
     "noResults": "No results.",
     "error": "Something went wrong. Please try again.",
     "tryAgain": "Try again",
@@ -97,6 +98,7 @@
       },
       "chart": {
         "title": "Monthly overview",
+        "subtitle": "Vallles issued and commissions earned, month by month.",
         "vallles": "Vallles",
         "commissions": "Commissions"
       }
@@ -131,7 +133,18 @@
         "createdAt": "Created",
         "expiresAt": "Expires",
         "balanceSummary": "{{total}} • Available: {{balance}}",
-        "edit": "Edit"
+        "edit": "Edit",
+        "archive": "Archive",
+        "restore": "Restore",
+        "archiveConfirmTitle": "Archive this vallle?",
+        "archiveConfirmMessage": "It will no longer be redeemable, but its history will be kept. You can restore it later.",
+        "restoreConfirmTitle": "Restore this vallle?",
+        "restoreConfirmMessage": "It will become redeemable again.",
+        "archiveSuccess": "Vallle archived.",
+        "restoreSuccess": "Vallle restored.",
+        "error": {
+          "generic": "Could not update the vallle."
+        }
       },
       "edit": {
         "heading": "Edit vallle",
@@ -140,12 +153,6 @@
         "expiresAt": "Expiry date",
         "submit": "Save changes",
         "success": "Vallle updated successfully!",
-        "archive": "Archive vallle",
-        "restore": "Restore vallle",
-        "archiveConfirm": "Archive this vallle? It will no longer be redeemable, but its history will be kept. You can restore it later.",
-        "restoreConfirm": "Restore this vallle to active?",
-        "archiveSuccess": "Vallle archived.",
-        "restoreSuccess": "Vallle restored.",
         "error": {
           "generic": "Could not update the vallle."
         }
@@ -210,6 +217,7 @@
       "totalRedeemed": "Total redeemed",
       "chart": {
         "title": "Vallles created",
+        "subtitle": "How many vallles you have created each month.",
         "vallles": "Vallles"
       }
     },
@@ -301,6 +309,7 @@
           "email": "Email",
           "password": "Password",
           "role": "Role",
+          "language": "Language",
           "error": {
             "nameRequired": "Name is required.",
             "emailRequired": "Email is required.",
@@ -395,7 +404,8 @@
           "totalSales": "Total sales",
           "totalCommission": "Total commission",
           "unpaidCommission": "Outstanding",
-          "users": "Users"
+          "users": "Users",
+          "usersEmpty": "No users belong to this company yet."
         },
         "edit": {
           "heading": "Edit company",
@@ -429,6 +439,7 @@
           "email": "Email",
           "password": "Password",
           "role": "Role",
+          "language": "Language",
           "company": "Assign to company",
           "noCompany": "No company",
           "error": {
@@ -453,7 +464,8 @@
           "disable": "Disable account",
           "enable": "Enable account",
           "statusUpdated": "Account status updated.",
-          "companies": "Assigned companies"
+          "companies": "Assigned companies",
+          "companiesDescription": "The companies this user is assigned to."
         },
         "edit": {
           "heading": "Edit user",
@@ -461,6 +473,7 @@
           "submit": "Save changes",
           "success": "User updated successfully!",
           "assignedTo": "Assigned to",
+          "assignedToDescription": "The companies this user can manage.",
           "error": {
             "generic": "Could not update the user."
           }
@@ -475,7 +488,10 @@
         "description": "Track commissions earned across all companies.",
         "companyDetailDescription": "Monthly commission breakdown.",
         "company": "Company",
+        "vallle": "Vallle",
+        "buyer": "Buyer",
         "vallleSales": "Vallle sales",
+        "vallleValue": "Vallle value",
         "totalCommission": "Commission",
         "totalPaid": "Paid",
         "outstanding": "Outstanding",
@@ -531,6 +547,7 @@
     "adminUsers": "Users",
     "adminCommissions": "Commissions",
     "switchStore": "Switch store",
+    "adminBadge": "Administrator",
     "switchStoreModal": {
       "heading": "Switch store",
       "description": "Currently working with {{store}}. Select another store to work with."

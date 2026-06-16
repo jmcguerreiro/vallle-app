@@ -10,6 +10,9 @@ import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import Select from "@/components/forms/Select";
+import { LOCALE_OPTIONS } from "@/constants/locales";
+import { USER_ROLES } from "@/constants/user-roles";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
@@ -32,8 +35,14 @@ const CompanyUserCreate = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      role: USER_ROLES.USER,
+      locale: "pt",
+    },
+  });
 
   // Mutations
   const createUser = useMutation({
@@ -43,6 +52,7 @@ const CompanyUserCreate = () => {
         email: values.email,
         password: values.password,
         role: values.role,
+        locale: values.locale,
       }),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["company", "users"] });
@@ -64,6 +74,16 @@ const CompanyUserCreate = () => {
   // Derived State
   const title = t("features.company.users.create.heading");
   const description = t("features.company.users.create.description");
+  const roleOptions = [
+    {
+      value: USER_ROLES.USER,
+      label: t("features.company.users.list.role_user"),
+    },
+    {
+      value: USER_ROLES.ADMIN,
+      label: t("features.company.users.list.role_admin"),
+    },
+  ];
 
   // Handlers
   const onSubmit = useCallback(
@@ -92,6 +112,7 @@ const CompanyUserCreate = () => {
           required={t("features.company.users.form.error.nameRequired")}
         />
         <Input
+          autoComplete="off"
           error={errors.email}
           label={t("features.company.users.form.email")}
           name="email"
@@ -100,6 +121,7 @@ const CompanyUserCreate = () => {
           type="email"
         />
         <Input
+          autoComplete="new-password"
           error={errors.password}
           label={t("features.company.users.form.password")}
           name="password"
@@ -108,23 +130,22 @@ const CompanyUserCreate = () => {
           type="password"
           validate={validatePassword(t)}
         />
-        <div className="c-form__field">
-          <label className="c-form__field-label" htmlFor="role">
-            {t("features.company.users.form.role")}
-          </label>
-          <select
-            className="c-form__field-input"
-            id="role"
-            {...register("role")}
-          >
-            <option value="user">
-              {t("features.company.users.list.role_user")}
-            </option>
-            <option value="admin">
-              {t("features.company.users.list.role_admin")}
-            </option>
-          </select>
-        </div>
+        <Select
+          control={control}
+          error={errors.role}
+          label={t("features.company.users.form.role")}
+          name="role"
+          options={roleOptions}
+          placeholder={t("features.company.users.form.role")}
+        />
+        <Select
+          control={control}
+          error={errors.locale}
+          label={t("features.company.users.form.language")}
+          name="locale"
+          options={LOCALE_OPTIONS}
+          placeholder={t("features.company.users.form.language")}
+        />
       </FormFields>
       <FormActions>
         <Button isProcessing={createUser.isPending} type="submit">

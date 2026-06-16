@@ -1,695 +1,1289 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Vallle — Give Something That Matters</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap" rel="stylesheet">
-  <style>
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
-
-    :root {
-      --terracotta: #C4653A;
-      --terracotta-dark: #A8522D;
-      --linen: #F5E6D8;
-      --espresso: #2C2520;
-      --sage: #7A9B76;
-      --sage-light: #e8f0e7;
-      --parchment: #E8DDD3;
-      --honey: #D4A574;
-      --white: #FFFFFF;
-      --font-display: 'DM Serif Display', Georgia, serif;
-      --font-body: 'DM Sans', system-ui, sans-serif;
-    }
-
-    html { scroll-behavior: smooth; }
-
-    body {
-      font-family: var(--font-body);
-      font-weight: 300;
-      color: var(--espresso);
-      line-height: 1.6;
-      background: var(--white);
-      -webkit-font-smoothing: antialiased;
-    }
-
-    /* ── NAV ── */
-    .nav {
-      position: fixed; top: 0; left: 0; right: 0; z-index: 100;
-      background: rgba(255,255,255,0.95);
-      backdrop-filter: blur(10px);
-      border-bottom: 1px solid var(--parchment);
-      transition: box-shadow 0.3s;
-    }
-    .nav--scrolled { box-shadow: 0 2px 20px rgba(44,37,32,0.08); }
-    .nav__inner {
-      max-width: 1200px; margin: 0 auto; padding: 0 24px;
-      display: flex; align-items: center; justify-content: space-between; height: 64px;
-    }
-    .nav__logo { font-family: var(--font-display); font-size: 1.5rem; color: var(--terracotta); text-decoration: none; }
-    .nav__links { display: flex; gap: 28px; align-items: center; }
-    .nav__link {
-      text-decoration: none; color: var(--espresso); font-weight: 400; font-size: 0.92rem;
-      transition: color 0.2s;
-    }
-    .nav__link:hover { color: var(--terracotta); }
-    .nav__vallle-btn {
-      display: inline-flex; align-items: center; gap: 6px;
-      background: var(--linen); color: var(--terracotta);
-      padding: 8px 16px; border-radius: 8px; border: 1.5px solid var(--honey);
-      text-decoration: none; font-weight: 500; font-size: 0.88rem;
-      transition: all 0.2s;
-    }
-    .nav__vallle-btn:hover { background: var(--terracotta); color: var(--white); border-color: var(--terracotta); }
-    .nav__app-btn {
-      background: var(--espresso); color: var(--white);
-      padding: 9px 20px; border-radius: 8px; text-decoration: none;
-      font-weight: 500; font-size: 0.88rem; transition: all 0.2s;
-    }
-    .nav__app-btn:hover { background: var(--terracotta); }
-    .nav__hamburger {
-      display: none; background: none; border: none; cursor: pointer;
-      width: 32px; height: 32px; position: relative;
-    }
-    .nav__hamburger span {
-      display: block; width: 24px; height: 2px; background: var(--espresso);
-      position: absolute; left: 4px; transition: all 0.3s;
-    }
-    .nav__hamburger span:nth-child(1) { top: 8px; }
-    .nav__hamburger span:nth-child(2) { top: 15px; }
-    .nav__hamburger span:nth-child(3) { top: 22px; }
-
-    /* ── SHARED ── */
-    .section__inner { max-width: 1100px; margin: 0 auto; }
-    .section__label {
-      font-size: 0.82rem; font-weight: 500; text-transform: uppercase;
-      letter-spacing: 2px; color: var(--terracotta); text-align: center; margin-bottom: 12px;
-    }
-    .section__title {
-      font-family: var(--font-display); font-size: clamp(2rem, 4vw, 2.8rem);
-      text-align: center; margin-bottom: 16px; color: var(--espresso);
-    }
-    .section__subtitle {
-      text-align: center; max-width: 600px; margin: 0 auto 60px;
-      color: #6b5e56; font-size: 1.05rem;
-    }
-    .btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 14px 32px; border-radius: 10px; font-family: var(--font-body);
-      font-size: 1rem; font-weight: 500; text-decoration: none; transition: all 0.2s;
-      cursor: pointer; border: none;
-    }
-    .btn--primary { background: var(--terracotta); color: var(--white); }
-    .btn--primary:hover { background: var(--terracotta-dark); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(196,101,58,0.3); }
-    .btn--secondary { background: var(--white); color: var(--espresso); border: 2px solid var(--parchment); }
-    .btn--secondary:hover { border-color: var(--terracotta); color: var(--terracotta); }
-    .btn--ghost { background: transparent; color: var(--espresso); border: 2px solid rgba(44,37,32,0.15); }
-    .btn--ghost:hover { border-color: var(--terracotta); color: var(--terracotta); }
-    .fade-in { opacity: 0; transform: translateY(24px); transition: opacity 0.6s ease, transform 0.6s ease; }
-    .fade-in.visible { opacity: 1; transform: translateY(0); }
-
-    /* ── HERO ── */
-    .hero {
-      padding: 140px 24px 100px;
-      background: linear-gradient(170deg, var(--linen) 0%, var(--white) 60%);
-      text-align: center; overflow: hidden;
-    }
-    .hero__title {
-      font-family: var(--font-display);
-      font-size: clamp(2.6rem, 6.5vw, 4.5rem);
-      line-height: 1.12; max-width: 780px; margin: 0 auto 24px; color: var(--espresso);
-    }
-    .hero__title em { font-style: normal; color: var(--terracotta); }
-    .hero__subtitle {
-      font-size: 1.25rem; max-width: 560px; margin: 0 auto 48px; color: #6b5e56; line-height: 1.7;
-    }
-    .hero__actions { display: flex; gap: 16px; justify-content: center; flex-wrap: wrap; margin-bottom: 80px; }
-    .hero__postcards {
-      display: flex; justify-content: center; gap: 24px;
-      perspective: 1200px; max-width: 840px; margin: 0 auto;
-    }
-    .hero__card {
-      background: var(--white); border-radius: 14px; padding: 28px 24px;
-      box-shadow: 0 16px 48px rgba(44,37,32,0.1), 0 1px 3px rgba(44,37,32,0.06);
-      min-width: 220px; flex: 1; max-width: 260px;
-      transition: transform 0.4s; position: relative; overflow: hidden;
-    }
-    .hero__card::before {
-      content: ''; position: absolute; top: 0; left: 0; right: 0; height: 5px;
-    }
-    .hero__card:nth-child(1) { transform: rotate(-3deg) translateY(12px); }
-    .hero__card:nth-child(1)::before { background: var(--terracotta); }
-    .hero__card:nth-child(2) { transform: rotate(1deg) translateY(-4px); z-index: 2; }
-    .hero__card:nth-child(2)::before { background: var(--sage); }
-    .hero__card:nth-child(3) { transform: rotate(3deg) translateY(8px); }
-    .hero__card:nth-child(3)::before { background: var(--honey); }
-    .hero__card:hover { transform: rotate(0deg) translateY(-8px) scale(1.03); z-index: 3; }
-    .hero__card-store { font-family: var(--font-display); font-size: 1rem; margin-bottom: 4px; }
-    .hero__card-code {
-      font-family: 'Courier New', monospace; font-size: 0.72rem; letter-spacing: 1.5px;
-      color: #a89d95; margin-bottom: 10px;
-    }
-    .hero__card-amount { font-family: var(--font-display); font-size: 1.6rem; color: var(--terracotta); margin-bottom: 12px; }
-    .hero__card-divider {
-      border: none; border-top: 1px dashed var(--parchment); margin: 12px 0;
-    }
-    .hero__card-msg {
-      font-style: italic; color: #8a7d75; font-size: 0.82rem;
-      padding-left: 0; line-height: 1.5;
-    }
-
-    /* ── HOW IT WORKS (for gift givers) ── */
-    .how-gift {
-      padding: 100px 24px;
-      background: var(--linen);
-    }
-    .how-gift__steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 32px; }
-    .how-gift__step {
-      text-align: center; padding: 32px 24px;
-      background: var(--white); border-radius: 16px;
-      box-shadow: 0 2px 12px rgba(44,37,32,0.04);
-    }
-    .how-gift__step-num {
-      display: inline-flex; align-items: center; justify-content: center;
-      width: 40px; height: 40px; border-radius: 50%;
-      background: var(--terracotta); color: var(--white);
-      font-family: var(--font-display); font-size: 1.1rem; margin-bottom: 16px;
-    }
-    .how-gift__step-title { font-weight: 600; font-size: 1.05rem; margin-bottom: 8px; }
-    .how-gift__step-desc { color: #6b5e56; font-size: 0.92rem; line-height: 1.6; }
-
-    /* ── CHECK YOUR VALLLE ── */
-    .check-vallle {
-      padding: 80px 24px;
-      background: var(--espresso); color: var(--white);
-    }
-    .check-vallle__inner { max-width: 660px; margin: 0 auto; text-align: center; }
-    .check-vallle__title {
-      font-family: var(--font-display); font-size: clamp(1.6rem, 3vw, 2.2rem);
-      margin-bottom: 12px; color: var(--linen);
-    }
-    .check-vallle__desc { color: #a89d95; margin-bottom: 32px; font-size: 1rem; }
-    .check-vallle__form { display: flex; gap: 12px; max-width: 440px; margin: 0 auto; }
-    .check-vallle__input {
-      flex: 1; padding: 14px 20px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.15);
-      background: rgba(255,255,255,0.08); color: var(--white);
-      font-family: 'Courier New', monospace; font-size: 1.1rem; letter-spacing: 2px;
-      text-transform: uppercase; text-align: center;
-      outline: none; transition: border-color 0.2s;
-    }
-    .check-vallle__input::placeholder { color: rgba(255,255,255,0.3); letter-spacing: 1px; font-size: 0.95rem; }
-    .check-vallle__input:focus { border-color: var(--terracotta); }
-    .check-vallle__submit {
-      padding: 14px 28px; border-radius: 10px; border: none;
-      background: var(--terracotta); color: var(--white);
-      font-family: var(--font-body); font-weight: 500; font-size: 0.95rem;
-      cursor: pointer; transition: background 0.2s; white-space: nowrap;
-    }
-    .check-vallle__submit:hover { background: var(--terracotta-dark); }
-    .check-vallle__result {
-      margin-top: 24px; padding: 20px; border-radius: 12px;
-      background: rgba(255,255,255,0.06); display: none;
-    }
-    .check-vallle__result.active { display: block; }
-    .check-vallle__result-balance {
-      font-family: var(--font-display); font-size: 2.2rem; color: var(--sage);
-    }
-    .check-vallle__result-label { color: #a89d95; font-size: 0.85rem; margin-top: 4px; }
-
-    /* ── PARTICIPATING STORES ── */
-    .stores { padding: 100px 24px; background: var(--white); }
-    .stores__map-placeholder {
-      width: 100%; height: 320px; border-radius: 20px;
-      background: var(--parchment);
-      display: flex; flex-direction: column; align-items: center; justify-content: center;
-      margin-bottom: 40px; position: relative; overflow: hidden;
-    }
-    .stores__map-placeholder::before {
-      content: ''; position: absolute; inset: 0;
-      background:
-        radial-gradient(circle at 25% 40%, var(--linen) 0%, transparent 50%),
-        radial-gradient(circle at 70% 60%, rgba(196,101,58,0.08) 0%, transparent 40%),
-        radial-gradient(circle at 50% 30%, rgba(122,155,118,0.1) 0%, transparent 45%);
-    }
-    .stores__map-icon { font-size: 2.5rem; margin-bottom: 12px; position: relative; }
-    .stores__map-text { color: #8a7d75; font-size: 0.95rem; position: relative; }
-    .stores__grid {
-      display: grid; grid-template-columns: repeat(auto-fill, minmax(240px, 1fr)); gap: 20px;
-    }
-    .store-card {
-      padding: 24px; border-radius: 14px; border: 1px solid var(--parchment);
-      transition: all 0.3s; cursor: default;
-    }
-    .store-card:hover { border-color: var(--honey); box-shadow: 0 8px 28px rgba(44,37,32,0.06); transform: translateY(-2px); }
-    .store-card__category {
-      font-size: 0.75rem; font-weight: 500; text-transform: uppercase; letter-spacing: 1px;
-      color: var(--sage); margin-bottom: 8px;
-    }
-    .store-card__name { font-family: var(--font-display); font-size: 1.15rem; margin-bottom: 6px; }
-    .store-card__location { font-size: 0.88rem; color: #8a7d75; }
-    .store-card__dot {
-      display: inline-block; width: 8px; height: 8px; border-radius: 50%;
-      background: var(--sage); margin-right: 6px; vertical-align: middle;
-    }
-
-    /* ── FAQ ── */
-    .faq { padding: 100px 24px; background: var(--white); }
-    .faq__list {
-      max-width: 700px; margin: 0 auto;
-      display: flex; flex-direction: column; gap: 16px;
-    }
-    .faq__item {
-      border: 1px solid var(--parchment); border-radius: 12px;
-      overflow: hidden; transition: border-color 0.3s;
-    }
-    .faq__item:hover { border-color: var(--honey); }
-    .faq__question {
-      width: 100%; background: none; border: none; padding: 20px 24px;
-      font-family: var(--font-body); font-size: 1.05rem; font-weight: 500;
-      color: var(--espresso); cursor: pointer;
-      display: flex; justify-content: space-between; align-items: center; text-align: left;
-    }
-    .faq__question::after {
-      content: '+'; font-size: 1.3rem; color: var(--terracotta);
-      transition: transform 0.3s; flex-shrink: 0; margin-left: 16px;
-    }
-    .faq__item.active .faq__question::after { transform: rotate(45deg); }
-    .faq__answer { max-height: 0; overflow: hidden; transition: max-height 0.3s ease; }
-    .faq__item.active .faq__answer { max-height: 300px; }
-    .faq__answer-inner {
-      padding: 0 24px 20px; color: #6b5e56; font-size: 0.95rem; line-height: 1.7;
-    }
-
-    /* ── MANIFESTO ── */
-    .manifesto {
-      padding: 100px 24px;
-      background: var(--linen);
-    }
-    .manifesto__grid {
-      display: grid; grid-template-columns: 1fr 1fr; gap: 60px; align-items: center;
-    }
-    .manifesto__text h2 {
-      font-family: var(--font-display); font-size: clamp(1.8rem, 3.5vw, 2.4rem);
-      line-height: 1.25; margin-bottom: 20px;
-    }
-    .manifesto__text h2 em { font-style: normal; color: var(--terracotta); }
-    .manifesto__text p {
-      color: #6b5e56; font-size: 1.05rem; line-height: 1.8; margin-bottom: 16px;
-    }
-    .manifesto__text p:last-of-type { margin-bottom: 0; }
-    .manifesto__visual { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
-    .manifesto__tile {
-      background: var(--white); border-radius: 16px; padding: 28px 24px; text-align: center;
-    }
-    .manifesto__tile:nth-child(2) { background: var(--sage-light); }
-    .manifesto__tile:nth-child(3) { background: #fef3ee; }
-    .manifesto__tile:nth-child(4) { background: var(--parchment); }
-    .manifesto__tile-icon { font-size: 2rem; margin-bottom: 8px; }
-    .manifesto__tile-text { font-weight: 500; font-size: 0.92rem; color: var(--espresso); line-height: 1.4; }
-
-    /* ── JOIN CTA (subtle, above footer) ── */
-    .join-cta {
-      padding: 64px 24px;
-      background: var(--linen);
-      text-align: center;
-    }
-    .join-cta__inner {
-      max-width: 600px; margin: 0 auto;
-      display: flex; align-items: center; justify-content: space-between;
-      gap: 24px; flex-wrap: wrap;
-    }
-    .join-cta__text { text-align: left; }
-    .join-cta__title {
-      font-family: var(--font-display); font-size: 1.4rem; margin-bottom: 4px;
-    }
-    .join-cta__desc { color: #6b5e56; font-size: 0.95rem; }
-    .join-cta__btn {
-      display: inline-flex; align-items: center; gap: 8px;
-      padding: 12px 28px; border-radius: 10px;
-      background: var(--terracotta); color: var(--white);
-      text-decoration: none; font-weight: 500; font-size: 0.95rem;
-      transition: all 0.2s; white-space: nowrap;
-    }
-    .join-cta__btn:hover { background: var(--terracotta-dark); transform: translateY(-1px); }
-
-    /* ── FOOTER ── */
-    .footer { padding: 48px 24px; background: var(--espresso); color: #a89d95; font-size: 0.9rem; }
-    .footer__inner {
-      max-width: 1100px; margin: 0 auto;
-      display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 16px;
-    }
-    .footer__logo { font-family: var(--font-display); color: var(--honey); font-size: 1.3rem; }
-    .footer__links { display: flex; gap: 24px; }
-    .footer__link { color: #a89d95; text-decoration: none; transition: color 0.2s; }
-    .footer__link:hover { color: var(--linen); }
-
-    /* ── RESPONSIVE ── */
-    @media (max-width: 768px) {
-      .nav__links { display: none; }
-      .nav__hamburger { display: flex; align-items: center; justify-content: center; }
-      .nav__links.open {
-        display: flex; flex-direction: column; position: absolute;
-        top: 64px; left: 0; right: 0; background: var(--white);
-        padding: 24px; border-bottom: 1px solid var(--parchment);
-        box-shadow: 0 8px 24px rgba(44,37,32,0.1); gap: 16px;
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Vallle — Give Something That Matters</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      *,
+      *::before,
+      *::after {
+        box-sizing: border-box;
+        margin: 0;
+        padding: 0;
       }
-      .hero { padding: 120px 24px 80px; }
-      .hero__postcards { flex-direction: column; align-items: center; }
-      .hero__card { transform: none !important; max-width: 280px; }
-      .how-gift__steps { grid-template-columns: 1fr; }
-      .manifesto__grid { grid-template-columns: 1fr; gap: 40px; }
-      .stores__grid { grid-template-columns: 1fr 1fr; }
-      .check-vallle__form { flex-direction: column; }
-      .join-cta__inner { flex-direction: column; text-align: center; }
-      .join-cta__text { text-align: center; }
-    }
-    @media (max-width: 480px) {
-      .stores__grid { grid-template-columns: 1fr; }
-    }
-  </style>
-</head>
-<body>
 
-  <!-- NAV -->
-  <nav class="nav" id="nav">
-    <div class="nav__inner">
-      <a href="#" class="nav__logo">Vallle</a>
-      <div class="nav__links" id="navLinks">
-        <a href="#how" class="nav__link">How it works</a>
-        <a href="#stores" class="nav__link">Stores</a>
-        <a href="/for-businesses.html" class="nav__link">For businesses</a>
-        <a href="#check" class="nav__vallle-btn">
-          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-          Check your vallle
-        </a>
-        <a href="/login" class="nav__app-btn">Customer area</a>
-      </div>
-      <button class="nav__hamburger" id="hamburger" aria-label="Menu">
-        <span></span><span></span><span></span>
-      </button>
-    </div>
-  </nav>
-
-  <!-- 1. HERO -->
-  <section class="hero">
-    <div class="section__inner">
-      <h1 class="hero__title">Give local. <em>Give different.</em></h1>
-      <p class="hero__subtitle">Gift vallles from the local shops you love — handwritten on a beautiful postcard. Personal, meaningful, local.</p>
-      <div class="hero__actions">
-        <a href="#stores" class="btn btn--primary">Find a store near you</a>
-        <a href="#how" class="btn btn--secondary">How does it work?</a>
-      </div>
-      <div class="hero__postcards fade-in">
-        <div class="hero__card">
-          <p class="hero__card-store">Cafe Central</p>
-          <p class="hero__card-code">XTU-TER-T61</p>
-          <p class="hero__card-amount">&euro;15</p>
-          <hr class="hero__card-divider">
-          <p class="hero__card-msg">"For all those mornings you need an extra espresso. Happy birthday!"</p>
-        </div>
-        <div class="hero__card">
-          <p class="hero__card-store">Padaria da Esquina</p>
-          <p class="hero__card-code">K7M-DW3-R9N</p>
-          <p class="hero__card-amount">&euro;25</p>
-          <hr class="hero__card-divider">
-          <p class="hero__card-msg">"Os melhores pasteis de nata sao aqui. Com amor, Miguel"</p>
-        </div>
-        <div class="hero__card">
-          <p class="hero__card-store">Garrafeira do Bairro</p>
-          <p class="hero__card-code">P4F-HN8-V2X</p>
-          <p class="hero__card-amount">&euro;40</p>
-          <hr class="hero__card-divider">
-          <p class="hero__card-msg">"Pick something special for your anniversary dinner. Cheers!"</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 2. HOW IT WORKS -->
-  <section class="how-gift" id="how">
-    <div class="section__inner">
-      <p class="section__label">How it works</p>
-      <h2 class="section__title">As easy as buying a coffee</h2>
-      <p class="section__subtitle">No accounts, no apps, no passwords. Just walk in and ask.</p>
-      <div class="how-gift__steps">
-        <div class="how-gift__step fade-in">
-          <div class="how-gift__step-num">1</div>
-          <h3 class="how-gift__step-title">Pick a local shop</h3>
-          <p class="how-gift__step-desc">Walk into any participating store and ask for a Vallle postcard. Choose whatever amount you like.</p>
-        </div>
-        <div class="how-gift__step fade-in">
-          <div class="how-gift__step-num">2</div>
-          <h3 class="how-gift__step-title">Make it yours</h3>
-          <p class="how-gift__step-desc">The owner writes the vallle details on the left of the postcard. You add your personal message on the right. Done — ready to give.</p>
-        </div>
-        <div class="how-gift__step fade-in">
-          <div class="how-gift__step-num">3</div>
-          <h3 class="how-gift__step-title">They use it when they want</h3>
-          <p class="how-gift__step-desc">The person you gave it to visits the store and uses their postcard. All at once, or a little at a time.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 3. WHERE TO BUY -->
-  <section class="stores" id="stores">
-    <div class="section__inner">
-      <p class="section__label">Where to buy</p>
-      <h2 class="section__title">Stores you already love</h2>
-      <p class="section__subtitle">These local businesses are part of Vallle. Walk in, grab a postcard, and give a gift that actually supports your community.</p>
-      <div class="stores__map-placeholder fade-in">
-        <div class="stores__map-icon">&#128205;</div>
-        <p class="stores__map-text">Interactive map coming soon</p>
-      </div>
-      <div class="stores__grid">
-        <div class="store-card fade-in">
-          <p class="store-card__category">Cafe</p>
-          <h3 class="store-card__name">Cafe Central</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Rua Augusta, Lisboa</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Bakery</p>
-          <h3 class="store-card__name">Padaria da Esquina</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Rua da Boavista, Porto</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Wine shop</p>
-          <h3 class="store-card__name">Garrafeira do Bairro</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Travessa do Carmo, Lisboa</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Bookshop</p>
-          <h3 class="store-card__name">Livraria Esperanca</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Rua das Flores, Braga</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Florist</p>
-          <h3 class="store-card__name">Flora &amp; Raiz</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Avenida da Republica, Coimbra</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Restaurant</p>
-          <h3 class="store-card__name">Taberna do Largo</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Largo da Se, Evora</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Hair salon</p>
-          <h3 class="store-card__name">Atelier Cabelo</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Rua do Almada, Porto</p>
-        </div>
-        <div class="store-card fade-in">
-          <p class="store-card__category">Boutique</p>
-          <h3 class="store-card__name">Coisas com Alma</h3>
-          <p class="store-card__location"><span class="store-card__dot"></span>Rua da Junqueira, Lisboa</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 4. GOT A VALLLE? -->
-  <section class="check-vallle" id="check">
-    <div class="check-vallle__inner">
-      <h2 class="check-vallle__title">Got a vallle? Check your balance.</h2>
-      <p class="check-vallle__desc">Enter the code from your postcard to see how much you have left to spend.</p>
-      <form class="check-vallle__form" onsubmit="handleCheckVallle(event)">
-        <input type="text" class="check-vallle__input" id="vallleCodeInput"
-          placeholder="XXX-XXX-XXX" maxlength="11" autocomplete="off" spellcheck="false">
-        <button type="submit" class="check-vallle__submit">Check balance</button>
-      </form>
-      <div class="check-vallle__result" id="vallleResult">
-        <div class="check-vallle__result-balance" id="vallleBalance"></div>
-        <div class="check-vallle__result-label" id="vallleExpiry"></div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 5. FAQS -->
-  <section class="faq" id="faq">
-    <div class="section__inner">
-      <p class="section__label">Questions</p>
-      <h2 class="section__title">Good question</h2>
-      <div class="faq__list">
-        <div class="faq__item">
-          <button class="faq__question">What exactly is a Vallle postcard?</button>
-          <div class="faq__answer">
-            <p class="faq__answer-inner">It's a beautiful branded postcard that doubles as a gift vallle. On the back, the store owner handwrites the vallle details on the left — amount, unique code, shop name — and there's space on the right for you to write a personal message. One card, gift and vallle together.</p>
-          </div>
-        </div>
-        <div class="faq__item">
-          <button class="faq__question">How do I buy one?</button>
-          <div class="faq__answer">
-            <p class="faq__answer-inner">Just walk into any participating store and ask. You choose the amount, they fill in the postcard, you write your message, and you're done. You pay the store directly — cash, card, however they normally take payment.</p>
-          </div>
-        </div>
-        <div class="faq__item">
-          <button class="faq__question">How does the person I give it to use it?</button>
-          <div class="faq__answer">
-            <p class="faq__answer-inner">They take the postcard to the store and present it at checkout. The store looks up the code and deducts the amount. They can use the full value in one go, or spread it across multiple visits — whatever suits them.</p>
-          </div>
-        </div>
-        <div class="faq__item">
-          <button class="faq__question">What if they don't use it all at once?</button>
-          <div class="faq__answer">
-            <p class="faq__answer-inner">No problem. The remaining balance stays on the vallle. They can come back and use the rest whenever they like, until the vallle expires.</p>
-          </div>
-        </div>
-        <div class="faq__item">
-          <button class="faq__question">How long is a vallle valid?</button>
-          <div class="faq__answer">
-            <p class="faq__answer-inner">Each store sets its own expiry period — typically one year, but it can be up to five. The expiry date is written on the postcard and tracked in the system.</p>
-          </div>
-        </div>
-        <div class="faq__item">
-          <button class="faq__question">Can I check how much is left on a vallle?</button>
-          <div class="faq__answer">
-            <p class="faq__answer-inner">Yes — just enter the code from your postcard in the "Check your vallle" section above. You'll see the remaining balance and expiry date instantly.</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 6. OUR MANIFESTO -->
-  <section class="manifesto" id="manifesto">
-    <div class="section__inner">
-      <div class="manifesto__grid">
-        <div class="manifesto__text fade-in">
-          <h2>A gift that <em>actually supports</em> the places you love</h2>
-          <p>Every Vallle postcard puts money directly into a local business — the bakery on your corner, the wine shop you always recommend, the cafe where everyone knows your name.</p>
-          <p>On the back, the store owner handwrites the vallle details on the left — the amount, a unique code, their shop name. On the right, there's space for your personal message. Gift and vallle, side by side, on one card.</p>
-          <p>It's not a generic gift card from a faceless brand. It's something from a place you chose, for a person you know, that keeps your money in the neighbourhood.</p>
-        </div>
-        <div class="manifesto__visual fade-in">
-          <div class="manifesto__tile">
-            <div class="manifesto__tile-icon">&#127978;</div>
-            <p class="manifesto__tile-text">Money goes straight to local shops</p>
-          </div>
-          <div class="manifesto__tile">
-            <div class="manifesto__tile-icon">&#127873;</div>
-            <p class="manifesto__tile-text">Gift &amp; vallle in one card</p>
-          </div>
-          <div class="manifesto__tile">
-            <div class="manifesto__tile-icon">&#9997;&#65039;</div>
-            <p class="manifesto__tile-text">Handwritten by the shop &amp; by you</p>
-          </div>
-          <div class="manifesto__tile">
-            <div class="manifesto__tile-icon">&#128154;</div>
-            <p class="manifesto__tile-text">Something different to give</p>
-          </div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- 7. OWN A LOCAL BUSINESS? -->
-  <section class="join-cta">
-    <div class="section__inner">
-      <div class="join-cta__inner">
-        <div class="join-cta__text">
-          <h3 class="join-cta__title">Own a local business?</h3>
-          <p class="join-cta__desc">Find out how Vallle can work for your shop.</p>
-        </div>
-        <a href="/for-businesses.html" class="join-cta__btn">Learn more &rarr;</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- FOOTER -->
-  <footer class="footer">
-    <div class="footer__inner">
-      <span class="footer__logo">Vallle</span>
-      <div class="footer__links">
-        <a href="mailto:hello@vallle.pt" class="footer__link">hello@vallle.pt</a>
-        <a href="#" class="footer__link">Privacy</a>
-        <a href="#" class="footer__link">Terms</a>
-      </div>
-      <span>&copy; 2026 Vallle. Made in Portugal.</span>
-    </div>
-  </footer>
-
-  <script>
-    const nav = document.getElementById('nav')
-    window.addEventListener('scroll', () => {
-      nav.classList.toggle('nav--scrolled', window.scrollY > 10)
-    })
-
-    const hamburger = document.getElementById('hamburger')
-    const navLinks = document.getElementById('navLinks')
-    hamburger.addEventListener('click', () => navLinks.classList.toggle('open'))
-    navLinks.querySelectorAll('a').forEach(link => {
-      link.addEventListener('click', () => navLinks.classList.remove('open'))
-    })
-
-    const codeInput = document.getElementById('vallleCodeInput')
-    codeInput.addEventListener('input', (e) => {
-      let val = e.target.value.replace(/[^A-Za-z0-9]/g, '').toUpperCase()
-      if (val.length > 9) val = val.slice(0, 9)
-      let formatted = ''
-      for (let i = 0; i < val.length; i++) {
-        if (i > 0 && i % 3 === 0) formatted += '-'
-        formatted += val[i]
+      :root {
+        --terracotta: #c4653a;
+        --terracotta-dark: #a8522d;
+        --linen: #f5e6d8;
+        --espresso: #2c2520;
+        --sage: #7a9b76;
+        --sage-light: #e8f0e7;
+        --parchment: #e8ddd3;
+        --honey: #d4a574;
+        --white: #ffffff;
+        --font-display: "DM Serif Display", Georgia, serif;
+        --font-body: "DM Sans", system-ui, sans-serif;
       }
-      e.target.value = formatted
-    })
 
-    function handleCheckVallle(e) {
-      e.preventDefault()
-      const code = codeInput.value.trim()
-      const result = document.getElementById('vallleResult')
-      const balance = document.getElementById('vallleBalance')
-      const expiry = document.getElementById('vallleExpiry')
-      if (code.length < 11) {
-        balance.textContent = 'Please enter a complete vallle code'
-        balance.style.color = '#a89d95'
-        balance.style.fontSize = '1rem'
-        expiry.textContent = ''
-        result.classList.add('active')
-        return
+      html {
+        scroll-behavior: smooth;
       }
-      balance.style.color = ''
-      balance.style.fontSize = ''
-      balance.textContent = '\u20AC18.50 remaining'
-      expiry.textContent = 'Valid until 15 March 2027 \u00B7 Padaria da Esquina'
-      result.classList.add('active')
-    }
 
-    document.querySelectorAll('.faq__question').forEach(btn => {
-      btn.addEventListener('click', () => {
-        const item = btn.parentElement
-        const wasActive = item.classList.contains('active')
-        document.querySelectorAll('.faq__item').forEach(i => i.classList.remove('active'))
-        if (!wasActive) item.classList.add('active')
-      })
-    })
+      body {
+        font-family: var(--font-body);
+        font-weight: 300;
+        color: var(--espresso);
+        line-height: 1.6;
+        background: var(--white);
+        -webkit-font-smoothing: antialiased;
+      }
 
-    const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-        if (entry.isIntersecting) entry.target.classList.add('visible')
-      })
-    }, { threshold: 0.1 })
-    document.querySelectorAll('.fade-in').forEach(el => observer.observe(el))
-  </script>
-</body>
+      /* ── NAV ── */
+      .nav {
+        position: fixed;
+        top: 0;
+        left: 0;
+        right: 0;
+        z-index: 100;
+        background: rgba(255, 255, 255, 0.95);
+        backdrop-filter: blur(10px);
+        border-bottom: 1px solid var(--parchment);
+        transition: box-shadow 0.3s;
+      }
+      .nav--scrolled {
+        box-shadow: 0 2px 20px rgba(44, 37, 32, 0.08);
+      }
+      .nav__inner {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 0 24px;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 64px;
+      }
+      .nav__logo {
+        font-family: var(--font-display);
+        font-size: 1.5rem;
+        color: var(--terracotta);
+        text-decoration: none;
+      }
+      .nav__links {
+        display: flex;
+        gap: 28px;
+        align-items: center;
+      }
+      .nav__link {
+        text-decoration: none;
+        color: var(--espresso);
+        font-weight: 400;
+        font-size: 0.92rem;
+        transition: color 0.2s;
+      }
+      .nav__link:hover {
+        color: var(--terracotta);
+      }
+      .nav__vallle-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        background: var(--linen);
+        color: var(--terracotta);
+        padding: 8px 16px;
+        border-radius: 8px;
+        border: 1.5px solid var(--honey);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.88rem;
+        transition: all 0.2s;
+      }
+      .nav__vallle-btn:hover {
+        background: var(--terracotta);
+        color: var(--white);
+        border-color: var(--terracotta);
+      }
+      .nav__app-btn {
+        background: var(--espresso);
+        color: var(--white);
+        padding: 9px 20px;
+        border-radius: 8px;
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.88rem;
+        transition: all 0.2s;
+      }
+      .nav__app-btn:hover {
+        background: var(--terracotta);
+      }
+      .nav__hamburger {
+        display: none;
+        background: none;
+        border: none;
+        cursor: pointer;
+        width: 32px;
+        height: 32px;
+        position: relative;
+      }
+      .nav__hamburger span {
+        display: block;
+        width: 24px;
+        height: 2px;
+        background: var(--espresso);
+        position: absolute;
+        left: 4px;
+        transition: all 0.3s;
+      }
+      .nav__hamburger span:nth-child(1) {
+        top: 8px;
+      }
+      .nav__hamburger span:nth-child(2) {
+        top: 15px;
+      }
+      .nav__hamburger span:nth-child(3) {
+        top: 22px;
+      }
+
+      /* ── SHARED ── */
+      .section__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+      }
+      .section__label {
+        font-size: 0.82rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 2px;
+        color: var(--terracotta);
+        text-align: center;
+        margin-bottom: 12px;
+      }
+      .section__title {
+        font-family: var(--font-display);
+        font-size: clamp(2rem, 4vw, 2.8rem);
+        text-align: center;
+        margin-bottom: 16px;
+        color: var(--espresso);
+      }
+      .section__subtitle {
+        text-align: center;
+        max-width: 600px;
+        margin: 0 auto 60px;
+        color: #6b5e56;
+        font-size: 1.05rem;
+      }
+      .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 14px 32px;
+        border-radius: 10px;
+        font-family: var(--font-body);
+        font-size: 1rem;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.2s;
+        cursor: pointer;
+        border: none;
+      }
+      .btn--primary {
+        background: var(--terracotta);
+        color: var(--white);
+      }
+      .btn--primary:hover {
+        background: var(--terracotta-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 8px 24px rgba(196, 101, 58, 0.3);
+      }
+      .btn--secondary {
+        background: var(--white);
+        color: var(--espresso);
+        border: 2px solid var(--parchment);
+      }
+      .btn--secondary:hover {
+        border-color: var(--terracotta);
+        color: var(--terracotta);
+      }
+      .btn--ghost {
+        background: transparent;
+        color: var(--espresso);
+        border: 2px solid rgba(44, 37, 32, 0.15);
+      }
+      .btn--ghost:hover {
+        border-color: var(--terracotta);
+        color: var(--terracotta);
+      }
+      .fade-in {
+        opacity: 0;
+        transform: translateY(24px);
+        transition:
+          opacity 0.6s ease,
+          transform 0.6s ease;
+      }
+      .fade-in.visible {
+        opacity: 1;
+        transform: translateY(0);
+      }
+
+      /* ── HERO ── */
+      .hero {
+        padding: 140px 24px 100px;
+        background: linear-gradient(170deg, var(--linen) 0%, var(--white) 60%);
+        text-align: center;
+        overflow: hidden;
+      }
+      .hero__title {
+        font-family: var(--font-display);
+        font-size: clamp(2.6rem, 6.5vw, 4.5rem);
+        line-height: 1.12;
+        max-width: 780px;
+        margin: 0 auto 24px;
+        color: var(--espresso);
+      }
+      .hero__title em {
+        font-style: normal;
+        color: var(--terracotta);
+      }
+      .hero__subtitle {
+        font-size: 1.25rem;
+        max-width: 560px;
+        margin: 0 auto 48px;
+        color: #6b5e56;
+        line-height: 1.7;
+      }
+      .hero__actions {
+        display: flex;
+        gap: 16px;
+        justify-content: center;
+        flex-wrap: wrap;
+        margin-bottom: 80px;
+      }
+      .hero__postcards {
+        display: flex;
+        justify-content: center;
+        gap: 24px;
+        perspective: 1200px;
+        max-width: 840px;
+        margin: 0 auto;
+      }
+      .hero__card {
+        background: var(--white);
+        border-radius: 14px;
+        padding: 28px 24px;
+        box-shadow:
+          0 16px 48px rgba(44, 37, 32, 0.1),
+          0 1px 3px rgba(44, 37, 32, 0.06);
+        min-width: 220px;
+        flex: 1;
+        max-width: 260px;
+        transition: transform 0.4s;
+        position: relative;
+        overflow: hidden;
+      }
+      .hero__card::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 5px;
+      }
+      .hero__card:nth-child(1) {
+        transform: rotate(-3deg) translateY(12px);
+      }
+      .hero__card:nth-child(1)::before {
+        background: var(--terracotta);
+      }
+      .hero__card:nth-child(2) {
+        transform: rotate(1deg) translateY(-4px);
+        z-index: 2;
+      }
+      .hero__card:nth-child(2)::before {
+        background: var(--sage);
+      }
+      .hero__card:nth-child(3) {
+        transform: rotate(3deg) translateY(8px);
+      }
+      .hero__card:nth-child(3)::before {
+        background: var(--honey);
+      }
+      .hero__card:hover {
+        transform: rotate(0deg) translateY(-8px) scale(1.03);
+        z-index: 3;
+      }
+      .hero__card-store {
+        font-family: var(--font-display);
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+      .hero__card-code {
+        font-family: "Courier New", monospace;
+        font-size: 0.72rem;
+        letter-spacing: 1.5px;
+        color: #a89d95;
+        margin-bottom: 10px;
+      }
+      .hero__card-amount {
+        font-family: var(--font-display);
+        font-size: 1.6rem;
+        color: var(--terracotta);
+        margin-bottom: 12px;
+      }
+      .hero__card-divider {
+        border: none;
+        border-top: 1px dashed var(--parchment);
+        margin: 12px 0;
+      }
+      .hero__card-msg {
+        font-style: italic;
+        color: #8a7d75;
+        font-size: 0.82rem;
+        padding-left: 0;
+        line-height: 1.5;
+      }
+
+      /* ── HOW IT WORKS (for gift givers) ── */
+      .how-gift {
+        padding: 100px 24px;
+        background: var(--linen);
+      }
+      .how-gift__steps {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        gap: 32px;
+      }
+      .how-gift__step {
+        text-align: center;
+        padding: 32px 24px;
+        background: var(--white);
+        border-radius: 16px;
+        box-shadow: 0 2px 12px rgba(44, 37, 32, 0.04);
+      }
+      .how-gift__step-num {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        width: 40px;
+        height: 40px;
+        border-radius: 50%;
+        background: var(--terracotta);
+        color: var(--white);
+        font-family: var(--font-display);
+        font-size: 1.1rem;
+        margin-bottom: 16px;
+      }
+      .how-gift__step-title {
+        font-weight: 600;
+        font-size: 1.05rem;
+        margin-bottom: 8px;
+      }
+      .how-gift__step-desc {
+        color: #6b5e56;
+        font-size: 0.92rem;
+        line-height: 1.6;
+      }
+
+      /* ── CHECK YOUR VALLLE ── */
+      .check-vallle {
+        padding: 80px 24px;
+        background: var(--espresso);
+        color: var(--white);
+      }
+      .check-vallle__inner {
+        max-width: 660px;
+        margin: 0 auto;
+        text-align: center;
+      }
+      .check-vallle__title {
+        font-family: var(--font-display);
+        font-size: clamp(1.6rem, 3vw, 2.2rem);
+        margin-bottom: 12px;
+        color: var(--linen);
+      }
+      .check-vallle__desc {
+        color: #a89d95;
+        margin-bottom: 32px;
+        font-size: 1rem;
+      }
+      .check-vallle__form {
+        display: flex;
+        gap: 12px;
+        max-width: 440px;
+        margin: 0 auto;
+      }
+      .check-vallle__input {
+        flex: 1;
+        padding: 14px 20px;
+        border-radius: 10px;
+        border: 2px solid rgba(255, 255, 255, 0.15);
+        background: rgba(255, 255, 255, 0.08);
+        color: var(--white);
+        font-family: "Courier New", monospace;
+        font-size: 1.1rem;
+        letter-spacing: 2px;
+        text-transform: uppercase;
+        text-align: center;
+        outline: none;
+        transition: border-color 0.2s;
+      }
+      .check-vallle__input::placeholder {
+        color: rgba(255, 255, 255, 0.3);
+        letter-spacing: 1px;
+        font-size: 0.95rem;
+      }
+      .check-vallle__input:focus {
+        border-color: var(--terracotta);
+      }
+      .check-vallle__submit {
+        padding: 14px 28px;
+        border-radius: 10px;
+        border: none;
+        background: var(--terracotta);
+        color: var(--white);
+        font-family: var(--font-body);
+        font-weight: 500;
+        font-size: 0.95rem;
+        cursor: pointer;
+        transition: background 0.2s;
+        white-space: nowrap;
+      }
+      .check-vallle__submit:hover {
+        background: var(--terracotta-dark);
+      }
+      .check-vallle__result {
+        margin-top: 24px;
+        padding: 20px;
+        border-radius: 12px;
+        background: rgba(255, 255, 255, 0.06);
+        display: none;
+      }
+      .check-vallle__result.active {
+        display: block;
+      }
+      .check-vallle__result-balance {
+        font-family: var(--font-display);
+        font-size: 2.2rem;
+        color: var(--sage);
+      }
+      .check-vallle__result-label {
+        color: #a89d95;
+        font-size: 0.85rem;
+        margin-top: 4px;
+      }
+
+      /* ── PARTICIPATING STORES ── */
+      .stores {
+        padding: 100px 24px;
+        background: var(--white);
+      }
+      .stores__map-placeholder {
+        width: 100%;
+        height: 320px;
+        border-radius: 20px;
+        background: var(--parchment);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        margin-bottom: 40px;
+        position: relative;
+        overflow: hidden;
+      }
+      .stores__map-placeholder::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background:
+          radial-gradient(circle at 25% 40%, var(--linen) 0%, transparent 50%),
+          radial-gradient(
+            circle at 70% 60%,
+            rgba(196, 101, 58, 0.08) 0%,
+            transparent 40%
+          ),
+          radial-gradient(
+            circle at 50% 30%,
+            rgba(122, 155, 118, 0.1) 0%,
+            transparent 45%
+          );
+      }
+      .stores__map-icon {
+        font-size: 2.5rem;
+        margin-bottom: 12px;
+        position: relative;
+      }
+      .stores__map-text {
+        color: #8a7d75;
+        font-size: 0.95rem;
+        position: relative;
+      }
+      .stores__grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(240px, 1fr));
+        gap: 20px;
+      }
+      .store-card {
+        padding: 24px;
+        border-radius: 14px;
+        border: 1px solid var(--parchment);
+        transition: all 0.3s;
+        cursor: default;
+      }
+      .store-card:hover {
+        border-color: var(--honey);
+        box-shadow: 0 8px 28px rgba(44, 37, 32, 0.06);
+        transform: translateY(-2px);
+      }
+      .store-card__category {
+        font-size: 0.75rem;
+        font-weight: 500;
+        text-transform: uppercase;
+        letter-spacing: 1px;
+        color: var(--sage);
+        margin-bottom: 8px;
+      }
+      .store-card__name {
+        font-family: var(--font-display);
+        font-size: 1.15rem;
+        margin-bottom: 6px;
+      }
+      .store-card__location {
+        font-size: 0.88rem;
+        color: #8a7d75;
+      }
+      .store-card__dot {
+        display: inline-block;
+        width: 8px;
+        height: 8px;
+        border-radius: 50%;
+        background: var(--sage);
+        margin-right: 6px;
+        vertical-align: middle;
+      }
+
+      /* ── FAQ ── */
+      .faq {
+        padding: 100px 24px;
+        background: var(--white);
+      }
+      .faq__list {
+        max-width: 700px;
+        margin: 0 auto;
+        display: flex;
+        flex-direction: column;
+        gap: 16px;
+      }
+      .faq__item {
+        border: 1px solid var(--parchment);
+        border-radius: 12px;
+        overflow: hidden;
+        transition: border-color 0.3s;
+      }
+      .faq__item:hover {
+        border-color: var(--honey);
+      }
+      .faq__question {
+        width: 100%;
+        background: none;
+        border: none;
+        padding: 20px 24px;
+        font-family: var(--font-body);
+        font-size: 1.05rem;
+        font-weight: 500;
+        color: var(--espresso);
+        cursor: pointer;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        text-align: left;
+      }
+      .faq__question::after {
+        content: "+";
+        font-size: 1.3rem;
+        color: var(--terracotta);
+        transition: transform 0.3s;
+        flex-shrink: 0;
+        margin-left: 16px;
+      }
+      .faq__item.active .faq__question::after {
+        transform: rotate(45deg);
+      }
+      .faq__answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease;
+      }
+      .faq__item.active .faq__answer {
+        max-height: 300px;
+      }
+      .faq__answer-inner {
+        padding: 0 24px 20px;
+        color: #6b5e56;
+        font-size: 0.95rem;
+        line-height: 1.7;
+      }
+
+      /* ── MANIFESTO ── */
+      .manifesto {
+        padding: 100px 24px;
+        background: var(--linen);
+      }
+      .manifesto__grid {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 60px;
+        align-items: center;
+      }
+      .manifesto__text h2 {
+        font-family: var(--font-display);
+        font-size: clamp(1.8rem, 3.5vw, 2.4rem);
+        line-height: 1.25;
+        margin-bottom: 20px;
+      }
+      .manifesto__text h2 em {
+        font-style: normal;
+        color: var(--terracotta);
+      }
+      .manifesto__text p {
+        color: #6b5e56;
+        font-size: 1.05rem;
+        line-height: 1.8;
+        margin-bottom: 16px;
+      }
+      .manifesto__text p:last-of-type {
+        margin-bottom: 0;
+      }
+      .manifesto__visual {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 16px;
+      }
+      .manifesto__tile {
+        background: var(--white);
+        border-radius: 16px;
+        padding: 28px 24px;
+        text-align: center;
+      }
+      .manifesto__tile:nth-child(2) {
+        background: var(--sage-light);
+      }
+      .manifesto__tile:nth-child(3) {
+        background: #fef3ee;
+      }
+      .manifesto__tile:nth-child(4) {
+        background: var(--parchment);
+      }
+      .manifesto__tile-icon {
+        font-size: 2rem;
+        margin-bottom: 8px;
+      }
+      .manifesto__tile-text {
+        font-weight: 500;
+        font-size: 0.92rem;
+        color: var(--espresso);
+        line-height: 1.4;
+      }
+
+      /* ── JOIN CTA (subtle, above footer) ── */
+      .join-cta {
+        padding: 64px 24px;
+        background: var(--linen);
+        text-align: center;
+      }
+      .join-cta__inner {
+        max-width: 600px;
+        margin: 0 auto;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 24px;
+        flex-wrap: wrap;
+      }
+      .join-cta__text {
+        text-align: left;
+      }
+      .join-cta__title {
+        font-family: var(--font-display);
+        font-size: 1.4rem;
+        margin-bottom: 4px;
+      }
+      .join-cta__desc {
+        color: #6b5e56;
+        font-size: 0.95rem;
+      }
+      .join-cta__btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+        padding: 12px 28px;
+        border-radius: 10px;
+        background: var(--terracotta);
+        color: var(--white);
+        text-decoration: none;
+        font-weight: 500;
+        font-size: 0.95rem;
+        transition: all 0.2s;
+        white-space: nowrap;
+      }
+      .join-cta__btn:hover {
+        background: var(--terracotta-dark);
+        transform: translateY(-1px);
+      }
+
+      /* ── FOOTER ── */
+      .footer {
+        padding: 48px 24px;
+        background: var(--espresso);
+        color: #a89d95;
+        font-size: 0.9rem;
+      }
+      .footer__inner {
+        max-width: 1100px;
+        margin: 0 auto;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-wrap: wrap;
+        gap: 16px;
+      }
+      .footer__logo {
+        font-family: var(--font-display);
+        color: var(--honey);
+        font-size: 1.3rem;
+      }
+      .footer__links {
+        display: flex;
+        gap: 24px;
+      }
+      .footer__link {
+        color: #a89d95;
+        text-decoration: none;
+        transition: color 0.2s;
+      }
+      .footer__link:hover {
+        color: var(--linen);
+      }
+
+      /* ── RESPONSIVE ── */
+      @media (max-width: 768px) {
+        .nav__links {
+          display: none;
+        }
+        .nav__hamburger {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        .nav__links.open {
+          display: flex;
+          flex-direction: column;
+          position: absolute;
+          top: 64px;
+          left: 0;
+          right: 0;
+          background: var(--white);
+          padding: 24px;
+          border-bottom: 1px solid var(--parchment);
+          box-shadow: 0 8px 24px rgba(44, 37, 32, 0.1);
+          gap: 16px;
+        }
+        .hero {
+          padding: 120px 24px 80px;
+        }
+        .hero__postcards {
+          flex-direction: column;
+          align-items: center;
+        }
+        .hero__card {
+          transform: none !important;
+          max-width: 280px;
+        }
+        .how-gift__steps {
+          grid-template-columns: 1fr;
+        }
+        .manifesto__grid {
+          grid-template-columns: 1fr;
+          gap: 40px;
+        }
+        .stores__grid {
+          grid-template-columns: 1fr 1fr;
+        }
+        .check-vallle__form {
+          flex-direction: column;
+        }
+        .join-cta__inner {
+          flex-direction: column;
+          text-align: center;
+        }
+        .join-cta__text {
+          text-align: center;
+        }
+      }
+      @media (max-width: 480px) {
+        .stores__grid {
+          grid-template-columns: 1fr;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <!-- NAV -->
+    <nav class="nav" id="nav">
+      <div class="nav__inner">
+        <a href="#" class="nav__logo">Vallle</a>
+        <div class="nav__links" id="navLinks">
+          <a href="#how" class="nav__link">How it works</a>
+          <a href="#stores" class="nav__link">Stores</a>
+          <a href="/for-businesses.html" class="nav__link">For businesses</a>
+          <a href="#check" class="nav__vallle-btn">
+            <svg
+              width="16"
+              height="16"
+              viewBox="0 0 24 24"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="2.5"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+            >
+              <circle cx="11" cy="11" r="8" />
+              <line x1="21" y1="21" x2="16.65" y2="16.65" />
+            </svg>
+            Check your vallle
+          </a>
+          <a href="/login" class="nav__app-btn">Customer area</a>
+        </div>
+        <button class="nav__hamburger" id="hamburger" aria-label="Menu">
+          <span></span><span></span><span></span>
+        </button>
+      </div>
+    </nav>
+
+    <!-- 1. HERO -->
+    <section class="hero">
+      <div class="section__inner">
+        <h1 class="hero__title">Give local. <em>Give different.</em></h1>
+        <p class="hero__subtitle">
+          Gift vallles from the local shops you love — handwritten on a
+          beautiful postcard. Personal, meaningful, local.
+        </p>
+        <div class="hero__actions">
+          <a href="#stores" class="btn btn--primary">Find a store near you</a>
+          <a href="#how" class="btn btn--secondary">How does it work?</a>
+        </div>
+        <div class="hero__postcards fade-in">
+          <div class="hero__card">
+            <p class="hero__card-store">Cafe Central</p>
+            <p class="hero__card-code">XTU-TER-T61</p>
+            <p class="hero__card-amount">&euro;15</p>
+            <hr class="hero__card-divider" />
+            <p class="hero__card-msg">
+              "For all those mornings you need an extra espresso. Happy
+              birthday!"
+            </p>
+          </div>
+          <div class="hero__card">
+            <p class="hero__card-store">Padaria da Esquina</p>
+            <p class="hero__card-code">K7M-DW3-R9N</p>
+            <p class="hero__card-amount">&euro;25</p>
+            <hr class="hero__card-divider" />
+            <p class="hero__card-msg">
+              "Os melhores pasteis de nata sao aqui. Com amor, Miguel"
+            </p>
+          </div>
+          <div class="hero__card">
+            <p class="hero__card-store">Garrafeira do Bairro</p>
+            <p class="hero__card-code">P4F-HN8-V2X</p>
+            <p class="hero__card-amount">&euro;40</p>
+            <hr class="hero__card-divider" />
+            <p class="hero__card-msg">
+              "Pick something special for your anniversary dinner. Cheers!"
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 2. HOW IT WORKS -->
+    <section class="how-gift" id="how">
+      <div class="section__inner">
+        <p class="section__label">How it works</p>
+        <h2 class="section__title">As easy as buying a coffee</h2>
+        <p class="section__subtitle">
+          No accounts, no apps, no passwords. Just walk in and ask.
+        </p>
+        <div class="how-gift__steps">
+          <div class="how-gift__step fade-in">
+            <div class="how-gift__step-num">1</div>
+            <h3 class="how-gift__step-title">Pick a local shop</h3>
+            <p class="how-gift__step-desc">
+              Walk into any participating store and ask for a Vallle postcard.
+              Choose whatever amount you like.
+            </p>
+          </div>
+          <div class="how-gift__step fade-in">
+            <div class="how-gift__step-num">2</div>
+            <h3 class="how-gift__step-title">Make it yours</h3>
+            <p class="how-gift__step-desc">
+              The owner writes the vallle details on the left of the postcard.
+              You add your personal message on the right. Done — ready to give.
+            </p>
+          </div>
+          <div class="how-gift__step fade-in">
+            <div class="how-gift__step-num">3</div>
+            <h3 class="how-gift__step-title">They use it when they want</h3>
+            <p class="how-gift__step-desc">
+              The person you gave it to visits the store and uses their
+              postcard. All at once, or a little at a time.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 3. WHERE TO BUY -->
+    <section class="stores" id="stores">
+      <div class="section__inner">
+        <p class="section__label">Where to buy</p>
+        <h2 class="section__title">Stores you already love</h2>
+        <p class="section__subtitle">
+          These local businesses are part of Vallle. Walk in, grab a postcard,
+          and give a gift that actually supports your community.
+        </p>
+        <div class="stores__map-placeholder fade-in">
+          <div class="stores__map-icon">&#128205;</div>
+          <p class="stores__map-text">Interactive map coming soon</p>
+        </div>
+        <div class="stores__grid">
+          <div class="store-card fade-in">
+            <p class="store-card__category">Cafe</p>
+            <h3 class="store-card__name">Cafe Central</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Rua Augusta, Lisboa
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Bakery</p>
+            <h3 class="store-card__name">Padaria da Esquina</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Rua da Boavista, Porto
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Wine shop</p>
+            <h3 class="store-card__name">Garrafeira do Bairro</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Travessa do Carmo, Lisboa
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Bookshop</p>
+            <h3 class="store-card__name">Livraria Esperanca</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Rua das Flores, Braga
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Florist</p>
+            <h3 class="store-card__name">Flora &amp; Raiz</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Avenida da Republica, Coimbra
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Restaurant</p>
+            <h3 class="store-card__name">Taberna do Largo</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Largo da Se, Evora
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Hair salon</p>
+            <h3 class="store-card__name">Atelier Cabelo</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Rua do Almada, Porto
+            </p>
+          </div>
+          <div class="store-card fade-in">
+            <p class="store-card__category">Boutique</p>
+            <h3 class="store-card__name">Coisas com Alma</h3>
+            <p class="store-card__location">
+              <span class="store-card__dot"></span>Rua da Junqueira, Lisboa
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 4. GOT A VALLLE? -->
+    <section class="check-vallle" id="check">
+      <div class="check-vallle__inner">
+        <h2 class="check-vallle__title">Got a vallle? Check your balance.</h2>
+        <p class="check-vallle__desc">
+          Enter the code from your postcard to see how much you have left to
+          spend.
+        </p>
+        <form class="check-vallle__form" onsubmit="handleCheckVallle(event)">
+          <input
+            type="text"
+            class="check-vallle__input"
+            id="vallleCodeInput"
+            placeholder="XXX-XXX-XXX"
+            maxlength="11"
+            autocomplete="off"
+            spellcheck="false"
+          />
+          <button type="submit" class="check-vallle__submit">
+            Check balance
+          </button>
+        </form>
+        <div class="check-vallle__result" id="vallleResult">
+          <div class="check-vallle__result-balance" id="vallleBalance"></div>
+          <div class="check-vallle__result-label" id="vallleExpiry"></div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5. FAQS -->
+    <section class="faq" id="faq">
+      <div class="section__inner">
+        <p class="section__label">Questions</p>
+        <h2 class="section__title">Good question</h2>
+        <div class="faq__list">
+          <div class="faq__item">
+            <button class="faq__question">
+              What exactly is a Vallle postcard?
+            </button>
+            <div class="faq__answer">
+              <p class="faq__answer-inner">
+                It's a beautiful branded postcard that doubles as a gift vallle.
+                On the back, the store owner handwrites the vallle details on
+                the left — amount, unique code, shop name — and there's space on
+                the right for you to write a personal message. One card, gift
+                and vallle together.
+              </p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question">How do I buy one?</button>
+            <div class="faq__answer">
+              <p class="faq__answer-inner">
+                Just walk into any participating store and ask. You choose the
+                amount, they fill in the postcard, you write your message, and
+                you're done. You pay the store directly — cash, card, however
+                they normally take payment.
+              </p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question">
+              How does the person I give it to use it?
+            </button>
+            <div class="faq__answer">
+              <p class="faq__answer-inner">
+                They take the postcard to the store and present it at checkout.
+                The store looks up the code and deducts the amount. They can use
+                the full value in one go, or spread it across multiple visits —
+                whatever suits them.
+              </p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question">
+              What if they don't use it all at once?
+            </button>
+            <div class="faq__answer">
+              <p class="faq__answer-inner">
+                No problem. The remaining balance stays on the vallle. They can
+                come back and use the rest whenever they like, until the vallle
+                expires.
+              </p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question">How long is a vallle valid?</button>
+            <div class="faq__answer">
+              <p class="faq__answer-inner">
+                Each store sets its own expiry period — typically one year, but
+                it can be up to five. The expiry date is written on the postcard
+                and tracked in the system.
+              </p>
+            </div>
+          </div>
+          <div class="faq__item">
+            <button class="faq__question">
+              Can I check how much is left on a vallle?
+            </button>
+            <div class="faq__answer">
+              <p class="faq__answer-inner">
+                Yes — just enter the code from your postcard in the "Check your
+                vallle" section above. You'll see the remaining balance and
+                expiry date instantly.
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 6. OUR MANIFESTO -->
+    <section class="manifesto" id="manifesto">
+      <div class="section__inner">
+        <div class="manifesto__grid">
+          <div class="manifesto__text fade-in">
+            <h2>A gift that <em>actually supports</em> the places you love</h2>
+            <p>
+              Every Vallle postcard puts money directly into a local business —
+              the bakery on your corner, the wine shop you always recommend, the
+              cafe where everyone knows your name.
+            </p>
+            <p>
+              On the back, the store owner handwrites the vallle details on the
+              left — the amount, a unique code, their shop name. On the right,
+              there's space for your personal message. Gift and vallle, side by
+              side, on one card.
+            </p>
+            <p>
+              It's not a generic gift card from a faceless brand. It's something
+              from a place you chose, for a person you know, that keeps your
+              money in the neighbourhood.
+            </p>
+          </div>
+          <div class="manifesto__visual fade-in">
+            <div class="manifesto__tile">
+              <div class="manifesto__tile-icon">&#127978;</div>
+              <p class="manifesto__tile-text">
+                Money goes straight to local shops
+              </p>
+            </div>
+            <div class="manifesto__tile">
+              <div class="manifesto__tile-icon">&#127873;</div>
+              <p class="manifesto__tile-text">Gift &amp; vallle in one card</p>
+            </div>
+            <div class="manifesto__tile">
+              <div class="manifesto__tile-icon">&#9997;&#65039;</div>
+              <p class="manifesto__tile-text">
+                Handwritten by the shop &amp; by you
+              </p>
+            </div>
+            <div class="manifesto__tile">
+              <div class="manifesto__tile-icon">&#128154;</div>
+              <p class="manifesto__tile-text">Something different to give</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 7. OWN A LOCAL BUSINESS? -->
+    <section class="join-cta">
+      <div class="section__inner">
+        <div class="join-cta__inner">
+          <div class="join-cta__text">
+            <h3 class="join-cta__title">Own a local business?</h3>
+            <p class="join-cta__desc">
+              Find out how Vallle can work for your shop.
+            </p>
+          </div>
+          <a href="/for-businesses.html" class="join-cta__btn"
+            >Learn more &rarr;</a
+          >
+        </div>
+      </div>
+    </section>
+
+    <!-- FOOTER -->
+    <footer class="footer">
+      <div class="footer__inner">
+        <span class="footer__logo">Vallle</span>
+        <div class="footer__links">
+          <a href="mailto:hello@vallle.pt" class="footer__link"
+            >hello@vallle.pt</a
+          >
+          <a href="#" class="footer__link">Privacy</a>
+          <a href="#" class="footer__link">Terms</a>
+        </div>
+        <span>&copy; 2026 Vallle. Made in Portugal.</span>
+      </div>
+    </footer>
+
+    <script>
+      const nav = document.getElementById("nav");
+      window.addEventListener("scroll", () => {
+        nav.classList.toggle("nav--scrolled", window.scrollY > 10);
+      });
+
+      const hamburger = document.getElementById("hamburger");
+      const navLinks = document.getElementById("navLinks");
+      hamburger.addEventListener("click", () =>
+        navLinks.classList.toggle("open"),
+      );
+      navLinks.querySelectorAll("a").forEach((link) => {
+        link.addEventListener("click", () => navLinks.classList.remove("open"));
+      });
+
+      const codeInput = document.getElementById("vallleCodeInput");
+      codeInput.addEventListener("input", (e) => {
+        let val = e.target.value.replace(/[^A-Za-z0-9]/g, "").toUpperCase();
+        if (val.length > 9) val = val.slice(0, 9);
+        let formatted = "";
+        for (let i = 0; i < val.length; i++) {
+          if (i > 0 && i % 3 === 0) formatted += "-";
+          formatted += val[i];
+        }
+        e.target.value = formatted;
+      });
+
+      function handleCheckVallle(e) {
+        e.preventDefault();
+        const code = codeInput.value.trim();
+        const result = document.getElementById("vallleResult");
+        const balance = document.getElementById("vallleBalance");
+        const expiry = document.getElementById("vallleExpiry");
+        if (code.length < 11) {
+          balance.textContent = "Please enter a complete vallle code";
+          balance.style.color = "#a89d95";
+          balance.style.fontSize = "1rem";
+          expiry.textContent = "";
+          result.classList.add("active");
+          return;
+        }
+        balance.style.color = "";
+        balance.style.fontSize = "";
+        balance.textContent = "\u20AC18.50 remaining";
+        expiry.textContent =
+          "Valid until 15 March 2027 \u00B7 Padaria da Esquina";
+        result.classList.add("active");
+      }
+
+      document.querySelectorAll(".faq__question").forEach((btn) => {
+        btn.addEventListener("click", () => {
+          const item = btn.parentElement;
+          const wasActive = item.classList.contains("active");
+          document
+            .querySelectorAll(".faq__item")
+            .forEach((i) => i.classList.remove("active"));
+          if (!wasActive) item.classList.add("active");
+        });
+      });
+
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) entry.target.classList.add("visible");
+          });
+        },
+        { threshold: 0.1 },
+      );
+      document
+        .querySelectorAll(".fade-in")
+        .forEach((el) => observer.observe(el));
+    </script>
+  </body>
 </html>

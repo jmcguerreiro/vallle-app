@@ -22,7 +22,6 @@ import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
 import {
-  IconCalendarDays,
   IconChevronLeft,
   IconChevronRight,
 } from "@/utils/icons";
@@ -167,7 +166,7 @@ const AdminDashboardIndex = () => {
             </button>
           </div>
         }
-        icon={IconCalendarDays}
+        description={t("features.adminDashboard.chart.subtitle")}
         title={t("features.adminDashboard.chart.title")}
       >
         <div style={{ height: 300 }}>

@@ -2,6 +2,8 @@
  * Vallle-specific utility functions.
  */
 
+import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
+
 /**
  * Checks whether a vallle is expired based on its expires_at field.
  * @param {string} expiresAt - ISO 8601 expiry date
@@ -26,8 +28,9 @@ export function formatVallleCode(raw) {
  * @returns {'active'|'used'|'expired'|'archived'}
  */
 export function deriveVallleStatus(vallle) {
-  if (vallle.status === "archived") return "archived";
-  if (isVallleExpired(vallle.expires_at)) return "expired";
-  if (vallle.balance === 0) return "used";
-  return "active";
+  if (vallle.status === VALLLE_STATUSES.ARCHIVED)
+    return VALLLE_STATUSES.ARCHIVED;
+  if (isVallleExpired(vallle.expires_at)) return VALLLE_STATUSES.EXPIRED;
+  if (vallle.balance === 0) return VALLLE_STATUSES.USED;
+  return VALLLE_STATUSES.ACTIVE;
 }

@@ -7,12 +7,28 @@ import {
   useState,
 } from "react";
 
+import { COMPANY_STATUSES } from "@/constants/company-statuses";
+import { SUPPORTED_LOCALES } from "@/constants/locales";
 import { USER_ROLES } from "@/constants/user-roles";
+import i18n from "@/i18n";
 import { get, post, setApiStoreId } from "@/services/api";
 
 export const AuthContext = createContext(null);
 
 const STORE_KEY = "vallle_active_store";
+const LANGUAGE_KEY = "vallle_language";
+
+/**
+ * Applies an authenticated user's saved locale to the UI: the DB value is the
+ * source of truth for a logged-in user, so we sync i18next and the persisted
+ * language preference to it on login and session restore.
+ * @param {string} [locale]
+ */
+function applyUserLocale(locale) {
+  if (!SUPPORTED_LOCALES.has(locale)) return;
+  if (i18n.language !== locale) i18n.changeLanguage(locale);
+  localStorage.setItem(LANGUAGE_KEY, locale);
+}
 
 /**
  * Reads the persisted active store ID from localStorage for a given user.
@@ -63,6 +79,7 @@ export const AuthProvider = ({ children }) => {
     const { data } = await post("/api/auth/login", { email, password });
     setUser(data.user);
     userIdRef.current = data.user.id;
+    applyUserLocale(data.user.locale);
 
     // Auto-select store if user has exactly one.
     // For multi-store users, always show the picker after login.
@@ -105,6 +122,7 @@ export const AuthProvider = ({ children }) => {
       .then(({ data }) => {
         setUser(data.user);
         userIdRef.current = data.user.id;
+        applyUserLocale(data.user.locale);
 
         if (data.user.stores?.length === 1) {
           const store = data.user.stores[0];
@@ -128,7 +146,8 @@ export const AuthProvider = ({ children }) => {
   const needsStoreSelection =
     !!user && (user.stores?.length ?? 0) > 1 && !activeStore;
 
-  const isStoreSuspended = activeStore?.store_status === "suspended";
+  const isStoreSuspended =
+    activeStore?.store_status === COMPANY_STATUSES.SUSPENDED;
 
   const value = useMemo(
     () => ({

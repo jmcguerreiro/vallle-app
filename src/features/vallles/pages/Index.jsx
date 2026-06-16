@@ -8,6 +8,10 @@ import EmptyState from "@/components/EmptyState";
 import FilterSelect from "@/components/forms/FilterSelect";
 import Loader from "@/components/Loader";
 import { vallleCreatePath } from "@/constants/routes";
+import {
+  VALLLE_STATUS_ALL,
+  VALLLE_STATUSES,
+} from "@/constants/vallle-statuses";
 import VallleDatatable from "@/features/vallles/components/VallleDatatable";
 import { deriveVallleStatus } from "@/features/vallles/utils";
 import { useAuth } from "@/hooks/useAuth";
@@ -25,7 +29,6 @@ import { IconMailPlus } from "@/utils/icons";
  */
 const ValllesIndex = () => {
   // Constants
-  const STATUS_ALL = "all";
   const PAGE_SIZE = 20;
 
   // Hooks
@@ -36,7 +39,7 @@ const ValllesIndex = () => {
   const { setHeader } = useMain();
 
   // State
-  const [statusFilter, setStatusFilter] = useState(STATUS_ALL);
+  const [statusFilter, setStatusFilter] = useState(VALLLE_STATUSES.ACTIVE);
   const [pageIndex, setPageIndex] = useState(0);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ id: "created_at", desc: true });
@@ -65,7 +68,8 @@ const ValllesIndex = () => {
         sort: sort.id,
         order: sort.desc ? "desc" : "asc",
       });
-      if (statusFilter !== STATUS_ALL) params.set("status", statusFilter);
+      if (statusFilter !== VALLLE_STATUS_ALL)
+        params.set("status", statusFilter);
       if (search) params.set("search", search);
       return get(`/api/vallles?${params.toString()}`, { signal });
     },
@@ -73,7 +77,7 @@ const ValllesIndex = () => {
   });
 
   const totalCount = response?.meta?.total ?? 0;
-  const hasActiveFilters = statusFilter !== STATUS_ALL || search !== "";
+  const hasActiveFilters = statusFilter !== VALLLE_STATUS_ALL || search !== "";
 
   // Derived State
   const enrichedVallles = useMemo(() => {
@@ -168,11 +172,20 @@ const ValllesIndex = () => {
       ariaLabel={t("common.filters.allStatuses")}
       onChange={handleStatusFilter}
       options={[
-        { value: STATUS_ALL, label: t("common.filters.allStatuses") },
-        { value: "active", label: t("features.vallles.list.active") },
-        { value: "used", label: t("features.vallles.list.used") },
-        { value: "expired", label: t("features.vallles.list.expired") },
-        { value: "archived", label: t("features.vallles.list.archived") },
+        { value: VALLLE_STATUS_ALL, label: t("common.filters.allStatuses") },
+        {
+          value: VALLLE_STATUSES.ACTIVE,
+          label: t("features.vallles.list.active"),
+        },
+        { value: VALLLE_STATUSES.USED, label: t("features.vallles.list.used") },
+        {
+          value: VALLLE_STATUSES.EXPIRED,
+          label: t("features.vallles.list.expired"),
+        },
+        {
+          value: VALLLE_STATUSES.ARCHIVED,
+          label: t("features.vallles.list.archived"),
+        },
       ]}
       value={statusFilter}
     />

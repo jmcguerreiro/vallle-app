@@ -10,6 +10,8 @@ import EmptyState from "@/components/EmptyState";
 import FilterSelect from "@/components/forms/FilterSelect";
 import Loader from "@/components/Loader";
 import { ROUTES, adminUserPath } from "@/constants/routes";
+import { USER_ROLES } from "@/constants/user-roles";
+import { USER_STATUSES } from "@/constants/user-statuses";
 import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
 import { formatDateTime } from "@/utils/dates";
@@ -223,10 +225,16 @@ const AdminUsersIndex = () => {
         onChange={handleRoleFilter}
         options={[
           { value: FILTER_ALL, label: t("common.filters.allRoles") },
-          { value: "user", label: t("features.admin.users.list.role_user") },
-          { value: "admin", label: t("features.admin.users.list.role_admin") },
           {
-            value: "super_admin",
+            value: USER_ROLES.USER,
+            label: t("features.admin.users.list.role_user"),
+          },
+          {
+            value: USER_ROLES.ADMIN,
+            label: t("features.admin.users.list.role_admin"),
+          },
+          {
+            value: USER_ROLES.SUPER_ADMIN,
             label: t("features.admin.users.list.role_super_admin"),
           },
         ]}
@@ -237,8 +245,14 @@ const AdminUsersIndex = () => {
         onChange={handleStatusFilter}
         options={[
           { value: FILTER_ALL, label: t("common.filters.allStatuses") },
-          { value: "active", label: t("features.admin.users.list.active") },
-          { value: "inactive", label: t("features.admin.users.list.inactive") },
+          {
+            value: USER_STATUSES.ACTIVE,
+            label: t("features.admin.users.list.active"),
+          },
+          {
+            value: USER_STATUSES.INACTIVE,
+            label: t("features.admin.users.list.inactive"),
+          },
         ]}
         value={statusFilter}
       />

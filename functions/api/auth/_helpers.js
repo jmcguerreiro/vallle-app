@@ -4,8 +4,8 @@
  * Passwords are hashed with PBKDF2-SHA256.
  */
 
-const JWT_EXPIRY = 3 * 24 * 60 * 60 // 3 days in seconds
-const PBKDF2_ITERATIONS = 100_000
+const JWT_EXPIRY = 3 * 24 * 60 * 60; // 3 days in seconds
+const PBKDF2_ITERATIONS = 100_000;
 
 /**
  * Converts an ArrayBuffer to a base64url string.
@@ -13,12 +13,15 @@ const PBKDF2_ITERATIONS = 100_000
  * @returns {string}
  */
 function bufferToBase64Url(buffer) {
-  const bytes = new Uint8Array(buffer)
-  let binary = ''
+  const bytes = new Uint8Array(buffer);
+  let binary = "";
   for (const byte of bytes) {
-    binary += String.fromCharCode(byte)
+    binary += String.fromCharCode(byte);
   }
-  return btoa(binary).replaceAll('+', '-').replaceAll('/', '_').replaceAll('=', '')
+  return btoa(binary)
+    .replaceAll("+", "-")
+    .replaceAll("/", "_")
+    .replaceAll("=", "");
 }
 
 /**
@@ -27,14 +30,14 @@ function bufferToBase64Url(buffer) {
  * @returns {ArrayBuffer}
  */
 function base64UrlToBuffer(base64url) {
-  const base64 = base64url.replaceAll('-', '+').replaceAll('_', '/')
-  const padded = base64 + '='.repeat((4 - (base64.length % 4)) % 4)
-  const binary = atob(padded)
-  const bytes = new Uint8Array(binary.length)
+  const base64 = base64url.replaceAll("-", "+").replaceAll("_", "/");
+  const padded = base64 + "=".repeat((4 - (base64.length % 4)) % 4);
+  const binary = atob(padded);
+  const bytes = new Uint8Array(binary.length);
   for (let index = 0; index < binary.length; index++) {
-    bytes[index] = binary.codePointAt(index)
+    bytes[index] = binary.codePointAt(index);
   }
-  return bytes.buffer
+  return bytes.buffer;
 }
 
 /**
@@ -43,14 +46,14 @@ function base64UrlToBuffer(base64url) {
  * @returns {Promise<CryptoKey>}
  */
 async function getSigningKey(secret) {
-  const encoder = new TextEncoder()
+  const encoder = new TextEncoder();
   return crypto.subtle.importKey(
-    'raw',
+    "raw",
     encoder.encode(secret),
-    { name: 'HMAC', hash: 'SHA-256' },
+    { name: "HMAC", hash: "SHA-256" },
     false,
-    ['sign', 'verify'],
-  )
+    ["sign", "verify"],
+  );
 }
 
 /**
@@ -60,19 +63,19 @@ async function getSigningKey(secret) {
  * @returns {Promise<string>} Signed JWT string
  */
 export async function signJwt(payload, secret) {
-  const header = { alg: 'HS256', typ: 'JWT' }
-  const now = Math.floor(Date.now() / 1000)
-  const claims = { ...payload, iat: now, exp: now + JWT_EXPIRY }
+  const header = { alg: "HS256", typ: "JWT" };
+  const now = Math.floor(Date.now() / 1000);
+  const claims = { ...payload, iat: now, exp: now + JWT_EXPIRY };
 
-  const encoder = new TextEncoder()
-  const headerB64 = bufferToBase64Url(encoder.encode(JSON.stringify(header)))
-  const payloadB64 = bufferToBase64Url(encoder.encode(JSON.stringify(claims)))
-  const data = `${headerB64}.${payloadB64}`
+  const encoder = new TextEncoder();
+  const headerB64 = bufferToBase64Url(encoder.encode(JSON.stringify(header)));
+  const payloadB64 = bufferToBase64Url(encoder.encode(JSON.stringify(claims)));
+  const data = `${headerB64}.${payloadB64}`;
 
-  const key = await getSigningKey(secret)
-  const signature = await crypto.subtle.sign('HMAC', key, encoder.encode(data))
+  const key = await getSigningKey(secret);
+  const signature = await crypto.subtle.sign("HMAC", key, encoder.encode(data));
 
-  return `${data}.${bufferToBase64Url(signature)}`
+  return `${data}.${bufferToBase64Url(signature)}`;
 }
 
 /**
@@ -83,28 +86,33 @@ export async function signJwt(payload, secret) {
  */
 export async function verifyJwt(token, secret) {
   try {
-    const [headerB64, payloadB64, signatureB64] = token.split('.')
-    if (!headerB64 || !payloadB64 || !signatureB64) return null
+    const [headerB64, payloadB64, signatureB64] = token.split(".");
+    if (!headerB64 || !payloadB64 || !signatureB64) return null;
 
-    const encoder = new TextEncoder()
-    const data = `${headerB64}.${payloadB64}`
-    const key = await getSigningKey(secret)
-    const signature = base64UrlToBuffer(signatureB64)
+    const encoder = new TextEncoder();
+    const data = `${headerB64}.${payloadB64}`;
+    const key = await getSigningKey(secret);
+    const signature = base64UrlToBuffer(signatureB64);
 
-    const valid = await crypto.subtle.verify('HMAC', key, signature, encoder.encode(data))
-    if (!valid) return null
+    const valid = await crypto.subtle.verify(
+      "HMAC",
+      key,
+      signature,
+      encoder.encode(data),
+    );
+    if (!valid) return null;
 
     const payload = JSON.parse(
       new TextDecoder().decode(base64UrlToBuffer(payloadB64)),
-    )
+    );
 
     if (payload.exp && payload.exp < Math.floor(Date.now() / 1000)) {
-      return null
+      return null;
     }
 
-    return payload
+    return payload;
   } catch {
-    return null
+    return null;
   }
 }
 
@@ -115,37 +123,44 @@ export async function verifyJwt(token, secret) {
  * @returns {Promise<string>} Format: `salt:hash` (both hex)
  */
 export async function hashPassword(password, salt) {
-  const encoder = new TextEncoder()
+  const encoder = new TextEncoder();
 
-  let saltBuffer
+  let saltBuffer;
   if (salt) {
-    saltBuffer = new Uint8Array(salt.match(/.{2}/g).map((byte) => Number.parseInt(byte, 16)))
+    saltBuffer = new Uint8Array(
+      salt.match(/.{2}/g).map((byte) => Number.parseInt(byte, 16)),
+    );
   } else {
-    saltBuffer = crypto.getRandomValues(new Uint8Array(16))
+    saltBuffer = crypto.getRandomValues(new Uint8Array(16));
   }
 
   const keyMaterial = await crypto.subtle.importKey(
-    'raw',
+    "raw",
     encoder.encode(password),
-    'PBKDF2',
+    "PBKDF2",
     false,
-    ['deriveBits'],
-  )
+    ["deriveBits"],
+  );
 
   const derivedBits = await crypto.subtle.deriveBits(
-    { name: 'PBKDF2', salt: saltBuffer, iterations: PBKDF2_ITERATIONS, hash: 'SHA-256' },
+    {
+      name: "PBKDF2",
+      salt: saltBuffer,
+      iterations: PBKDF2_ITERATIONS,
+      hash: "SHA-256",
+    },
     keyMaterial,
     256,
-  )
+  );
 
   const hashHex = [...new Uint8Array(derivedBits)]
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
   const saltHex = [...saltBuffer]
-    .map((b) => b.toString(16).padStart(2, '0'))
-    .join('')
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 
-  return `${saltHex}:${hashHex}`
+  return `${saltHex}:${hashHex}`;
 }
 
 /**
@@ -155,25 +170,37 @@ export async function hashPassword(password, salt) {
  * @returns {Promise<boolean>}
  */
 export async function verifyPassword(password, storedHash) {
-  const [salt] = storedHash.split(':')
-  const rehashed = await hashPassword(password, salt)
+  const [salt] = storedHash.split(":");
+  const rehashed = await hashPassword(password, salt);
 
-  const encoder = new TextEncoder()
-  const a = encoder.encode(rehashed)
-  const b = encoder.encode(storedHash)
-  if (a.byteLength !== b.byteLength) return false
+  const encoder = new TextEncoder();
+  const a = encoder.encode(rehashed);
+  const b = encoder.encode(storedHash);
+  if (a.byteLength !== b.byteLength) return false;
 
-  const keyA = await crypto.subtle.importKey('raw', a, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
-  const sigA = new Uint8Array(await crypto.subtle.sign('HMAC', keyA, b))
-  const keyB = await crypto.subtle.importKey('raw', b, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign'])
-  const sigB = new Uint8Array(await crypto.subtle.sign('HMAC', keyB, b))
+  const keyA = await crypto.subtle.importKey(
+    "raw",
+    a,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sigA = new Uint8Array(await crypto.subtle.sign("HMAC", keyA, b));
+  const keyB = await crypto.subtle.importKey(
+    "raw",
+    b,
+    { name: "HMAC", hash: "SHA-256" },
+    false,
+    ["sign"],
+  );
+  const sigB = new Uint8Array(await crypto.subtle.sign("HMAC", keyB, b));
 
-  if (sigA.byteLength !== sigB.byteLength) return false
-  let result = 0
+  if (sigA.byteLength !== sigB.byteLength) return false;
+  let result = 0;
   for (let i = 0; i < sigA.byteLength; i++) {
-    result |= sigA[i] ^ sigB[i]
+    result |= sigA[i] ^ sigB[i];
   }
-  return result === 0
+  return result === 0;
 }
 
 /**
@@ -183,10 +210,49 @@ export async function verifyPassword(password, storedHash) {
  * @returns {Promise<Object|null>} User payload or null
  */
 export async function getAuthUser(request, secret) {
-  const cookie = request.headers.get('Cookie') || ''
-  const match = cookie.match(/(?:^|;\s*)vallle_token=([^;]+)/)
-  if (!match) return null
-  return verifyJwt(match[1], secret)
+  const cookie = request.headers.get("Cookie") || "";
+  const match = cookie.match(/(?:^|;\s*)vallle_token=([^;]+)/);
+  if (!match) return null;
+  return verifyJwt(match[1], secret);
+}
+
+/**
+ * Verifies the request is authenticated.
+ * Returns a 401 Response if not, or the authenticated user payload if successful.
+ * @param {Request} request
+ * @param {string} secret - JWT_SECRET from env
+ * @returns {Promise<{ user: Object }|Response>}
+ */
+export async function requireAuth(request, secret) {
+  const user = await getAuthUser(request, secret);
+  if (!user) {
+    return Response.json(
+      { error: { message: "Unauthorized", code: "AUTH_UNAUTHORIZED" } },
+      { status: 401 },
+    );
+  }
+  return { user };
+}
+
+/**
+ * Verifies the request is authenticated and the user has one of the given roles.
+ * Returns a 401/403 Response if not, or the authenticated user payload if successful.
+ * @param {Request} request
+ * @param {string} secret - JWT_SECRET from env
+ * @param {string|string[]} roles - Required role, or list of allowed roles
+ * @returns {Promise<{ user: Object }|Response>}
+ */
+export async function requireRole(request, secret, roles) {
+  const result = await requireAuth(request, secret);
+  if (result instanceof Response) return result;
+  const allowed = Array.isArray(roles) ? roles : [roles];
+  if (!allowed.includes(result.user.role)) {
+    return Response.json(
+      { error: { message: "Forbidden", code: "AUTH_FORBIDDEN" } },
+      { status: 403 },
+    );
+  }
+  return result;
 }
 
 /**
@@ -196,8 +262,8 @@ export async function getAuthUser(request, secret) {
  * @returns {string}
  */
 export function authCookie(token, secure = true) {
-  const secureFlag = secure ? '; Secure' : ''
-  return `vallle_token=${token}; Path=/; HttpOnly; SameSite=Strict${secureFlag}; Max-Age=${JWT_EXPIRY}`
+  const secureFlag = secure ? "; Secure" : "";
+  return `vallle_token=${token}; Path=/; HttpOnly; SameSite=Strict${secureFlag}; Max-Age=${JWT_EXPIRY}`;
 }
 
 /**
@@ -206,6 +272,6 @@ export function authCookie(token, secure = true) {
  * @returns {string}
  */
 export function clearAuthCookie(secure = true) {
-  const secureFlag = secure ? '; Secure' : ''
-  return `vallle_token=; Path=/; HttpOnly; SameSite=Strict${secureFlag}; Max-Age=0`
+  const secureFlag = secure ? "; Secure" : "";
+  return `vallle_token=; Path=/; HttpOnly; SameSite=Strict${secureFlag}; Max-Age=0`;
 }

@@ -14,6 +14,7 @@ import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
 import { useAuth } from "@/hooks/useAuth";
+import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
 
 /**
@@ -26,6 +27,7 @@ const CompanyEdit = () => {
   // Hooks
   const { t } = useTranslation();
   const { activeStore } = useAuth();
+  const { addToast } = useToast();
   const {
     register,
     handleSubmit,
@@ -73,7 +75,7 @@ const CompanyEdit = () => {
         ),
       }),
     onSuccess: () => {
-      setSuccess(true);
+      addToast(t("features.company.success"), "success");
     },
     onError: () => {
       setServerError(t("features.company.error.generic"));
@@ -82,16 +84,14 @@ const CompanyEdit = () => {
 
   // State
   const [serverError, setServerError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   // Handlers
   const handleSave = useCallback(
     (values) => {
       setServerError("");
-      setSuccess(false);
       saveCompany.mutate(values);
     },
-    [saveCompany, setServerError, setSuccess],
+    [saveCompany],
   );
 
   // Effects
@@ -267,9 +267,6 @@ const CompanyEdit = () => {
         >
           {t("common.save")}
         </Button>
-        {success && (
-          <p className="c-form__success">{t("features.company.success")}</p>
-        )}
       </Form>
     </div>
   );

@@ -5,15 +5,14 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import Form from "@/components/forms/Form";
-import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
+import { COMPANY_STATUSES } from "@/constants/company-statuses";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -65,6 +64,11 @@ const AdminCompanyEdit = () => {
     },
   });
 
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: update } = updateCompany;
+
   // State
   const [serverError, setServerError] = useState(null);
 
@@ -74,14 +78,28 @@ const AdminCompanyEdit = () => {
     label: t(`constants.companyCategories.${key}`),
   }));
   const countryOptions = [{ value: "PT", label: t("constants.countries.PT") }];
+  const statusOptions = [
+    {
+      value: COMPANY_STATUSES.ACTIVE,
+      label: t("features.admin.companies.list.active"),
+    },
+    {
+      value: COMPANY_STATUSES.SUSPENDED,
+      label: t("features.admin.companies.list.suspended"),
+    },
+    {
+      value: COMPANY_STATUSES.INACTIVE,
+      label: t("features.admin.companies.list.inactive"),
+    },
+  ];
 
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      updateCompany.mutate(values);
+      update(values);
     },
-    [updateCompany],
+    [update],
   );
 
   // Effects
@@ -89,9 +107,19 @@ const AdminCompanyEdit = () => {
     setHeader({
       title: t("features.admin.companies.edit.heading"),
       description: t("features.admin.companies.edit.description"),
+      actions: response?.data
+        ? [
+            {
+              label: t("features.admin.companies.edit.submit"),
+              onClick: handleSubmit(onSubmit),
+              skin: "primary",
+              isProcessing: updateCompany.isPending,
+            },
+          ]
+        : [],
     });
     return () => setHeader();
-  }, [setHeader, t]);
+  }, [setHeader, t, response, handleSubmit, onSubmit, updateCompany.isPending]);
 
   useEffect(() => {
     if (response?.data) {
@@ -154,6 +182,7 @@ const AdminCompanyEdit = () => {
           placeholder={t("features.admin.companies.form.category")}
         />
         <Input
+          autoComplete="off"
           error={errors.email}
           label={t("features.admin.companies.form.email")}
           name="email"
@@ -161,6 +190,7 @@ const AdminCompanyEdit = () => {
           type="email"
         />
         <Input
+          autoComplete="off"
           error={errors.phone}
           label={t("features.admin.companies.form.phone")}
           name="phone"
@@ -173,30 +203,35 @@ const AdminCompanyEdit = () => {
           register={register}
         />
         <Input
+          autoComplete="off"
           error={errors.address1}
           label={t("features.admin.companies.form.address1")}
           name="address1"
           register={register}
         />
         <Input
+          autoComplete="off"
           error={errors.address2}
           label={t("features.admin.companies.form.address2")}
           name="address2"
           register={register}
         />
         <Input
+          autoComplete="off"
           error={errors.city}
           label={t("features.admin.companies.form.city")}
           name="city"
           register={register}
         />
         <Input
+          autoComplete="off"
           error={errors.postal_code}
           label={t("features.admin.companies.form.postalCode")}
           name="postal_code"
           register={register}
         />
         <Input
+          autoComplete="off"
           error={errors.region}
           label={t("features.admin.companies.form.region")}
           name="region"
@@ -227,35 +262,15 @@ const AdminCompanyEdit = () => {
             },
           }}
         />
-        <div className="c-form__field">
-          <label className="c-form__field-label" htmlFor="status">
-            {t("features.admin.companies.form.status")}
-          </label>
-          <select
-            className="c-form__field-input"
-            id="status"
-            {...register("status")}
-          >
-            <option value="active">
-              {t("features.admin.companies.list.active")}
-            </option>
-            <option value="suspended">
-              {t("features.admin.companies.list.suspended")}
-            </option>
-            <option value="inactive">
-              {t("features.admin.companies.list.inactive")}
-            </option>
-          </select>
-        </div>
+        <Select
+          control={control}
+          error={errors.status}
+          label={t("features.admin.companies.form.status")}
+          name="status"
+          options={statusOptions}
+          placeholder={t("features.admin.companies.form.status")}
+        />
       </FormFields>
-      <FormActions>
-        <Button isProcessing={updateCompany.isPending} type="submit">
-          {t("features.admin.companies.edit.submit")}
-        </Button>
-        <Button onClick={() => navigate(-1)} skin="ghost">
-          {t("common.cancel")}
-        </Button>
-      </FormActions>
     </Form>
   );
 };

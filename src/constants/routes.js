@@ -39,6 +39,7 @@ export const ROUTES = {
   ADMIN_USERS_MODAL_EDIT: "/admin/users/:id/edit",
   ADMIN_COMMISSIONS: "/admin/commissions",
   ADMIN_COMMISSIONS_MODAL_DETAIL: "/admin/commissions/:storeId",
+  ADMIN_COMMISSIONS_MODAL_MONTH: "/admin/commissions/:storeId/:yearMonth",
 };
 
 /**
@@ -103,6 +104,15 @@ export const adminUserEditPath = (id) => `/admin/users/${id}/edit`;
  */
 export const adminCommissionsDetailPath = (storeId) =>
   `/admin/commissions/${storeId}`;
+
+/**
+ * Builds a full admin commissions month breakdown path for navigation.
+ * @param {string} storeId - Store ID
+ * @param {string} yearMonth - Month in YYYY-MM format
+ * @returns {string}
+ */
+export const adminCommissionsMonthPath = (storeId, yearMonth) =>
+  `/admin/commissions/${storeId}/${yearMonth}`;
 
 /**
  * Builds a full settings user create path for navigation.

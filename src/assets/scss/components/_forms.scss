@@ -79,12 +79,6 @@
   color: $text-color-muted;
 }
 
-.c-form__success {
-  @include font-size(sm);
-  color: $color-success;
-  text-align: center;
-}
-
 // Avatar select option
 .c-avatar-option {
   align-items: center;

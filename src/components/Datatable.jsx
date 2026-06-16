@@ -203,10 +203,13 @@ const Datatable = ({
         <div className="c-datatable__toolbar-search">
           <IconSearch className="c-datatable__toolbar-search-icon" size={16} />
           <input
+            autoComplete="off"
             className="c-datatable__toolbar-search-input"
+            id="datatable-search"
+            name="datatable-search"
             onChange={handleSearchChange}
             placeholder={t("common.search")}
-            type="text"
+            type="search"
             value={globalFilter}
           />
         </div>

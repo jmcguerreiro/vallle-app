@@ -14,6 +14,7 @@ export {
   CircleHelp as IconCircleHelp,
   EllipsisVertical as IconEllipsisVertical,
   HandCoins as IconHandCoins,
+  HatGlasses as IconHatGlasses,
   HouseHeart as IconHouseHeart,
   Info as IconInfo,
   Loader2 as IconLoader,

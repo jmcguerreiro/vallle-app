@@ -12,15 +12,12 @@ import Form from "@/components/forms/Form";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
+import { LOCALE_OPTIONS } from "@/constants/locales";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
 import { useMain } from "@/hooks/useMain";
+import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
-
-const LANGUAGE_OPTIONS = [
-  { value: "pt", label: "Português" },
-  { value: "en", label: "English" },
-];
 
 const AVATAR_NAMES = [
   "paper-bag-head",
@@ -99,6 +96,7 @@ const Profile = () => {
   const { t, i18n } = useTranslation();
   const { setUser } = useAuth();
   const { setHeader } = useMain();
+  const { addToast } = useToast();
   const location = useLocation();
   const {
     register,
@@ -125,6 +123,7 @@ const Profile = () => {
         name: values.name,
         email: values.email,
         avatar: values.avatar,
+        locale: values.language,
       }),
     onSuccess: ({ data }, values) => {
       setUser((previous) => ({ ...previous, ...data.user }));
@@ -134,7 +133,7 @@ const Profile = () => {
         localStorage.setItem("vallle_language", values.language);
       }
 
-      setSuccess(true);
+      addToast(t("features.profile.success"), "success");
     },
     onError: (error) => {
       setServerError(
@@ -147,13 +146,11 @@ const Profile = () => {
 
   // State
   const [serverError, setServerError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   // Handlers
   const handleSave = useCallback(
     (values) => {
       setServerError("");
-      setSuccess(false);
       saveProfile.mutate(values);
     },
     [saveProfile],
@@ -174,7 +171,7 @@ const Profile = () => {
       reset({
         name: response.data.user.name,
         email: response.data.user.email,
-        language: i18n.language,
+        language: response.data.user.locale || i18n.language,
         avatar: response.data.user.avatar || "paper-bag-head",
       });
     }
@@ -244,14 +241,11 @@ const Profile = () => {
           error={errors.language}
           label={t("features.profile.form.language")}
           name="language"
-          options={LANGUAGE_OPTIONS}
+          options={LOCALE_OPTIONS}
         />
         <Button isProcessing={saveProfile.isPending} type="submit">
           {t("common.save")}
         </Button>
-        {success && (
-          <p className="c-form__success">{t("features.profile.success")}</p>
-        )}
       </Form>
 
       <Fieldset legend={t("features.profile.password.heading")}>

@@ -10,6 +10,9 @@ import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import Select from "@/components/forms/Select";
+import { LOCALE_OPTIONS } from "@/constants/locales";
+import { USER_ROLES } from "@/constants/user-roles";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, post } from "@/services/api";
@@ -32,8 +35,15 @@ const AdminUserCreate = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      role: USER_ROLES.USER,
+      locale: "pt",
+      store_id: "",
+    },
+  });
 
   // Queries
   const { data: companiesResponse } = useQuery({
@@ -70,6 +80,21 @@ const AdminUserCreate = () => {
   // Derived State
   const title = t("features.admin.users.create.heading");
   const description = t("features.admin.users.create.description");
+  const roleOptions = [
+    { value: USER_ROLES.USER, label: t("features.admin.users.list.role_user") },
+    {
+      value: USER_ROLES.ADMIN,
+      label: t("features.admin.users.list.role_admin"),
+    },
+    {
+      value: USER_ROLES.SUPER_ADMIN,
+      label: t("features.admin.users.list.role_super_admin"),
+    },
+  ];
+  const companyOptions = [
+    { value: "", label: t("features.admin.users.form.noCompany") },
+    ...companies.map((c) => ({ value: c.id, label: c.name })),
+  ];
 
   // Handlers
   const onSubmit = useCallback(
@@ -98,6 +123,7 @@ const AdminUserCreate = () => {
           required={t("features.admin.users.form.error.nameRequired")}
         />
         <Input
+          autoComplete="off"
           error={errors.email}
           label={t("features.admin.users.form.email")}
           name="email"
@@ -106,6 +132,7 @@ const AdminUserCreate = () => {
           type="email"
         />
         <Input
+          autoComplete="new-password"
           error={errors.password}
           label={t("features.admin.users.form.password")}
           name="password"
@@ -114,46 +141,31 @@ const AdminUserCreate = () => {
           type="password"
           validate={validatePassword(t)}
         />
-        <div className="c-form__field">
-          <label className="c-form__field-label" htmlFor="role">
-            {t("features.admin.users.form.role")}
-          </label>
-          <select
-            className="c-form__field-input"
-            id="role"
-            {...register("role")}
-          >
-            <option value="user">
-              {t("features.admin.users.list.role_user")}
-            </option>
-            <option value="admin">
-              {t("features.admin.users.list.role_admin")}
-            </option>
-            <option value="super_admin">
-              {t("features.admin.users.list.role_super_admin")}
-            </option>
-          </select>
-        </div>
+        <Select
+          control={control}
+          error={errors.role}
+          label={t("features.admin.users.form.role")}
+          name="role"
+          options={roleOptions}
+          placeholder={t("features.admin.users.form.role")}
+        />
+        <Select
+          control={control}
+          error={errors.locale}
+          label={t("features.admin.users.form.language")}
+          name="locale"
+          options={LOCALE_OPTIONS}
+          placeholder={t("features.admin.users.form.language")}
+        />
         {companies.length > 0 && (
-          <div className="c-form__field">
-            <label className="c-form__field-label" htmlFor="store_id">
-              {t("features.admin.users.form.company")}
-            </label>
-            <select
-              className="c-form__field-input"
-              id="store_id"
-              {...register("store_id")}
-            >
-              <option value="">
-                {t("features.admin.users.form.noCompany")}
-              </option>
-              {companies.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.name}
-                </option>
-              ))}
-            </select>
-          </div>
+          <Select
+            control={control}
+            error={errors.store_id}
+            label={t("features.admin.users.form.company")}
+            name="store_id"
+            options={companyOptions}
+            placeholder={t("features.admin.users.form.noCompany")}
+          />
         )}
       </FormFields>
       <FormActions>

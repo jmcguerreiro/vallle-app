@@ -7,6 +7,7 @@ import { useMutation } from "@tanstack/react-query";
 import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import { valllePath, vallleRedeemPath } from "@/constants/routes";
+import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
 import VallleCodeInput, {
   CODE_LENGTH,
 } from "@/features/vallles/components/VallleCodeInput";
@@ -41,7 +42,7 @@ const QuickRedeem = () => {
     onSuccess: ({ data }, formatted) => {
       if (isVallleExpired(data.expires_at)) {
         setLookupResult({
-          status: "expired",
+          status: VALLLE_STATUSES.EXPIRED,
           code: formatted,
           vallleId: data.id,
         });
@@ -110,7 +111,7 @@ const QuickRedeem = () => {
             />
           )}
 
-          {lookupResult.status === "expired" && (
+          {lookupResult.status === VALLLE_STATUSES.EXPIRED && (
             <EmptyState
               action={{
                 text: t("features.vallles.quickRedeem.viewVallle"),

@@ -1,15 +1,15 @@
-import { clearAuthCookie } from './_helpers.js'
+import { clearAuthCookie } from "./_helpers.js";
 
 /**
  * POST /api/auth/logout
  * Clears the auth cookie.
  */
 export async function onRequestPost(context) {
-  const { env } = context
-  const secure = env.ENVIRONMENT !== 'development'
+  const { env } = context;
+  const secure = env.ENVIRONMENT !== "development";
 
   return Response.json(
-    { data: { message: 'Logged out' } },
-    { headers: { 'Set-Cookie': clearAuthCookie(secure) } },
-  )
+    { data: { message: "Logged out" } },
+    { headers: { "Set-Cookie": clearAuthCookie(secure) } },
+  );
 }

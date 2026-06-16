@@ -10,6 +10,7 @@ import EmptyState from "@/components/EmptyState";
 import FilterSelect from "@/components/forms/FilterSelect";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
+import { COMPANY_STATUSES } from "@/constants/company-statuses";
 import { ROUTES, adminCompanyPath } from "@/constants/routes";
 import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
@@ -247,13 +248,16 @@ const AdminCompaniesIndex = () => {
         onChange={handleStatusFilter}
         options={[
           { value: FILTER_ALL, label: t("common.filters.allStatuses") },
-          { value: "active", label: t("features.admin.companies.list.active") },
           {
-            value: "suspended",
+            value: COMPANY_STATUSES.ACTIVE,
+            label: t("features.admin.companies.list.active"),
+          },
+          {
+            value: COMPANY_STATUSES.SUSPENDED,
             label: t("features.admin.companies.list.suspended"),
           },
           {
-            value: "inactive",
+            value: COMPANY_STATUSES.INACTIVE,
             label: t("features.admin.companies.list.inactive"),
           },
         ]}

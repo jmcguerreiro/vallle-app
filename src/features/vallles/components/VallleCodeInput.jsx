@@ -104,7 +104,9 @@ const VallleCodeInput = ({ value, onChange, error, autoFocus }) => {
               autoCorrect="off"
               autoFocus={autoFocus && i === 0}
               className="c-vallle-code-input__input-segment-input"
+              id={`vallle-code-${i}`}
               maxLength={1}
+              name={`vallle-code-${i}`}
               onChange={(e) => handleChange(i, e)}
               onFocus={handleFocus}
               onKeyDown={(e) => handleKeyDown(i, e)}

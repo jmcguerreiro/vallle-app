@@ -1,5 +1,4 @@
-import { buildLikePattern, parseListQuery } from '../../_list.js'
-import { getAuthUser } from '../../auth/_helpers.js'
+import { buildLikePattern, parseListQuery } from "../../_list.js";
 
 /**
  * GET /api/admin/commissions — Commission summary per store (super_admin only).
@@ -11,44 +10,35 @@ import { getAuthUser } from '../../auth/_helpers.js'
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env } = context
-
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
-    return Response.json(
-      { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
-      { status: 401 },
-    )
-  }
-  if (user.role !== 'super_admin') {
-    return Response.json(
-      { error: { message: 'Forbidden', code: 'AUTH_FORBIDDEN' } },
-      { status: 403 },
-    )
-  }
+  const { request, env } = context;
 
   try {
-    const url = new URL(request.url)
+    const url = new URL(request.url);
     const { limit, offset, search, sort, order } = parseListQuery(url, {
       sortableColumns: new Set([
-        'store_name', 'total_vallle_amount', 'total_commission', 'total_paid', 'total_unpaid', 'last_paid_at',
+        "store_name",
+        "total_vallle_amount",
+        "total_commission",
+        "total_paid",
+        "total_unpaid",
+        "last_paid_at",
       ]),
-      defaultSort: 'total_unpaid',
-    })
-    const payment = url.searchParams.get('payment') || 'all'
+      defaultSort: "total_unpaid",
+    });
+    const payment = url.searchParams.get("payment") || "all";
 
-    const where = []
-    const params = []
+    const where = [];
+    const params = [];
 
     if (search) {
-      where.push(String.raw`store_name LIKE ? ESCAPE '\'`)
-      params.push(buildLikePattern(search))
+      where.push(String.raw`store_name LIKE ? ESCAPE '\'`);
+      params.push(buildLikePattern(search));
     }
 
-    if (payment === 'unpaid') where.push('total_unpaid > 0')
-    if (payment === 'paid') where.push('total_unpaid = 0')
+    if (payment === "unpaid") where.push("total_unpaid > 0");
+    if (payment === "paid") where.push("total_unpaid = 0");
 
-    const whereSql = where.length > 0 ? `WHERE ${where.join(' AND ')}` : ''
+    const whereSql = where.length > 0 ? `WHERE ${where.join(" AND ")}` : "";
 
     // Aggregate per store first; search/filter/sort/pagination apply to the
     // summary so aggregate columns are sortable like any other.
@@ -66,22 +56,27 @@ export async function onRequestGet(context) {
         LEFT JOIN commissions c ON c.store_id = s.id
         LEFT JOIN vallles v ON v.id = c.vallle_id
         GROUP BY s.id, s.name
-      )`
+      )`;
 
     const [countResult, dataResult] = await env.DB.batch([
-      env.DB.prepare(`${summarySql} SELECT COUNT(*) AS total FROM summary ${whereSql}`).bind(...params),
+      env.DB.prepare(
+        `${summarySql} SELECT COUNT(*) AS total FROM summary ${whereSql}`,
+      ).bind(...params),
       env.DB.prepare(
         `${summarySql} SELECT * FROM summary ${whereSql} ORDER BY ${sort} ${order}, store_name ASC LIMIT ? OFFSET ?`,
       ).bind(...params, limit, offset),
-    ])
+    ]);
 
-    const total = countResult.results[0].total
+    const total = countResult.results[0].total;
 
-    return Response.json({ data: dataResult.results, meta: { total, limit, offset } })
+    return Response.json({
+      data: dataResult.results,
+      meta: { total, limit, offset },
+    });
   } catch (error) {
-    const err = new Error('Admin: Failed to get commission overview')
-    err.code = 'DB_READ_FAILED'
-    err.cause = error
-    throw err
+    const err = new Error("Admin: Failed to get commission overview");
+    err.code = "DB_READ_FAILED";
+    err.cause = error;
+    throw err;
   }
 }

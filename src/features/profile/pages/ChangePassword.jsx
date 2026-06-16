@@ -9,6 +9,7 @@ import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
 import Input from "@/components/forms/Input";
 import { useModal } from "@/hooks/useModal";
+import { useToast } from "@/hooks/useToast";
 import { put } from "@/services/api";
 import { validatePassword } from "@/utils/password";
 
@@ -24,6 +25,7 @@ const ChangePassword = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const { setHeader } = useModal();
+  const { addToast } = useToast();
   const {
     register,
     handleSubmit,
@@ -38,8 +40,8 @@ const ChangePassword = () => {
         newPassword: values.newPassword,
       }),
     onSuccess: () => {
-      setSuccess(true);
-      setTimeout(() => navigate(-1), 1500);
+      addToast(t("features.profile.password.success"), "success");
+      navigate(-1);
     },
     onError: (error) => {
       setServerError(
@@ -52,7 +54,6 @@ const ChangePassword = () => {
 
   // State
   const [serverError, setServerError] = useState("");
-  const [success, setSuccess] = useState(false);
 
   // Derived State
   const title = t("features.profile.password.heading");
@@ -63,7 +64,6 @@ const ChangePassword = () => {
   const handleSave = useCallback(
     (values) => {
       setServerError("");
-      setSuccess(false);
       changePassword.mutate(values);
     },
     [changePassword],
@@ -103,11 +103,6 @@ const ChangePassword = () => {
       <Button isProcessing={changePassword.isPending} type="submit">
         {t("features.profile.password.submit")}
       </Button>
-      {success && (
-        <p className="c-form__success">
-          {t("features.profile.password.success")}
-        </p>
-      )}
     </Form>
   );
 };

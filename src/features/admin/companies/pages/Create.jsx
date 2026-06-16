@@ -103,6 +103,7 @@ const AdminCompanyCreate = () => {
           placeholder={t("features.admin.companies.form.category")}
         />
         <Input
+          autoComplete="off"
           error={errors.email}
           label={t("features.admin.companies.form.email")}
           name="email"
@@ -110,6 +111,7 @@ const AdminCompanyCreate = () => {
           type="email"
         />
         <Input
+          autoComplete="off"
           error={errors.phone}
           label={t("features.admin.companies.form.phone")}
           name="phone"

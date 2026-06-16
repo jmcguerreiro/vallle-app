@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Modal from "@/components/Modal";
 import StoreSelect from "@/components/StoreSelect";
 import { useAuth } from "@/hooks/useAuth";
-import { IconStore } from "@/utils/icons";
+import { IconHatGlasses, IconStore } from "@/utils/icons";
 
 /**
  * Component: Store
@@ -46,7 +46,21 @@ const Store = () => {
   );
 
   // Render
-  if (!activeStore || isSuperAdmin) return null;
+  if (isSuperAdmin) {
+    return (
+      <div className="s-header__store">
+        <span className="s-header__admin-badge">
+          <IconHatGlasses
+            className="s-header__store-switch-icon"
+            strokeWidth="1.5"
+          />
+          {t("nav.adminBadge")}
+        </span>
+      </div>
+    );
+  }
+
+  if (!activeStore) return null;
 
   return (
     <div className="s-header__store">

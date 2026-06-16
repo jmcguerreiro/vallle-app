@@ -1,11 +1,11 @@
 .c-commission-status {
-	&--paid {
-		color: $color-success;
-		font-weight: $font-weight-bold;
-	}
+  &--paid {
+    color: $color-success;
+    font-weight: $font-weight-bold;
+  }
 
-	&--unpaid {
-		color: $color-warning;
-		font-weight: $font-weight-bold;
-	}
+  &--unpaid {
+    color: $color-warning;
+    font-weight: $font-weight-bold;
+  }
 }

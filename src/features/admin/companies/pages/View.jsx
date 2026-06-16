@@ -4,7 +4,9 @@ import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useQuery } from "@tanstack/react-query";
 
+import Accordion from "@/components/Accordion";
 import Badge from "@/components/Badge";
+import DefinitionList from "@/components/DefinitionList";
 import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Stat from "@/components/Stat";
@@ -97,9 +99,42 @@ const AdminCompanyView = () => {
 
   const { store, stats, users } = response.data;
 
+  const details = [
+    {
+      label: t("features.admin.companies.form.category"),
+      value: store.category
+        ? t(`constants.companyCategories.${store.category}`)
+        : "—",
+    },
+    {
+      label: t("features.admin.companies.form.email"),
+      value: store.email || "—",
+    },
+    {
+      label: t("features.admin.companies.form.phone"),
+      value: store.phone || "—",
+    },
+    {
+      label: t("features.admin.companies.form.vatId"),
+      value: store.vat_id || "—",
+    },
+    {
+      label: t("features.admin.companies.list.status"),
+      value: (
+        <Badge variant={STATUS_VARIANTS[store.status]}>
+          {t(`features.admin.companies.list.${store.status}`)}
+        </Badge>
+      ),
+    },
+    {
+      label: t("features.admin.companies.list.createdAt"),
+      value: formatDate(store.created_at),
+    },
+  ];
+
   return (
     <div className="c-admin-company-view">
-      <div className="c-admin-stats-grid">
+      <div className="c-admin-stats-grid c-admin-stats-grid--2">
         <Stat
           label={t("features.admin.companies.view.vallles")}
           value={stats.vallle_count}
@@ -118,78 +153,44 @@ const AdminCompanyView = () => {
         />
       </div>
 
-      <div className="c-admin-detail-grid">
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.companies.form.category")}
-          </span>
-          <span className="c-admin-detail__value">{store.category || "—"}</span>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.companies.form.email")}
-          </span>
-          <span className="c-admin-detail__value">{store.email || "—"}</span>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.companies.form.phone")}
-          </span>
-          <span className="c-admin-detail__value">{store.phone || "—"}</span>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.companies.form.vatId")}
-          </span>
-          <span className="c-admin-detail__value">{store.vat_id || "—"}</span>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.companies.list.status")}
-          </span>
-          <Badge variant={STATUS_VARIANTS[store.status]}>
-            {t(`features.admin.companies.list.${store.status}`)}
-          </Badge>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.companies.list.createdAt")}
-          </span>
-          <span className="c-admin-detail__value">
-            {formatDate(store.created_at)}
-          </span>
-        </div>
-      </div>
+      <DefinitionList className="c-admin-detail-list" items={details} />
 
-      {users.length > 0 && (
-        <div className="c-admin-company-users">
-          <h3 className="c-admin-company-users__heading">
-            {t("features.admin.companies.view.users")}
-          </h3>
-          <ul className="c-admin-company-users__list">
-            {users.map((u) => (
-              <li key={u.id} className="c-admin-company-users__item">
-                <Link
-                  className="c-admin-company-users__link"
-                  state={{
-                    backgroundLocation:
-                      location.state?.backgroundLocation || location,
-                  }}
-                  to={adminUserPath(u.id)}
-                >
-                  <span className="c-admin-company-users__name">{u.name}</span>
-                  <span className="c-admin-company-users__email">
-                    {u.email}
-                  </span>
-                  <Badge variant={USER_STATUS_VARIANTS[u.status]}>
-                    {t(`features.admin.users.list.${u.status}`)}
-                  </Badge>
-                </Link>
-              </li>
-            ))}
-          </ul>
-        </div>
-      )}
+      <div className="c-admin-company-users">
+        <Accordion title={t("features.admin.companies.view.users")}>
+          {users.length === 0 ? (
+            <p className="c-admin-company-users__empty">
+              {t("features.admin.companies.view.usersEmpty")}
+            </p>
+          ) : (
+            <ul className="c-admin-company-users__list">
+              {users.map((u) => (
+                <li key={u.id} className="c-admin-company-users__item">
+                  <Link
+                    className="c-admin-company-users__link"
+                    state={{
+                      backgroundLocation:
+                        location.state?.backgroundLocation || location,
+                    }}
+                    to={adminUserPath(u.id)}
+                  >
+                    <div className="c-admin-company-users__row">
+                      <span className="c-admin-company-users__name">
+                        {u.name}
+                      </span>
+                      <Badge variant={USER_STATUS_VARIANTS[u.status]}>
+                        {t(`features.admin.users.list.${u.status}`)}
+                      </Badge>
+                    </div>
+                    <span className="c-admin-company-users__email">
+                      {u.email}
+                    </span>
+                  </Link>
+                </li>
+              ))}
+            </ul>
+          )}
+        </Accordion>
+      </div>
     </div>
   );
 };

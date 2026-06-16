@@ -10,7 +10,7 @@
  * @returns {string|null}
  */
 export function getStoreId(request) {
-  return request.headers.get('X-Store-Id') || null
+  return request.headers.get("X-Store-Id") || null;
 }
 
 /**
@@ -22,9 +22,11 @@ export function getStoreId(request) {
  */
 export async function verifyStoreAccess(env, userId, storeId) {
   const link = await env.DB.prepare(
-    'SELECT id FROM store_users WHERE user_id = ? AND store_id = ?',
-  ).bind(userId, storeId).first()
-  return !!link
+    "SELECT id FROM store_users WHERE user_id = ? AND store_id = ?",
+  )
+    .bind(userId, storeId)
+    .first();
+  return !!link;
 }
 
 /**
@@ -34,10 +36,10 @@ export async function verifyStoreAccess(env, userId, storeId) {
  * @returns {Promise<string|null>} Store status or null if not found
  */
 export async function getStoreStatus(env, storeId) {
-  const store = await env.DB.prepare(
-    'SELECT status FROM stores WHERE id = ?',
-  ).bind(storeId).first()
-  return store?.status || null
+  const store = await env.DB.prepare("SELECT status FROM stores WHERE id = ?")
+    .bind(storeId)
+    .first();
+  return store?.status || null;
 }
 
 /**
@@ -49,23 +51,30 @@ export async function getStoreStatus(env, storeId) {
  * @returns {Promise<{ storeId: string }|Response>}
  */
 export async function requireStore(request, env, userId) {
-  const storeId = getStoreId(request)
+  const storeId = getStoreId(request);
 
   if (!storeId) {
     return Response.json(
-      { error: { message: 'X-Store-Id header is required', code: 'STORE_MISSING' } },
+      {
+        error: {
+          message: "X-Store-Id header is required",
+          code: "STORE_MISSING",
+        },
+      },
       { status: 400 },
-    )
+    );
   }
 
-  const hasAccess = await verifyStoreAccess(env, userId, storeId)
+  const hasAccess = await verifyStoreAccess(env, userId, storeId);
 
   if (!hasAccess) {
     return Response.json(
-      { error: { message: 'No access to this store', code: 'STORE_FORBIDDEN' } },
+      {
+        error: { message: "No access to this store", code: "STORE_FORBIDDEN" },
+      },
       { status: 403 },
-    )
+    );
   }
 
-  return { storeId }
+  return { storeId };
 }

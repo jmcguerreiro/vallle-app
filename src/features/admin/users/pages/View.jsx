@@ -1,13 +1,17 @@
 import { useCallback, useEffect } from "react";
 import { useTranslation } from "react-i18next";
-import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
+import Card from "@/components/Card";
+import DefinitionList from "@/components/DefinitionList";
 import EmptyState from "@/components/EmptyState";
+import List from "@/components/List";
 import Loader from "@/components/Loader";
 import { adminCompanyPath, adminUserEditPath } from "@/constants/routes";
+import { USER_STATUSES } from "@/constants/user-statuses";
 import { useAuth } from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -64,6 +68,11 @@ const AdminUserView = () => {
     },
   });
 
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: toggleUserStatus } = toggleStatus;
+
   // Derived State
   const isSelf = currentUser?.id === id;
 
@@ -75,8 +84,12 @@ const AdminUserView = () => {
 
   const handleToggleStatus = useCallback(() => {
     if (!user) return;
-    toggleStatus.mutate(user.status === "active" ? "inactive" : "active");
-  }, [user, toggleStatus]);
+    toggleUserStatus(
+      user.status === USER_STATUSES.ACTIVE
+        ? USER_STATUSES.INACTIVE
+        : USER_STATUSES.ACTIVE,
+    );
+  }, [user, toggleUserStatus]);
 
   // Effects
   useEffect(() => {
@@ -84,7 +97,7 @@ const AdminUserView = () => {
       { label: t("features.admin.users.view.edit"), onClick: handleEdit },
     ];
     if (user && !isSelf) {
-      const isActive = user.status === "active";
+      const isActive = user.status === USER_STATUSES.ACTIVE;
       actions.push({
         label: isActive
           ? t("features.admin.users.view.disable")
@@ -122,69 +135,51 @@ const AdminUserView = () => {
     );
   }
 
+  const details = [
+    { label: t("features.admin.users.form.name"), value: user.name },
+    { label: t("features.admin.users.form.email"), value: user.email },
+    {
+      label: t("features.admin.users.list.role"),
+      value: <Badge>{t(`features.admin.users.list.role_${user.role}`)}</Badge>,
+    },
+    {
+      label: t("features.admin.users.list.status"),
+      value: (
+        <Badge variant={STATUS_VARIANTS[user.status]}>
+          {t(`features.admin.users.list.${user.status}`)}
+        </Badge>
+      ),
+    },
+    {
+      label: t("features.admin.users.list.createdAt"),
+      value: formatDate(user.created_at),
+    },
+  ];
+
   return (
     <div className="c-admin-user-view">
-      <div className="c-admin-detail-grid">
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.users.form.name")}
-          </span>
-          <span className="c-admin-detail__value">{user.name}</span>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.users.form.email")}
-          </span>
-          <span className="c-admin-detail__value">{user.email}</span>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.users.list.role")}
-          </span>
-          <Badge>{t(`features.admin.users.list.role_${user.role}`)}</Badge>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.users.list.status")}
-          </span>
-          <Badge variant={STATUS_VARIANTS[user.status]}>
-            {t(`features.admin.users.list.${user.status}`)}
-          </Badge>
-        </div>
-        <div className="c-admin-detail__row">
-          <span className="c-admin-detail__label">
-            {t("features.admin.users.list.createdAt")}
-          </span>
-          <span className="c-admin-detail__value">
-            {formatDate(user.created_at)}
-          </span>
-        </div>
-      </div>
+      <DefinitionList className="c-admin-detail-list" items={details} />
 
       {user.stores?.length > 0 && (
-        <div className="c-admin-company-users">
-          <h3 className="c-admin-company-users__heading">
-            {t("features.admin.users.view.companies")}
-          </h3>
-          <ul className="c-admin-company-users__list">
+        <Card
+          description={t("features.admin.users.view.companiesDescription")}
+          title={t("features.admin.users.view.companies")}
+        >
+          <List>
             {user.stores.map((s) => (
-              <li key={s.store_id} className="c-admin-company-users__item">
-                <Link
-                  className="c-admin-company-users__link"
-                  state={{
-                    backgroundLocation:
-                      location.state?.backgroundLocation || location,
-                  }}
-                  to={adminCompanyPath(s.store_id)}
-                >
-                  <span className="c-admin-company-users__name">
-                    {s.store_name}
-                  </span>
-                </Link>
-              </li>
+              <List.Item
+                key={s.store_id}
+                state={{
+                  backgroundLocation:
+                    location.state?.backgroundLocation || location,
+                }}
+                to={adminCompanyPath(s.store_id)}
+              >
+                {s.store_name}
+              </List.Item>
             ))}
-          </ul>
-        </div>
+          </List>
+        </Card>
       )}
     </div>
   );

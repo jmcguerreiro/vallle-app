@@ -3,6 +3,7 @@
     "loading": "A carregar...",
     "save": "Guardar",
     "cancel": "Cancelar",
+    "confirm": "Confirmar",
     "noResults": "Sem resultados.",
     "error": "Algo correu mal. Tente novamente.",
     "tryAgain": "Tentar novamente",
@@ -97,6 +98,7 @@
       },
       "chart": {
         "title": "Visão mensal",
+        "subtitle": "Vallles emitidos e comissões ganhas, mês a mês.",
         "vallles": "Vallles",
         "commissions": "Comissões"
       }
@@ -131,7 +133,18 @@
         "createdAt": "Criado em",
         "expiresAt": "Expira em",
         "balanceSummary": "{{total}} • Disponível: {{balance}}",
-        "edit": "Editar"
+        "edit": "Editar",
+        "archive": "Arquivar",
+        "restore": "Restaurar",
+        "archiveConfirmTitle": "Arquivar este vallle?",
+        "archiveConfirmMessage": "Deixará de poder ser resgatado, mas o histórico será mantido. Pode restaurá-lo mais tarde.",
+        "restoreConfirmTitle": "Restaurar este vallle?",
+        "restoreConfirmMessage": "Voltará a poder ser resgatado.",
+        "archiveSuccess": "Vallle arquivado.",
+        "restoreSuccess": "Vallle restaurado.",
+        "error": {
+          "generic": "Não foi possível atualizar o vallle."
+        }
       },
       "edit": {
         "heading": "Editar vallle",
@@ -140,12 +153,6 @@
         "expiresAt": "Data de expiração",
         "submit": "Guardar alterações",
         "success": "Vallle atualizado com sucesso!",
-        "archive": "Arquivar vallle",
-        "restore": "Restaurar vallle",
-        "archiveConfirm": "Arquivar este vallle? Deixará de poder ser resgatado, mas o histórico será mantido. Pode restaurá-lo mais tarde.",
-        "restoreConfirm": "Restaurar este vallle para ativo?",
-        "archiveSuccess": "Vallle arquivado.",
-        "restoreSuccess": "Vallle restaurado.",
         "error": {
           "generic": "Não foi possível atualizar o vallle."
         }
@@ -210,6 +217,7 @@
       "totalRedeemed": "Total resgatado",
       "chart": {
         "title": "Vallles criados",
+        "subtitle": "Quantos vallles criou em cada mês.",
         "vallles": "Vallles"
       }
     },
@@ -301,6 +309,7 @@
           "email": "Email",
           "password": "Palavra-passe",
           "role": "Função",
+          "language": "Idioma",
           "error": {
             "nameRequired": "O nome é obrigatório.",
             "emailRequired": "O email é obrigatório.",
@@ -395,7 +404,8 @@
           "totalSales": "Total de vendas",
           "totalCommission": "Total de comissões",
           "unpaidCommission": "Por pagar",
-          "users": "Utilizadores"
+          "users": "Utilizadores",
+          "usersEmpty": "Esta empresa ainda não tem utilizadores."
         },
         "edit": {
           "heading": "Editar empresa",
@@ -429,6 +439,7 @@
           "email": "Email",
           "password": "Palavra-passe",
           "role": "Função",
+          "language": "Idioma",
           "company": "Atribuir a empresa",
           "noCompany": "Sem empresa",
           "error": {
@@ -453,7 +464,8 @@
           "disable": "Desativar conta",
           "enable": "Ativar conta",
           "statusUpdated": "Estado da conta atualizado.",
-          "companies": "Empresas atribuídas"
+          "companies": "Empresas atribuídas",
+          "companiesDescription": "As empresas a que este utilizador está atribuído."
         },
         "edit": {
           "heading": "Editar utilizador",
@@ -461,6 +473,7 @@
           "submit": "Guardar alterações",
           "success": "Utilizador atualizado com sucesso!",
           "assignedTo": "Atribuído a",
+          "assignedToDescription": "As empresas que este utilizador pode gerir.",
           "error": {
             "generic": "Não foi possível atualizar o utilizador."
           }
@@ -475,7 +488,10 @@
         "description": "Acompanhe as comissões geradas por todas as empresas.",
         "companyDetailDescription": "Detalhamento mensal de comissões.",
         "company": "Empresa",
+        "vallle": "Vallle",
+        "buyer": "Comprador",
         "vallleSales": "Vendas de vallles",
+        "vallleValue": "Valor do vallle",
         "totalCommission": "Comissão",
         "totalPaid": "Pago",
         "outstanding": "Por pagar",
@@ -531,6 +547,7 @@
     "adminUsers": "Utilizadores",
     "adminCommissions": "Comissões",
     "switchStore": "Trocar de loja",
+    "adminBadge": "Administrador",
     "switchStoreModal": {
       "heading": "Trocar de loja",
       "description": "De momento está a trabalhar com {{store}}. Selecione outra loja com que pretende trabalhar."

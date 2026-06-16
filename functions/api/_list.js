@@ -16,20 +16,29 @@
  * @param {string} [options.defaultOrder='DESC'] - Order when none is given
  * @returns {{ limit: number, offset: number, search: string, sort: string, order: string }}
  */
-export function parseListQuery(url, { sortableColumns, defaultSort, defaultOrder = 'DESC' }) {
-  const limit = Math.min(Math.max(Number.parseInt(url.searchParams.get('limit'), 10) || 50, 1), 200)
-  const offset = Math.max(Number.parseInt(url.searchParams.get('offset'), 10) || 0, 0)
-  const search = (url.searchParams.get('search') || '').trim()
+export function parseListQuery(
+  url,
+  { sortableColumns, defaultSort, defaultOrder = "DESC" },
+) {
+  const limit = Math.min(
+    Math.max(Number.parseInt(url.searchParams.get("limit"), 10) || 50, 1),
+    200,
+  );
+  const offset = Math.max(
+    Number.parseInt(url.searchParams.get("offset"), 10) || 0,
+    0,
+  );
+  const search = (url.searchParams.get("search") || "").trim();
 
-  const sortParam = url.searchParams.get('sort')
-  const sort = sortableColumns.has(sortParam) ? sortParam : defaultSort
+  const sortParam = url.searchParams.get("sort");
+  const sort = sortableColumns.has(sortParam) ? sortParam : defaultSort;
 
-  const orderParam = url.searchParams.get('order')
-  let order = defaultOrder
-  if (orderParam === 'asc') order = 'ASC'
-  if (orderParam === 'desc') order = 'DESC'
+  const orderParam = url.searchParams.get("order");
+  let order = defaultOrder;
+  if (orderParam === "asc") order = "ASC";
+  if (orderParam === "desc") order = "DESC";
 
-  return { limit, offset, search, sort, order }
+  return { limit, offset, search, sort, order };
 }
 
 /**
@@ -39,5 +48,5 @@ export function parseListQuery(url, { sortableColumns, defaultSort, defaultOrder
  * @returns {string}
  */
 export function buildLikePattern(search) {
-  return `%${search.replaceAll(/[\\%_]/g, (c) => `\\${c}`)}%`
+  return `%${search.replaceAll(/[\\%_]/g, (c) => `\\${c}`)}%`;
 }

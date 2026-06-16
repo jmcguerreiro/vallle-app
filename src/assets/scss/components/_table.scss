@@ -1,0 +1,85 @@
+.c-table {
+  border-collapse: collapse;
+  width: 100%;
+
+  @include font-size(sm);
+}
+
+.c-table__th {
+  @include font-size(xs);
+
+  color: $text-color-muted;
+  font-weight: $font-weight-bold;
+  padding: $spacing-3;
+  text-align: left;
+  text-transform: uppercase;
+  white-space: nowrap;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+}
+
+.c-table__td {
+  border-top: 1px solid rgba($color-ash, 0.2);
+  color: $text-color;
+  padding: $spacing-3;
+
+  &:first-child {
+    padding-left: 0;
+  }
+
+  &:last-child {
+    padding-right: 0;
+  }
+}
+
+.c-table__cell {
+  &--right {
+    text-align: right;
+  }
+
+  &--center {
+    text-align: center;
+  }
+
+  &--text-highlight {
+    color: $text-color-highlight;
+  }
+
+  &--hide-mobile {
+    display: none;
+
+    @include screen(md) {
+      display: table-cell;
+    }
+  }
+}
+
+.c-table__row {
+  transition: $transition-normal;
+
+  &--clickable {
+    cursor: pointer;
+
+    @include hover {
+      background-color: rgba($color-parchment, 0.4);
+    }
+
+    @include active {
+      transform: scale(0.99);
+    }
+  }
+
+  &--empty {
+    .c-table__td {
+      color: $text-color-muted;
+      padding: $spacing-8 $spacing-4;
+      text-align: center;
+    }
+  }
+}

@@ -1,5 +1,5 @@
-import { getAuthUser } from '../auth/_helpers.js'
-import { requireStore } from '../_store.js'
+import { requireAuth } from "../auth/_helpers.js";
+import { requireStore } from "../_store.js";
 
 /**
  * GET /api/vallles/lookup?code=XXX — Look up a vallle by its code.
@@ -7,50 +7,53 @@ import { requireStore } from '../_store.js'
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env } = context
+  const { request, env } = context;
 
   // Auth
-  const user = await getAuthUser(request, env.JWT_SECRET)
-  if (!user) {
-    return Response.json(
-      { error: { message: 'Unauthorized', code: 'AUTH_UNAUTHORIZED' } },
-      { status: 401 },
-    )
-  }
+  const auth = await requireAuth(request, env.JWT_SECRET);
+  if (auth instanceof Response) return auth;
+  const { user } = auth;
 
   // Store
-  const storeResult = await requireStore(request, env, user.sub)
-  if (storeResult instanceof Response) return storeResult
-  const { storeId } = storeResult
+  const storeResult = await requireStore(request, env, user.sub);
+  if (storeResult instanceof Response) return storeResult;
+  const { storeId } = storeResult;
 
   // Query param
-  const url = new URL(request.url)
-  const code = url.searchParams.get('code')?.trim()
+  const url = new URL(request.url);
+  const code = url.searchParams.get("code")?.trim();
 
   if (!code) {
     return Response.json(
-      { error: { message: 'Code query parameter is required', code: 'VALIDATION_FAILED' } },
+      {
+        error: {
+          message: "Code query parameter is required",
+          code: "VALIDATION_FAILED",
+        },
+      },
       { status: 400 },
-    )
+    );
   }
 
   try {
     const vallle = await env.DB.prepare(
-      'SELECT * FROM vallles WHERE code = ? AND store_id = ?',
-    ).bind(code.toUpperCase(), storeId).first()
+      "SELECT * FROM vallles WHERE code = ? AND store_id = ?",
+    )
+      .bind(code.toUpperCase(), storeId)
+      .first();
 
     if (!vallle) {
       return Response.json(
-        { error: { message: 'Vallle not found', code: 'VALLLE_NOT_FOUND' } },
+        { error: { message: "Vallle not found", code: "VALLLE_NOT_FOUND" } },
         { status: 404 },
-      )
+      );
     }
 
-    return Response.json({ data: vallle })
+    return Response.json({ data: vallle });
   } catch (error) {
-    const err = new Error('Vallles: Failed to look up vallle by code')
-    err.code = 'DB_READ_FAILED'
-    err.cause = error
-    throw err
+    const err = new Error("Vallles: Failed to look up vallle by code");
+    err.code = "DB_READ_FAILED";
+    err.cause = error;
+    throw err;
   }
 }

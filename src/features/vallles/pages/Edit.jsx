@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -11,6 +11,8 @@ import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
+import { valllePath } from "@/constants/routes";
+import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
 import { isVallleExpired } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -25,9 +27,9 @@ const STATUS_VARIANTS = {
 /**
  * Component: VallleEdit
  * Form for editing an existing vallle. Only buyer and expiry date
- * are editable; amount is shown read-only. The save and archive/restore
- * buttons live in the modal/drawer footer (via the header actions),
- * not in the form body.
+ * are editable; amount is shown read-only. The save button lives in the
+ * modal/drawer footer (via the header actions), not in the form body.
+ * Archive/restore lives on the vallle View screen.
  * @component
  * @returns {JSX.Element}
  */
@@ -36,6 +38,7 @@ const VallleEdit = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const location = useLocation();
   const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -71,32 +74,10 @@ const VallleEdit = () => {
     },
   });
 
-  const toggleArchive = useMutation({
-    mutationFn: (nextStatus) =>
-      put(`/api/vallles/${id}`, { status: nextStatus }),
-    onSuccess: (_data, nextStatus) => {
-      queryClient.invalidateQueries({ queryKey: ["vallles"] });
-      queryClient.invalidateQueries({ queryKey: ["stats"] });
-      addToast(
-        t(
-          `features.vallles.edit.${nextStatus === "archived" ? "archiveSuccess" : "restoreSuccess"}`,
-        ),
-        "success",
-      );
-    },
-    onError: (error) => {
-      addToast(
-        error.message || t("features.vallles.edit.error.generic"),
-        "error",
-      );
-    },
-  });
-
-  // The mutation result objects are fresh references every render; only the
-  // stable mutate functions may be hook dependencies, otherwise the header
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
   // effect (setHeader → context update → re-render) loops forever.
   const { mutate: update } = updateVallle;
-  const { mutate: toggleArchiveStatus } = toggleArchive;
 
   // State
   const [serverError, setServerError] = useState(null);
@@ -106,16 +87,17 @@ const VallleEdit = () => {
   const description = t("features.vallles.edit.description");
 
   const statusKey = useMemo(() => {
-    if (!vallle) return "active";
-    if (vallle.status === "archived") return "archived";
-    if (isVallleExpired(vallle.expires_at)) return "expired";
-    if (vallle.balance === 0) return "used";
-    return "active";
+    if (!vallle) return VALLLE_STATUSES.ACTIVE;
+    if (vallle.status === VALLLE_STATUSES.ARCHIVED)
+      return VALLLE_STATUSES.ARCHIVED;
+    if (isVallleExpired(vallle.expires_at)) return VALLLE_STATUSES.EXPIRED;
+    if (vallle.balance === 0) return VALLLE_STATUSES.USED;
+    return VALLLE_STATUSES.ACTIVE;
   }, [vallle]);
 
   const statusLabel = useMemo(() => {
     if (!vallle) return "";
-    if (vallle.status === "archived")
+    if (vallle.status === VALLLE_STATUSES.ARCHIVED)
       return t("features.vallles.list.archived");
     if (isVallleExpired(vallle.expires_at))
       return t("features.vallles.list.expired");
@@ -131,9 +113,11 @@ const VallleEdit = () => {
     });
   }, [vallle, t]);
 
-  const isArchived = vallle?.status === "archived";
-  const canToggleArchive =
-    vallle?.status === "active" || vallle?.status === "archived";
+  // Editable only while there's a balance to act on and it isn't archived —
+  // mirrors the gate on the View screen. Used and archived vallles get bounced
+  // back to View (handles someone hitting the edit URL directly).
+  const canEdit =
+    vallle && vallle.status !== VALLLE_STATUSES.ARCHIVED && vallle.balance > 0;
 
   // Handlers
   const onSubmit = useCallback(
@@ -147,14 +131,18 @@ const VallleEdit = () => {
     [update],
   );
 
-  const handleToggleArchive = useCallback(() => {
-    const nextStatus = isArchived ? "active" : "archived";
-    const confirmKey = isArchived ? "restoreConfirm" : "archiveConfirm";
-    if (!globalThis.confirm(t(`features.vallles.edit.${confirmKey}`))) return;
-    toggleArchiveStatus(nextStatus);
-  }, [isArchived, t, toggleArchiveStatus]);
-
   // Effects
+  useEffect(() => {
+    if (vallle && !canEdit) {
+      navigate(valllePath(id), {
+        replace: true,
+        state: {
+          backgroundLocation: location.state?.backgroundLocation || location,
+        },
+      });
+    }
+  }, [vallle, canEdit, id, navigate, location]);
+
   useEffect(() => {
     if (vallle) {
       reset({
@@ -165,34 +153,26 @@ const VallleEdit = () => {
   }, [vallle, reset]);
 
   useEffect(() => {
-    const actions = [];
-
-    if (canToggleArchive) {
-      actions.push({
-        label: t(`features.vallles.edit.${isArchived ? "restore" : "archive"}`),
-        onClick: handleToggleArchive,
-      });
-    }
-
-    if (vallle) {
-      actions.push({
-        label: t("features.vallles.edit.submit"),
-        onClick: handleSubmit(onSubmit),
-        skin: "primary",
-        isProcessing: updateVallle.isPending,
-      });
-    }
-
-    setHeader({ title, description, actions });
+    setHeader({
+      title,
+      description,
+      actions: vallle
+        ? [
+            {
+              label: t("features.vallles.edit.submit"),
+              onClick: handleSubmit(onSubmit),
+              skin: "primary",
+              isProcessing: updateVallle.isPending,
+            },
+          ]
+        : [],
+    });
     return () => setHeader();
   }, [
     title,
     description,
     setHeader,
     vallle,
-    canToggleArchive,
-    isArchived,
-    handleToggleArchive,
     handleSubmit,
     onSubmit,
     updateVallle.isPending,
@@ -224,13 +204,25 @@ const VallleEdit = () => {
     );
   }
 
+  // Not editable — the effect above is redirecting to View; show the loader
+  // rather than flashing the form for a frame.
+  if (!canEdit) {
+    return (
+      <div className="p-vallle-edit">
+        <div className="p-vallle-edit__loading">
+          <Loader />
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div className="p-vallle-edit">
       <Form error={serverError} handleSubmit={handleSubmit} onSubmit={onSubmit}>
         <div className="p-vallle-edit__hero">
           <Badge variant={STATUS_VARIANTS[statusKey]}>{statusLabel}</Badge>
           <h2
-            className={`p-vallle-edit__code${statusKey === "active" ? "" : " p-vallle-edit__code--inactive"}`}
+            className={`p-vallle-edit__code${statusKey === VALLLE_STATUSES.ACTIVE ? "" : " p-vallle-edit__code--inactive"}`}
           >
             {vallle.code}
           </h2>

@@ -11,6 +11,7 @@ CREATE TABLE IF NOT EXISTS users (
   role       TEXT NOT NULL DEFAULT 'admin',
   status     TEXT NOT NULL DEFAULT 'active',
   avatar     TEXT NOT NULL DEFAULT 'paper-bag-head',
+  locale     TEXT NOT NULL DEFAULT 'pt',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );

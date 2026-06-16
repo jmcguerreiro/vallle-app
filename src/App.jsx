@@ -8,15 +8,18 @@ import {
 } from "react-router-dom";
 
 import Confetti from "@/components/Confetti";
+import Confirm from "@/components/Confirm";
 import Toast from "@/components/Toast";
 import { ROUTES } from "@/constants/routes";
 import { USER_ROLES } from "@/constants/user-roles";
 import { AuthProvider } from "@/contexts/auth";
 import { ConfettiProvider } from "@/contexts/confetti";
+import { ConfirmProvider } from "@/contexts/confirm";
 import { MainProvider } from "@/contexts/main";
 import { ModalProvider } from "@/contexts/modal";
 import { ToastProvider } from "@/contexts/toast";
 import AdminCommissionsIndex from "@/features/admin/commissions/pages/Index";
+import AdminCommissionsMonthView from "@/features/admin/commissions/pages/MonthView";
 import AdminCommissionsView from "@/features/admin/commissions/pages/View";
 import AdminCompanyCreate from "@/features/admin/companies/pages/Create";
 import AdminCompanyEdit from "@/features/admin/companies/pages/Edit";
@@ -82,6 +85,7 @@ const MODAL_ROUTE_PATHS = [
   ROUTES.ADMIN_USERS_MODAL_VIEW,
   ROUTES.ADMIN_USERS_MODAL_EDIT,
   ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL,
+  ROUTES.ADMIN_COMMISSIONS_MODAL_MONTH,
 ];
 
 /**
@@ -340,6 +344,16 @@ const AppRoutes = () => {
                 }
                 path={ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL}
               />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminCommissionsMonthView />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMMISSIONS_MODAL_MONTH}
+              />
             </Routes>
           </AuthGuard>
         </ModalProvider>
@@ -363,9 +377,12 @@ const App = () => {
         <MainProvider>
           <ToastProvider>
             <ConfettiProvider>
-              <AppRoutes />
-              <Toast />
-              <Confetti />
+              <ConfirmProvider>
+                <AppRoutes />
+                <Toast />
+                <Confetti />
+                <Confirm />
+              </ConfirmProvider>
             </ConfettiProvider>
           </ToastProvider>
         </MainProvider>
