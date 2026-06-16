@@ -1,6 +1,5 @@
 .c-accordion {
-  border: solid 1px $color-parchment;
-  border-radius: $border-radius-lg;
+  border-bottom: solid 1px $color-parchment;
 }
 
 .c-accordion__trigger {
@@ -9,7 +8,7 @@
   display: flex;
   justify-content: space-between;
   list-style: none;
-  padding: $spacing-3;
+  padding: $spacing-3 0;
 
   &::-webkit-details-marker {
     display: none;
@@ -34,5 +33,5 @@
 }
 
 .c-accordion__body {
-  padding: $spacing-3;
+  padding: $spacing-3 0;
 }
