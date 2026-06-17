@@ -3,22 +3,8 @@
  * Validates the reset token and updates the user's password.
  */
 
-import { hashPassword, isStrongPassword } from "./_helpers";
-
-/**
- * Hashes a raw token with SHA-256 to compare against the stored hash.
- * @param {string} raw - The raw token from the URL
- * @returns {Promise<string>} Hex-encoded hash
- */
-const hashToken = async (raw) => {
-  const buffer = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(raw),
-  );
-  return [...new Uint8Array(buffer)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-};
+import { isStrongPassword } from "../_validation.js";
+import { hashPassword, sha256Hex } from "./_helpers.js";
 
 export const onRequestPost = async (context) => {
   const { env, request } = context;
@@ -50,7 +36,7 @@ export const onRequestPost = async (context) => {
       );
     }
 
-    const tokenHash = await hashToken(token);
+    const tokenHash = await sha256Hex(token);
     const now = new Date().toISOString();
 
     // Find a valid, unused, non-expired token. Compare ISO-to-ISO: expires_at is
@@ -83,7 +69,7 @@ export const onRequestPost = async (context) => {
         resetToken.user_id,
       ),
       env.DB.prepare(
-        "UPDATE password_reset_tokens SET used_at = ? WHERE user_id = ?",
+        "UPDATE password_reset_tokens SET used_at = ? WHERE user_id = ? AND used_at IS NULL",
       ).bind(now, resetToken.user_id),
     ]);
 

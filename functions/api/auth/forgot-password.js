@@ -7,6 +7,7 @@
 import { generateUlid } from "../_ulid.js";
 import { sendEmail } from "./_email";
 import { resetPasswordEmail } from "./_email-templates.js";
+import { sha256Hex } from "./_helpers.js";
 
 const TOKEN_EXPIRY_MINUTES = 30;
 
@@ -18,16 +19,7 @@ const TOKEN_EXPIRY_MINUTES = 30;
 const generateResetToken = async () => {
   const buffer = crypto.getRandomValues(new Uint8Array(32));
   const raw = [...buffer].map((b) => b.toString(16).padStart(2, "0")).join("");
-
-  const hashBuffer = await crypto.subtle.digest(
-    "SHA-256",
-    new TextEncoder().encode(raw),
-  );
-  const hash = [...new Uint8Array(hashBuffer)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-
-  return { raw, hash };
+  return { raw, hash: await sha256Hex(raw) };
 };
 
 export const onRequestPost = async (context) => {

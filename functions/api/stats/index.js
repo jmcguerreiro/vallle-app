@@ -1,6 +1,3 @@
-import { requireAuth } from "../auth/_helpers.js";
-import { requireStore } from "../_store.js";
-
 /**
  * Builds an array of { month, count } for every month of the given year,
  * filling in months with no data as count: 0.
@@ -23,33 +20,24 @@ function fillChartData(rows, year) {
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env } = context;
-
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
+  const { request, env, data } = context;
+  const { storeId } = data.store;
 
   const url = new URL(request.url);
   const year =
     url.searchParams.get("year") || new Date().getFullYear().toString();
+  const now = new Date().toISOString();
 
   try {
-    // Run all stat queries in a batch for efficiency
     const [summaryResult, redeemedResult, chartResult] = await env.DB.batch([
       env.DB.prepare(
         `SELECT
            COUNT(*) as totalVallles,
-           SUM(CASE WHEN status = 'active' THEN 1 ELSE 0 END) as activeVallles,
+           SUM(CASE WHEN status = 'active' AND balance > 0 AND expires_at >= ? THEN 1 ELSE 0 END) as activeVallles,
            COALESCE(SUM(amount), 0) as totalAmount
          FROM vallles
          WHERE store_id = ?`,
-      ).bind(storeId),
+      ).bind(now, storeId),
       env.DB.prepare(
         `SELECT COALESCE(SUM(amount), 0) as totalRedeemed
          FROM redemptions

@@ -1,18 +1,9 @@
-const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, status, created_at FROM stores WHERE id = ?`;
-
-const EDITABLE_FIELDS = [
-  "name",
-  "category",
-  "email",
-  "vat_id",
-  "phone",
-  "address1",
-  "address2",
-  "city",
-  "postal_code",
-  "region",
-  "country",
-];
+import {
+  STORE_SELECT,
+  buildStoreUpdate,
+  validateStoreExpiryDays,
+  validateStoreStatus,
+} from "../../_store.js";
 
 /**
  * GET /api/admin/companies/:id — Get a single store with stats (super_admin only).
@@ -113,59 +104,22 @@ export async function onRequestPut(context) {
       );
     }
 
-    // Status is updated only when provided (PUT must not blank it to ""). An
-    // out-of-range value is coerced to a safe default.
-    const VALID_STATUSES = ["active", "suspended", "inactive"];
-    const statusUpdate =
-      body.status === undefined
-        ? null
-        : VALID_STATUSES.includes(body.status)
-          ? body.status
-          : "active";
-
-    // Validate default_vallle_expiry_days if provided
-    if (body.default_vallle_expiry_days !== undefined) {
-      const days = parseInt(body.default_vallle_expiry_days, 10);
-      if (Number.isNaN(days) || days < 1 || days > 1825) {
-        return Response.json(
-          {
-            error: {
-              message: "Default expiry must be between 1 and 1825 days",
-              code: "VALIDATION_FAILED",
-            },
-          },
-          { status: 400 },
-        );
-      }
-    }
-
-    const columns = [...EDITABLE_FIELDS];
-    const values = EDITABLE_FIELDS.map((f) =>
-      (body[f] ?? "").toString().trim(),
+    const expiryError = validateStoreExpiryDays(
+      body.default_vallle_expiry_days,
     );
-    if (statusUpdate !== null) {
-      columns.push("status");
-      values.push(statusUpdate);
-    }
+    if (expiryError) return expiryError;
 
-    const sets = columns.map((f) => `${f} = ?`).join(", ");
+    const statusError = validateStoreStatus(body.status);
+    if (statusError) return statusError;
+
+    const { sets, values } = buildStoreUpdate(body, { allowStatus: true });
     const now = new Date().toISOString();
 
-    const statements = [
-      env.DB.prepare(
-        `UPDATE stores SET ${sets}, updated_at = ? WHERE id = ?`,
-      ).bind(...values, now, id),
-    ];
-
-    if (body.default_vallle_expiry_days !== undefined) {
-      statements.push(
-        env.DB.prepare(
-          "UPDATE stores SET default_vallle_expiry_days = ?, updated_at = ? WHERE id = ?",
-        ).bind(parseInt(body.default_vallle_expiry_days, 10), now, id),
-      );
-    }
-
-    await env.DB.batch(statements);
+    await env.DB.prepare(
+      `UPDATE stores SET ${sets}, updated_at = ? WHERE id = ?`,
+    )
+      .bind(...values, now, id)
+      .run();
 
     const store = await env.DB.prepare(STORE_SELECT).bind(id).first();
 

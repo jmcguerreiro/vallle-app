@@ -1,4 +1,5 @@
 import { normaliseLocale } from "../../_locales.js";
+import { isValidEmail } from "../../_validation.js";
 
 /**
  * GET /api/admin/users/:id — Get a single user with their store associations (super_admin only).
@@ -76,10 +77,7 @@ export async function onRequestPut(context) {
       { status: 400 },
     );
   }
-  if (
-    !body.email?.trim() ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())
-  ) {
+  if (!isValidEmail(body.email)) {
     return Response.json(
       {
         error: {
@@ -105,7 +103,6 @@ export async function onRequestPut(context) {
       );
     }
 
-    // Check email uniqueness (excluding this user)
     const emailConflict = await env.DB.prepare(
       "SELECT id FROM users WHERE email = ? AND id != ?",
     )

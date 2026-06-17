@@ -1,8 +1,13 @@
 -- Vallle · Seed data for local development
 -- Run with: npx wrangler d1 execute vallle-db --file=./migrations/0002_seed.sql
 --
+-- ⚠️  LOCAL DEVELOPMENT ONLY — never run against the production database.
+-- The shared password below is public; seeding it into prod would create
+-- accounts anyone can log into.
+--
 -- All passwords are: "vallle123"
--- Pre-hashed with PBKDF2-SHA256 (100k iterations).
+-- Pre-hashed with PBKDF2-SHA256 (100k iterations, legacy 2-part salt:hash
+-- format — still accepted by verifyPassword's legacy fallback).
 -- To regenerate, run the hash-password script (see below).
 
 -- ─── Users ──────────────────────────────────────────────────────

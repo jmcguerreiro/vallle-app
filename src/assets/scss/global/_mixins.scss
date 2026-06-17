@@ -74,6 +74,14 @@
   }
 }
 
+// Apply :disabled styles. Pass a modifier to extend the selector,
+// e.g. `@include disabled("[aria-disabled='true']")`.
+@mixin disabled($modifier: "") {
+  &:disabled#{$modifier} {
+    @content;
+  }
+}
+
 @mixin no-user-select {
   -ms-user-select: none;
   -webkit-user-select: none;

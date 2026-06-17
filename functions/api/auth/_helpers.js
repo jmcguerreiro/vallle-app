@@ -5,24 +5,29 @@
  */
 
 const JWT_EXPIRY = 3 * 24 * 60 * 60; // 3 days in seconds
-const PBKDF2_ITERATIONS = 100_000;
+
+// Iteration count for new password hashes. Stored inside each hash so it can be
+// raised over time without locking out existing users.
+const PBKDF2_ITERATIONS = 600_000;
+// Hashes written before the count was stored use this legacy value (2-part
+// `salt:hash` format). They still verify, and are silently invisible to new code.
+const LEGACY_PBKDF2_ITERATIONS = 100_000;
 
 /**
- * Validates a password against the strength policy (min 8 chars, upper, lower,
- * digit, special). Mirrors the frontend rule in `src/utils/password.js` — keep
- * the two in sync. Single source of truth for every server-side password check.
- * @param {string} password
- * @returns {boolean}
+ * Hashes a raw string with SHA-256 and returns the hex digest. Used for reset
+ * tokens — `forgot-password` stores this hash, `reset-password` recomputes it to
+ * compare, so both paths must derive it identically.
+ * @param {string} raw
+ * @returns {Promise<string>} Hex-encoded SHA-256 digest
  */
-export function isStrongPassword(password) {
-  return (
-    typeof password === "string" &&
-    password.length >= 8 &&
-    /[A-Z]/.test(password) &&
-    /[a-z]/.test(password) &&
-    /\d/.test(password) &&
-    /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)
+export async function sha256Hex(raw) {
+  const buffer = await crypto.subtle.digest(
+    "SHA-256",
+    new TextEncoder().encode(raw),
   );
+  return [...new Uint8Array(buffer)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
 }
 
 /**
@@ -135,90 +140,103 @@ export async function verifyJwt(token, secret) {
 }
 
 /**
- * Hashes a password with PBKDF2-SHA256.
- * @param {string} password
- * @param {string} [salt] - Hex string; generated if not provided
- * @returns {Promise<string>} Format: `salt:hash` (both hex)
+ * Converts a hex string to a byte array.
+ * @param {string} hex
+ * @returns {Uint8Array}
  */
-export async function hashPassword(password, salt) {
-  const encoder = new TextEncoder();
+function hexToBytes(hex) {
+  return new Uint8Array(
+    hex.match(/.{2}/g).map((byte) => Number.parseInt(byte, 16)),
+  );
+}
 
-  let saltBuffer;
-  if (salt) {
-    saltBuffer = new Uint8Array(
-      salt.match(/.{2}/g).map((byte) => Number.parseInt(byte, 16)),
-    );
-  } else {
-    saltBuffer = crypto.getRandomValues(new Uint8Array(16));
-  }
+/**
+ * Converts a byte array (or ArrayBuffer) to a hex string.
+ * @param {Uint8Array|ArrayBuffer} bytes
+ * @returns {string}
+ */
+function bytesToHex(bytes) {
+  return [...new Uint8Array(bytes)]
+    .map((b) => b.toString(16).padStart(2, "0"))
+    .join("");
+}
 
+/**
+ * Derives a 256-bit PBKDF2-SHA256 hash and returns it as hex.
+ * @param {string} password
+ * @param {Uint8Array} saltBuffer
+ * @param {number} iterations
+ * @returns {Promise<string>} Hex-encoded derived key
+ */
+async function deriveHashHex(password, saltBuffer, iterations) {
   const keyMaterial = await crypto.subtle.importKey(
     "raw",
-    encoder.encode(password),
+    new TextEncoder().encode(password),
     "PBKDF2",
     false,
     ["deriveBits"],
   );
 
   const derivedBits = await crypto.subtle.deriveBits(
-    {
-      name: "PBKDF2",
-      salt: saltBuffer,
-      iterations: PBKDF2_ITERATIONS,
-      hash: "SHA-256",
-    },
+    { name: "PBKDF2", salt: saltBuffer, iterations, hash: "SHA-256" },
     keyMaterial,
     256,
   );
 
-  const hashHex = [...new Uint8Array(derivedBits)]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-  const saltHex = [...saltBuffer]
-    .map((b) => b.toString(16).padStart(2, "0"))
-    .join("");
-
-  return `${saltHex}:${hashHex}`;
+  return bytesToHex(derivedBits);
 }
 
 /**
- * Verifies a password against a stored hash.
+ * Constant-time comparison of two hex strings. Returns false (without leaking
+ * timing) when lengths differ.
+ * @param {string} a
+ * @param {string} b
+ * @returns {boolean}
+ */
+function timingSafeEqualHex(a, b) {
+  if (a.length !== b.length) return false;
+  let result = 0;
+  for (let i = 0; i < a.length; i++) {
+    result |= a.codePointAt(i) ^ b.codePointAt(i);
+  }
+  return result === 0;
+}
+
+/**
+ * Hashes a password with PBKDF2-SHA256 using the current iteration count.
  * @param {string} password
- * @param {string} storedHash - Format: `salt:hash`
+ * @returns {Promise<string>} Self-describing format: `iterations:salt:hash`
+ */
+export async function hashPassword(password) {
+  const saltBuffer = crypto.getRandomValues(new Uint8Array(16));
+  const hashHex = await deriveHashHex(password, saltBuffer, PBKDF2_ITERATIONS);
+  return `${PBKDF2_ITERATIONS}:${bytesToHex(saltBuffer)}:${hashHex}`;
+}
+
+/**
+ * Verifies a password against a stored hash. Accepts the self-describing
+ * `iterations:salt:hash` format as well as legacy 2-part `salt:hash` hashes
+ * (assumed to use {@link LEGACY_PBKDF2_ITERATIONS}).
+ * @param {string} password
+ * @param {string} storedHash
  * @returns {Promise<boolean>}
  */
 export async function verifyPassword(password, storedHash) {
-  const [salt] = storedHash.split(":");
-  const rehashed = await hashPassword(password, salt);
+  const parts = storedHash.split(":");
 
-  const encoder = new TextEncoder();
-  const a = encoder.encode(rehashed);
-  const b = encoder.encode(storedHash);
-  if (a.byteLength !== b.byteLength) return false;
-
-  const keyA = await crypto.subtle.importKey(
-    "raw",
-    a,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const sigA = new Uint8Array(await crypto.subtle.sign("HMAC", keyA, b));
-  const keyB = await crypto.subtle.importKey(
-    "raw",
-    b,
-    { name: "HMAC", hash: "SHA-256" },
-    false,
-    ["sign"],
-  );
-  const sigB = new Uint8Array(await crypto.subtle.sign("HMAC", keyB, b));
-
-  if (sigA.byteLength !== sigB.byteLength) return false;
-  let result = 0;
-  for (let i = 0; i < sigA.byteLength; i++) {
-    result |= sigA[i] ^ sigB[i];
+  let iterations;
+  let salt;
+  let expectedHash;
+  if (parts.length === 3) {
+    iterations = Number.parseInt(parts[0], 10);
+    [, salt, expectedHash] = parts;
+  } else {
+    iterations = LEGACY_PBKDF2_ITERATIONS;
+    [salt, expectedHash] = parts;
   }
-  return result === 0;
+
+  const actualHash = await deriveHashHex(password, hexToBytes(salt), iterations);
+  return timingSafeEqualHex(actualHash, expectedHash);
 }
 
 /**
@@ -235,33 +253,47 @@ export async function getAuthUser(request, secret) {
 }
 
 /**
- * Verifies the request is authenticated.
- * Returns a 401 Response if not, or the authenticated user payload if successful.
+ * Verifies the request is authenticated and the account is still active.
+ * Re-reads `status` and `role` from the database rather than trusting the
+ * (up to 3-day-old) JWT claims, so a deactivated account or a changed role
+ * takes effect immediately instead of lingering until the token expires.
+ * Returns a 401 Response if not, or `{ user }` (token payload with the live
+ * `role`/`status`) if successful.
  * @param {Request} request
- * @param {string} secret - JWT_SECRET from env
+ * @param {Object} env - Cloudflare env bindings (DB + JWT_SECRET)
  * @returns {Promise<{ user: Object }|Response>}
  */
-export async function requireAuth(request, secret) {
-  const user = await getAuthUser(request, secret);
-  if (!user) {
-    return Response.json(
-      { error: { message: "Unauthorized", code: "AUTH_UNAUTHORIZED" } },
-      { status: 401 },
-    );
-  }
-  return { user };
+export async function requireAuth(request, env) {
+  const unauthorized = Response.json(
+    { error: { message: "Unauthorized", code: "AUTH_UNAUTHORIZED" } },
+    { status: 401 },
+  );
+
+  const payload = await getAuthUser(request, env.JWT_SECRET);
+  if (!payload) return unauthorized;
+
+  const account = await env.DB.prepare(
+    "SELECT status, role FROM users WHERE id = ?",
+  )
+    .bind(payload.sub)
+    .first();
+
+  if (!account || account.status !== "active") return unauthorized;
+
+  return { user: { ...payload, role: account.role, status: account.status } };
 }
 
 /**
  * Verifies the request is authenticated and the user has one of the given roles.
- * Returns a 401/403 Response if not, or the authenticated user payload if successful.
+ * Role is taken from the live DB record (via requireAuth), not the token.
+ * Returns a 401/403 Response if not, or `{ user }` if successful.
  * @param {Request} request
- * @param {string} secret - JWT_SECRET from env
+ * @param {Object} env - Cloudflare env bindings (DB + JWT_SECRET)
  * @param {string|string[]} roles - Required role, or list of allowed roles
  * @returns {Promise<{ user: Object }|Response>}
  */
-export async function requireRole(request, secret, roles) {
-  const result = await requireAuth(request, secret);
+export async function requireRole(request, env, roles) {
+  const result = await requireAuth(request, env);
   if (result instanceof Response) return result;
   const allowed = Array.isArray(roles) ? roles : [roles];
   if (!allowed.includes(result.user.role)) {

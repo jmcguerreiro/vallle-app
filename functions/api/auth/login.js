@@ -1,13 +1,14 @@
 import { authCookie, signJwt, verifyPassword } from "./_helpers.js";
 
 /**
- * A well-formed (`salt:hash`) PBKDF2 hash that no password matches. Verified
- * against when the email is unknown so login spends the same time hashing
- * whether or not the account exists — closes a timing side-channel that would
- * otherwise leak which emails are registered.
+ * A well-formed (`iterations:salt:hash`) PBKDF2 hash that no password matches.
+ * Verified against when the email is unknown so login spends the same time
+ * hashing whether or not the account exists — closes a timing side-channel that
+ * would otherwise leak which emails are registered. The iteration count must
+ * match the one new hashes use so the timing lines up.
  */
 const DUMMY_PASSWORD_HASH =
-  "00000000000000000000000000000000:0000000000000000000000000000000000000000000000000000000000000000";
+  "600000:00000000000000000000000000000000:0000000000000000000000000000000000000000000000000000000000000000";
 
 /**
  * POST /api/auth/login
@@ -83,7 +84,7 @@ export async function onRequestPost(context) {
       .all();
 
     const token = await signJwt(
-      { sub: user.id, email: user.email, role: user.role },
+      { sub: user.id, role: user.role },
       env.JWT_SECRET,
     );
 

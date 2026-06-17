@@ -1,17 +1,13 @@
 import { parsePagination } from "../_list.js";
-import { requireRole } from "../auth/_helpers.js";
 
 /**
- * GET /api/commissions — List all commissions (super_admin only).
+ * GET /api/commissions — List all commissions.
+ * Gated to super_admin by functions/api/commissions/_middleware.js.
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
   const { request, env } = context;
-
-  // Auth — super_admin only
-  const auth = await requireRole(request, env.JWT_SECRET, "super_admin");
-  if (auth instanceof Response) return auth;
 
   try {
     const url = new URL(request.url);

@@ -185,7 +185,7 @@ const VallleView = () => {
       actions.push({
         label: t(`features.vallles.view.${isArchived ? "restore" : "archive"}`),
         onClick: handleToggleArchive,
-        skin: "ghost"
+        skin: "ghost",
       });
     }
 

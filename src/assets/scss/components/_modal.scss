@@ -3,21 +3,23 @@
   border: none;
   inset: 0;
   margin: auto;
-  max-height: 90dvh;
   max-width: $screen-sm;
   padding: 0;
   width: 100%;
   padding: $spacing-6;
-}
 
-.c-modal[open] {
-  animation: modal-fade-in 0.2s ease-out;
+  &[open] {
+    animation: modal-fade-in 0.2s ease-out;
+    display: flex;
+  }
 }
 
 .c-modal[open]::backdrop {
   animation: modal-backdrop-fade 0.2s ease-out forwards;
   height: 100vh;
   background: rgba($color-espresso, 0.5);
+  width: 100%;
+  position: fixed;
 }
 
 .c-modal__wrapper {
@@ -25,9 +27,9 @@
   border-radius: $border-radius-3xl;
   display: flex;
   flex-direction: column;
-  max-height: 90dvh;
   overflow: hidden;
   position: relative;
+  width: 100%;
 }
 
 .c-modal__close {

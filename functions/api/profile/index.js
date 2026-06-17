@@ -1,4 +1,5 @@
 import { normaliseLocale } from "../_locales.js";
+import { DEFAULT_AVATAR, isValidAvatar, isValidEmail } from "../_validation.js";
 import { getAuthUser } from "../auth/_helpers.js";
 
 /**
@@ -43,7 +44,7 @@ export async function onRequestGet(context) {
           name: user.name,
           email: user.email,
           role: user.role,
-          avatar: user.avatar || "paper-bag-head",
+          avatar: user.avatar || DEFAULT_AVATAR,
           locale: user.locale || "pt",
           created_at: user.created_at,
         },
@@ -92,11 +93,7 @@ export async function onRequestPut(context) {
     );
   }
 
-  if (
-    typeof email !== "string" ||
-    !email.trim() ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
-  ) {
+  if (!isValidEmail(email)) {
     return Response.json(
       {
         error: {
@@ -104,6 +101,13 @@ export async function onRequestPut(context) {
           code: "VALIDATION_FAILED",
         },
       },
+      { status: 400 },
+    );
+  }
+
+  if (avatar !== undefined && !isValidAvatar(avatar)) {
+    return Response.json(
+      { error: { message: "Invalid avatar", code: "VALIDATION_FAILED" } },
       { status: 400 },
     );
   }
@@ -131,7 +135,7 @@ export async function onRequestPut(context) {
       .bind(
         name.trim(),
         email.trim().toLowerCase(),
-        avatar || "paper-bag-head",
+        avatar || DEFAULT_AVATAR,
         safeLocale,
         now,
         payload.sub,
@@ -151,7 +155,7 @@ export async function onRequestPut(context) {
           name: user.name,
           email: user.email,
           role: user.role,
-          avatar: user.avatar || "paper-bag-head",
+          avatar: user.avatar || DEFAULT_AVATAR,
           locale: user.locale || "pt",
           created_at: user.created_at,
         },

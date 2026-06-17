@@ -1,4 +1,5 @@
 import { normaliseLocale } from "../../_locales.js";
+import { isValidEmail } from "../../_validation.js";
 
 const MEMBERSHIP_STATUSES = new Set(["active", "inactive"]);
 
@@ -80,10 +81,7 @@ export async function onRequestPut(context) {
       { status: 400 },
     );
   }
-  if (
-    !body.email?.trim() ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())
-  ) {
+  if (!isValidEmail(body.email)) {
     return Response.json(
       {
         error: {
@@ -118,7 +116,6 @@ export async function onRequestPut(context) {
       );
     }
 
-    // Check email uniqueness (excluding this user)
     const emailConflict = await env.DB.prepare(
       "SELECT id FROM users WHERE email = ? AND id != ?",
     )

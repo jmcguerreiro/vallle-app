@@ -1,25 +1,12 @@
-import { requireAuth } from "../auth/_helpers.js";
-import { requireStore } from "../_store.js";
-
 /**
  * GET /api/vallles/lookup?code=XXX — Look up a vallle by its code.
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env } = context;
+  const { request, env, data } = context;
+  const { storeId } = data.store;
 
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
-
-  // Query param
   const url = new URL(request.url);
   const code = url.searchParams.get("code")?.trim();
 

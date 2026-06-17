@@ -1,7 +1,8 @@
 import { buildLikePattern, parseListQuery } from "../../_list.js";
 import { normaliseLocale } from "../../_locales.js";
 import { generateUlid } from "../../_ulid.js";
-import { hashPassword, isStrongPassword } from "../../auth/_helpers.js";
+import { isStrongPassword, isValidEmail } from "../../_validation.js";
+import { hashPassword } from "../../auth/_helpers.js";
 
 /**
  * GET /api/company/users — List users for the active store.
@@ -96,10 +97,7 @@ export async function onRequestPost(context) {
       { status: 400 },
     );
   }
-  if (
-    !body.email?.trim() ||
-    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(body.email.trim())
-  ) {
+  if (!isValidEmail(body.email)) {
     return Response.json(
       {
         error: {

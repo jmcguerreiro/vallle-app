@@ -1,17 +1,12 @@
-import { requireRole } from "../auth/_helpers.js";
-
 /**
- * PATCH /api/commissions/:id — Mark a commission as paid (super_admin only).
+ * PATCH /api/commissions/:id — Mark a commission as paid.
+ * Gated to super_admin by functions/api/commissions/_middleware.js.
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
 export async function onRequestPatch(context) {
-  const { request, env, params } = context;
+  const { env, params } = context;
   const { id } = params;
-
-  // Auth — super_admin only
-  const auth = await requireRole(request, env.JWT_SECRET, "super_admin");
-  if (auth instanceof Response) return auth;
 
   try {
     const paidAt = new Date().toISOString();

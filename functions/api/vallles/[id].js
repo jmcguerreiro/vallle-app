@@ -1,5 +1,4 @@
-import { requireAuth } from "../auth/_helpers.js";
-import { requireStore } from "../_store.js";
+import { validateBuyer, validateExpiry } from "./_validation.js";
 
 /**
  * GET /api/vallles/:id — Get a single vallle by ID.
@@ -7,18 +6,9 @@ import { requireStore } from "../_store.js";
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env, params } = context;
+  const { env, params, data } = context;
   const { id } = params;
-
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
+  const { storeId } = data.store;
 
   try {
     const vallle = await env.DB.prepare(
@@ -49,20 +39,10 @@ export async function onRequestGet(context) {
  * @returns {Promise<Response>}
  */
 export async function onRequestPut(context) {
-  const { request, env, params } = context;
+  const { request, env, params, data } = context;
   const { id } = params;
+  const { storeId } = data.store;
 
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
-
-  // Body
   let body;
   try {
     body = await request.json();
@@ -75,24 +55,10 @@ export async function onRequestPut(context) {
 
   const { buyer, expires_at, status } = body;
 
-  // Validate buyer length
-  if (
-    buyer !== undefined &&
-    buyer !== null &&
-    (typeof buyer !== "string" || buyer.length > 255)
-  ) {
-    return Response.json(
-      {
-        error: {
-          message: "Buyer must be a string of 255 characters or fewer",
-          code: "VALIDATION_FAILED",
-        },
-      },
-      { status: 400 },
-    );
-  }
+  const buyerError = validateBuyer(buyer);
+  if (buyerError) return buyerError;
 
-  // Validate status (only active/archived can be set manually)
+  // Only active/archived can be set manually; 'used' is system-managed.
   if (status !== undefined && status !== "active" && status !== "archived") {
     return Response.json(
       {
@@ -105,39 +71,12 @@ export async function onRequestPut(context) {
     );
   }
 
-  // Validate expires_at if provided (max 5 years from now)
   if (expires_at) {
-    const expiryDate = new Date(expires_at);
-    const maxExpiry = new Date();
-    maxExpiry.setFullYear(maxExpiry.getFullYear() + 5);
-
-    if (Number.isNaN(expiryDate.getTime()) || expiryDate <= new Date()) {
-      return Response.json(
-        {
-          error: {
-            message: "Expiry date must be a valid future date",
-            code: "VALIDATION_FAILED",
-          },
-        },
-        { status: 400 },
-      );
-    }
-
-    if (expiryDate > maxExpiry) {
-      return Response.json(
-        {
-          error: {
-            message: "Expiry date cannot exceed 5 years from now",
-            code: "VALIDATION_FAILED",
-          },
-        },
-        { status: 400 },
-      );
-    }
+    const expiryError = validateExpiry(expires_at);
+    if (expiryError) return expiryError;
   }
 
   try {
-    // Check vallle exists and belongs to store
     const existing = await env.DB.prepare(
       "SELECT * FROM vallles WHERE id = ? AND store_id = ?",
     )

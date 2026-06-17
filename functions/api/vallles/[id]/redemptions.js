@@ -1,6 +1,4 @@
 import { parsePagination } from "../../_list.js";
-import { requireStore } from "../../_store.js";
-import { requireAuth } from "../../auth/_helpers.js";
 
 /**
  * GET /api/vallles/:id/redemptions — List redemptions for a vallle.
@@ -8,21 +6,11 @@ import { requireAuth } from "../../auth/_helpers.js";
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env, params } = context;
+  const { request, env, params, data } = context;
   const { id } = params;
-
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
+  const { storeId } = data.store;
 
   try {
-    // Verify vallle belongs to store
     const vallle = await env.DB.prepare(
       "SELECT id FROM vallles WHERE id = ? AND store_id = ?",
     )

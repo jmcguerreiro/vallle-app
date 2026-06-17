@@ -21,10 +21,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
-import {
-  IconChevronLeft,
-  IconChevronRight,
-} from "@/utils/icons";
+import { IconChevronLeft, IconChevronRight } from "@/utils/icons";
 
 const MONTH_LABELS = [
   "Jan",

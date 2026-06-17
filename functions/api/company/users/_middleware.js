@@ -13,7 +13,7 @@ import { requireAuth } from "../../auth/_helpers.js";
 export async function onRequest(context) {
   const { request, env } = context;
 
-  const auth = await requireAuth(request, env.JWT_SECRET);
+  const auth = await requireAuth(request, env);
   if (auth instanceof Response) return auth;
   const { user } = auth;
 

@@ -1,7 +1,7 @@
 import { requireRole } from "../auth/_helpers.js";
 
 /**
- * Gates every /api/admin/* route to the super_admin role.
+ * Gates every /api/commissions/* route to the super_admin role.
  * Runs before the route handler; exposes the authenticated user as
  * `context.data.user` for downstream handlers that need it.
  * @param {Object} context - Cloudflare Pages Function context

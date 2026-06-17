@@ -1,7 +1,10 @@
 import { buildLikePattern, parseListQuery } from "../_list.js";
-import { requireStore } from "../_store.js";
 import { generateUlid } from "../_ulid.js";
-import { requireAuth } from "../auth/_helpers.js";
+import {
+  validateAmount,
+  validateBuyer,
+  validateExpiry,
+} from "./_validation.js";
 
 /**
  * Characters used for vallle code generation.
@@ -29,17 +32,8 @@ function generateVallleCode() {
  * @returns {Promise<Response>}
  */
 export async function onRequestGet(context) {
-  const { request, env } = context;
-
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
+  const { request, env, data } = context;
+  const { storeId } = data.store;
 
   try {
     const url = new URL(request.url);
@@ -142,17 +136,9 @@ export async function onRequestGet(context) {
  * @returns {Promise<Response>}
  */
 export async function onRequestPost(context) {
-  const { request, env } = context;
-
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId, storeStatus } = storeResult;
+  const { request, env, data } = context;
+  const { user } = data;
+  const { storeId, storeStatus } = data.store;
 
   // A suspended store stays readable but cannot emit new vallles.
   if (storeStatus !== "active") {
@@ -167,7 +153,6 @@ export async function onRequestPost(context) {
     );
   }
 
-  // Body
   let body;
   try {
     body = await request.json();
@@ -180,43 +165,13 @@ export async function onRequestPost(context) {
 
   let { amount, buyer, expires_at } = body;
 
-  // Validate amount (max €50,000 = 5_000_000 cents)
-  if (
-    !amount ||
-    typeof amount !== "number" ||
-    !Number.isInteger(amount) ||
-    amount <= 0 ||
-    amount > 5_000_000
-  ) {
-    return Response.json(
-      {
-        error: {
-          message: "Amount must be a positive integer (cents) up to 5000000",
-          code: "VALIDATION_FAILED",
-        },
-      },
-      { status: 400 },
-    );
-  }
+  const amountError = validateAmount(amount);
+  if (amountError) return amountError;
 
-  // Validate buyer length
-  if (
-    buyer !== undefined &&
-    buyer !== null &&
-    (typeof buyer !== "string" || buyer.length > 255)
-  ) {
-    return Response.json(
-      {
-        error: {
-          message: "Buyer must be a string of 255 characters or fewer",
-          code: "VALIDATION_FAILED",
-        },
-      },
-      { status: 400 },
-    );
-  }
+  const buyerError = validateBuyer(buyer);
+  if (buyerError) return buyerError;
 
-  // If no expires_at provided, compute from the store's default expiry period
+  // If no expires_at provided, compute from the store's default expiry period.
   if (!expires_at) {
     const store = await env.DB.prepare(
       "SELECT default_vallle_expiry_days FROM stores WHERE id = ?",
@@ -230,34 +185,10 @@ export async function onRequestPost(context) {
     expires_at = defaultExpiry.toISOString();
   }
 
+  const expiryError = validateExpiry(expires_at);
+  if (expiryError) return expiryError;
+
   const expiryDate = new Date(expires_at);
-  const maxExpiry = new Date();
-  maxExpiry.setFullYear(maxExpiry.getFullYear() + 5);
-
-  if (Number.isNaN(expiryDate.getTime()) || expiryDate <= new Date()) {
-    return Response.json(
-      {
-        error: {
-          message: "Expiry date must be a valid future date",
-          code: "VALIDATION_FAILED",
-        },
-      },
-      { status: 400 },
-    );
-  }
-
-  if (expiryDate > maxExpiry) {
-    return Response.json(
-      {
-        error: {
-          message: "Expiry date cannot exceed 5 years from now",
-          code: "VALIDATION_FAILED",
-        },
-      },
-      { status: 400 },
-    );
-  }
-
   const now = new Date().toISOString();
   const vallleId = generateUlid();
   const code = generateVallleCode();

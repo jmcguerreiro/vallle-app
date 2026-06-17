@@ -20,14 +20,7 @@ export function parseListQuery(
   url,
   { sortableColumns, defaultSort, defaultOrder = "DESC" },
 ) {
-  const limit = Math.min(
-    Math.max(Number.parseInt(url.searchParams.get("limit"), 10) || 50, 1),
-    200,
-  );
-  const offset = Math.max(
-    Number.parseInt(url.searchParams.get("offset"), 10) || 0,
-    0,
-  );
+  const { limit, offset } = parsePagination(url);
   const search = (url.searchParams.get("search") || "").trim();
 
   const sortParam = url.searchParams.get("sort");

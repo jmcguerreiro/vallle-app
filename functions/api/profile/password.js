@@ -1,9 +1,5 @@
-import {
-  getAuthUser,
-  hashPassword,
-  isStrongPassword,
-  verifyPassword,
-} from "../auth/_helpers.js";
+import { isStrongPassword } from "../_validation.js";
+import { getAuthUser, hashPassword, verifyPassword } from "../auth/_helpers.js";
 
 /**
  * PUT /api/profile/password

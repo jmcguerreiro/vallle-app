@@ -47,14 +47,13 @@ export async function onRequestGet(context) {
         SELECT s.id AS store_id,
                s.name AS store_name,
                COUNT(c.id) AS commission_count,
-               COALESCE(SUM(v.amount), 0) AS total_vallle_amount,
+               COALESCE((SELECT SUM(amount) FROM vallles WHERE store_id = s.id), 0) AS total_vallle_amount,
                COALESCE(SUM(c.amount), 0) AS total_commission,
                COALESCE(SUM(CASE WHEN c.paid_at IS NOT NULL THEN c.amount ELSE 0 END), 0) AS total_paid,
                COALESCE(SUM(CASE WHEN c.paid_at IS NULL THEN c.amount ELSE 0 END), 0) AS total_unpaid,
                MAX(c.paid_at) AS last_paid_at
         FROM stores s
         LEFT JOIN commissions c ON c.store_id = s.id
-        LEFT JOIN vallles v ON v.id = c.vallle_id
         GROUP BY s.id, s.name
       )`;
 

@@ -1,6 +1,5 @@
-import { requireAuth } from "../../auth/_helpers.js";
-import { requireStore } from "../../_store.js";
 import { generateUlid } from "../../_ulid.js";
+import { validateAmount } from "../_validation.js";
 
 /**
  * POST /api/vallles/:id/redeem — Redeem a vallle (partial or full).
@@ -9,20 +8,11 @@ import { generateUlid } from "../../_ulid.js";
  * @returns {Promise<Response>}
  */
 export async function onRequestPost(context) {
-  const { request, env, params } = context;
+  const { request, env, params, data } = context;
   const { id } = params;
+  const { user } = data;
+  const { storeId } = data.store;
 
-  // Auth
-  const auth = await requireAuth(request, env.JWT_SECRET);
-  if (auth instanceof Response) return auth;
-  const { user } = auth;
-
-  // Store
-  const storeResult = await requireStore(request, env, user.sub);
-  if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
-
-  // Body
   let body;
   try {
     body = await request.json();
@@ -35,26 +25,9 @@ export async function onRequestPost(context) {
 
   const { amount, description } = body;
 
-  // Validate amount (max €50,000 = 5_000_000 cents)
-  if (
-    !amount ||
-    typeof amount !== "number" ||
-    !Number.isInteger(amount) ||
-    amount <= 0 ||
-    amount > 5_000_000
-  ) {
-    return Response.json(
-      {
-        error: {
-          message: "Amount must be a positive integer (cents) up to 5000000",
-          code: "VALIDATION_FAILED",
-        },
-      },
-      { status: 400 },
-    );
-  }
+  const amountError = validateAmount(amount);
+  if (amountError) return amountError;
 
-  // Validate description (required)
   if (
     typeof description !== "string" ||
     description.trim().length === 0 ||
@@ -73,7 +46,6 @@ export async function onRequestPost(context) {
   }
 
   try {
-    // Fetch vallle
     const vallle = await env.DB.prepare(
       "SELECT * FROM vallles WHERE id = ? AND store_id = ?",
     )
@@ -87,7 +59,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Check status
     if (vallle.status !== "active") {
       return Response.json(
         { error: { message: "Vallle is not active", code: "VALLLE_INACTIVE" } },
@@ -95,7 +66,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Check expiry
     if (new Date(vallle.expires_at) < new Date()) {
       return Response.json(
         {
@@ -105,7 +75,6 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Check balance
     if (amount > vallle.balance) {
       return Response.json(
         {
@@ -134,7 +103,7 @@ export async function onRequestPost(context) {
         `INSERT INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at)
          SELECT ?, ?, ?, ?, ?, ?, balance - ?, ?
            FROM vallles
-          WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
+          WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at >= ?`,
       ).bind(
         redemptionId,
         storeId,
@@ -154,7 +123,7 @@ export async function onRequestPost(context) {
            SET balance    = balance - ?,
                status     = CASE WHEN (balance - ?) = 0 THEN 'used' ELSE status END,
                updated_at = ?
-         WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
+         WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at >= ?`,
       ).bind(amount, amount, now, id, storeId, amount, now),
     ]);
 
