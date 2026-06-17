@@ -7,23 +7,25 @@ import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Card from "@/components/Card";
 import EmptyState from "@/components/EmptyState";
+import Fieldset from "@/components/forms/Fieldset";
 import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
-import List from "@/components/List";
 import Loader from "@/components/Loader";
 import { LOCALE_OPTIONS } from "@/constants/locales";
-import { USER_ROLES } from "@/constants/user-roles";
+import { ACCOUNT_ROLES, STORE_ROLES } from "@/constants/user-roles";
 import { USER_STATUSES } from "@/constants/user-statuses";
+import { useAuth } from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
 
 /**
  * Component: AdminUserEdit
- * Form for editing a user's name, email, role, and status.
- * Super admin only.
+ * Form for editing a user's identity, account type (platform super admin vs
+ * regular account), account status, and their role + status within each store
+ * they belong to. Super admin only.
  * @component
  * @returns {JSX.Element}
  */
@@ -32,6 +34,7 @@ const AdminUserEdit = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -52,8 +55,6 @@ const AdminUserEdit = () => {
     queryKey: ["admin", "users", id],
     queryFn: ({ signal }) => get(`/api/admin/users/${id}`, { signal }),
   });
-
-  const userStores = response?.data?.user?.stores ?? [];
 
   // Mutations
   const updateUser = useMutation({
@@ -81,15 +82,21 @@ const AdminUserEdit = () => {
   const [serverError, setServerError] = useState(null);
 
   // Derived State
-  const roleOptions = [
-    { value: USER_ROLES.USER, label: t("features.admin.users.list.role_user") },
+  // You can't change your OWN account type or status (avoids locking yourself
+  // out of the platform). Store-scoped role/status are always editable — a
+  // super_admin's platform access doesn't depend on any store membership.
+  const isSelf = user?.id === id;
+  const userStores = response?.data?.user?.stores ?? [];
+  // Account role is now just the platform flag: super admin or regular account.
+  // The admin/user distinction lives per store, below.
+  const accountTypeOptions = [
     {
-      value: USER_ROLES.ADMIN,
-      label: t("features.admin.users.list.role_admin"),
+      value: ACCOUNT_ROLES.SUPER_ADMIN,
+      label: t("features.admin.users.form.accountType_super_admin"),
     },
     {
-      value: USER_ROLES.SUPER_ADMIN,
-      label: t("features.admin.users.list.role_super_admin"),
+      value: ACCOUNT_ROLES.USER,
+      label: t("features.admin.users.form.accountType_regular"),
     },
   ];
   const statusOptions = [
@@ -102,12 +109,31 @@ const AdminUserEdit = () => {
       label: t("features.admin.users.list.inactive"),
     },
   ];
+  const storeRoleOptions = [
+    {
+      value: STORE_ROLES.ADMIN,
+      label: t("features.admin.users.list.role_admin"),
+    },
+    {
+      value: STORE_ROLES.USER,
+      label: t("features.admin.users.list.role_user"),
+    },
+  ];
 
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      update(values);
+      // Flatten the per-store object (keyed by store_id) into the array the API
+      // expects: [{ store_id, role, status }].
+      const stores = Object.entries(values.stores ?? {}).map(
+        ([store_id, membership]) => ({
+          store_id,
+          role: membership.role,
+          status: membership.status,
+        }),
+      );
+      update({ ...values, stores });
     },
     [update],
   );
@@ -133,13 +159,23 @@ const AdminUserEdit = () => {
 
   useEffect(() => {
     if (response?.data) {
-      const { user } = response.data;
+      const { user: editedUser } = response.data;
+      // Legacy account role "admin" collapses to a regular account; only
+      // super_admin maps to the platform flag.
+      const stores = {};
+      for (const s of editedUser.stores ?? []) {
+        stores[s.store_id] = { role: s.role, status: s.status };
+      }
       reset({
-        name: user.name,
-        email: user.email,
-        role: user.role,
-        status: user.status,
-        locale: user.locale || "pt",
+        name: editedUser.name,
+        email: editedUser.email,
+        role:
+          editedUser.role === ACCOUNT_ROLES.SUPER_ADMIN
+            ? ACCOUNT_ROLES.SUPER_ADMIN
+            : ACCOUNT_ROLES.USER,
+        status: editedUser.status,
+        locale: editedUser.locale || "pt",
+        stores,
       });
     }
   }, [response, reset]);
@@ -186,19 +222,22 @@ const AdminUserEdit = () => {
         />
         <Select
           control={control}
+          disabled={isSelf}
           error={errors.role}
-          label={t("features.admin.users.form.role")}
+          hint={isSelf ? t("features.admin.users.form.selfLocked") : undefined}
+          label={t("features.admin.users.form.accountType")}
           name="role"
-          options={roleOptions}
-          placeholder={t("features.admin.users.form.role")}
+          options={accountTypeOptions}
+          placeholder={t("features.admin.users.form.accountType")}
         />
         <Select
           control={control}
+          disabled={isSelf}
           error={errors.status}
-          label={t("features.admin.users.list.status")}
+          label={t("features.admin.users.form.accountStatus")}
           name="status"
           options={statusOptions}
-          placeholder={t("features.admin.users.list.status")}
+          placeholder={t("features.admin.users.form.accountStatus")}
         />
         <Select
           control={control}
@@ -210,18 +249,39 @@ const AdminUserEdit = () => {
         />
       </FormFields>
 
-      {userStores.length > 0 && (
-        <Card
-          description={t("features.admin.users.edit.assignedToDescription")}
-          title={t("features.admin.users.edit.assignedTo")}
-        >
-          <List>
-            {userStores.map((s) => (
-              <List.Item key={s.store_id}>{s.store_name}</List.Item>
-            ))}
-          </List>
-        </Card>
-      )}
+      <Card
+        description={t("features.admin.users.edit.storeAccessDescription")}
+        title={t("features.admin.users.edit.storeAccess")}
+      >
+        {userStores.length === 0 ? (
+          <p className="c-form__hint">
+            {t("features.admin.users.edit.noStores")}
+          </p>
+        ) : (
+          userStores.map((s) => (
+            <Fieldset key={s.store_id} legend={s.store_name}>
+              <FormFields>
+                <Select
+                  control={control}
+                  error={errors.stores?.[s.store_id]?.role}
+                  label={t("features.admin.users.form.storeRole")}
+                  name={`stores.${s.store_id}.role`}
+                  options={storeRoleOptions}
+                  placeholder={t("features.admin.users.form.storeRole")}
+                />
+                <Select
+                  control={control}
+                  error={errors.stores?.[s.store_id]?.status}
+                  label={t("features.admin.users.form.storeStatus")}
+                  name={`stores.${s.store_id}.status`}
+                  options={statusOptions}
+                  placeholder={t("features.admin.users.form.storeStatus")}
+                />
+              </FormFields>
+            </Fieldset>
+          ))
+        )}
+      </Card>
     </Form>
   );
 };

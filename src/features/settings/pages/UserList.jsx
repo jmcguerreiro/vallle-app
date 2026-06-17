@@ -19,7 +19,7 @@ import { formatDateTime } from "@/utils/dates";
 import { IconUserPlus } from "@/utils/icons";
 
 /**
- * Maps user status values to Badge variants. Statuses without a
+ * Maps store-membership status values to Badge variants. Statuses without a
  * mapping render with the neutral base style.
  */
 const STATUS_VARIANTS = {

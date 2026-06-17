@@ -7,9 +7,11 @@ import {
   useState,
 } from "react";
 
+import { useQueryClient } from "@tanstack/react-query";
+
 import { COMPANY_STATUSES } from "@/constants/company-statuses";
 import { SUPPORTED_LOCALES } from "@/constants/locales";
-import { USER_ROLES } from "@/constants/user-roles";
+import { ACCOUNT_ROLES, STORE_ROLES } from "@/constants/user-roles";
 import i18n from "@/i18n";
 import { get, post, setApiStoreId } from "@/services/api";
 
@@ -66,6 +68,9 @@ function saveStoreId(userId, storeId) {
  * @returns {JSX.Element}
  */
 export const AuthProvider = ({ children }) => {
+  // Hooks
+  const queryClient = useQueryClient();
+
   // State
   const [user, setUser] = useState(null);
   const [activeStore, setActiveStoreState] = useState(null);
@@ -81,9 +86,13 @@ export const AuthProvider = ({ children }) => {
     userIdRef.current = data.user.id;
     applyUserLocale(data.user.locale);
 
-    // Auto-select store if user has exactly one.
-    // For multi-store users, always show the picker after login.
-    if (data.user.stores?.length === 1) {
+    // Super admins operate platform-wide and have no active store.
+    // For everyone else: auto-select store if the user has exactly one;
+    // multi-store users always get the picker after login.
+    if (data.user.role === ACCOUNT_ROLES.SUPER_ADMIN) {
+      setActiveStoreState(null);
+      setApiStoreId(null);
+    } else if (data.user.stores?.length === 1) {
       const store = data.user.stores[0];
       setActiveStoreState(store);
       setApiStoreId(store.store_id);
@@ -102,7 +111,11 @@ export const AuthProvider = ({ children }) => {
     setActiveStoreState(null);
     setApiStoreId(null);
     userIdRef.current = null;
-  }, []);
+    // Wipe all cached server data so the next account that logs in on this
+    // browser can't see the previous user's data (query keys like ["profile"]
+    // are global, not user-scoped).
+    queryClient.clear();
+  }, [queryClient]);
 
   const selectStore = useCallback((store) => {
     setApiStoreId(store?.store_id || null);
@@ -124,7 +137,11 @@ export const AuthProvider = ({ children }) => {
         userIdRef.current = data.user.id;
         applyUserLocale(data.user.locale);
 
-        if (data.user.stores?.length === 1) {
+        // Super admins operate platform-wide and have no active store.
+        if (data.user.role === ACCOUNT_ROLES.SUPER_ADMIN) {
+          setActiveStoreState(null);
+          setApiStoreId(null);
+        } else if (data.user.stores?.length === 1) {
           const store = data.user.stores[0];
           setActiveStoreState(store);
           setApiStoreId(store.store_id);
@@ -146,6 +163,8 @@ export const AuthProvider = ({ children }) => {
   const needsStoreSelection =
     !!user && (user.stores?.length ?? 0) > 1 && !activeStore;
 
+  // A suspended store is read-only (no new vallles). Suspension is a store-level
+  // state set by the super_admin — memberships are only active/inactive.
   const isStoreSuspended =
     activeStore?.store_status === COMPANY_STATUSES.SUSPENDED;
 
@@ -160,10 +179,12 @@ export const AuthProvider = ({ children }) => {
       selectStore,
       needsStoreSelection,
       isAuthenticated: !!user,
-      isSuperAdmin: user?.role === USER_ROLES.SUPER_ADMIN,
+      isSuperAdmin: user?.role === ACCOUNT_ROLES.SUPER_ADMIN,
+      // Store admin is store-scoped: admin of the active store, or a platform
+      // super_admin (who is implicitly an admin everywhere).
       isAdmin:
-        user?.role === USER_ROLES.ADMIN ||
-        user?.role === USER_ROLES.SUPER_ADMIN,
+        user?.role === ACCOUNT_ROLES.SUPER_ADMIN ||
+        activeStore?.role === STORE_ROLES.ADMIN,
       isStoreSuspended,
     }),
     [

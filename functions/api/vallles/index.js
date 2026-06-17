@@ -1,5 +1,5 @@
 import { buildLikePattern, parseListQuery } from "../_list.js";
-import { getStoreStatus, requireStore } from "../_store.js";
+import { requireStore } from "../_store.js";
 import { generateUlid } from "../_ulid.js";
 import { requireAuth } from "../auth/_helpers.js";
 
@@ -152,10 +152,9 @@ export async function onRequestPost(context) {
   // Store
   const storeResult = await requireStore(request, env, user.sub);
   if (storeResult instanceof Response) return storeResult;
-  const { storeId } = storeResult;
+  const { storeId, storeStatus } = storeResult;
 
-  // Check store is not suspended or inactive
-  const storeStatus = await getStoreStatus(env, storeId);
+  // A suspended store stays readable but cannot emit new vallles.
   if (storeStatus !== "active") {
     return Response.json(
       {

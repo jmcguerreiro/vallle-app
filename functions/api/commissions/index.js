@@ -1,3 +1,4 @@
+import { parsePagination } from "../_list.js";
 import { requireRole } from "../auth/_helpers.js";
 
 /**
@@ -14,14 +15,7 @@ export async function onRequestGet(context) {
 
   try {
     const url = new URL(request.url);
-    const limit = Math.min(
-      Math.max(parseInt(url.searchParams.get("limit"), 10) || 50, 1),
-      200,
-    );
-    const offset = Math.max(
-      parseInt(url.searchParams.get("offset"), 10) || 0,
-      0,
-    );
+    const { limit, offset } = parsePagination(url);
 
     const [countResult, dataResult] = await env.DB.batch([
       env.DB.prepare("SELECT COUNT(*) as total FROM commissions").bind(),

@@ -3,7 +3,7 @@
  * Validates the reset token and updates the user's password.
  */
 
-import { hashPassword } from "./_helpers";
+import { hashPassword, isStrongPassword } from "./_helpers";
 
 /**
  * Hashes a raw token with SHA-256 to compare against the stored hash.
@@ -38,13 +38,7 @@ export const onRequestPost = async (context) => {
       );
     }
 
-    if (
-      password.length < 8 ||
-      !/[A-Z]/.test(password) ||
-      !/[a-z]/.test(password) ||
-      !/\d/.test(password) ||
-      !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)
-    ) {
+    if (!isStrongPassword(password)) {
       return Response.json(
         {
           error: {

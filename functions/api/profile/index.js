@@ -92,9 +92,18 @@ export async function onRequestPut(context) {
     );
   }
 
-  if (!email || !email.trim()) {
+  if (
+    typeof email !== "string" ||
+    !email.trim() ||
+    !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.trim())
+  ) {
     return Response.json(
-      { error: { message: "Email is required", code: "VALIDATION_FAILED" } },
+      {
+        error: {
+          message: "A valid email is required",
+          code: "VALIDATION_FAILED",
+        },
+      },
       { status: 400 },
     );
   }

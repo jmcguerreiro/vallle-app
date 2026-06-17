@@ -36,7 +36,7 @@ export const onRequestPost = async (context) => {
   try {
     const { email } = await request.json();
 
-    if (!email) {
+    if (typeof email !== "string" || !email) {
       return Response.json(
         { error: { message: "Email is required", code: "VALIDATION_FAILED" } },
         { status: 400 },

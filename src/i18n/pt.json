@@ -310,6 +310,7 @@
           "password": "Palavra-passe",
           "role": "Função",
           "language": "Idioma",
+          "selfLocked": "Não pode alterar a sua própria função ou estado.",
           "error": {
             "nameRequired": "O nome é obrigatório.",
             "emailRequired": "O email é obrigatório.",
@@ -344,7 +345,7 @@
       }
     },
     "storeSuspended": {
-      "banner": "A sua conta foi suspensa. Pode continuar a consultar e resgatar vallles, mas a criação de novos vallles está desativada. Contacte o suporte para mais informações."
+      "banner": "Esta loja foi suspensa. Pode continuar a consultar e resgatar vallles, mas a criação de novos vallles está desativada. Contacte o suporte para mais informações."
     },
     "admin": {
       "companies": {
@@ -442,6 +443,13 @@
           "language": "Idioma",
           "company": "Atribuir a empresa",
           "noCompany": "Sem empresa",
+          "accountType": "Tipo de conta",
+          "accountType_super_admin": "Super admin da plataforma",
+          "accountType_regular": "Conta normal",
+          "accountStatus": "Estado da conta",
+          "storeRole": "Função",
+          "storeStatus": "Estado",
+          "selfLocked": "Não pode alterar o seu próprio tipo de conta ou estado.",
           "error": {
             "nameRequired": "O nome é obrigatório.",
             "emailRequired": "O email é obrigatório.",
@@ -469,11 +477,12 @@
         },
         "edit": {
           "heading": "Editar utilizador",
-          "description": "Atualize a função ou o estado do utilizador.",
+          "description": "Atualize os dados, o tipo de conta e o acesso às lojas.",
           "submit": "Guardar alterações",
           "success": "Utilizador atualizado com sucesso!",
-          "assignedTo": "Atribuído a",
-          "assignedToDescription": "As empresas que este utilizador pode gerir.",
+          "storeAccess": "Acesso a lojas",
+          "storeAccessDescription": "Defina a função e o estado deste utilizador em cada loja a que pertence.",
+          "noStores": "Este utilizador ainda não pertence a nenhuma loja.",
           "error": {
             "generic": "Não foi possível atualizar o utilizador."
           }

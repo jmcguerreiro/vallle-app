@@ -1,7 +1,7 @@
 import { buildLikePattern, parseListQuery } from "../../_list.js";
 import { normaliseLocale } from "../../_locales.js";
 import { generateUlid } from "../../_ulid.js";
-import { hashPassword } from "../../auth/_helpers.js";
+import { hashPassword, isStrongPassword } from "../../auth/_helpers.js";
 
 /**
  * GET /api/admin/users — List all users with their store associations (super_admin only).
@@ -135,12 +135,12 @@ export async function onRequestPost(context) {
       { status: 400 },
     );
   }
-  if (!body.password?.trim() || body.password.length < 8) {
+  if (!isStrongPassword(body.password)) {
     return Response.json(
       {
         error: {
-          message: "Password is required (min 8 characters)",
-          code: "VALIDATION_FAILED",
+          message: "Password does not meet security requirements",
+          code: "WEAK_PASSWORD",
         },
       },
       { status: 400 },
@@ -161,31 +161,9 @@ export async function onRequestPost(context) {
       );
     }
 
-    const id = generateUlid();
-    const passwordHash = await hashPassword(body.password);
-    const allowedRoles = ["user", "admin", "super_admin"];
-    const role = allowedRoles.includes(body.role) ? body.role : "user";
-    const locale = normaliseLocale(body.locale);
-    const now = new Date().toISOString();
-
-    await env.DB.prepare(
-      `INSERT INTO users (id, name, email, password, role, status, locale, created_at, updated_at)
-       VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?)`,
-    )
-      .bind(
-        id,
-        body.name.trim(),
-        body.email.trim().toLowerCase(),
-        passwordHash,
-        role,
-        locale,
-        now,
-        now,
-      )
-      .run();
-
+    // Validate the store assignment BEFORE creating the user, so a bad store_id
+    // can't leave an orphaned account behind.
     if (body.store_id) {
-      // Verify the store exists before creating the association
       const store = await env.DB.prepare("SELECT id FROM stores WHERE id = ?")
         .bind(body.store_id)
         .first();
@@ -195,13 +173,45 @@ export async function onRequestPost(context) {
           { status: 404 },
         );
       }
-
-      await env.DB.prepare(
-        `INSERT INTO store_users (store_id, user_id, role) VALUES (?, ?, 'admin')`,
-      )
-        .bind(body.store_id, id)
-        .run();
     }
+
+    const id = generateUlid();
+    const passwordHash = await hashPassword(body.password);
+    // Account role is the platform flag only: super_admin or plain user.
+    const accountRole = body.role === "super_admin" ? "super_admin" : "user";
+    // Store role is store-scoped and chosen independently of the account role
+    // (admin/user). Defaults to admin — assigning a user to a store usually
+    // means making them its owner/manager.
+    const storeRole = body.store_role === "user" ? "user" : "admin";
+    const locale = normaliseLocale(body.locale);
+    const now = new Date().toISOString();
+
+    const statements = [
+      env.DB.prepare(
+        `INSERT INTO users (id, name, email, password, role, status, locale, created_at, updated_at)
+         VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?)`,
+      ).bind(
+        id,
+        body.name.trim(),
+        body.email.trim().toLowerCase(),
+        passwordHash,
+        accountRole,
+        locale,
+        now,
+        now,
+      ),
+    ];
+
+    if (body.store_id) {
+      statements.push(
+        env.DB.prepare(
+          `INSERT INTO store_users (id, store_id, user_id, role, status, created_at)
+           VALUES (?, ?, ?, ?, 'active', ?)`,
+        ).bind(generateUlid(), body.store_id, id, storeRole, now),
+      );
+    }
+
+    await env.DB.batch(statements);
 
     const newUser = await env.DB.prepare(
       "SELECT id, name, email, role, status, locale, created_at FROM users WHERE id = ?",

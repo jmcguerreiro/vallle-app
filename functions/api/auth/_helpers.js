@@ -8,6 +8,24 @@ const JWT_EXPIRY = 3 * 24 * 60 * 60; // 3 days in seconds
 const PBKDF2_ITERATIONS = 100_000;
 
 /**
+ * Validates a password against the strength policy (min 8 chars, upper, lower,
+ * digit, special). Mirrors the frontend rule in `src/utils/password.js` — keep
+ * the two in sync. Single source of truth for every server-side password check.
+ * @param {string} password
+ * @returns {boolean}
+ */
+export function isStrongPassword(password) {
+  return (
+    typeof password === "string" &&
+    password.length >= 8 &&
+    /[A-Z]/.test(password) &&
+    /[a-z]/.test(password) &&
+    /\d/.test(password) &&
+    /[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(password)
+  );
+}
+
+/**
  * Converts an ArrayBuffer to a base64url string.
  * @param {ArrayBuffer} buffer
  * @returns {string}

@@ -11,7 +11,7 @@ import Confetti from "@/components/Confetti";
 import Confirm from "@/components/Confirm";
 import Toast from "@/components/Toast";
 import { ROUTES } from "@/constants/routes";
-import { USER_ROLES } from "@/constants/user-roles";
+import { ACCOUNT_ROLES } from "@/constants/user-roles";
 import { AuthProvider } from "@/contexts/auth";
 import { ConfettiProvider } from "@/contexts/confetti";
 import { ConfirmProvider } from "@/contexts/confirm";
@@ -59,8 +59,20 @@ import RouteModal from "@/router/RouteModal";
 import ScrollToTop from "@/router/ScrollToTop";
 
 const AdminRoute = ({ children }) => (
-  <RoleGuard allowedRoles={[USER_ROLES.SUPER_ADMIN]}>{children}</RoleGuard>
+  <RoleGuard allowedRoles={[ACCOUNT_ROLES.SUPER_ADMIN]}>{children}</RoleGuard>
 );
+
+/**
+ * Gates a route to admins of the active store (store-scoped role) or platform
+ * super_admins. Redirects to the home page otherwise.
+ * @param {Object} props
+ * @param {React.ReactNode} props.children
+ * @returns {JSX.Element}
+ */
+const StoreAdminRoute = ({ children }) => {
+  const { isAdmin } = useAuth();
+  return isAdmin ? children : <Navigate replace to={ROUTES.HOME} />;
+};
 
 /**
  * Path patterns that render as URL-driven modals. When one of these is opened
@@ -153,11 +165,9 @@ const AppRoutes = () => {
             <Route element={<CompanyEdit />} path={ROUTES.SETTINGS_COMPANY} />
             <Route
               element={
-                <RoleGuard
-                  allowedRoles={[USER_ROLES.ADMIN, USER_ROLES.SUPER_ADMIN]}
-                >
+                <StoreAdminRoute>
                   <CompanyUserList />
-                </RoleGuard>
+                </StoreAdminRoute>
               }
               path={ROUTES.SETTINGS_USERS}
             />
@@ -255,20 +265,24 @@ const AppRoutes = () => {
                 path={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
               />
 
-              {/* Settings user modals */}
+              {/* Settings user modals (store-admin only — guarded for direct access) */}
               <Route
                 element={
-                  <RouteModal>
-                    <CompanyUserCreate />
-                  </RouteModal>
+                  <StoreAdminRoute>
+                    <RouteModal>
+                      <CompanyUserCreate />
+                    </RouteModal>
+                  </StoreAdminRoute>
                 }
                 path={ROUTES.SETTINGS_USERS_MODAL_CREATE}
               />
               <Route
                 element={
-                  <RouteModal>
-                    <CompanyUserEdit />
-                  </RouteModal>
+                  <StoreAdminRoute>
+                    <RouteModal>
+                      <CompanyUserEdit />
+                    </RouteModal>
+                  </StoreAdminRoute>
                 }
                 path={ROUTES.SETTINGS_USERS_MODAL_EDIT}
               />

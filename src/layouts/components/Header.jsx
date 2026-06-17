@@ -22,7 +22,11 @@ const Header = () => {
         <Store />
 
         <div className="s-header__extra">
-          <a aria-label={t("nav.help")} className="s-header__help" href="#">
+          <a
+            aria-label={t("nav.help")}
+            className="s-header__help"
+            href="https://docs.vallle.com"
+          >
             <IconCircleHelp
               aria-hidden="true"
               className="s-header__help-icon"

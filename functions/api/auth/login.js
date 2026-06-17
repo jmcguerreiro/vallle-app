@@ -1,6 +1,15 @@
 import { authCookie, signJwt, verifyPassword } from "./_helpers.js";
 
 /**
+ * A well-formed (`salt:hash`) PBKDF2 hash that no password matches. Verified
+ * against when the email is unknown so login spends the same time hashing
+ * whether or not the account exists — closes a timing side-channel that would
+ * otherwise leak which emails are registered.
+ */
+const DUMMY_PASSWORD_HASH =
+  "00000000000000000000000000000000:0000000000000000000000000000000000000000000000000000000000000000";
+
+/**
  * POST /api/auth/login
  * Authenticates a user with email + password, sets a JWT cookie.
  */
@@ -19,7 +28,12 @@ export async function onRequestPost(context) {
 
   const { email, password } = body;
 
-  if (!email || !password) {
+  if (
+    typeof email !== "string" ||
+    !email ||
+    typeof password !== "string" ||
+    !password
+  ) {
     return Response.json(
       {
         error: {
@@ -38,7 +52,14 @@ export async function onRequestPost(context) {
       .bind(email.toLowerCase().trim())
       .first();
 
-    if (!user || user.status !== "active") {
+    // Always run the password verification — against a dummy hash when the email
+    // is unknown — so response timing doesn't reveal whether the account exists.
+    const valid = await verifyPassword(
+      password,
+      user?.password ?? DUMMY_PASSWORD_HASH,
+    );
+
+    if (!user || user.status !== "active" || !valid) {
       return Response.json(
         {
           error: {
@@ -50,25 +71,13 @@ export async function onRequestPost(context) {
       );
     }
 
-    const valid = await verifyPassword(password, user.password);
-    if (!valid) {
-      return Response.json(
-        {
-          error: {
-            message: "Invalid email or password",
-            code: "AUTH_INVALID_CREDENTIALS",
-          },
-        },
-        { status: 401 },
-      );
-    }
-
-    // Fetch the user's stores (exclude inactive stores)
+    // Fetch the user's stores. role is store-scoped. Exclude inactive stores and
+    // inactive memberships; suspended stores stay visible (read-only).
     const { results: storeLinks } = await env.DB.prepare(
       `SELECT su.store_id, su.role, s.name AS store_name, s.status AS store_status
        FROM store_users su
        JOIN stores s ON s.id = su.store_id
-       WHERE su.user_id = ? AND s.status != 'inactive'`,
+       WHERE su.user_id = ? AND s.status != 'inactive' AND su.status != 'inactive'`,
     )
       .bind(user.id)
       .all();

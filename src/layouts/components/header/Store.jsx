@@ -84,6 +84,7 @@ const Store = () => {
               open={switcherOpen}
               title={t("nav.switchStoreModal.heading")}
             >
+              <img src="/images/modals/store-switch.svg" />
               <p className="s-header__store-modal-intro">
                 {t("nav.switchStoreModal.description", {
                   store: activeStore.store_name,

@@ -8,8 +8,10 @@ CREATE TABLE IF NOT EXISTS users (
   name       TEXT NOT NULL,
   email      TEXT NOT NULL UNIQUE,
   password   TEXT NOT NULL,
-  role       TEXT NOT NULL DEFAULT 'admin',
-  status     TEXT NOT NULL DEFAULT 'active',
+  -- Account scope: platform flag only. 'super_admin' (sysadmin) or plain 'user'.
+  -- The admin/user distinction is store-scoped (see store_users.role).
+  role       TEXT NOT NULL DEFAULT 'user' CHECK (role IN ('user', 'super_admin')),
+  status     TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
   avatar     TEXT NOT NULL DEFAULT 'paper-bag-head',
   locale     TEXT NOT NULL DEFAULT 'pt',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
@@ -31,18 +33,28 @@ CREATE TABLE IF NOT EXISTS stores (
   postal_code                TEXT NOT NULL DEFAULT '',
   region                     TEXT NOT NULL DEFAULT '',
   country                    TEXT NOT NULL DEFAULT 'PT',
-  status                     TEXT NOT NULL DEFAULT 'active',
+  -- Store-level state, set by the super_admin: 'suspended' = read-only (no new
+  -- vallles), 'inactive' = no access. Distinct from a membership's status.
+  status                     TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'inactive')),
   default_vallle_expiry_days INTEGER NOT NULL DEFAULT 365,
   created_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   updated_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
 -- ─── Store users (many-to-many) ─────────────────────────────────
+-- role/status are store-scoped: a user can be an admin in one store and a
+-- plain (or inactive) member in another. status is active/inactive only —
+-- whether the user can access that store. "suspended" is a store-level state
+-- (stores.status), not a membership one. users.role/users.status remain
+-- account-level (super_admin platform flag + account kill-switch).
 CREATE TABLE IF NOT EXISTS store_users (
   id         TEXT PRIMARY KEY,
   store_id   TEXT NOT NULL REFERENCES stores(id),
   user_id    TEXT NOT NULL REFERENCES users(id),
-  role       TEXT NOT NULL DEFAULT 'admin',
+  -- Store scope: what the user can do within this store. 'admin' manages the
+  -- store and its members; 'user' is store staff.
+  role       TEXT NOT NULL DEFAULT 'admin' CHECK (role IN ('user', 'admin')),
+  status     TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'inactive')),
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 

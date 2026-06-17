@@ -12,7 +12,7 @@ import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import { LOCALE_OPTIONS } from "@/constants/locales";
-import { USER_ROLES } from "@/constants/user-roles";
+import { ACCOUNT_ROLES, STORE_ROLES } from "@/constants/user-roles";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, post } from "@/services/api";
@@ -36,10 +36,12 @@ const AdminUserCreate = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
   } = useForm({
     defaultValues: {
-      role: USER_ROLES.USER,
+      role: ACCOUNT_ROLES.USER,
+      store_role: STORE_ROLES.ADMIN,
       locale: "pt",
       store_id: "",
     },
@@ -80,21 +82,32 @@ const AdminUserCreate = () => {
   // Derived State
   const title = t("features.admin.users.create.heading");
   const description = t("features.admin.users.create.description");
-  const roleOptions = [
-    { value: USER_ROLES.USER, label: t("features.admin.users.list.role_user") },
+  const accountTypeOptions = [
     {
-      value: USER_ROLES.ADMIN,
+      value: ACCOUNT_ROLES.USER,
+      label: t("features.admin.users.form.accountType_regular"),
+    },
+    {
+      value: ACCOUNT_ROLES.SUPER_ADMIN,
+      label: t("features.admin.users.form.accountType_super_admin"),
+    },
+  ];
+  const storeRoleOptions = [
+    {
+      value: STORE_ROLES.ADMIN,
       label: t("features.admin.users.list.role_admin"),
     },
     {
-      value: USER_ROLES.SUPER_ADMIN,
-      label: t("features.admin.users.list.role_super_admin"),
+      value: STORE_ROLES.USER,
+      label: t("features.admin.users.list.role_user"),
     },
   ];
   const companyOptions = [
     { value: "", label: t("features.admin.users.form.noCompany") },
     ...companies.map((c) => ({ value: c.id, label: c.name })),
   ];
+  // The store role only applies once a company is assigned.
+  const storeId = watch("store_id");
 
   // Handlers
   const onSubmit = useCallback(
@@ -144,10 +157,10 @@ const AdminUserCreate = () => {
         <Select
           control={control}
           error={errors.role}
-          label={t("features.admin.users.form.role")}
+          label={t("features.admin.users.form.accountType")}
           name="role"
-          options={roleOptions}
-          placeholder={t("features.admin.users.form.role")}
+          options={accountTypeOptions}
+          placeholder={t("features.admin.users.form.accountType")}
         />
         <Select
           control={control}
@@ -158,14 +171,26 @@ const AdminUserCreate = () => {
           placeholder={t("features.admin.users.form.language")}
         />
         {companies.length > 0 && (
-          <Select
-            control={control}
-            error={errors.store_id}
-            label={t("features.admin.users.form.company")}
-            name="store_id"
-            options={companyOptions}
-            placeholder={t("features.admin.users.form.noCompany")}
-          />
+          <>
+            <Select
+              control={control}
+              error={errors.store_id}
+              label={t("features.admin.users.form.company")}
+              name="store_id"
+              options={companyOptions}
+              placeholder={t("features.admin.users.form.noCompany")}
+            />
+            {storeId && (
+              <Select
+                control={control}
+                error={errors.store_role}
+                label={t("features.admin.users.form.storeRole")}
+                name="store_role"
+                options={storeRoleOptions}
+                placeholder={t("features.admin.users.form.storeRole")}
+              />
+            )}
+          </>
         )}
       </FormFields>
       <FormActions>

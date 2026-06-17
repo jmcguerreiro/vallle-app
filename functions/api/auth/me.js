@@ -35,13 +35,14 @@ export async function onRequestGet(context) {
       );
     }
 
-    // Exclude inactive stores — suspended stores remain accessible (read-only)
+    // role is store-scoped. Exclude inactive stores and inactive memberships;
+    // suspended stores stay accessible (read-only — no new vallles).
     const { results: storeLinks } = await env.DB.prepare(
       `SELECT su.store_id, su.role, s.name AS store_name, s.status AS store_status,
               s.default_vallle_expiry_days
        FROM store_users su
        JOIN stores s ON s.id = su.store_id
-       WHERE su.user_id = ? AND s.status != 'inactive'`,
+       WHERE su.user_id = ? AND s.status != 'inactive' AND su.status != 'inactive'`,
     )
       .bind(user.id)
       .all();

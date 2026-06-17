@@ -1,7 +1,14 @@
 /**
  * Shared store helpers for Pages Functions.
- * Reads the active store ID from the X-Store-Id header
- * and verifies the authenticated user has access.
+ * Reads the active store ID from the X-Store-Id header and resolves the
+ * authenticated user's store-scoped membership.
+ *
+ * Two distinct status concepts:
+ * - Membership (`store_users.status`): `active`/`inactive` — whether this user
+ *   can access this store. `role` (`admin`/`user`) is likewise store-scoped.
+ * - Store (`stores.status`): `active`/`suspended`/`inactive`, set by the
+ *   platform super_admin. `suspended` keeps the store readable but blocks new
+ *   vallle creation; `inactive` removes access entirely.
  */
 
 /**
@@ -14,41 +21,17 @@ export function getStoreId(request) {
 }
 
 /**
- * Verifies the user has access to the given store via store_users.
- * @param {Object} env - Cloudflare env bindings
- * @param {string} userId - Authenticated user ID
- * @param {string} storeId - Store ID to check
- * @returns {Promise<boolean>}
- */
-export async function verifyStoreAccess(env, userId, storeId) {
-  const link = await env.DB.prepare(
-    "SELECT id FROM store_users WHERE user_id = ? AND store_id = ?",
-  )
-    .bind(userId, storeId)
-    .first();
-  return !!link;
-}
-
-/**
- * Returns the store status for a given store ID.
- * @param {Object} env - Cloudflare env bindings
- * @param {string} storeId - Store ID
- * @returns {Promise<string|null>} Store status or null if not found
- */
-export async function getStoreStatus(env, storeId) {
-  const store = await env.DB.prepare("SELECT status FROM stores WHERE id = ?")
-    .bind(storeId)
-    .first();
-  return store?.status || null;
-}
-
-/**
- * Reads the store ID from the request header and verifies user access.
- * Returns a Response if validation fails, or the store ID if successful.
+ * Reads the store ID from the request header and resolves the user's
+ * store-scoped membership. Returns a Response if validation fails, otherwise the
+ * store ID, the caller's store role, and the store's status.
+ *
+ * Access is denied (403) when the user has no membership, the membership is
+ * inactive, or the store itself is inactive. A suspended store is allowed
+ * through (read access); creation handlers gate writes on `storeStatus`.
  * @param {Request} request
  * @param {Object} env - Cloudflare env bindings
  * @param {string} userId - Authenticated user ID
- * @returns {Promise<{ storeId: string }|Response>}
+ * @returns {Promise<{ storeId: string, storeRole: string, storeStatus: string }|Response>}
  */
 export async function requireStore(request, env, userId) {
   const storeId = getStoreId(request);
@@ -65,9 +48,21 @@ export async function requireStore(request, env, userId) {
     );
   }
 
-  const hasAccess = await verifyStoreAccess(env, userId, storeId);
+  const row = await env.DB.prepare(
+    `SELECT su.role AS member_role, su.status AS member_status,
+            s.status AS store_status
+       FROM store_users su
+       JOIN stores s ON s.id = su.store_id
+      WHERE su.user_id = ? AND su.store_id = ?`,
+  )
+    .bind(userId, storeId)
+    .first();
 
-  if (!hasAccess) {
+  if (
+    !row ||
+    row.member_status === "inactive" ||
+    row.store_status === "inactive"
+  ) {
     return Response.json(
       {
         error: { message: "No access to this store", code: "STORE_FORBIDDEN" },
@@ -76,5 +71,9 @@ export async function requireStore(request, env, userId) {
     );
   }
 
-  return { storeId };
+  return {
+    storeId,
+    storeRole: row.member_role,
+    storeStatus: row.store_status,
+  };
 }

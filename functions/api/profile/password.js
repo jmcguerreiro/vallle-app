@@ -1,4 +1,9 @@
-import { getAuthUser, hashPassword, verifyPassword } from "../auth/_helpers.js";
+import {
+  getAuthUser,
+  hashPassword,
+  isStrongPassword,
+  verifyPassword,
+} from "../auth/_helpers.js";
 
 /**
  * PUT /api/profile/password
@@ -41,14 +46,7 @@ export async function onRequestPut(context) {
     );
   }
 
-  if (
-    !newPassword ||
-    newPassword.length < 8 ||
-    !/[A-Z]/.test(newPassword) ||
-    !/[a-z]/.test(newPassword) ||
-    !/\d/.test(newPassword) ||
-    !/[!@#$%^&*()_+\-=[\]{};':"\\|,.<>/?`~]/.test(newPassword)
-  ) {
+  if (!isStrongPassword(newPassword)) {
     return Response.json(
       {
         error: {

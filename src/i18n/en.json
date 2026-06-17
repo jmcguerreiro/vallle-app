@@ -310,6 +310,7 @@
           "password": "Password",
           "role": "Role",
           "language": "Language",
+          "selfLocked": "You can't change your own role or status.",
           "error": {
             "nameRequired": "Name is required.",
             "emailRequired": "Email is required.",
@@ -344,7 +345,7 @@
       }
     },
     "storeSuspended": {
-      "banner": "Your account has been suspended. You can still view and redeem vallles, but creating new vallles is disabled. Please contact support for more information."
+      "banner": "This store has been suspended. You can still view and redeem vallles, but creating new vallles is disabled. Please contact support for more information."
     },
     "admin": {
       "companies": {
@@ -442,6 +443,13 @@
           "language": "Language",
           "company": "Assign to company",
           "noCompany": "No company",
+          "accountType": "Account type",
+          "accountType_super_admin": "Platform super admin",
+          "accountType_regular": "Regular account",
+          "accountStatus": "Account status",
+          "storeRole": "Role",
+          "storeStatus": "Status",
+          "selfLocked": "You can't change your own account type or status.",
           "error": {
             "nameRequired": "Name is required.",
             "emailRequired": "Email is required.",
@@ -469,11 +477,12 @@
         },
         "edit": {
           "heading": "Edit user",
-          "description": "Update this user's role or status.",
+          "description": "Update this user's details, account type, and store access.",
           "submit": "Save changes",
           "success": "User updated successfully!",
-          "assignedTo": "Assigned to",
-          "assignedToDescription": "The companies this user can manage.",
+          "storeAccess": "Store access",
+          "storeAccessDescription": "Set this user's role and status in each store they belong to.",
+          "noStores": "This user doesn't belong to any store yet.",
           "error": {
             "generic": "Could not update the user."
           }

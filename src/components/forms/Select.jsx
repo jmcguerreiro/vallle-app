@@ -30,6 +30,8 @@ const DropdownIndicator = (props) => (
  * @param {boolean|string} [props.required] - Pass true for default message, or a string for custom
  * @param {Object} [props.error] - Field error object from react-hook-form
  * @param {boolean} [props.isSearchable] - Whether the select is searchable. Defaults to false.
+ * @param {boolean} [props.disabled] - Whether the select is disabled. Defaults to false.
+ * @param {string} [props.hint] - Optional helper text shown under the field.
  * @param {Function} [props.formatOptionLabel] - Custom renderer for each option label.
  * @returns {JSX.Element}
  */
@@ -42,6 +44,8 @@ const Select = ({
   required,
   error,
   isSearchable = false,
+  disabled = false,
+  hint,
   formatOptionLabel,
 }) => {
   // Derived State
@@ -71,6 +75,7 @@ const Select = ({
             components={{ DropdownIndicator, IndicatorSeparator: null }}
             formatOptionLabel={formatOptionLabel}
             inputId={name}
+            isDisabled={disabled}
             isSearchable={isSearchable}
             onChange={(option) => onChange(option?.value)}
             options={options}
@@ -81,6 +86,7 @@ const Select = ({
         )}
         rules={rules}
       />
+      {hint && !error && <p className="c-form__field-hint">{hint}</p>}
       {error && <p className="c-form__field-error">{error.message}</p>}
     </div>
   );

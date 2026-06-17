@@ -12,7 +12,6 @@ const EDITABLE_FIELDS = [
   "postal_code",
   "region",
   "country",
-  "status",
 ];
 
 /**
@@ -52,8 +51,10 @@ export async function onRequestGet(context) {
       ...commissionStats.results[0],
     };
 
+    // role/status are store-scoped (store_users) — this is the store's view of
+    // each member, not their account-level role/status.
     const { results: users } = await env.DB.prepare(
-      `SELECT u.id, u.name, u.email, u.role, u.status
+      `SELECT u.id, u.name, u.email, su.role AS role, su.status AS status
        FROM users u
        JOIN store_users su ON su.user_id = u.id
        WHERE su.store_id = ?`,
@@ -112,11 +113,15 @@ export async function onRequestPut(context) {
       );
     }
 
-    // Whitelist valid status values
+    // Status is updated only when provided (PUT must not blank it to ""). An
+    // out-of-range value is coerced to a safe default.
     const VALID_STATUSES = ["active", "suspended", "inactive"];
-    if (body.status && !VALID_STATUSES.includes(body.status)) {
-      body.status = "active";
-    }
+    const statusUpdate =
+      body.status === undefined
+        ? null
+        : VALID_STATUSES.includes(body.status)
+          ? body.status
+          : "active";
 
     // Validate default_vallle_expiry_days if provided
     if (body.default_vallle_expiry_days !== undefined) {
@@ -134,10 +139,16 @@ export async function onRequestPut(context) {
       }
     }
 
-    const sets = EDITABLE_FIELDS.map((f) => `${f} = ?`).join(", ");
+    const columns = [...EDITABLE_FIELDS];
     const values = EDITABLE_FIELDS.map((f) =>
       (body[f] ?? "").toString().trim(),
     );
+    if (statusUpdate !== null) {
+      columns.push("status");
+      values.push(statusUpdate);
+    }
+
+    const sets = columns.map((f) => `${f} = ?`).join(", ");
     const now = new Date().toISOString();
 
     const statements = [

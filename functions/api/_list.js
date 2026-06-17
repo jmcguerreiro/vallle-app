@@ -42,6 +42,24 @@ export function parseListQuery(
 }
 
 /**
+ * Parses just `limit` (1–200, default 50) and `offset` (>= 0) from a request
+ * URL. For list endpoints that paginate but don't search or sort.
+ * @param {URL} url - The request URL
+ * @returns {{ limit: number, offset: number }}
+ */
+export function parsePagination(url) {
+  const limit = Math.min(
+    Math.max(Number.parseInt(url.searchParams.get("limit"), 10) || 50, 1),
+    200,
+  );
+  const offset = Math.max(
+    Number.parseInt(url.searchParams.get("offset"), 10) || 0,
+    0,
+  );
+  return { limit, offset };
+}
+
+/**
  * Builds a LIKE pattern for a search term, escaping LIKE wildcards.
  * Use with `LIKE ? ESCAPE '\'` clauses.
  * @param {string} search - Raw search input

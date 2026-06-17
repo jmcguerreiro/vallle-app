@@ -1,19 +1,17 @@
 import { buildLikePattern, parseListQuery } from "../../_list.js";
 import { normaliseLocale } from "../../_locales.js";
-import { requireStore } from "../../_store.js";
 import { generateUlid } from "../../_ulid.js";
-import { hashPassword } from "../../auth/_helpers.js";
+import { hashPassword, isStrongPassword } from "../../auth/_helpers.js";
 
 /**
  * GET /api/company/users — List users for the active store.
- * Server-side pagination, search (name/email), sort, and status filter.
- * Requires admin role (admin or super_admin).
+ * role/status are store-scoped (from store_users). Server-side pagination,
+ * search (name/email), sort, and status filter. Store-admin only (enforced by
+ * the directory middleware, which also resolves `context.data.store`).
  */
 export async function onRequestGet(context) {
   const { request, env, data } = context;
-
-  const result = await requireStore(request, env, data.user.sub);
-  if (result instanceof Response) return result;
+  const { storeId } = data.store;
 
   try {
     const url = new URL(request.url);
@@ -27,7 +25,7 @@ export async function onRequestGet(context) {
     // Never expose platform super_admins in a company-scoped listing, even when
     // one is assigned to the store — they aren't the store's to manage.
     const where = ["su.store_id = ?", "u.role != 'super_admin'"];
-    const params = [result.storeId];
+    const params = [storeId];
 
     if (search) {
       const like = buildLikePattern(search);
@@ -38,7 +36,7 @@ export async function onRequestGet(context) {
     }
 
     if (status !== "all") {
-      where.push("u.status = ?");
+      where.push("su.status = ?");
       params.push(status);
     }
 
@@ -50,7 +48,8 @@ export async function onRequestGet(context) {
         `SELECT COUNT(*) AS total ${fromSql} WHERE ${whereSql}`,
       ).bind(...params),
       env.DB.prepare(
-        `SELECT u.id, u.name, u.email, u.role, u.status, u.created_at, u.updated_at
+        `SELECT u.id, u.name, u.email, su.role AS role, su.status AS status,
+                u.created_at, u.updated_at
          ${fromSql}
          WHERE ${whereSql}
          ORDER BY u.${sort} ${order}
@@ -74,13 +73,12 @@ export async function onRequestGet(context) {
 
 /**
  * POST /api/company/users — Create a user and assign to the active store.
- * Requires admin role (admin or super_admin).
+ * The account is created with a non-privileged account role; the store role and
+ * an active membership are recorded on store_users. Store-admin only.
  */
 export async function onRequestPost(context) {
   const { request, env, data } = context;
-
-  const result = await requireStore(request, env, data.user.sub);
-  if (result instanceof Response) return result;
+  const { storeId } = data.store;
 
   let body;
   try {
@@ -112,12 +110,12 @@ export async function onRequestPost(context) {
       { status: 400 },
     );
   }
-  if (!body.password?.trim() || body.password.length < 8) {
+  if (!isStrongPassword(body.password)) {
     return Response.json(
       {
         error: {
-          message: "Password is required (min 8 characters)",
-          code: "VALIDATION_FAILED",
+          message: "Password does not meet security requirements",
+          code: "WEAK_PASSWORD",
         },
       },
       { status: 400 },
@@ -140,34 +138,39 @@ export async function onRequestPost(context) {
 
     const id = generateUlid();
     const passwordHash = await hashPassword(body.password);
-    // Company admins can only create user or admin roles, never super_admin
-    const role = body.role === "admin" ? "admin" : "user";
+    // Account role is non-privileged; the store role lives on store_users.
+    // Company admins can only grant the user or admin store role.
+    const storeRole = body.role === "admin" ? "admin" : "user";
     const locale = normaliseLocale(body.locale);
     const now = new Date().toISOString();
 
     await env.DB.batch([
       env.DB.prepare(
         `INSERT INTO users (id, name, email, password, role, status, locale, created_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, 'active', ?, ?, ?)`,
+         VALUES (?, ?, ?, ?, 'user', 'active', ?, ?, ?)`,
       ).bind(
         id,
         body.name.trim(),
         body.email.trim().toLowerCase(),
         passwordHash,
-        role,
         locale,
         now,
         now,
       ),
       env.DB.prepare(
-        `INSERT INTO store_users (store_id, user_id, role) VALUES (?, ?, ?)`,
-      ).bind(result.storeId, id, role),
+        `INSERT INTO store_users (id, store_id, user_id, role, status, created_at)
+         VALUES (?, ?, ?, ?, 'active', ?)`,
+      ).bind(generateUlid(), storeId, id, storeRole, now),
     ]);
 
     const newUser = await env.DB.prepare(
-      "SELECT id, name, email, role, status, locale, created_at FROM users WHERE id = ?",
+      `SELECT u.id, u.name, u.email, su.role AS role, su.status AS status,
+              u.locale, u.created_at
+       FROM users u
+       JOIN store_users su ON su.user_id = u.id AND su.store_id = ?
+       WHERE u.id = ?`,
     )
-      .bind(id)
+      .bind(storeId, id)
       .first();
 
     return Response.json({ data: { user: newUser } }, { status: 201 });

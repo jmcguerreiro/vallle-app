@@ -10,7 +10,7 @@ import EmptyState from "@/components/EmptyState";
 import FilterSelect from "@/components/forms/FilterSelect";
 import Loader from "@/components/Loader";
 import { ROUTES, adminUserPath } from "@/constants/routes";
-import { USER_ROLES } from "@/constants/user-roles";
+import { ACCOUNT_ROLES } from "@/constants/user-roles";
 import { USER_STATUSES } from "@/constants/user-statuses";
 import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
@@ -226,15 +226,11 @@ const AdminUsersIndex = () => {
         options={[
           { value: FILTER_ALL, label: t("common.filters.allRoles") },
           {
-            value: USER_ROLES.USER,
+            value: ACCOUNT_ROLES.USER,
             label: t("features.admin.users.list.role_user"),
           },
           {
-            value: USER_ROLES.ADMIN,
-            label: t("features.admin.users.list.role_admin"),
-          },
-          {
-            value: USER_ROLES.SUPER_ADMIN,
+            value: ACCOUNT_ROLES.SUPER_ADMIN,
             label: t("features.admin.users.list.role_super_admin"),
           },
         ]}

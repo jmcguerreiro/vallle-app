@@ -12,8 +12,9 @@ import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { LOCALE_OPTIONS } from "@/constants/locales";
-import { USER_ROLES } from "@/constants/user-roles";
+import { STORE_ROLES } from "@/constants/user-roles";
 import { USER_STATUSES } from "@/constants/user-statuses";
+import { useAuth } from "@/hooks/useAuth";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -31,6 +32,7 @@ const CompanyUserEdit = () => {
   const { t } = useTranslation();
   const { id } = useParams();
   const navigate = useNavigate();
+  const { user } = useAuth();
   const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -78,13 +80,16 @@ const CompanyUserEdit = () => {
   const [serverError, setServerError] = useState(null);
 
   // Derived State
+  // You can't change your own role or status (avoids an admin locking
+  // themselves out of this store).
+  const isSelf = user?.id === id;
   const roleOptions = [
     {
-      value: USER_ROLES.USER,
+      value: STORE_ROLES.USER,
       label: t("features.company.users.list.role_user"),
     },
     {
-      value: USER_ROLES.ADMIN,
+      value: STORE_ROLES.ADMIN,
       label: t("features.company.users.list.role_admin"),
     },
   ];
@@ -182,7 +187,11 @@ const CompanyUserEdit = () => {
         />
         <Select
           control={control}
+          disabled={isSelf}
           error={errors.role}
+          hint={
+            isSelf ? t("features.company.users.form.selfLocked") : undefined
+          }
           label={t("features.company.users.form.role")}
           name="role"
           options={roleOptions}
@@ -190,6 +199,7 @@ const CompanyUserEdit = () => {
         />
         <Select
           control={control}
+          disabled={isSelf}
           error={errors.status}
           label={t("features.company.users.list.status")}
           name="status"

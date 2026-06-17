@@ -12,7 +12,7 @@ import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import { LOCALE_OPTIONS } from "@/constants/locales";
-import { USER_ROLES } from "@/constants/user-roles";
+import { STORE_ROLES } from "@/constants/user-roles";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
@@ -39,7 +39,7 @@ const CompanyUserCreate = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
-      role: USER_ROLES.USER,
+      role: STORE_ROLES.USER,
       locale: "pt",
     },
   });
@@ -76,11 +76,11 @@ const CompanyUserCreate = () => {
   const description = t("features.company.users.create.description");
   const roleOptions = [
     {
-      value: USER_ROLES.USER,
+      value: STORE_ROLES.USER,
       label: t("features.company.users.list.role_user"),
     },
     {
-      value: USER_ROLES.ADMIN,
+      value: STORE_ROLES.ADMIN,
       label: t("features.company.users.list.role_admin"),
     },
   ];

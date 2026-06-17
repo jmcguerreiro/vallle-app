@@ -122,19 +122,41 @@ export async function onRequestPost(context) {
     const redemptionId = generateUlid();
     const balanceAfter = vallle.balance - amount;
 
-    // Atomically deduct balance and mark as 'used' when fully redeemed.
-    // The WHERE clause enforces both balance and expiry to prevent double-spend
-    // and last-millisecond expiry races. A 0-row UPDATE is NOT a DB error in
-    // D1, so we check changes before inserting the redemption record.
-    const updateResult = await env.DB.prepare(
-      `UPDATE vallles
-         SET balance    = balance - ?,
-             status     = CASE WHEN (balance - ?) = 0 THEN 'used' ELSE status END,
-             updated_at = ?
-       WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
-    )
-      .bind(amount, amount, now, id, storeId, amount, now)
-      .run();
+    // Deduct the balance and record the redemption atomically in one D1 batch
+    // (a transaction): either both land or neither does — no debit without a
+    // matching redemption row. Both statements gate on the same balance/expiry
+    // condition to prevent double-spend and last-millisecond expiry races; the
+    // INSERT ... SELECT runs first and reads the pre-deduction balance, so its
+    // balance_after matches the UPDATE. A 0-row write is not a D1 error, so we
+    // detect "nothing happened" via the UPDATE's change count.
+    const [, updateResult] = await env.DB.batch([
+      env.DB.prepare(
+        `INSERT INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at)
+         SELECT ?, ?, ?, ?, ?, ?, balance - ?, ?
+           FROM vallles
+          WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
+      ).bind(
+        redemptionId,
+        storeId,
+        id,
+        user.sub,
+        description.trim(),
+        amount,
+        amount,
+        now,
+        id,
+        storeId,
+        amount,
+        now,
+      ),
+      env.DB.prepare(
+        `UPDATE vallles
+           SET balance    = balance - ?,
+               status     = CASE WHEN (balance - ?) = 0 THEN 'used' ELSE status END,
+               updated_at = ?
+         WHERE id = ? AND store_id = ? AND balance >= ? AND expires_at > ?`,
+      ).bind(amount, amount, now, id, storeId, amount, now),
+    ]);
 
     if (!updateResult.meta.changes) {
       return Response.json(
@@ -147,21 +169,6 @@ export async function onRequestPost(context) {
         { status: 409 },
       );
     }
-
-    await env.DB.prepare(
-      "INSERT INTO redemptions (id, store_id, vallle_id, redeemed_by, description, amount, balance_after, created_at) VALUES (?, ?, ?, ?, ?, ?, ?, ?)",
-    )
-      .bind(
-        redemptionId,
-        storeId,
-        id,
-        user.sub,
-        description.trim(),
-        amount,
-        balanceAfter,
-        now,
-      )
-      .run();
 
     return Response.json({
       data: {

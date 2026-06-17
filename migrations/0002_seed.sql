@@ -26,7 +26,7 @@ VALUES (
   'Maria Santos',
   'maria@cafeflor.pt',
   '8fe400ca058abd49e7de7c5eced93f2b:aea9e1836138724651be3535bf815ff622701a9e0bacd30707f4bd5836b8fd0f',
-  'admin',
+  'user',
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
@@ -39,7 +39,7 @@ VALUES (
   'António Ferreira',
   'antonio@padariasaojorge.pt',
   '8fe400ca058abd49e7de7c5eced93f2b:aea9e1836138724651be3535bf815ff622701a9e0bacd30707f4bd5836b8fd0f',
-  'admin',
+  'user',
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
@@ -52,7 +52,7 @@ VALUES (
   'Ana Oliveira',
   'ana@vinhosdomonte.pt',
   '8fe400ca058abd49e7de7c5eced93f2b:aea9e1836138724651be3535bf815ff622701a9e0bacd30707f4bd5836b8fd0f',
-  'admin',
+  'user',
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
@@ -114,22 +114,22 @@ VALUES (
 );
 
 -- ─── Store users (link owners to stores) ─────────────────────────
-INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, created_at)
-VALUES ('01JA0000000000000000000020', '01JA0000000000000000000010', '01JA0000000000000000000002', 'admin', '2026-03-17T10:00:00Z');
+-- role + status are store-scoped: role is admin/user, status is active/inactive
+-- (whether the user can access that store). "suspended" is a store-level state,
+-- not a membership one.
+INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, status, created_at)
+VALUES ('01JA0000000000000000000020', '01JA0000000000000000000010', '01JA0000000000000000000002', 'admin', 'active', '2026-03-17T10:00:00Z');
 
-INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, created_at)
-VALUES ('01JA0000000000000000000021', '01JA0000000000000000000011', '01JA0000000000000000000003', 'admin', '2026-03-17T10:00:00Z');
+INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, status, created_at)
+VALUES ('01JA0000000000000000000021', '01JA0000000000000000000011', '01JA0000000000000000000003', 'admin', 'active', '2026-03-17T10:00:00Z');
 
-INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, created_at)
-VALUES ('01JA0000000000000000000022', '01JA0000000000000000000012', '01JA0000000000000000000004', 'admin', '2026-03-17T10:00:00Z');
+INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, status, created_at)
+VALUES ('01JA0000000000000000000022', '01JA0000000000000000000012', '01JA0000000000000000000004', 'admin', 'active', '2026-03-17T10:00:00Z');
 
--- Super admin can also manage Café Flor (for testing)
-INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, created_at)
-VALUES ('01JA0000000000000000000023', '01JA0000000000000000000010', '01JA0000000000000000000001', 'admin', '2026-03-17T10:00:00Z');
-
--- Maria Santos also manages Padaria São Jorge (for testing multi-store)
-INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, created_at)
-VALUES ('01JA0000000000000000000024', '01JA0000000000000000000011', '01JA0000000000000000000002', 'admin', '2026-03-17T10:00:00Z');
+-- Maria Santos also belongs to Padaria São Jorge — as a regular member, to
+-- exercise the store-scoped role (admin at Café Flor, plain user here).
+INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, status, created_at)
+VALUES ('01JA0000000000000000000024', '01JA0000000000000000000011', '01JA0000000000000000000002', 'user', 'active', '2026-03-17T10:00:00Z');
 
 -- ─── Vallles ───────────────────────────────────────────────────
 -- Café Flor: active vallle, €25

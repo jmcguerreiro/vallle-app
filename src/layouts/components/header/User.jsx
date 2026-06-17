@@ -18,11 +18,18 @@ import { IconEllipsisVertical } from "@/utils/icons";
 const User = () => {
   // Hooks
   const { t } = useTranslation();
-  const { user, logout } = useAuth();
+  const { user, logout, isSuperAdmin, activeStore } = useAuth();
   const navigate = useNavigate();
 
   // State
   const [userMenuOpen, setUserMenuOpen] = useState(false);
+
+  // Derived State
+  // Role is store-scoped: show the active store's role, except for platform
+  // super_admins (a global account role).
+  const displayRole = isSuperAdmin
+    ? user?.role
+    : activeStore?.role || user?.role;
 
   // Handlers
   const handleOpenUserMenu = useCallback(() => {
@@ -73,23 +80,16 @@ const User = () => {
               src={`/images/avatars/${user?.avatar || "paper-bag-head"}.svg`}
             />
             <p className="s-header__user-menu-name">{user?.name}</p>
-            {user?.role && (
+            {displayRole && (
               <p className="s-header__user-menu-role">
-                {t(`roles.${user.role}`)}
+                {t(`roles.${displayRole}`)}
               </p>
             )}
             <div className="s-header__user-menu-actions">
-              <Button
-                display="block"
-                onClick={handleEditProfile}
-                skin="sand"
-              >
+              <Button display="block" onClick={handleEditProfile} skin="sand">
                 {t("nav.editProfile")}
               </Button>
-              <Button
-                display="block"
-                onClick={handleLogout}
-              >
+              <Button display="block" onClick={handleLogout}>
                 {t("nav.logout")}
               </Button>
             </div>
