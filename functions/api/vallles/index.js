@@ -85,19 +85,19 @@ export async function onRequestGet(context) {
         break;
       }
       case "expired": {
-        where.push("status = 'active' AND expires_at < ?");
+        where.push("status != 'archived' AND expires_at < ?");
         params.push(now);
 
         break;
       }
       case "used": {
-        where.push("status = 'active' AND balance = 0 AND expires_at >= ?");
+        where.push("status != 'archived' AND balance = 0 AND expires_at >= ?");
         params.push(now);
 
         break;
       }
       case "active": {
-        where.push("status = 'active' AND balance > 0 AND expires_at >= ?");
+        where.push("status != 'archived' AND balance > 0 AND expires_at >= ?");
         params.push(now);
 
         break;

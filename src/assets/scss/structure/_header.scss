@@ -20,11 +20,14 @@
   width: 100%;
 }
 
+.s-header-logo {
+  display: none;
+}
+
 .s-header__extra {
   align-items: center;
   display: flex;
   gap: $spacing-3;
-  margin-left: auto;
 }
 
 .s-header__help-icon {
@@ -134,6 +137,28 @@
 
 @include screen(md) {
   .s-header {
-    padding: $spacing-6 $spacing-9 $spacing-9 $spacing-9;
+    padding: $spacing-6 $spacing-9 $spacing-12 $spacing-9;
+  }
+
+  .s-header__wrapper {
+    display: grid;
+    grid-template-columns: 1fr auto 1fr;
+  }
+
+  .s-header__store {
+    justify-self: start;
+  }
+
+  .s-header-logo {
+    display: flex;
+    justify-self: center;
+  }
+
+  .s-header-logo__image {
+    width: to-rem(100);
+  }
+
+  .s-header__extra {
+    justify-self: end;
   }
 }

@@ -52,7 +52,7 @@ const Store = () => {
         <span className="s-header__admin-badge">
           <IconHatGlasses
             className="s-header__store-switch-icon"
-            strokeWidth="1.5"
+            strokeWidth={1.5}
           />
           {t("nav.adminBadge")}
         </span>
@@ -74,7 +74,7 @@ const Store = () => {
           >
             <IconStore
               className="s-header__store-switch-icon"
-              strokeWidth="1.5"
+              strokeWidth={1.5}
             />
             {activeStore.store_name}
           </button>

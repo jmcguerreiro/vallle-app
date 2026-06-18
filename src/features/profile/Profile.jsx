@@ -9,6 +9,8 @@ import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import Fieldset from "@/components/forms/Fieldset";
 import Form from "@/components/forms/Form";
+import FormActions from "@/components/forms/FormActions";
+import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
@@ -210,56 +212,65 @@ const Profile = () => {
         handleSubmit={handleSubmit}
         onSubmit={handleSave}
       >
-        <Select
-          control={control}
-          error={errors.avatar}
-          formatOptionLabel={formatAvatarOption}
-          isSearchable
-          label={t("features.profile.form.avatar")}
-          name="avatar"
-          options={AVATAR_OPTIONS}
-        />
-        <Input
-          autoComplete="name"
-          error={errors.name}
-          label={t("features.profile.form.name")}
-          name="name"
-          register={register}
-          required={t("features.profile.form.error.nameRequired")}
-        />
-        <Input
-          autoComplete="email"
-          error={errors.email}
-          label={t("features.profile.form.email")}
-          name="email"
-          register={register}
-          required={t("features.profile.form.error.emailRequired")}
-          type="email"
-        />
-        <Select
-          control={control}
-          error={errors.language}
-          label={t("features.profile.form.language")}
-          name="language"
-          options={LOCALE_OPTIONS}
-        />
-        <Button isProcessing={saveProfile.isPending} type="submit">
-          {t("common.save")}
-        </Button>
-      </Form>
+        <FormFields>
+          <Select
+            control={control}
+            error={errors.avatar}
+            formatOptionLabel={formatAvatarOption}
+            isSearchable
+            label={t("features.profile.form.avatar")}
+            name="avatar"
+            options={AVATAR_OPTIONS}
+          />
+          <Input
+            autoComplete="name"
+            error={errors.name}
+            label={t("features.profile.form.name")}
+            name="name"
+            register={register}
+            required={t("features.profile.form.error.nameRequired")}
+          />
+          <Input
+            autoComplete="email"
+            error={errors.email}
+            label={t("features.profile.form.email")}
+            name="email"
+            register={register}
+            required={t("features.profile.form.error.emailRequired")}
+            type="email"
+          />
+          <Select
+            control={control}
+            error={errors.language}
+            label={t("features.profile.form.language")}
+            name="language"
+            options={LOCALE_OPTIONS}
+          />
 
-      <Fieldset legend={t("features.profile.password.heading")}>
-        <p className="c-form__fieldset-description">
-          {t("features.profile.password.description")}
-        </p>
-        <Button
-          state={{ backgroundLocation: location }}
-          to={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
-          skin="ghost"
-        >
-          {t("features.profile.password.submit")}
-        </Button>
-      </Fieldset>
+          <Fieldset legend={t("features.profile.password.heading")}>
+            <p className="c-form__fieldset-description">
+              {t("features.profile.password.description")}
+            </p>
+            <Button
+              skin="sand"
+              state={{ backgroundLocation: location }}
+              to={ROUTES.PROFILE_MODAL_CHANGE_PASSWORD}
+            >
+              {t("features.profile.password.submit")}
+            </Button>
+          </Fieldset>
+        </FormFields>
+
+        <FormActions>
+          <Button
+            display="block"
+            isProcessing={saveProfile.isPending}
+            type="submit"
+          >
+            {t("common.save")}
+          </Button>
+        </FormActions>
+      </Form>
     </div>
   );
 };

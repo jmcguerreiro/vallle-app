@@ -136,7 +136,7 @@ const Navigation = () => {
               <Icon
                 aria-hidden="true"
                 className="s-navigation__item-icon"
-                strokeWidth="1.5"
+                strokeWidth={1.5}
               />
             </NavLink>
           </li>

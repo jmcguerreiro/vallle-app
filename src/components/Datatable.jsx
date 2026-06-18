@@ -305,7 +305,7 @@ const Datatable = ({
             }}
             type="button"
           >
-            <IconArrowLeft size={20} strokeWidth="1.5" />
+            <IconArrowLeft size={20} strokeWidth={1.5} />
           </button>
           <span className="c-datatable__pagination-info">
             {t("common.pagination.page", {
@@ -330,7 +330,7 @@ const Datatable = ({
             }}
             type="button"
           >
-            <IconArrowRight size={20} strokeWidth="1.5" />
+            <IconArrowRight size={20} strokeWidth={1.5} />
           </button>
         </div>
       )}

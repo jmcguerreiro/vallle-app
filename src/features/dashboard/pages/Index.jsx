@@ -85,7 +85,7 @@ const Dashboard = () => {
             </span>
             <IconMailPlus
               className="p-dashboard__body-actions-action-icon"
-              strokeWidth="1.5"
+              strokeWidth={1.5}
             />
           </button>
           <button
@@ -98,7 +98,7 @@ const Dashboard = () => {
             </span>
             <IconMailMinus
               className="p-dashboard__body-actions-action-icon"
-              strokeWidth="1.5"
+              strokeWidth={1.5}
             />
           </button>
           <button
@@ -111,7 +111,7 @@ const Dashboard = () => {
             </span>
             <IconMailSearch
               className="p-dashboard__body-actions-action-icon"
-              strokeWidth="1.5"
+              strokeWidth={1.5}
             />
           </button>
         </div>

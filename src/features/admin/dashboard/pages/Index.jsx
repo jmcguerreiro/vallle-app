@@ -178,14 +178,14 @@ const AdminDashboardIndex = () => {
                 dataKey="vallle_amount"
                 name={t("features.adminDashboard.chart.vallles")}
                 stroke="#C4653A"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 type="monotone"
               />
               <Line
                 dataKey="commission_amount"
                 name={t("features.adminDashboard.chart.commissions")}
                 stroke="#7A9B76"
-                strokeWidth={2}
+                strokeWidth={1.5}
                 type="monotone"
               />
             </LineChart>

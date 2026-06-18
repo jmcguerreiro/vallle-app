@@ -68,7 +68,7 @@ const User = () => {
         <IconEllipsisVertical
           className="s-header__user-button-toggle-icon"
           size="20"
-          strokeWidth="1.5"
+          strokeWidth={1.5}
         />
       </button>
       <div className="s-header__user-modal">

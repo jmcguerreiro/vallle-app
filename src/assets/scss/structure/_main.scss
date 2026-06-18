@@ -43,6 +43,7 @@
 .s-main__header-title {
   @include font-size(3xl);
   color: $text-color-highlight;
+  font-family: $font-family-two;
   font-weight: $font-weight-bold;
 }
 
@@ -73,6 +74,7 @@
   .s-main__header {
     align-items: center;
     flex-direction: row;
+    margin-bottom: $spacing-12;
     text-align: left;
   }
 
