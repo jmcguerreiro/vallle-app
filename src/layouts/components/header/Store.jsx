@@ -78,23 +78,26 @@ const Store = () => {
             />
             {activeStore.store_name}
           </button>
-          <div className="s-header__store-modal">
+          <div className="s-header__store-modal-wrapper">
             <Modal
+              description={t("nav.switchStoreModal.description")}
               onClose={handleCloseSwitcher}
               open={switcherOpen}
               title={t("nav.switchStoreModal.heading")}
             >
-              <img src="/images/modals/store-switch.svg" />
-              <p className="s-header__store-modal-intro">
-                {t("nav.switchStoreModal.description", {
-                  store: activeStore.store_name,
-                })}
-              </p>
-              <StoreSelect
-                onSelect={handleSelectStore}
-                renderMeta={(store) => store.role}
-                stores={otherStores}
-              />
+              <div className="s-header__store-modal">
+                <img
+                  className="s-header__store-modal__image"
+                  src="/images/modals/store-switch.svg"
+                />
+                <div className="s-header__store-modal__switcher">
+                  <StoreSelect
+                    onSelect={handleSelectStore}
+                    renderMeta={(store) => t(`roles.${store.role}`)}
+                    stores={otherStores}
+                  />
+                </div>
+              </div>
             </Modal>
           </div>
         </>

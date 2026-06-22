@@ -11,7 +11,7 @@ import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
 import VallleCodeInput, {
   CODE_LENGTH,
 } from "@/features/vallles/components/VallleCodeInput";
-import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
+import { isVallleExpired } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 
@@ -37,13 +37,13 @@ const QuickRedeem = () => {
 
   // Mutations
   const lookupVallle = useMutation({
-    mutationFn: (formatted) =>
-      get(`/api/vallles/lookup?code=${encodeURIComponent(formatted)}`),
-    onSuccess: ({ data }, formatted) => {
+    mutationFn: (submittedCode) =>
+      get(`/api/vallles/lookup?code=${encodeURIComponent(submittedCode)}`),
+    onSuccess: ({ data }, submittedCode) => {
       if (isVallleExpired(data.expires_at)) {
         setLookupResult({
           status: VALLLE_STATUSES.EXPIRED,
-          code: formatted,
+          code: submittedCode,
           vallleId: data.id,
         });
         return;
@@ -51,7 +51,7 @@ const QuickRedeem = () => {
       if (data.balance === 0) {
         setLookupResult({
           status: "used-up",
-          code: formatted,
+          code: submittedCode,
           vallleId: data.id,
         });
         return;
@@ -61,10 +61,10 @@ const QuickRedeem = () => {
         state: { backgroundLocation },
       });
     },
-    onError: (error, formatted) => {
+    onError: (error, submittedCode) => {
       setLookupResult({
         status: error.code === "VALLLE_NOT_FOUND" ? "not-found" : "error",
-        code: formatted,
+        code: submittedCode,
       });
     },
   });
@@ -79,7 +79,7 @@ const QuickRedeem = () => {
   }, []);
 
   const handleLookup = useCallback(() => {
-    lookupVallle.mutate(formatVallleCode(code));
+    lookupVallle.mutate(code);
   }, [code, lookupVallle]);
 
   const handleTryAgain = useCallback(() => {

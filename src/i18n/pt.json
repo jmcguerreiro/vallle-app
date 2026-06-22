@@ -299,10 +299,7 @@
           "status": "Estado",
           "updatedAt": "Última atualização",
           "active": "Ativo",
-          "inactive": "Inativo",
-          "role_user": "Utilizador",
-          "role_admin": "Admin",
-          "role_super_admin": "Super Admin"
+          "inactive": "Inativo"
         },
         "form": {
           "name": "Nome",
@@ -430,10 +427,7 @@
           "createdAt": "Criado em",
           "updatedAt": "Última atualização",
           "active": "Ativo",
-          "inactive": "Inativo",
-          "role_user": "Utilizador",
-          "role_admin": "Admin",
-          "role_super_admin": "Super Admin"
+          "inactive": "Inativo"
         },
         "form": {
           "name": "Nome",
@@ -559,7 +553,7 @@
     "adminBadge": "Administrador",
     "switchStoreModal": {
       "heading": "Trocar de loja",
-      "description": "De momento está a trabalhar com {{store}}. Selecione outra loja com que pretende trabalhar."
+      "description": "Selecione a loja com que pretende trabalhar."
     },
     "logout": "Sair",
     "mainMenu": "Menu principal",
@@ -569,9 +563,9 @@
     "userMenu": "Menu do utilizador"
   },
   "roles": {
-    "user": "Colaborador",
-    "admin": "Administrador",
-    "super_admin": "Super administrador"
+    "user": "Utilizador",
+    "admin": "Admin",
+    "super_admin": "Super Admin"
   },
   "layouts": {
     "backTo": {

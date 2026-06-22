@@ -10,7 +10,6 @@ import { valllePath } from "@/constants/routes";
 import VallleCodeInput, {
   CODE_LENGTH,
 } from "@/features/vallles/components/VallleCodeInput";
-import { formatVallleCode } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 
@@ -36,18 +35,18 @@ const QuickLookup = () => {
 
   // Mutations
   const lookupVallle = useMutation({
-    mutationFn: (formatted) =>
-      get(`/api/vallles/lookup?code=${encodeURIComponent(formatted)}`),
+    mutationFn: (submittedCode) =>
+      get(`/api/vallles/lookup?code=${encodeURIComponent(submittedCode)}`),
     onSuccess: ({ data }) => {
       navigate(valllePath(data.id), {
         replace: true,
         state: { backgroundLocation },
       });
     },
-    onError: (error, formatted) => {
+    onError: (error, submittedCode) => {
       setLookupResult({
         status: error.code === "VALLLE_NOT_FOUND" ? "not-found" : "error",
-        code: formatted,
+        code: submittedCode,
       });
     },
   });
@@ -62,7 +61,7 @@ const QuickLookup = () => {
   }, []);
 
   const handleLookup = useCallback(() => {
-    lookupVallle.mutate(formatVallleCode(code));
+    lookupVallle.mutate(code);
   }, [code, lookupVallle]);
 
   const handleTryAgain = useCallback(() => {

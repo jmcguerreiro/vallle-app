@@ -1,17 +1,17 @@
-import { Fragment, useCallback, useRef } from "react";
+import { useCallback, useRef } from "react";
 
-const CODE_LENGTH = 9;
+const CODE_LENGTH = 5;
 const VALID_CHARS = /[^A-Z2-9]/g;
 
 /**
  * Component: VallleCodeInput
- * Nine single-character inputs for vallle codes (XXX-XXX-XXX).
+ * Five single-character inputs for a vallle code.
  * Auto-advances to the next input on entry, auto-rewinds on backspace.
  * Converts to uppercase and filters to valid characters only.
  * @component
  * @param {Object} props
- * @param {string} props.value - Raw value without dashes (up to 9 chars)
- * @param {Function} props.onChange - Called with the raw value (without dashes)
+ * @param {string} props.value - Raw code value (up to 5 chars)
+ * @param {Function} props.onChange - Called with the raw value
  * @param {string} [props.error] - Error message to display
  * @param {boolean} [props.autoFocus] - Focus the first input on mount
  * @returns {JSX.Element}
@@ -95,33 +95,26 @@ const VallleCodeInput = ({ value, onChange, error, autoFocus }) => {
       className={`c-vallle-code-input${error ? " c-vallle-code-input--error" : ""}`}
     >
       {chars.map((char, i) => (
-        <Fragment key={i}>
-          <div className="c-vallle-code-input__input-segment">
-            <input
-              ref={(el) => setRef(i, el)}
-              autoCapitalize="characters"
-              autoComplete="off"
-              autoCorrect="off"
-              autoFocus={autoFocus && i === 0}
-              className="c-vallle-code-input__input-segment-input"
-              id={`vallle-code-${i}`}
-              maxLength={1}
-              name={`vallle-code-${i}`}
-              onChange={(e) => handleChange(i, e)}
-              onFocus={handleFocus}
-              onKeyDown={(e) => handleKeyDown(i, e)}
-              onPaste={handlePaste}
-              spellCheck={false}
-              type="text"
-              value={char}
-            />
-          </div>
-          {(i === 2 || i === 5) && (
-            <span className="c-vallle-code-input__input-segment-separator">
-              –
-            </span>
-          )}
-        </Fragment>
+        <div key={i} className="c-vallle-code-input__input-segment">
+          <input
+            ref={(el) => setRef(i, el)}
+            autoCapitalize="characters"
+            autoComplete="off"
+            autoCorrect="off"
+            autoFocus={autoFocus && i === 0}
+            className="c-vallle-code-input__input-segment-input"
+            id={`vallle-code-${i}`}
+            maxLength={1}
+            name={`vallle-code-${i}`}
+            onChange={(e) => handleChange(i, e)}
+            onFocus={handleFocus}
+            onKeyDown={(e) => handleKeyDown(i, e)}
+            onPaste={handlePaste}
+            spellCheck={false}
+            type="text"
+            value={char}
+          />
+        </div>
       ))}
       {error && <p className="c-vallle-code-input__error">{error}</p>}
     </div>

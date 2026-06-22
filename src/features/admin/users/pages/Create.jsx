@@ -95,11 +95,11 @@ const AdminUserCreate = () => {
   const storeRoleOptions = [
     {
       value: STORE_ROLES.ADMIN,
-      label: t("features.admin.users.list.role_admin"),
+      label: t("roles.admin"),
     },
     {
       value: STORE_ROLES.USER,
-      label: t("features.admin.users.list.role_user"),
+      label: t("roles.user"),
     },
   ];
   const companyOptions = [

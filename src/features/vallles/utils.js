@@ -14,15 +14,6 @@ export function isVallleExpired(expiresAt) {
 }
 
 /**
- * Formats a raw 9-character vallle code into the XXX-XXX-XXX display form.
- * @param {string} raw - Code without dashes
- * @returns {string}
- */
-export function formatVallleCode(raw) {
-  return `${raw.slice(0, 3)}-${raw.slice(3, 6)}-${raw.slice(6, 9)}`;
-}
-
-/**
  * Derives the display status for a vallle based on its data.
  * @param {Object} vallle
  * @returns {'active'|'used'|'expired'|'archived'}

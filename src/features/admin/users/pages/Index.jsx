@@ -106,7 +106,7 @@ const AdminUsersIndex = () => {
         header: t("features.admin.users.list.role"),
         enableSorting: false,
         cell: ({ getValue }) => (
-          <Badge>{t(`features.admin.users.list.role_${getValue()}`)}</Badge>
+          <Badge>{t(`roles.${getValue()}`)}</Badge>
         ),
       },
       {
@@ -227,11 +227,11 @@ const AdminUsersIndex = () => {
           { value: FILTER_ALL, label: t("common.filters.allRoles") },
           {
             value: ACCOUNT_ROLES.USER,
-            label: t("features.admin.users.list.role_user"),
+            label: t("roles.user"),
           },
           {
             value: ACCOUNT_ROLES.SUPER_ADMIN,
-            label: t("features.admin.users.list.role_super_admin"),
+            label: t("roles.super_admin"),
           },
         ]}
         value={roleFilter}

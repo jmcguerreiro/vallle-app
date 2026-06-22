@@ -86,11 +86,11 @@ const CompanyUserEdit = () => {
   const roleOptions = [
     {
       value: STORE_ROLES.USER,
-      label: t("features.company.users.list.role_user"),
+      label: t("roles.user"),
     },
     {
       value: STORE_ROLES.ADMIN,
-      label: t("features.company.users.list.role_admin"),
+      label: t("roles.admin"),
     },
   ];
   const statusOptions = [

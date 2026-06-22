@@ -56,7 +56,7 @@ const SelectStore = () => {
         <div className="p-auth-select-store__body-picker">
           <StoreSelect
             onSelect={handleSelect}
-            renderMeta={(store) => store.role}
+            renderMeta={(store) => t(`roles.${store.role}`)}
             stores={user?.stores}
           />
         </div>

@@ -140,7 +140,7 @@ const AdminUserView = () => {
     { label: t("features.admin.users.form.email"), value: user.email },
     {
       label: t("features.admin.users.list.role"),
-      value: <Badge>{t(`features.admin.users.list.role_${user.role}`)}</Badge>,
+      value: <Badge>{t(`roles.${user.role}`)}</Badge>,
     },
     {
       label: t("features.admin.users.list.status"),

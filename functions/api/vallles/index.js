@@ -13,14 +13,23 @@ import {
 const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
 /**
- * Generates a 9-character vallle code in groups of 3, e.g. "XTU-TER-T61".
+ * Length of a vallle code. Codes are unique per store (not globally), so a
+ * short code gives each store the full 31^5 ≈ 28.6M space to itself.
+ */
+const CODE_LENGTH = 5;
+
+/** Max insert attempts before giving up on finding a free code in a store. */
+const MAX_CODE_ATTEMPTS = 5;
+
+/**
+ * Generates a 5-character vallle code, e.g. "XTUT6". Uniqueness is enforced
+ * per store by the DB constraint + insert retry, not by the code length.
  * @returns {string}
  */
 function generateVallleCode() {
-  const bytes = crypto.getRandomValues(new Uint8Array(9));
+  const bytes = crypto.getRandomValues(new Uint8Array(CODE_LENGTH));
   let code = "";
-  for (let i = 0; i < 9; i++) {
-    if (i > 0 && i % 3 === 0) code += "-";
+  for (let i = 0; i < CODE_LENGTH; i++) {
     code += CODE_CHARS[bytes[i] % CODE_CHARS.length];
   }
   return code;
@@ -191,53 +200,70 @@ export async function onRequestPost(context) {
   const expiryDate = new Date(expires_at);
   const now = new Date().toISOString();
   const vallleId = generateUlid();
-  const code = generateVallleCode();
   const commissionId = generateUlid();
   const commissionAmount = Math.max(50, Math.round(amount * 0.05));
 
-  const vallle = {
-    id: vallleId,
-    store_id: storeId,
-    created_by: user.sub,
-    code,
-    amount,
-    balance: amount,
-    buyer: buyer || null,
-    status: "active",
-    created_at: now,
-    expires_at: expiryDate.toISOString(),
-    updated_at: now,
-  };
+  // Codes are only unique per store, so a generated code can collide with an
+  // existing one. Retry with a fresh code when the UNIQUE(store_id, code)
+  // constraint rejects the insert; rethrow any other failure immediately.
+  let lastError;
+  for (let attempt = 0; attempt < MAX_CODE_ATTEMPTS; attempt++) {
+    const vallle = {
+      id: vallleId,
+      store_id: storeId,
+      created_by: user.sub,
+      code: generateVallleCode(),
+      amount,
+      balance: amount,
+      buyer: buyer || null,
+      status: "active",
+      created_at: now,
+      expires_at: expiryDate.toISOString(),
+      updated_at: now,
+    };
 
-  try {
-    await env.DB.batch([
-      env.DB.prepare(
-        `INSERT INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+    try {
+      await env.DB.batch([
+        env.DB.prepare(
+          `INSERT INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-      ).bind(
-        vallle.id,
-        vallle.store_id,
-        vallle.created_by,
-        vallle.code,
-        vallle.amount,
-        vallle.balance,
-        vallle.buyer,
-        vallle.status,
-        vallle.created_at,
-        vallle.expires_at,
-        vallle.updated_at,
-      ),
-      env.DB.prepare(
-        `INSERT INTO commissions (id, store_id, vallle_id, amount, created_at)
+        ).bind(
+          vallle.id,
+          vallle.store_id,
+          vallle.created_by,
+          vallle.code,
+          vallle.amount,
+          vallle.balance,
+          vallle.buyer,
+          vallle.status,
+          vallle.created_at,
+          vallle.expires_at,
+          vallle.updated_at,
+        ),
+        env.DB.prepare(
+          `INSERT INTO commissions (id, store_id, vallle_id, amount, created_at)
          VALUES (?, ?, ?, ?, ?)`,
-      ).bind(commissionId, storeId, vallleId, commissionAmount, now),
-    ]);
+        ).bind(commissionId, storeId, vallleId, commissionAmount, now),
+      ]);
 
-    return Response.json({ data: vallle }, { status: 201 });
-  } catch (error) {
-    const err = new Error("Vallles: Failed to create vallle");
-    err.code = "DB_WRITE_FAILED";
-    err.cause = error;
-    throw err;
+      return Response.json({ data: vallle }, { status: 201 });
+    } catch (error) {
+      lastError = error;
+      const isCodeCollision =
+        /UNIQUE constraint failed: vallles\.(code|store_id)/i.test(
+          error?.message ?? "",
+        );
+      if (!isCodeCollision) {
+        const err = new Error("Vallles: Failed to create vallle");
+        err.code = "DB_WRITE_FAILED";
+        err.cause = error;
+        throw err;
+      }
+    }
   }
+
+  const err = new Error("Vallles: Failed to generate a unique vallle code");
+  err.code = "DB_WRITE_FAILED";
+  err.cause = lastError;
+  throw err;
 }

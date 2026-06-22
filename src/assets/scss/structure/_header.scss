@@ -71,10 +71,15 @@
   padding: 0 $spacing-3;
 }
 
-.s-header__store-modal-intro {
-  margin: 0 0 $spacing-4;
-  color: $color-espresso;
-  opacity: 0.7;
+.s-header__store-modal {
+  display: flex;
+  flex-direction: column;
+}
+
+.s-header__store-modal__image {
+  height: to-rem(240);
+  width: to-rem(240);
+  margin: 0 auto;
 }
 
 .s-header__user-button {
@@ -155,7 +160,7 @@
   }
 
   .s-header-logo__image {
-    width: to-rem(100);
+    width: to-rem(80);
   }
 
   .s-header__extra {

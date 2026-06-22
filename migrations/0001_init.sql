@@ -66,14 +66,17 @@ CREATE TABLE IF NOT EXISTS vallles (
   id         TEXT PRIMARY KEY,
   store_id   TEXT NOT NULL REFERENCES stores(id),
   created_by TEXT NOT NULL REFERENCES users(id),
-  code       TEXT NOT NULL UNIQUE,
+  code       TEXT NOT NULL,
   amount     INTEGER NOT NULL,
   balance    INTEGER NOT NULL,
   buyer      TEXT NOT NULL DEFAULT '',
   status     TEXT NOT NULL DEFAULT 'active',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   expires_at TEXT NOT NULL,
-  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+  updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  -- Codes are unique per store, not globally: short codes only need to be
+  -- unambiguous within the store that issued them.
+  UNIQUE (store_id, code)
 );
 
 CREATE INDEX IF NOT EXISTS idx_vallles_store  ON vallles(store_id);

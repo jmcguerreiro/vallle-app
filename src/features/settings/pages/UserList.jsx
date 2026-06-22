@@ -103,7 +103,7 @@ const CompanyUserList = () => {
         header: t("features.company.users.list.role"),
         enableSorting: false,
         cell: ({ getValue }) => (
-          <Badge>{t(`features.company.users.list.role_${getValue()}`)}</Badge>
+          <Badge>{t(`roles.${getValue()}`)}</Badge>
         ),
       },
       {
