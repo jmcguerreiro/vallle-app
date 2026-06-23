@@ -11,8 +11,15 @@ import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
+import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
-import { isVallleExpired } from "@/features/vallles/utils";
+import {
+  formatMinRedemption,
+  formatVallleCode,
+  isVallleExpired,
+  shouldWarnRedemption,
+} from "@/features/vallles/utils";
+import { useConfirm } from "@/hooks/useConfirm";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, post } from "@/services/api";
@@ -38,6 +45,7 @@ const VallleRedeem = () => {
   const navigate = useNavigate();
   const { id } = useParams();
   const { setHeader } = useModal();
+  const { confirm } = useConfirm();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
   const {
@@ -111,21 +119,61 @@ const VallleRedeem = () => {
 
   const amountHint = useMemo(() => {
     if (!vallle) return "";
-    return t("features.vallles.redeem.amountHint", {
+    const base = t("features.vallles.redeem.amountHint", {
       balance: formatCurrency(vallle.balance),
     });
+    // Append the minimum-redemption policy when the vallle has one.
+    if (
+      vallle.min_redemption_mode &&
+      vallle.min_redemption_mode !== MIN_REDEMPTION_MODES.NONE
+    ) {
+      return `${base} ${t("features.vallles.redeem.amountHintMinimum", {
+        minimum: formatMinRedemption(
+          vallle.min_redemption_mode,
+          vallle.min_redemption_cents,
+          t,
+        ),
+      })}`;
+    }
+    return base;
   }, [vallle, t]);
 
   // Handlers
   const onSubmit = useCallback(
-    (values) => {
+    async (values) => {
       setServerError(null);
+      const amountCents = Math.round(Number.parseFloat(values.amount) * 100);
+
+      // The minimum is advisory: warn (but allow) below-minimum redemptions,
+      // unless the cashier is redeeming the entire remaining balance.
+      if (
+        shouldWarnRedemption({
+          mode: vallle.min_redemption_mode,
+          minCents: vallle.min_redemption_cents,
+          amountCents,
+          balanceCents: vallle.balance,
+        })
+      ) {
+        const confirmed = await confirm({
+          title: t("features.vallles.redeem.belowMinimum.title"),
+          message: t("features.vallles.redeem.belowMinimum.message", {
+            minimum: formatMinRedemption(
+              vallle.min_redemption_mode,
+              vallle.min_redemption_cents,
+              t,
+            ),
+          }),
+          confirmLabel: t("features.vallles.redeem.belowMinimum.confirmLabel"),
+        });
+        if (!confirmed) return;
+      }
+
       redeem({
-        amount: Math.round(Number.parseFloat(values.amount) * 100),
+        amount: amountCents,
         description: values.description.trim(),
       });
     },
-    [redeem],
+    [redeem, confirm, t, vallle],
   );
 
   // Effects
@@ -187,7 +235,7 @@ const VallleRedeem = () => {
           <h2
             className={`p-vallle-redeem__code${statusKey === VALLLE_STATUSES.ACTIVE ? "" : " p-vallle-redeem__code--inactive"}`}
           >
-            {vallle.code}
+            {formatVallleCode(vallle.code)}
           </h2>
         </div>
 

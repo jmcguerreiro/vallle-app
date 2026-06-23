@@ -3,6 +3,7 @@ import {
   buildStoreUpdate,
   requireStore,
   validateStoreExpiryDays,
+  validateStoreMinRedemption,
 } from "../_store.js";
 import { requireAuth } from "../auth/_helpers.js";
 
@@ -79,6 +80,9 @@ export async function onRequestPut(context) {
 
   const expiryError = validateStoreExpiryDays(body.default_vallle_expiry_days);
   if (expiryError) return expiryError;
+
+  const minRedemptionError = validateStoreMinRedemption(body);
+  if (minRedemptionError) return minRedemptionError;
 
   try {
     const { sets, values } = buildStoreUpdate(body);

@@ -4,6 +4,7 @@ import {
   validateAmount,
   validateBuyer,
   validateExpiry,
+  validateMinRedemption,
 } from "./_validation.js";
 
 /**
@@ -173,7 +174,8 @@ export async function onRequestPost(context) {
     );
   }
 
-  let { amount, buyer, expires_at } = body;
+  let { amount, buyer, expires_at, min_redemption_mode, min_redemption_cents } =
+    body;
 
   const amountError = validateAmount(amount);
   if (amountError) return amountError;
@@ -181,14 +183,22 @@ export async function onRequestPost(context) {
   const buyerError = validateBuyer(buyer);
   if (buyerError) return buyerError;
 
+  const minRedemptionError = validateMinRedemption(
+    min_redemption_mode,
+    min_redemption_cents,
+  );
+  if (minRedemptionError) return minRedemptionError;
+
+  // Pull the store's defaults to snapshot onto the new vallle (expiry period and
+  // minimum-redemption policy both mirror the store unless the client overrides).
+  const store = await env.DB.prepare(
+    "SELECT default_vallle_expiry_days, default_min_redemption_mode, default_min_redemption_cents FROM stores WHERE id = ?",
+  )
+    .bind(storeId)
+    .first();
+
   // If no expires_at provided, compute from the store's default expiry period.
   if (!expires_at) {
-    const store = await env.DB.prepare(
-      "SELECT default_vallle_expiry_days FROM stores WHERE id = ?",
-    )
-      .bind(storeId)
-      .first();
-
     const days = store?.default_vallle_expiry_days || 365;
     const defaultExpiry = new Date();
     defaultExpiry.setDate(defaultExpiry.getDate() + days);
@@ -197,6 +207,14 @@ export async function onRequestPost(context) {
 
   const expiryError = validateExpiry(expires_at);
   if (expiryError) return expiryError;
+
+  // Snapshot the minimum-redemption policy from the store unless overridden.
+  if (min_redemption_mode === undefined) {
+    min_redemption_mode = store?.default_min_redemption_mode || "none";
+    min_redemption_cents = store?.default_min_redemption_cents || 0;
+  }
+  // The cents column is only meaningful for 'custom'.
+  if (min_redemption_mode !== "custom") min_redemption_cents = 0;
 
   const expiryDate = new Date(expires_at);
   const now = new Date().toISOString();
@@ -220,14 +238,16 @@ export async function onRequestPost(context) {
       status: "active",
       created_at: now,
       expires_at: expiryDate.toISOString(),
+      min_redemption_mode,
+      min_redemption_cents,
       updated_at: now,
     };
 
     try {
       await env.DB.batch([
         env.DB.prepare(
-          `INSERT INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
-         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+          `INSERT INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, min_redemption_mode, min_redemption_cents, updated_at)
+         VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
         ).bind(
           vallle.id,
           vallle.store_id,
@@ -239,6 +259,8 @@ export async function onRequestPost(context) {
           vallle.status,
           vallle.created_at,
           vallle.expires_at,
+          vallle.min_redemption_mode,
+          vallle.min_redemption_cents,
           vallle.updated_at,
         ),
         env.DB.prepare(

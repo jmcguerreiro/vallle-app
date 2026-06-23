@@ -10,6 +10,7 @@ import { valllePath } from "@/constants/routes";
 import VallleCodeInput, {
   CODE_LENGTH,
 } from "@/features/vallles/components/VallleCodeInput";
+import { formatVallleCode } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 
@@ -87,7 +88,7 @@ const QuickLookup = () => {
                 onClick: handleTryAgain,
               }}
               description={t("features.vallles.quickLookup.notFound", {
-                code: lookupResult.code,
+                code: formatVallleCode(lookupResult.code),
               })}
               image="lookup-vallle--not-found"
             />

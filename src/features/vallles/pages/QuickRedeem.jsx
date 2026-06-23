@@ -11,7 +11,7 @@ import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
 import VallleCodeInput, {
   CODE_LENGTH,
 } from "@/features/vallles/components/VallleCodeInput";
-import { isVallleExpired } from "@/features/vallles/utils";
+import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { get } from "@/services/api";
 
@@ -105,7 +105,7 @@ const QuickRedeem = () => {
                 onClick: handleTryAgain,
               }}
               description={t("features.vallles.quickRedeem.notFound", {
-                code: lookupResult.code,
+                code: formatVallleCode(lookupResult.code),
               })}
               image="redeem-vallle--not-found"
             />
@@ -119,7 +119,7 @@ const QuickRedeem = () => {
                 state: { backgroundLocation },
               }}
               description={t("features.vallles.quickRedeem.expired", {
-                code: lookupResult.code,
+                code: formatVallleCode(lookupResult.code),
               })}
               image="redeem-vallle--expired"
             />
@@ -133,7 +133,7 @@ const QuickRedeem = () => {
                 state: { backgroundLocation },
               }}
               description={t("features.vallles.quickRedeem.usedUp", {
-                code: lookupResult.code,
+                code: formatVallleCode(lookupResult.code),
               })}
               image="redeem-vallle--used-up"
             />

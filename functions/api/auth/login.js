@@ -75,7 +75,9 @@ export async function onRequestPost(context) {
     // Fetch the user's stores. role is store-scoped. Exclude inactive stores and
     // inactive memberships; suspended stores stay visible (read-only).
     const { results: storeLinks } = await env.DB.prepare(
-      `SELECT su.store_id, su.role, s.name AS store_name, s.status AS store_status
+      `SELECT su.store_id, su.role, s.name AS store_name, s.status AS store_status,
+              s.default_vallle_expiry_days,
+              s.default_min_redemption_mode, s.default_min_redemption_cents
        FROM store_users su
        JOIN stores s ON s.id = su.store_id
        WHERE su.user_id = ? AND s.status != 'inactive' AND su.status != 'inactive'`,

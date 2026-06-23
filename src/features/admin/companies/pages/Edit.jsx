@@ -9,10 +9,12 @@ import EmptyState from "@/components/EmptyState";
 import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import MinRedemptionFields from "@/components/forms/MinRedemptionFields";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
 import { COMPANY_STATUSES } from "@/constants/company-statuses";
+import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -36,6 +38,7 @@ const AdminCompanyEdit = () => {
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -97,7 +100,14 @@ const AdminCompanyEdit = () => {
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      update(values);
+      const { minRedemptionAmount, ...rest } = values;
+      update({
+        ...rest,
+        default_min_redemption_cents:
+          values.default_min_redemption_mode === MIN_REDEMPTION_MODES.CUSTOM
+            ? Math.round(Number.parseFloat(minRedemptionAmount) * 100)
+            : 0,
+      });
     },
     [update],
   );
@@ -138,6 +148,10 @@ const AdminCompanyEdit = () => {
         country: store.country,
         status: store.status,
         default_vallle_expiry_days: store.default_vallle_expiry_days,
+        default_min_redemption_mode: store.default_min_redemption_mode,
+        minRedemptionAmount: store.default_min_redemption_cents
+          ? (store.default_min_redemption_cents / 100).toFixed(2)
+          : "",
       });
     }
   }, [response, reset]);
@@ -261,6 +275,14 @@ const AdminCompanyEdit = () => {
               );
             },
           }}
+        />
+        <MinRedemptionFields
+          amountName="minRedemptionAmount"
+          control={control}
+          errors={errors}
+          modeName="default_min_redemption_mode"
+          register={register}
+          watch={watch}
         />
         <Select
           control={control}

@@ -64,7 +64,7 @@ VALUES (
 );
 
 -- ─── Stores ─────────────────────────────────────────────────────
-INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, status, created_at, updated_at)
+INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, default_min_redemption_mode, default_min_redemption_cents, status, created_at, updated_at)
 VALUES (
   '01JA0000000000000000000010',
   'Café Flor',
@@ -77,12 +77,14 @@ VALUES (
   '1200-195',
   'Lisboa',
   'PT',
+  'custom',
+  1000,
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
 );
 
-INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, status, created_at, updated_at)
+INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, default_min_redemption_mode, default_min_redemption_cents, status, created_at, updated_at)
 VALUES (
   '01JA0000000000000000000011',
   'Padaria São Jorge',
@@ -95,6 +97,8 @@ VALUES (
   '4050-180',
   'Porto',
   'PT',
+  'full',
+  0,
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
@@ -137,8 +141,8 @@ INSERT OR IGNORE INTO store_users (id, store_id, user_id, role, status, created_
 VALUES ('01JA0000000000000000000024', '01JA0000000000000000000011', '01JA0000000000000000000002', 'user', 'active', '2026-03-17T10:00:00Z');
 
 -- ─── Vallles ───────────────────────────────────────────────────
--- Café Flor: active vallle, €25
-INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- Café Flor: active vallle, €25 (store policy: €10 minimum, snapshotted)
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, min_redemption_mode, min_redemption_cents, updated_at)
 VALUES (
   '01JA0000000000000000000030',
   '01JA0000000000000000000010',
@@ -148,11 +152,13 @@ VALUES (
   'active',
   '2026-03-15T14:00:00Z',
   '2031-03-15T14:00:00Z',
+  'custom',
+  1000,
   '2026-03-15T14:00:00Z'
 );
 
--- Café Flor: partially used vallle, €50 (€30 remaining)
-INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- Café Flor: partially used vallle, €50 (€30 remaining; €10 minimum snapshotted)
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, min_redemption_mode, min_redemption_cents, updated_at)
 VALUES (
   '01JA0000000000000000000031',
   '01JA0000000000000000000010',
@@ -162,11 +168,13 @@ VALUES (
   'active',
   '2026-03-10T11:00:00Z',
   '2031-03-10T11:00:00Z',
+  'custom',
+  1000,
   '2026-03-12T16:30:00Z'
 );
 
--- Padaria São Jorge: active vallle, €15
-INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, updated_at)
+-- Padaria São Jorge: active vallle, €15 (store policy: full value only, snapshotted)
+INSERT OR IGNORE INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, min_redemption_mode, min_redemption_cents, updated_at)
 VALUES (
   '01JA0000000000000000000032',
   '01JA0000000000000000000011',
@@ -176,6 +184,8 @@ VALUES (
   'active',
   '2026-03-16T09:00:00Z',
   '2031-03-16T09:00:00Z',
+  'full',
+  0,
   '2026-03-16T09:00:00Z'
 );
 

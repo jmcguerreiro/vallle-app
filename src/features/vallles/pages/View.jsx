@@ -11,7 +11,11 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import { vallleEditPath, vallleRedeemPath } from "@/constants/routes";
 import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
-import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
+import {
+  formatMinRedemption,
+  formatVallleCode,
+  isVallleExpired,
+} from "@/features/vallles/utils";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -236,6 +240,14 @@ const VallleView = () => {
     {
       label: t("features.vallles.view.expiresAt"),
       value: formatDate(vallle.expires_at),
+    },
+    {
+      label: t("features.vallles.view.minRedemption"),
+      value: formatMinRedemption(
+        vallle.min_redemption_mode,
+        vallle.min_redemption_cents,
+        t,
+      ),
     },
     {
       label: t("features.vallles.view.createdAt"),

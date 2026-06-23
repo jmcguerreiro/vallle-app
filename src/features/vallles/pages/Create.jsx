@@ -6,7 +6,9 @@ import { useLocation, useNavigate } from "react-router-dom";
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
 import Button from "@/components/Button";
+import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { ROUTES, valllePath } from "@/constants/routes";
+import { formatMinRedemption } from "@/features/vallles/utils";
 import { useAuth } from "@/hooks/useAuth";
 import { useConfetti } from "@/hooks/useConfetti";
 import { useModal } from "@/hooks/useModal";
@@ -60,6 +62,18 @@ const VallleCreate = () => {
     );
     return t("features.vallles.create.validUntil", { date: formatted });
   }, [expiryDate, i18n.language, t]);
+
+  const minRedemptionValue = useMemo(() => {
+    const mode =
+      activeStore?.default_min_redemption_mode || MIN_REDEMPTION_MODES.NONE;
+    // Hidden when there's no minimum; otherwise show the bare policy value.
+    if (mode === MIN_REDEMPTION_MODES.NONE) return "";
+    return formatMinRedemption(
+      mode,
+      activeStore?.default_min_redemption_cents || 0,
+      t,
+    );
+  }, [activeStore, t]);
 
   // Mutations
   const createVallle = useMutation({
@@ -163,6 +177,13 @@ const VallleCreate = () => {
       </div>
 
       <div className="p-vallle-create__expiry">{expiryLabel}</div>
+
+      {minRedemptionValue && (
+        <div className="p-vallle-create__min-redemption">
+          {t("features.vallles.create.minRedemptionLabel")}{" "}
+          <strong>{minRedemptionValue}</strong>
+        </div>
+      )}
 
       {serverError && <div className="c-form__error">{serverError}</div>}
 

@@ -7,6 +7,8 @@
 const MAX_AMOUNT_CENTS = 5_000_000; // €50,000
 const MAX_EXPIRY_YEARS = 5;
 
+const MIN_REDEMPTION_MODES = new Set(["none", "full", "custom"]);
+
 function validationError(message) {
   return Response.json(
     { error: { message, code: "VALIDATION_FAILED" } },
@@ -66,5 +68,43 @@ export function validateExpiry(expires_at) {
   if (expiryDate > maxExpiry) {
     return validationError("Expiry date cannot exceed 5 years from now");
   }
+  return null;
+}
+
+/**
+ * Minimum redemption policy. `mode` must be one of none/full/custom. The cents
+ * value is only meaningful for 'custom', where it must be a positive integer up
+ * to €50,000; for the other modes it must be absent or 0. Shared by the vallle
+ * endpoints and the store-default validator in `_store.js`.
+ * @param {unknown} mode
+ * @param {unknown} cents
+ * @returns {Response|null}
+ */
+export function validateMinRedemption(mode, cents) {
+  if (mode === undefined) return null;
+
+  if (typeof mode !== "string" || !MIN_REDEMPTION_MODES.has(mode)) {
+    return validationError(
+      "Minimum redemption mode must be none, full or custom",
+    );
+  }
+
+  if (mode === "custom") {
+    if (
+      typeof cents !== "number" ||
+      !Number.isInteger(cents) ||
+      cents <= 0 ||
+      cents > MAX_AMOUNT_CENTS
+    ) {
+      return validationError(
+        "Custom minimum must be a positive integer (cents) up to 5000000",
+      );
+    }
+  } else if (cents !== undefined && cents !== null && cents !== 0) {
+    return validationError(
+      "Minimum redemption amount is only allowed when mode is custom",
+    );
+  }
+
   return null;
 }

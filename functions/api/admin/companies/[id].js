@@ -2,6 +2,7 @@ import {
   STORE_SELECT,
   buildStoreUpdate,
   validateStoreExpiryDays,
+  validateStoreMinRedemption,
   validateStoreStatus,
 } from "../../_store.js";
 
@@ -111,6 +112,9 @@ export async function onRequestPut(context) {
 
     const statusError = validateStoreStatus(body.status);
     if (statusError) return statusError;
+
+    const minRedemptionError = validateStoreMinRedemption(body);
+    if (minRedemptionError) return minRedemptionError;
 
     const { sets, values } = buildStoreUpdate(body, { allowStatus: true });
     const now = new Date().toISOString();

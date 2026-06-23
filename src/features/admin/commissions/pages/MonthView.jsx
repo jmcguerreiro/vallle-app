@@ -9,6 +9,7 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Stat from "@/components/Stat";
 import Table from "@/components/Table";
+import { formatVallleCode } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, patch } from "@/services/api";
@@ -66,6 +67,7 @@ const AdminCommissionsMonthView = () => {
         key: "vallle_code",
         header: t("features.admin.commissions.vallle"),
         className: "c-table__cell--text-highlight",
+        render: (commission) => formatVallleCode(commission.vallle_code),
       },
       {
         key: "vallle_buyer",

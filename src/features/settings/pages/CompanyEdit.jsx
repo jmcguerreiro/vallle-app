@@ -10,9 +10,11 @@ import Fieldset from "@/components/forms/Fieldset";
 import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import MinRedemptionFields from "@/components/forms/MinRedemptionFields";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
+import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -26,13 +28,14 @@ import { get, put } from "@/services/api";
 const CompanyEdit = () => {
   // Hooks
   const { t } = useTranslation();
-  const { activeStore } = useAuth();
+  const { activeStore, updateActiveStore } = useAuth();
   const { addToast } = useToast();
   const {
     register,
     handleSubmit,
     reset,
     control,
+    watch,
     formState: { errors },
   } = useForm();
 
@@ -73,8 +76,23 @@ const CompanyEdit = () => {
           values.defaultVallleExpiryDays,
           10,
         ),
+        default_min_redemption_mode: values.minRedemptionMode,
+        default_min_redemption_cents:
+          values.minRedemptionMode === MIN_REDEMPTION_MODES.CUSTOM
+            ? Math.round(Number.parseFloat(values.minRedemptionAmount) * 100)
+            : 0,
       }),
-    onSuccess: () => {
+    onSuccess: (response) => {
+      // Keep the auth context's activeStore in sync so the create-vallle expiry
+      // and minimum-redemption labels reflect the new settings without a reload.
+      const store = response?.data?.store;
+      if (store) {
+        updateActiveStore({
+          default_vallle_expiry_days: store.default_vallle_expiry_days,
+          default_min_redemption_mode: store.default_min_redemption_mode,
+          default_min_redemption_cents: store.default_min_redemption_cents,
+        });
+      }
       addToast(t("features.company.success"), "success");
     },
     onError: () => {
@@ -110,6 +128,10 @@ const CompanyEdit = () => {
         region: response.data.store.region,
         country: response.data.store.country,
         defaultVallleExpiryDays: response.data.store.default_vallle_expiry_days,
+        minRedemptionMode: response.data.store.default_min_redemption_mode,
+        minRedemptionAmount: response.data.store.default_min_redemption_cents
+          ? (response.data.store.default_min_redemption_cents / 100).toFixed(2)
+          : "",
       });
     }
   }, [response, reset]);
@@ -240,24 +262,34 @@ const CompanyEdit = () => {
         </Fieldset>
 
         <Fieldset legend={t("features.company.sections.vallles")}>
-          <Input
-            error={errors.defaultVallleExpiryDays}
-            hint={t("features.company.form.defaultVallleExpiryDaysHint")}
-            label={t("features.company.form.defaultVallleExpiryDays")}
-            name="defaultVallleExpiryDays"
-            register={register}
-            required={t("features.company.form.error.expiryDaysRequired")}
-            type="number"
-            validate={{
-              range: (v) => {
-                const n = Number.parseInt(v, 10);
-                return (
-                  (n >= 1 && n <= 1825) ||
-                  t("features.company.form.error.expiryDaysRange")
-                );
-              },
-            }}
-          />
+          <FormFields>
+            <Input
+              error={errors.defaultVallleExpiryDays}
+              hint={t("features.company.form.defaultVallleExpiryDaysHint")}
+              label={t("features.company.form.defaultVallleExpiryDays")}
+              name="defaultVallleExpiryDays"
+              register={register}
+              required={t("features.company.form.error.expiryDaysRequired")}
+              type="number"
+              validate={{
+                range: (v) => {
+                  const n = Number.parseInt(v, 10);
+                  return (
+                    (n >= 1 && n <= 1825) ||
+                    t("features.company.form.error.expiryDaysRange")
+                  );
+                },
+              }}
+            />
+            <MinRedemptionFields
+              amountName="minRedemptionAmount"
+              control={control}
+              errors={errors}
+              modeName="minRedemptionMode"
+              register={register}
+              watch={watch}
+            />
+          </FormFields>
         </Fieldset>
 
         <Button

@@ -114,6 +114,7 @@
         "buyer": "Buyer name",
         "buyerPlaceholder": "John Smith",
         "validUntil": "Valid until {{date}}",
+        "minRedemptionLabel": "Minimum redemption:",
         "submit": "Create vallle",
         "success": "Vallle created successfully!",
         "error": {
@@ -132,6 +133,7 @@
         "buyer": "Buyer",
         "createdAt": "Created",
         "expiresAt": "Expires",
+        "minRedemption": "Minimum redemption",
         "balanceSummary": "{{total}} • Available: {{balance}}",
         "edit": "Edit",
         "archive": "Archive",
@@ -165,8 +167,14 @@
         "amount": "Amount to redeem (€)",
         "amountPlaceholder": "10",
         "amountHint": "You can redeem up to {{balance}}.",
+        "amountHintMinimum": "Minimum redemption: {{minimum}}",
         "submit": "Redeem",
         "success": "Vallle redeemed successfully!",
+        "belowMinimum": {
+          "title": "Below the minimum",
+          "message": "This vallle's redemption policy is \"{{minimum}}\". Redeem this smaller amount anyway?",
+          "confirmLabel": "Redeem anyway"
+        },
         "error": {
           "expired": "This vallle has expired.",
           "insufficientBalance": "Insufficient balance.",
@@ -192,6 +200,22 @@
       "redemptions": {
         "heading": "Redemption history",
         "empty": "No redemptions yet."
+      },
+      "minRedemption": {
+        "none": "No minimum",
+        "full": "Full value only",
+        "form": {
+          "modeLabel": "Minimum redemption",
+          "modeHint": "Discourage tiny redemptions. Shown as a warning the cashier can override.",
+          "modeNone": "No minimum",
+          "modeFull": "Full value only",
+          "modeCustom": "Custom amount",
+          "amountLabel": "Minimum amount (€)",
+          "error": {
+            "amountRequired": "Please enter a minimum amount.",
+            "amountPositive": "The minimum needs to be more than zero."
+          }
+        }
       },
       "list": {
         "code": "Code",

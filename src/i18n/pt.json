@@ -114,6 +114,7 @@
         "buyer": "Nome do comprador",
         "buyerPlaceholder": "José Antunes",
         "validUntil": "Válido até {{date}}",
+        "minRedemptionLabel": "Resgate mínimo:",
         "submit": "Criar vallle",
         "success": "Vallle criado com sucesso!",
         "error": {
@@ -132,6 +133,7 @@
         "buyer": "Comprador",
         "createdAt": "Criado em",
         "expiresAt": "Expira em",
+        "minRedemption": "Resgate mínimo",
         "balanceSummary": "{{total}} • Disponível: {{balance}}",
         "edit": "Editar",
         "archive": "Arquivar",
@@ -165,8 +167,14 @@
         "amount": "Valor a resgatar (€)",
         "amountPlaceholder": "10",
         "amountHint": "Pode resgatar até {{balance}}.",
+        "amountHintMinimum": "Resgate mínimo: {{minimum}}",
         "submit": "Resgatar",
         "success": "Vallle resgatado com sucesso!",
+        "belowMinimum": {
+          "title": "Abaixo do mínimo",
+          "message": "A política de resgate deste vallle é \"{{minimum}}\". Ainda assim, resgatar este valor mais baixo?",
+          "confirmLabel": "Resgatar mesmo assim"
+        },
         "error": {
           "expired": "Este vallle expirou.",
           "insufficientBalance": "Saldo insuficiente.",
@@ -192,6 +200,22 @@
       "redemptions": {
         "heading": "Histórico de resgates",
         "empty": "Sem resgates."
+      },
+      "minRedemption": {
+        "none": "Sem mínimo",
+        "full": "Apenas valor total",
+        "form": {
+          "modeLabel": "Resgate mínimo",
+          "modeHint": "Desencoraje resgates muito pequenos. Surge como um aviso que o caixa pode ignorar.",
+          "modeNone": "Sem mínimo",
+          "modeFull": "Apenas valor total",
+          "modeCustom": "Valor personalizado",
+          "amountLabel": "Valor mínimo (€)",
+          "error": {
+            "amountRequired": "Introduza um valor mínimo.",
+            "amountPositive": "O mínimo tem de ser superior a zero."
+          }
+        }
       },
       "list": {
         "code": "Código",

@@ -10,7 +10,9 @@ import EmptyState from "@/components/EmptyState";
 import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import MinRedemptionFields from "@/components/forms/MinRedemptionFields";
 import Loader from "@/components/Loader";
+import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { valllePath } from "@/constants/routes";
 import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
 import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
@@ -45,6 +47,8 @@ const VallleEdit = () => {
   const {
     register,
     handleSubmit,
+    control,
+    watch,
     formState: { errors },
     reset,
   } = useForm();
@@ -126,6 +130,11 @@ const VallleEdit = () => {
       update({
         buyer: values.buyer || null,
         expires_at: new Date(values.expires_at).toISOString(),
+        min_redemption_mode: values.minRedemptionMode,
+        min_redemption_cents:
+          values.minRedemptionMode === MIN_REDEMPTION_MODES.CUSTOM
+            ? Math.round(Number.parseFloat(values.minRedemptionAmount) * 100)
+            : 0,
       });
     },
     [update],
@@ -148,6 +157,10 @@ const VallleEdit = () => {
       reset({
         buyer: vallle.buyer || "",
         expires_at: vallle.expires_at ? vallle.expires_at.slice(0, 10) : "",
+        minRedemptionMode: vallle.min_redemption_mode,
+        minRedemptionAmount: vallle.min_redemption_cents
+          ? (vallle.min_redemption_cents / 100).toFixed(2)
+          : "",
       });
     }
   }, [vallle, reset]);
@@ -248,6 +261,14 @@ const VallleEdit = () => {
                 new Date(v) > new Date() ||
                 t("features.vallles.create.error.expiresAtFuture"),
             }}
+          />
+          <MinRedemptionFields
+            amountName="minRedemptionAmount"
+            control={control}
+            errors={errors}
+            modeName="minRedemptionMode"
+            register={register}
+            watch={watch}
           />
         </FormFields>
       </Form>

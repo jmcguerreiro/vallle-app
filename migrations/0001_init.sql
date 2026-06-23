@@ -37,6 +37,12 @@ CREATE TABLE IF NOT EXISTS stores (
   -- vallles), 'inactive' = no access. Distinct from a membership's status.
   status                     TEXT NOT NULL DEFAULT 'active' CHECK (status IN ('active', 'suspended', 'inactive')),
   default_vallle_expiry_days INTEGER NOT NULL DEFAULT 365,
+  -- Minimum redemption policy (advisory, surfaced as a warn-and-confirm in the
+  -- app, never a hard block). 'none' = any amount, 'full' = whole remaining
+  -- balance at once, 'custom' = at least default_min_redemption_cents. The cents
+  -- column is only meaningful when the mode is 'custom'.
+  default_min_redemption_mode  TEXT    NOT NULL DEFAULT 'none' CHECK (default_min_redemption_mode IN ('none', 'full', 'custom')),
+  default_min_redemption_cents INTEGER NOT NULL DEFAULT 0,
   created_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   updated_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
@@ -73,6 +79,10 @@ CREATE TABLE IF NOT EXISTS vallles (
   status     TEXT NOT NULL DEFAULT 'active',
   created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   expires_at TEXT NOT NULL,
+  -- Minimum redemption policy, snapshotted from the store's defaults at creation
+  -- (mirrors expires_at). See stores.default_min_redemption_mode for semantics.
+  min_redemption_mode  TEXT    NOT NULL DEFAULT 'none' CHECK (min_redemption_mode IN ('none', 'full', 'custom')),
+  min_redemption_cents INTEGER NOT NULL DEFAULT 0,
   updated_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   -- Codes are unique per store, not globally: short codes only need to be
   -- unambiguous within the store that issued them.

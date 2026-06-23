@@ -66,3 +66,7 @@
   color: $text-color-muted;
   text-align: center;
 }
+
+.p-vallle-create__min-redemption {
+  @extend .p-vallle-create__expiry;
+}

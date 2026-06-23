@@ -1,4 +1,8 @@
-import { validateBuyer, validateExpiry } from "./_validation.js";
+import {
+  validateBuyer,
+  validateExpiry,
+  validateMinRedemption,
+} from "./_validation.js";
 
 /**
  * GET /api/vallles/:id — Get a single vallle by ID.
@@ -53,10 +57,17 @@ export async function onRequestPut(context) {
     );
   }
 
-  const { buyer, expires_at, status } = body;
+  const { buyer, expires_at, status, min_redemption_mode } = body;
+  let { min_redemption_cents } = body;
 
   const buyerError = validateBuyer(buyer);
   if (buyerError) return buyerError;
+
+  const minRedemptionError = validateMinRedemption(
+    min_redemption_mode,
+    min_redemption_cents,
+  );
+  if (minRedemptionError) return minRedemptionError;
 
   // Only active/archived can be set manually; 'used' is system-managed.
   if (status !== undefined && status !== "active" && status !== "archived") {
@@ -101,10 +112,30 @@ export async function onRequestPut(context) {
         ? status
         : existing.status;
 
+    const updatedMinMode =
+      min_redemption_mode !== undefined
+        ? min_redemption_mode
+        : existing.min_redemption_mode;
+    // The cents column is only meaningful for 'custom'; zero it otherwise.
+    if (updatedMinMode !== "custom") min_redemption_cents = 0;
+    const updatedMinCents =
+      min_redemption_mode !== undefined
+        ? min_redemption_cents
+        : existing.min_redemption_cents;
+
     await env.DB.prepare(
-      "UPDATE vallles SET buyer = ?, expires_at = ?, status = ?, updated_at = ? WHERE id = ? AND store_id = ?",
+      "UPDATE vallles SET buyer = ?, expires_at = ?, status = ?, min_redemption_mode = ?, min_redemption_cents = ?, updated_at = ? WHERE id = ? AND store_id = ?",
     )
-      .bind(updatedBuyer, updatedExpiresAt, updatedStatus, now, id, storeId)
+      .bind(
+        updatedBuyer,
+        updatedExpiresAt,
+        updatedStatus,
+        updatedMinMode,
+        updatedMinCents,
+        now,
+        id,
+        storeId,
+      )
       .run();
 
     const vallle = {
@@ -112,6 +143,8 @@ export async function onRequestPut(context) {
       buyer: updatedBuyer,
       expires_at: updatedExpiresAt,
       status: updatedStatus,
+      min_redemption_mode: updatedMinMode,
+      min_redemption_cents: updatedMinCents,
       updated_at: now,
     };
 

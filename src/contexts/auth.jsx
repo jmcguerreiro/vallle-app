@@ -129,6 +129,14 @@ export const AuthProvider = ({ children }) => {
     globalThis.location.assign("/");
   }, []);
 
+  // Merges fresh fields into the active store after a settings change, so screens
+  // that read activeStore (e.g. the create-vallle expiry + minimum-redemption
+  // labels) reflect the new values without a full reload. activeStore is
+  // otherwise only hydrated from /api/auth/me on mount.
+  const updateActiveStore = useCallback((fields) => {
+    setActiveStoreState((prev) => (prev ? { ...prev, ...fields } : prev));
+  }, []);
+
   // Effects
   useEffect(() => {
     get("/api/auth/me")
@@ -177,6 +185,7 @@ export const AuthProvider = ({ children }) => {
       logout,
       activeStore,
       selectStore,
+      updateActiveStore,
       needsStoreSelection,
       isAuthenticated: !!user,
       isSuperAdmin: user?.role === ACCOUNT_ROLES.SUPER_ADMIN,
@@ -194,6 +203,7 @@ export const AuthProvider = ({ children }) => {
       logout,
       activeStore,
       selectStore,
+      updateActiveStore,
       needsStoreSelection,
       isStoreSuspended,
     ],

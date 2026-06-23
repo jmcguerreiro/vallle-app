@@ -11,6 +11,8 @@
  *   vallle creation; `inactive` removes access entirely.
  */
 
+import { validateMinRedemption } from "./vallles/_validation.js";
+
 /**
  * Reads the X-Store-Id header from the request.
  * @param {Request} request
@@ -79,7 +81,7 @@ export async function requireStore(request, env, userId) {
 }
 
 /** Columns returned when reading a single store record (by id). */
-export const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, status, created_at FROM stores WHERE id = ?`;
+export const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, default_min_redemption_mode, default_min_redemption_cents, status, created_at FROM stores WHERE id = ?`;
 
 /** Free-text store fields a client may edit. `status` and expiry are handled separately. */
 const STORE_EDITABLE_FIELDS = [
@@ -124,6 +126,21 @@ export function validateStoreExpiryDays(value) {
 }
 
 /**
+ * Validates the store's optional minimum-redemption default. Thin wrapper over
+ * the shared `validateMinRedemption` that reads the `default_*`-prefixed body
+ * fields. Returns a 400 `Response` when present-but-invalid, or `null` when
+ * absent or valid. Call before `buildStoreUpdate`.
+ * @param {Object} body - Parsed request body
+ * @returns {Response|null}
+ */
+export function validateStoreMinRedemption(body) {
+  return validateMinRedemption(
+    body.default_min_redemption_mode,
+    body.default_min_redemption_cents,
+  );
+}
+
+/**
  * Validates the optional `status` field against the allowed store statuses.
  * Returns a 400 `Response` when present-but-invalid, or `null` when absent or
  * valid. Call before `buildStoreUpdate({ allowStatus: true })`.
@@ -146,8 +163,9 @@ export function validateStoreStatus(value) {
  * body. This is a partial update: only fields actually present in the body are
  * written, so an omitted field is left unchanged (an explicit `""` still clears
  * it). Optionally includes `status` (admin only) and `default_vallle_expiry_days`
- * when present. Validate `status` with `validateStoreStatus` and expiry with
- * `validateStoreExpiryDays` before calling.
+ * when present. Validate `status` with `validateStoreStatus`, expiry with
+ * `validateStoreExpiryDays`, and the minimum-redemption default with
+ * `validateStoreMinRedemption` before calling.
  * @param {Object} body - Parsed request body
  * @param {Object} [options]
  * @param {boolean} [options.allowStatus=false] - Whether `status` may be updated
@@ -172,6 +190,20 @@ export function buildStoreUpdate(body, { allowStatus = false } = {}) {
   if (body.default_vallle_expiry_days !== undefined) {
     columns.push("default_vallle_expiry_days");
     values.push(Number.parseInt(body.default_vallle_expiry_days, 10));
+  }
+
+  if (body.default_min_redemption_mode !== undefined) {
+    const mode = body.default_min_redemption_mode;
+    columns.push("default_min_redemption_mode");
+    values.push(mode);
+    // The cents column is only meaningful for 'custom'; zero it otherwise so a
+    // stale amount never lingers behind a none/full mode.
+    columns.push("default_min_redemption_cents");
+    values.push(
+      mode === "custom"
+        ? Number.parseInt(body.default_min_redemption_cents, 10)
+        : 0,
+    );
   }
 
   return { sets: columns.map((f) => `${f} = ?`).join(", "), values };
