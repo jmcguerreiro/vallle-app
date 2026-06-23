@@ -5,6 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 import Badge from "@/components/Badge";
 import Datatable from "@/components/Datatable";
 import { valllePath } from "@/constants/routes";
+import { formatVallleCode } from "@/features/vallles/utils";
 import { formatCurrency } from "@/utils/currency";
 import { formatDate } from "@/utils/dates";
 
@@ -62,6 +63,7 @@ const VallleDatatable = ({
       {
         accessorKey: "code",
         header: t("features.vallles.list.code"),
+        cell: ({ getValue }) => formatVallleCode(getValue()),
         meta: { tdClassName: "c-datatable__td--text-highlight" },
       },
       {

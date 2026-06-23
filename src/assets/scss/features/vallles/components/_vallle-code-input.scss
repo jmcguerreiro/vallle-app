@@ -38,13 +38,20 @@
   }
 }
 
+.c-vallle-code-input__input-segment-separator {
+  font-weight: $font-weight-bold;
+  color: $text-color-highlight;
+  user-select: none;
+}
+
 .c-vallle-code-input__error {
   flex: 1 0 100%;
   color: $color-danger;
 }
 
 @include screen(lg) {
-  .c-vallle-code-input__input-segment-input {
+  .c-vallle-code-input__input-segment-input,
+  .c-vallle-code-input__input-segment-separator {
     @include font-size(3xl);
   }
 }

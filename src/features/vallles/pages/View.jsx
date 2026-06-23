@@ -11,7 +11,7 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import { vallleEditPath, vallleRedeemPath } from "@/constants/routes";
 import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
-import { isVallleExpired } from "@/features/vallles/utils";
+import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
 import { useConfirm } from "@/hooks/useConfirm";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -250,7 +250,7 @@ const VallleView = () => {
         <h2
           className={`p-vallle-view__code${statusKey === VALLLE_STATUSES.ACTIVE ? "" : " p-vallle-view__code--inactive"}`}
         >
-          {vallle.code}
+          {formatVallleCode(vallle.code)}
         </h2>
         <p className="p-vallle-view__subtitle">{heroSubtitle}</p>
       </div>

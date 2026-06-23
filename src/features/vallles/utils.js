@@ -14,6 +14,18 @@ export function isVallleExpired(expiresAt) {
 }
 
 /**
+ * Formats a raw 6-character vallle code for display as two groups of three,
+ * e.g. "XTUT6Q" → "XTU-T6Q". The separator is purely presentational — codes
+ * are stored and looked up raw, so don't use this for lookups.
+ * @param {string} raw - Raw code without separator
+ * @returns {string}
+ */
+export function formatVallleCode(raw) {
+  if (!raw) return "";
+  return `${raw.slice(0, 3)}-${raw.slice(3, 6)}`;
+}
+
+/**
  * Derives the display status for a vallle based on its data.
  * @param {Object} vallle
  * @returns {'active'|'used'|'expired'|'archived'}

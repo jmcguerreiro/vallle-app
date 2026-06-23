@@ -14,15 +14,16 @@ const CODE_CHARS = "ABCDEFGHJKMNPQRSTUVWXYZ23456789";
 
 /**
  * Length of a vallle code. Codes are unique per store (not globally), so a
- * short code gives each store the full 31^5 ≈ 28.6M space to itself.
+ * short code gives each store the full 31^6 ≈ 887M space to itself.
  */
-const CODE_LENGTH = 5;
+const CODE_LENGTH = 6;
 
 /** Max insert attempts before giving up on finding a free code in a store. */
 const MAX_CODE_ATTEMPTS = 5;
 
 /**
- * Generates a 5-character vallle code, e.g. "XTUT6". Uniqueness is enforced
+ * Generates a 6-character vallle code, e.g. "XTUT6Q". Stored raw (no
+ * separator); the UI displays it grouped as "XTU-T6Q". Uniqueness is enforced
  * per store by the DB constraint + insert retry, not by the code length.
  * @returns {string}
  */

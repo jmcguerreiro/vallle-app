@@ -13,7 +13,7 @@ import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
 import { valllePath } from "@/constants/routes";
 import { VALLLE_STATUSES } from "@/constants/vallle-statuses";
-import { isVallleExpired } from "@/features/vallles/utils";
+import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
@@ -224,7 +224,7 @@ const VallleEdit = () => {
           <h2
             className={`p-vallle-edit__code${statusKey === VALLLE_STATUSES.ACTIVE ? "" : " p-vallle-edit__code--inactive"}`}
           >
-            {vallle.code}
+            {formatVallleCode(vallle.code)}
           </h2>
           <p className="p-vallle-edit__subtitle">{heroSubtitle}</p>
         </div>
