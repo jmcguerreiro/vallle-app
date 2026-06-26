@@ -7,8 +7,9 @@
 const JWT_EXPIRY = 3 * 24 * 60 * 60; // 3 days in seconds
 
 // Iteration count for new password hashes. Stored inside each hash so it can be
-// raised over time without locking out existing users.
-const PBKDF2_ITERATIONS = 600_000;
+// raised over time without locking out existing users. Capped at 100,000:
+// Cloudflare Workers' Web Crypto throws NotSupportedError for PBKDF2 above that.
+const PBKDF2_ITERATIONS = 100_000;
 // Hashes written before the count was stored use this legacy value (2-part
 // `salt:hash` format). They still verify, and are silently invisible to new code.
 const LEGACY_PBKDF2_ITERATIONS = 100_000;
