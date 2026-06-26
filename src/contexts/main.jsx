@@ -1,5 +1,7 @@
 import { createContext, useCallback, useMemo, useState } from "react";
 
+import { usePageTitle } from "@/hooks/usePageTitle";
+
 export const MainContext = createContext(null);
 
 /**
@@ -45,6 +47,12 @@ export const MainProvider = ({ children }) => {
     }),
     [header, setHeader],
   );
+
+  // Effects
+  // Drive the tab title from the active page's header title. Header-less pages
+  // (auth screens, the user dashboard) leave this empty and set their own title
+  // via usePageTitle, which is why the empty case here is a no-op.
+  usePageTitle(header.title);
 
   // Render
   return <MainContext.Provider value={value}>{children}</MainContext.Provider>;

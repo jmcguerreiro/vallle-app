@@ -238,6 +238,10 @@ const VallleView = () => {
   const fields = [
     { label: t("features.vallles.view.buyer"), value: vallle.buyer || "—" },
     {
+      label: t("features.vallles.view.createdAt"),
+      value: formatDate(vallle.created_at),
+    },
+    {
       label: t("features.vallles.view.expiresAt"),
       value: formatDate(vallle.expires_at),
     },
@@ -248,10 +252,6 @@ const VallleView = () => {
         vallle.min_redemption_cents,
         t,
       ),
-    },
-    {
-      label: t("features.vallles.view.createdAt"),
-      value: formatDate(vallle.created_at),
     },
   ];
 

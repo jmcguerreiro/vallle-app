@@ -21,6 +21,7 @@
   },
   "features": {
     "login": {
+      "pageTitle": "Iniciar sessão",
       "forgotPassword": "Esqueceu-se da palavra-passe?",
       "form": {
         "email": "Email",
@@ -35,6 +36,7 @@
       }
     },
     "forgotPassword": {
+      "pageTitle": "Recuperar palavra-passe",
       "heading": "Esqueceu-se da palavra-passe?",
       "description": "Introduza o seu email para receber um link de recuperação de palavra-passe.",
       "backToLogin": "Voltar ao login",
@@ -51,6 +53,7 @@
       }
     },
     "resetPassword": {
+      "pageTitle": "Repor palavra-passe",
       "heading": "Definir nova palavra-passe",
       "description": "A nova palavra-passe deve ter pelo menos 8 caracteres e incluir uma letra maiúscula, uma minúscula, um número e um carácter especial.",
       "form": {
@@ -74,6 +77,7 @@
       }
     },
     "selectStore": {
+      "pageTitle": "Escolha uma loja",
       "heading": "Escolha uma loja",
       "description": "Tem acesso a várias lojas. Selecione a loja com que pretende trabalhar."
     },

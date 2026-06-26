@@ -61,12 +61,11 @@
   @extend .c-form__field-error;
 }
 
-.p-vallle-create__expiry {
+.p-vallle-create__meta {
   @include font-size(sm);
   color: $text-color-muted;
+  display: flex;
+  flex-direction: column;
+  gap: $spacing-2;
   text-align: center;
-}
-
-.p-vallle-create__min-redemption {
-  @extend .p-vallle-create__expiry;
 }

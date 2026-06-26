@@ -86,6 +86,10 @@ body {
   margin: auto;
 }
 
+strong {
+  font-weight: $font-weight-bold;
+}
+
 /* ─── Vallle Design Tokens ─────────────────────────────────────── */
 
 @import url("https://fonts.googleapis.com/css2?family=DM+Sans:wght@300;400;500;600&family=DM+Serif+Display&display=swap");

@@ -6,6 +6,7 @@ import Loader from "@/components/Loader";
 import StoreSelect from "@/components/StoreSelect";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 /**
  * Component: SelectStore
@@ -18,6 +19,7 @@ const SelectStore = () => {
   // Hooks
   const { t } = useTranslation();
   const { user, isAuthenticated, isLoading, selectStore } = useAuth();
+  usePageTitle(t("features.selectStore.pageTitle"));
 
   // Handlers
   const handleSelect = useCallback(

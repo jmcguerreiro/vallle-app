@@ -15,7 +15,7 @@
 .c-definition-list__label {
   color: $text-color-muted;
   flex-shrink: 0;
-  min-width: 100px;
+  min-width: to-rem(120);
 }
 
 .c-definition-list__value {

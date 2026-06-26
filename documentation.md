@@ -222,6 +222,33 @@ npx wrangler d1 execute vallle-db --remote --command="SELECT name FROM sqlite_ma
 # Should show: commissions, redemptions, store_users, stores, users, vallles
 ```
 
+> ⚠️ **Never run `migrations/0002_seed.sql` with `--remote`.** It contains demo
+> data and a super admin with a public password (`vallle123`). It is for local
+> development only.
+
+#### Production super admin
+
+The production super admin is **not** committed to version control — it's
+created once, by hand, against the remote database. Generate a real password
+hash locally, then insert the row directly:
+
+```bash
+# 1. Generate a PBKDF2 hash for your chosen (strong) password.
+#    Copy the "Hash:" value from the output.
+node scripts/hash-password.js 'your-strong-password-here'
+
+# 2. Insert the super admin into the remote DB. Paste the hash from step 1
+#    in place of <HASH>. ULID can be any valid ULID (e.g. from an online
+#    generator). joao@vallle.com is the production login email.
+npx wrangler d1 execute vallle-db --remote --command="INSERT INTO users (id, name, email, password, role, status) VALUES ('<ULID>', 'João Guerreiro', 'joao@vallle.com', '<HASH>', 'super_admin', 'active')"
+
+# 3. Verify (should return one row, role super_admin)
+npx wrangler d1 execute vallle-db --remote --command="SELECT id, email, role, status FROM users WHERE role = 'super_admin'"
+```
+
+The plaintext password is never written to a file — only the hash is, and only
+transiently in your shell history. Rotate it via the same flow if needed.
+
 ### 5. Local development
 
 ```bash
@@ -245,9 +272,47 @@ npx wrangler pages dev -- npx vite
 - **Import resolver**: `eslint-import-resolver-alias` wired to the same `@` → `src/` mapping so ESLint can resolve aliased imports.
 - **Coding conventions**: Documented in `CLAUDE.md` — agents and contributors should follow those rules.
 
-### Pages project (TODO)
+### Pages project (deployment)
 
-_Cloudflare Pages deployment config to be documented when we deploy._
+This app deploys to **Cloudflare Pages**, not Workers. It uses the `functions/`
+directory convention (Pages Functions) for the API — that is a Pages feature and
+has no equivalent under a plain `wrangler deploy` Worker entry point. **Do not
+deploy with `wrangler deploy`** (the Workers command) — it fails with "Missing
+entry-point to Worker script or to assets directory" because there is no Worker
+`main`. Use the Pages git integration (recommended) or `wrangler pages deploy`.
+
+`wrangler.toml` sets `pages_build_output_dir = "dist"` so wrangler treats this as
+a Pages project.
+
+**Recommended — Pages git integration:**
+
+1. Cloudflare dashboard → Workers & Pages → Create → **Pages** → Connect to Git,
+   select this repo.
+2. Build settings:
+   - Build command: `npm run build`
+   - Build output directory: `dist`
+   - (No deploy command — Pages publishes `dist` and bundles `functions/`
+     automatically.)
+3. Settings → Bindings (D1 database bindings): bind `DB` → `vallle-db`.
+4. Settings → Variables and Secrets (Production environment):
+   - `JWT_SECRET` — **Secret**. Signs session tokens.
+   - `RESEND_API_KEY` — **Secret**. Resend API key for password-reset email.
+   - `ENVIRONMENT` — plaintext, set to `production`. Anything other than
+     `development` makes session cookies `Secure`; `wrangler.toml` deliberately
+     does **not** define it (the dev value lives in `.dev.vars`) so it can't leak
+     into prod.
+
+**Manual / CLI deploy:**
+
+```bash
+npm run build
+npx wrangler pages deploy dist --project-name=vallle-app
+```
+
+> If the build log shows `Executing user deploy command: npx wrangler deploy`,
+> the project was created as a **Workers** build, not Pages. Either recreate it
+> as a Pages project (above), or change the build's deploy command to
+> `npx wrangler pages deploy dist`.
 
 ---
 
@@ -348,3 +413,4 @@ _Cloudflare Pages deployment config to be documented when we deploy._
 | 2026-06-23 | Dropped `0003_vallle_code_per_store_unique.sql` | The migration existed only to rebuild the vallles table for **already-provisioned** databases (SQLite can't drop a column-level `UNIQUE(code)` in place). `0001_init.sql` already bakes in `UNIQUE(store_id, code)`, so fresh setups never needed it — and since it's pre-launch (local/dummy data only, DBs are reinitialised from `0001`), there are no existing databases to migrate. It had also gone stale: its table rebuild predated the `min_redemption_*` columns, so running it after `0001` would have silently dropped them. Removed; the per-store-unique constraint lives solely in `0001`. |
 | 2026-06-23 | Minimum redemption value (advisory, warn-and-confirm) | Stores can discourage tiny redemptions. Mirrors the expiry pattern exactly: a store default (`stores.default_min_redemption_mode`/`_cents`) snapshotted onto each vallle at creation (`vallles.min_redemption_mode`/`_cents`) and overridable on the vallle Edit screen. Three modes — `none` (any amount), `full` (whole remaining balance at once), `custom` (≥ `*_cents`). Deliberately **advisory, not a hard API limit**: `POST /api/vallles/:id/redeem` does not reject below-minimum redemptions. The redeem screen shows a warn-and-confirm dialog (`useConfirm`) the cashier can override, and redeeming the **entire remaining balance** never warns (the "€5 left of a €20 purchase" case). Backend: shared `validateMinRedemption` in `vallles/_validation.js` (reused by create, the `[id]` PUT, and the store-default wrapper `validateStoreMinRedemption` in `_store.js`); `buildStoreUpdate`/`STORE_SELECT`/`auth/me.js` carry the two `default_*` columns; create snapshots them onto the vallle. Frontend: `shouldWarnRedemption`/`formatMinRedemption` (`features/vallles/utils.js`), the `MIN_REDEMPTION_MODES` constant, and a shared `components/forms/MinRedemptionFields.jsx` (mode select + conditional euro amount) used by store settings, super-admin store edit, and per-vallle edit; View shows the policy. Pre-launch, so the columns were added to `0001_init.sql` in place. |
 | 2026-06-23 | Vallle codes bumped 5 → 6 chars, displayed as `XXX-XXX` | The bare 5-char code read as visually flimsy, so codes are now 6 chars **grouped with a single hyphen** for a more deliberate, token-like look — and 6 chars adds real entropy (31^5 ≈ 28.6M → 31^6 ≈ 887M per store). Key design choice: the code is **stored raw** (`XTUT6Q`) and the hyphen is **display-only** (`XTU-T6Q`), reintroduced as `formatVallleCode` in `features/vallles/utils.js`. This keeps the separator out of identity, so lookups send the clean 6 chars and match directly — no reconstruction, no dependence on whether the user typed the dash (the input strips it either way). This is deliberately *not* how the original 9-char codes worked (those stored the dashes and the lookup re-inserted them); storing raw is the more robust pattern. `formatVallleCode` is now used at every **display** site that previously rendered the raw code — `View`/`Edit` hero and the list datatable `code` column — which also fixes a small prior inconsistency where those showed the unformatted code. `CODE_LENGTH` → 6 (generator + `VallleCodeInput`), the input regained a single separator after the 3rd segment (separator markup + SCSS restored). DB constraint (`UNIQUE(store_id, code)`) and the create-time collision-retry loop are unchanged. Seed codes re-extended to 6 chars. |
+| 2026-06-26 | Favicon set modernised + dynamic tab title | Replaced the lone `favicon.svg` link with the current minimal cross-device set in `index.html`: `favicon.svg` (modern browsers), `favicon.ico` (legacy fallback), `apple-touch-icon.png` (180×180, iOS home screen), a `theme-color` meta (terracotta `#C4653A`), and a new `public/manifest.webmanifest` (Android/PWA install) referencing `icon-192.png`, `icon-512.png`, and `icon-512-maskable.png` with the brand linen background. The placeholder `<title>vallle-app</title>` became `Vallle`. Per-route titles via `src/hooks/usePageTitle.js` (`document.title = "{title} · Vallle"`; an empty/falsy title is a **no-op** so it never resets or clobbers). The rule: **a page that sets a layout header gets its tab title for free** — `MainProvider` (`contexts/main.jsx`) calls `usePageTitle(header.title)`, so the title tracks the same string every header page already passes to `useMain().setHeader({ title })` (no per-page wiring, no duplicate i18n keys). **Header-less pages set their own title** by calling `usePageTitle` directly: the four auth screens (`features/auth/pages/*` — Login/ForgotPassword/ResetPassword/SelectStore, which use BlankLayout and have no header bar) and the user **Dashboard** (`features/dashboard/pages/Index.jsx`, which renders its own in-page header and deliberately sets no layout header). The no-op-on-empty behaviour is what makes the two writers coexist: on a header-less route `header.title` is `""` so `MainProvider` leaves the title alone and the page's own `usePageTitle` wins regardless of effect order. Auth-page titles are i18n'd as `features.{login,forgotPassword,resetPassword,selectStore}.pageTitle` (added to `en.json`/`pt.json`, PT formal) and are tab-only — not shown on screen; the dashboard reuses `nav.dashboard`. Modals don't touch the title (they use the separate `useModal()` header), so the tab reflects the page behind the modal. Existing `public/_headers` CSP already covers the manifest + icons (no header change). |

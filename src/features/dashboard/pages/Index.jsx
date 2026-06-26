@@ -6,6 +6,7 @@ import { useQuery } from "@tanstack/react-query";
 
 import { ROUTES, vallleCreatePath } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { get } from "@/services/api";
 import { IconMailMinus, IconMailPlus, IconMailSearch } from "@/utils/icons";
 
@@ -22,6 +23,7 @@ const Dashboard = () => {
   const { user, isStoreSuspended } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  usePageTitle(t("nav.dashboard"));
 
   // Queries
   const { data: stats } = useQuery({

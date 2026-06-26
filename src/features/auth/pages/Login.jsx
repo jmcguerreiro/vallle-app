@@ -11,6 +11,7 @@ import Input from "@/components/forms/Input";
 import Loader from "@/components/Loader";
 import { ROUTES } from "@/constants/routes";
 import { useAuth } from "@/hooks/useAuth";
+import { usePageTitle } from "@/hooks/usePageTitle";
 
 /**
  * Component: Login
@@ -28,6 +29,7 @@ const Login = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  usePageTitle(t("features.login.pageTitle"));
 
   // State
   const [serverError, setServerError] = useState("");

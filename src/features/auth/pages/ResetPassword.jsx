@@ -9,6 +9,7 @@ import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import { ROUTES } from "@/constants/routes";
+import { usePageTitle } from "@/hooks/usePageTitle";
 import { post } from "@/services/api";
 import { validatePassword } from "@/utils/password";
 
@@ -27,6 +28,7 @@ const ResetPassword = () => {
     handleSubmit,
     formState: { errors },
   } = useForm();
+  usePageTitle(t("features.resetPassword.pageTitle"));
 
   // State
   const [serverError, setServerError] = useState("");

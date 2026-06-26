@@ -1,8 +1,6 @@
 name = "vallle-app"
 compatibility_date = "2026-03-17"
-
-[vars]
-ENVIRONMENT = "development"
+pages_build_output_dir = "dist"
 
 [[d1_databases]]
 binding = "DB"

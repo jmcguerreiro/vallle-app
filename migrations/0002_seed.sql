@@ -11,7 +11,10 @@
 -- To regenerate, run the hash-password script (see below).
 
 -- ─── Users ──────────────────────────────────────────────────────
--- Super admin (you)
+-- Local dev super admin — for development only. The real production
+-- super admin is created out-of-band (never committed); see the
+-- "Production super admin" step in documentation.md. Both use the same
+-- email but live in separate D1 databases, so they never collide.
 INSERT OR IGNORE INTO users (id, name, email, password, role, status, created_at, updated_at)
 VALUES (
   '01JA0000000000000000000001',

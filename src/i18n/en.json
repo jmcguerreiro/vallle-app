@@ -21,6 +21,7 @@
   },
   "features": {
     "login": {
+      "pageTitle": "Sign in",
       "forgotPassword": "Forgot your password?",
       "form": {
         "email": "Email",
@@ -35,6 +36,7 @@
       }
     },
     "forgotPassword": {
+      "pageTitle": "Forgot password",
       "heading": "Forgot your password?",
       "description": "Enter your email and we'll send you a link to reset your password.",
       "backToLogin": "Back to sign in",
@@ -51,6 +53,7 @@
       }
     },
     "resetPassword": {
+      "pageTitle": "Reset password",
       "heading": "Set a new password",
       "description": "Your new password must be at least 8 characters and include an uppercase letter, a lowercase letter, a number, and a special character.",
       "form": {
@@ -74,6 +77,7 @@
       }
     },
     "selectStore": {
+      "pageTitle": "Choose a store",
       "heading": "Choose a store",
       "description": "You have access to multiple stores. Select which one you'd like to work with."
     },

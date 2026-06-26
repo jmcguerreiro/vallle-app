@@ -176,14 +176,16 @@ const VallleCreate = () => {
         )}
       </div>
 
-      <div className="p-vallle-create__expiry">{expiryLabel}</div>
+      <div className="p-vallle-create__meta">
+        {minRedemptionValue && (
+          <div className="p-vallle-create__meta-min-redemption">
+            {t("features.vallles.create.minRedemptionLabel")}{" "}
+            <strong>{minRedemptionValue}</strong>
+          </div>
+        )}
 
-      {minRedemptionValue && (
-        <div className="p-vallle-create__min-redemption">
-          {t("features.vallles.create.minRedemptionLabel")}{" "}
-          <strong>{minRedemptionValue}</strong>
-        </div>
-      )}
+        <div className="p-vallle-create__meta-expiry">{expiryLabel}</div>
+      </div>
 
       {serverError && <div className="c-form__error">{serverError}</div>}
 
