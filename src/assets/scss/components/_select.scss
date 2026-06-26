@@ -48,3 +48,34 @@
     color: $text-color-highlight;
   }
 }
+
+.c-select__value-container--is-multi {
+  display: flex;
+  flex-wrap: wrap;
+  gap: $spacing-2;
+}
+
+.c-select__multi-value {
+  align-items: center;
+  background: $color-linen;
+  border-radius: $border-radius-sm;
+  display: flex;
+  gap: $spacing-1;
+  overflow: hidden;
+}
+
+.c-select__multi-value__label {
+  padding: $spacing-1 $spacing-2;
+}
+
+.c-select__multi-value__remove {
+  align-items: center;
+  cursor: pointer;
+  display: flex;
+  padding: 0 $spacing-2;
+  transition: background $transition-normal;
+
+  &:hover {
+    background: $color-parchment;
+  }
+}

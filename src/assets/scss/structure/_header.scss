@@ -20,6 +20,21 @@
   width: 100%;
 }
 
+.s-header__store-label {
+  align-items: center;
+  border-radius: $border-radius-3xl;
+  border: solid 1px $color-parchment;
+  display: inline-flex;
+  gap: $spacing-2;
+  height: to-rem(48);
+  padding: 0 $spacing-3;
+}
+
+.s-header__store-label-icon {
+  width: to-rem(20);
+  height: to-rem(20);
+}
+
 .s-header-logo {
   display: none;
 }

@@ -301,6 +301,7 @@
       },
       "form": {
         "name": "Company name",
+        "slug": "Slug",
         "category": "Category",
         "email": "Email",
         "phone": "Phone",
@@ -407,6 +408,7 @@
           "country": "Country",
           "status": "Status",
           "defaultVallleExpiryDays": "Default vallle expiry (days)",
+          "slug": "URL slug",
           "error": {
             "nameRequired": "Company name is required.",
             "expiryDaysRequired": "Default expiry period is required.",
@@ -464,6 +466,8 @@
           "role": "Role",
           "language": "Language",
           "company": "Assign to company",
+          "companies": "Companies",
+          "companiesPlaceholder": "Select companies",
           "noCompany": "No company",
           "accountType": "Account type",
           "accountType_super_admin": "Platform super admin",

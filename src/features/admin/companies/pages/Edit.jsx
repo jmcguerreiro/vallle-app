@@ -187,6 +187,18 @@ const AdminCompanyEdit = () => {
           register={register}
           required={t("features.admin.companies.form.error.nameRequired")}
         />
+        <div className="c-form__field">
+          <label className="c-form__field-label" htmlFor="slug-readonly">
+            {t("features.admin.companies.form.slug")}
+          </label>
+          <input
+            className="c-form__field-input c-form__field-input--readonly"
+            id="slug-readonly"
+            readOnly
+            tabIndex={-1}
+            value={response.data.store.slug ?? ""}
+          />
+        </div>
         <Select
           control={control}
           error={errors.category}

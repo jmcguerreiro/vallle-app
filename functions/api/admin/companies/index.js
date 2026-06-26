@@ -1,4 +1,10 @@
 import { buildLikePattern, parseListQuery } from "../../_list.js";
+import {
+  STORE_SELECT,
+  slugify,
+  validateStoreExpiryDays,
+  validateStoreMinRedemption,
+} from "../../_store.js";
 import { generateUlid } from "../../_ulid.js";
 
 const STORE_FIELDS = [
@@ -135,18 +141,43 @@ export async function onRequestPost(context) {
     );
   }
 
+  const expiryError = validateStoreExpiryDays(body.default_vallle_expiry_days);
+  if (expiryError) return expiryError;
+
+  const minRedemptionError = validateStoreMinRedemption(body);
+  if (minRedemptionError) return minRedemptionError;
+
   try {
     const id = generateUlid();
-    const slug = body.name
-      .trim()
-      .toLowerCase()
-      .replaceAll(/[^a-z0-9]+/g, "-");
+    const slug = slugify(body.name);
     const now = new Date().toISOString();
+
+    // Settings columns mirror the edit form; status always starts 'active'.
+    const settings = [];
+    const settingsValues = [];
+    if (body.default_vallle_expiry_days !== undefined) {
+      settings.push("default_vallle_expiry_days");
+      settingsValues.push(Number.parseInt(body.default_vallle_expiry_days, 10));
+    }
+    if (body.default_min_redemption_mode !== undefined) {
+      const mode = body.default_min_redemption_mode;
+      settings.push(
+        "default_min_redemption_mode",
+        "default_min_redemption_cents",
+      );
+      settingsValues.push(
+        mode,
+        mode === "custom"
+          ? Number.parseInt(body.default_min_redemption_cents, 10)
+          : 0,
+      );
+    }
 
     const fields = [
       "id",
       "slug",
       ...STORE_FIELDS,
+      ...settings,
       "status",
       "created_at",
       "updated_at",
@@ -155,6 +186,7 @@ export async function onRequestPost(context) {
       id,
       slug,
       ...STORE_FIELDS.map((f) => (body[f] ?? "").toString().trim()),
+      ...settingsValues,
       "active",
       now,
       now,
@@ -167,11 +199,7 @@ export async function onRequestPost(context) {
       .bind(...values)
       .run();
 
-    const store = await env.DB.prepare(
-      "SELECT id, name, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, status, created_at FROM stores WHERE id = ?",
-    )
-      .bind(id)
-      .first();
+    const store = await env.DB.prepare(STORE_SELECT).bind(id).first();
 
     return Response.json({ data: { store } }, { status: 201 });
   } catch (error) {

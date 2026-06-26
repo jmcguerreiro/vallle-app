@@ -4,7 +4,7 @@ import { useTranslation } from "react-i18next";
 import Modal from "@/components/Modal";
 import StoreSelect from "@/components/StoreSelect";
 import { useAuth } from "@/hooks/useAuth";
-import { IconHatGlasses, IconStore } from "@/utils/icons";
+import { IconChevronDown, IconHatGlasses, IconStore } from "@/utils/icons";
 
 /**
  * Component: Store
@@ -77,6 +77,11 @@ const Store = () => {
               strokeWidth={1.5}
             />
             {activeStore.store_name}
+            <IconChevronDown
+              className="s-header__store-switch-chevron"
+              size={16}
+              strokeWidth={1.5}
+            />
           </button>
           <div className="s-header__store-modal-wrapper">
             <Modal
@@ -102,7 +107,12 @@ const Store = () => {
           </div>
         </>
       ) : (
-        <span className="s-header__store-name">{activeStore.store_name}</span>
+        <div className="s-header__store-label">
+          <IconStore className="s-header__store-label-icon" strokeWidth={1.5} />
+          <span className="s-header__store-label-name">
+            {activeStore.store_name}
+          </span>
+        </div>
       )}
     </div>
   );

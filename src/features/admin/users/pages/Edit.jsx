@@ -5,12 +5,11 @@ import { useNavigate, useParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import Card from "@/components/Card";
 import EmptyState from "@/components/EmptyState";
-import Fieldset from "@/components/forms/Fieldset";
 import Form from "@/components/forms/Form";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import MultiSelect from "@/components/forms/MultiSelect";
 import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { LOCALE_OPTIONS } from "@/constants/locales";
@@ -24,8 +23,9 @@ import { get, put } from "@/services/api";
 /**
  * Component: AdminUserEdit
  * Form for editing a user's identity, account type (platform super admin vs
- * regular account), account status, and their role + status within each store
- * they belong to. Super admin only.
+ * regular account), account status, and the companies they belong to — assigned
+ * through the same multiselect + per-company role used when creating a user.
+ * Super admin only.
  * @component
  * @returns {JSX.Element}
  */
@@ -43,6 +43,9 @@ const AdminUserEdit = () => {
     handleSubmit,
     reset,
     control,
+    watch,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm();
 
@@ -55,6 +58,13 @@ const AdminUserEdit = () => {
     queryKey: ["admin", "users", id],
     queryFn: ({ signal }) => get(`/api/admin/users/${id}`, { signal }),
   });
+
+  const { data: companiesResponse } = useQuery({
+    queryKey: ["admin", "companies"],
+    queryFn: ({ signal }) => get("/api/admin/companies?limit=200", { signal }),
+  });
+
+  const companies = companiesResponse?.data ?? [];
 
   // Mutations
   const updateUser = useMutation({
@@ -83,10 +93,8 @@ const AdminUserEdit = () => {
 
   // Derived State
   // You can't change your OWN account type or status (avoids locking yourself
-  // out of the platform). Store-scoped role/status are always editable — a
-  // super_admin's platform access doesn't depend on any store membership.
+  // out of the platform). Store memberships are always editable.
   const isSelf = user?.id === id;
-  const userStores = response?.data?.user?.stores ?? [];
   // Account role is now just the platform flag: super admin or regular account.
   // The admin/user distinction lives per store, below.
   const accountTypeOptions = [
@@ -110,30 +118,31 @@ const AdminUserEdit = () => {
     },
   ];
   const storeRoleOptions = [
-    {
-      value: STORE_ROLES.ADMIN,
-      label: t("roles.admin"),
-    },
-    {
-      value: STORE_ROLES.USER,
-      label: t("roles.user"),
-    },
+    { value: STORE_ROLES.ADMIN, label: t("roles.admin") },
+    { value: STORE_ROLES.USER, label: t("roles.user") },
   ];
+  const companyOptions = companies.map((c) => ({ value: c.id, label: c.name }));
+  const selectedStoreIds = watch("store_ids");
 
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      // Flatten the per-store object (keyed by store_id) into the array the API
-      // expects: [{ store_id, role, status }].
-      const stores = Object.entries(values.stores ?? {}).map(
-        ([store_id, membership]) => ({
-          store_id,
-          role: membership.role,
-          status: membership.status,
-        }),
-      );
-      update({ ...values, stores });
+      const stores = (values.store_ids || []).map((storeId) => ({
+        store_id: storeId,
+        role:
+          values.store_roles?.[storeId] === STORE_ROLES.USER
+            ? STORE_ROLES.USER
+            : STORE_ROLES.ADMIN,
+      }));
+      update({
+        name: values.name,
+        email: values.email,
+        role: values.role,
+        status: values.status,
+        locale: values.locale,
+        stores,
+      });
     },
     [update],
   );
@@ -160,25 +169,38 @@ const AdminUserEdit = () => {
   useEffect(() => {
     if (response?.data) {
       const { user: editedUser } = response.data;
-      // Legacy account role "admin" collapses to a regular account; only
-      // super_admin maps to the platform flag.
-      const stores = {};
+      const storeIds = [];
+      const storeRoles = {};
       for (const s of editedUser.stores ?? []) {
-        stores[s.store_id] = { role: s.role, status: s.status };
+        storeIds.push(s.store_id);
+        storeRoles[s.store_id] = s.role;
       }
       reset({
         name: editedUser.name,
         email: editedUser.email,
+        // Legacy account role "admin" collapses to a regular account; only
+        // super_admin maps to the platform flag.
         role:
           editedUser.role === ACCOUNT_ROLES.SUPER_ADMIN
             ? ACCOUNT_ROLES.SUPER_ADMIN
             : ACCOUNT_ROLES.USER,
         status: editedUser.status,
         locale: editedUser.locale || "pt",
-        stores,
+        store_ids: storeIds,
+        store_roles: storeRoles,
       });
     }
   }, [response, reset]);
+
+  // Default each newly-selected company's role to admin so the per-company role
+  // selects never render empty.
+  useEffect(() => {
+    for (const storeId of selectedStoreIds || []) {
+      if (getValues(`store_roles.${storeId}`) === undefined) {
+        setValue(`store_roles.${storeId}`, STORE_ROLES.ADMIN);
+      }
+    }
+  }, [selectedStoreIds, getValues, setValue]);
 
   // Render
   if (isPending) {
@@ -247,41 +269,33 @@ const AdminUserEdit = () => {
           options={LOCALE_OPTIONS}
           placeholder={t("features.admin.users.form.language")}
         />
-      </FormFields>
-
-      <Card
-        description={t("features.admin.users.edit.storeAccessDescription")}
-        title={t("features.admin.users.edit.storeAccess")}
-      >
-        {userStores.length === 0 ? (
-          <p className="c-form__hint">
-            {t("features.admin.users.edit.noStores")}
-          </p>
-        ) : (
-          userStores.map((s) => (
-            <Fieldset key={s.store_id} legend={s.store_name}>
-              <FormFields>
+        {companies.length > 0 && (
+          <>
+            <MultiSelect
+              control={control}
+              error={errors.store_ids}
+              label={t("features.admin.users.form.companies")}
+              name="store_ids"
+              options={companyOptions}
+              placeholder={t("features.admin.users.form.companiesPlaceholder")}
+            />
+            {(selectedStoreIds || []).map((storeId) => {
+              const company = companies.find((c) => c.id === storeId);
+              if (!company) return null;
+              return (
                 <Select
+                  key={storeId}
                   control={control}
-                  error={errors.stores?.[s.store_id]?.role}
-                  label={t("features.admin.users.form.storeRole")}
-                  name={`stores.${s.store_id}.role`}
+                  label={`${company.name} — ${t("features.admin.users.form.storeRole")}`}
+                  name={`store_roles.${storeId}`}
                   options={storeRoleOptions}
                   placeholder={t("features.admin.users.form.storeRole")}
                 />
-                <Select
-                  control={control}
-                  error={errors.stores?.[s.store_id]?.status}
-                  label={t("features.admin.users.form.storeStatus")}
-                  name={`stores.${s.store_id}.status`}
-                  options={statusOptions}
-                  placeholder={t("features.admin.users.form.storeStatus")}
-                />
-              </FormFields>
-            </Fieldset>
-          ))
+              );
+            })}
+          </>
         )}
-      </Card>
+      </FormFields>
     </Form>
   );
 };

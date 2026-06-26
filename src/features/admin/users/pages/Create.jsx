@@ -10,6 +10,7 @@ import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import MultiSelect from "@/components/forms/MultiSelect";
 import Select from "@/components/forms/Select";
 import { LOCALE_OPTIONS } from "@/constants/locales";
 import { ACCOUNT_ROLES, STORE_ROLES } from "@/constants/user-roles";
@@ -20,8 +21,8 @@ import { validatePassword } from "@/utils/password";
 
 /**
  * Component: AdminUserCreate
- * Form for creating a new user and optionally assigning them to a company.
- * Super admin only.
+ * Form for creating a new user and optionally assigning them to one or more
+ * companies, each with its own store role. Super admin only.
  * @component
  * @returns {JSX.Element}
  */
@@ -37,31 +38,29 @@ const AdminUserCreate = () => {
     handleSubmit,
     control,
     watch,
+    getValues,
+    setValue,
     formState: { errors },
   } = useForm({
     defaultValues: {
       role: ACCOUNT_ROLES.USER,
-      store_role: STORE_ROLES.ADMIN,
       locale: "pt",
-      store_id: "",
+      store_ids: [],
+      store_roles: {},
     },
   });
 
   // Queries
   const { data: companiesResponse } = useQuery({
     queryKey: ["admin", "companies"],
-    queryFn: ({ signal }) => get("/api/admin/companies", { signal }),
+    queryFn: ({ signal }) => get("/api/admin/companies?limit=200", { signal }),
   });
 
   const companies = companiesResponse?.data ?? [];
 
   // Mutations
   const createUser = useMutation({
-    mutationFn: (values) =>
-      post("/api/admin/users", {
-        ...values,
-        store_id: values.store_id || null,
-      }),
+    mutationFn: (payload) => post("/api/admin/users", payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "users"] });
       addToast(t("features.admin.users.create.success"), "success");
@@ -93,27 +92,31 @@ const AdminUserCreate = () => {
     },
   ];
   const storeRoleOptions = [
-    {
-      value: STORE_ROLES.ADMIN,
-      label: t("roles.admin"),
-    },
-    {
-      value: STORE_ROLES.USER,
-      label: t("roles.user"),
-    },
+    { value: STORE_ROLES.ADMIN, label: t("roles.admin") },
+    { value: STORE_ROLES.USER, label: t("roles.user") },
   ];
-  const companyOptions = [
-    { value: "", label: t("features.admin.users.form.noCompany") },
-    ...companies.map((c) => ({ value: c.id, label: c.name })),
-  ];
-  // The store role only applies once a company is assigned.
-  const storeId = watch("store_id");
+  const companyOptions = companies.map((c) => ({ value: c.id, label: c.name }));
+  const selectedStoreIds = watch("store_ids");
 
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      createUser.mutate(values);
+      const stores = (values.store_ids || []).map((storeId) => ({
+        store_id: storeId,
+        role:
+          values.store_roles?.[storeId] === STORE_ROLES.USER
+            ? STORE_ROLES.USER
+            : STORE_ROLES.ADMIN,
+      }));
+      createUser.mutate({
+        name: values.name,
+        email: values.email,
+        password: values.password,
+        role: values.role,
+        locale: values.locale,
+        stores,
+      });
     },
     [createUser],
   );
@@ -123,6 +126,16 @@ const AdminUserCreate = () => {
     setHeader({ title, description });
     return () => setHeader();
   }, [title, description, setHeader]);
+
+  // Default each newly-selected company's role to admin so the per-company role
+  // selects never render empty.
+  useEffect(() => {
+    for (const id of selectedStoreIds || []) {
+      if (getValues(`store_roles.${id}`) === undefined) {
+        setValue(`store_roles.${id}`, STORE_ROLES.ADMIN);
+      }
+    }
+  }, [selectedStoreIds, getValues, setValue]);
 
   // Render
   return (
@@ -172,24 +185,28 @@ const AdminUserCreate = () => {
         />
         {companies.length > 0 && (
           <>
-            <Select
+            <MultiSelect
               control={control}
-              error={errors.store_id}
-              label={t("features.admin.users.form.company")}
-              name="store_id"
+              error={errors.store_ids}
+              label={t("features.admin.users.form.companies")}
+              name="store_ids"
               options={companyOptions}
-              placeholder={t("features.admin.users.form.noCompany")}
+              placeholder={t("features.admin.users.form.companiesPlaceholder")}
             />
-            {storeId && (
-              <Select
-                control={control}
-                error={errors.store_role}
-                label={t("features.admin.users.form.storeRole")}
-                name="store_role"
-                options={storeRoleOptions}
-                placeholder={t("features.admin.users.form.storeRole")}
-              />
-            )}
+            {(selectedStoreIds || []).map((storeId) => {
+              const company = companies.find((c) => c.id === storeId);
+              if (!company) return null;
+              return (
+                <Select
+                  key={storeId}
+                  control={control}
+                  label={`${company.name} — ${t("features.admin.users.form.storeRole")}`}
+                  name={`store_roles.${storeId}`}
+                  options={storeRoleOptions}
+                  placeholder={t("features.admin.users.form.storeRole")}
+                />
+              );
+            })}
           </>
         )}
       </FormFields>

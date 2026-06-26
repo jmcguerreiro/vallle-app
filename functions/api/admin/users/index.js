@@ -159,13 +159,22 @@ export async function onRequestPost(context) {
       );
     }
 
-    // Validate the store assignment BEFORE creating the user, so a bad store_id
+    // A user may be assigned to multiple stores at once, each with its own
+    // store-scoped role (admin/user, chosen independently of the account role).
+    const storeAssignments = Array.isArray(body.stores) ? body.stores : [];
+
+    // Validate every store exists BEFORE creating the user, so a bad store_id
     // can't leave an orphaned account behind.
-    if (body.store_id) {
-      const store = await env.DB.prepare("SELECT id FROM stores WHERE id = ?")
-        .bind(body.store_id)
-        .first();
-      if (!store) {
+    if (storeAssignments.length > 0) {
+      const storeIds = storeAssignments.map((s) => s.store_id);
+      const placeholders = storeIds.map(() => "?").join(", ");
+      const { results: found } = await env.DB.prepare(
+        `SELECT id FROM stores WHERE id IN (${placeholders})`,
+      )
+        .bind(...storeIds)
+        .all();
+      const foundIds = new Set(found.map((r) => r.id));
+      if (storeIds.some((sid) => !foundIds.has(sid))) {
         return Response.json(
           { error: { message: "Store not found", code: "STORE_NOT_FOUND" } },
           { status: 404 },
@@ -177,10 +186,6 @@ export async function onRequestPost(context) {
     const passwordHash = await hashPassword(body.password);
     // Account role is the platform flag only: super_admin or plain user.
     const accountRole = body.role === "super_admin" ? "super_admin" : "user";
-    // Store role is store-scoped and chosen independently of the account role
-    // (admin/user). Defaults to admin — assigning a user to a store usually
-    // means making them its owner/manager.
-    const storeRole = body.store_role === "user" ? "user" : "admin";
     const locale = normaliseLocale(body.locale);
     const now = new Date().toISOString();
 
@@ -200,12 +205,15 @@ export async function onRequestPost(context) {
       ),
     ];
 
-    if (body.store_id) {
+    for (const assignment of storeAssignments) {
+      // Store role defaults to admin — assigning a user to a store usually means
+      // making them its owner/manager.
+      const storeRole = assignment.role === "user" ? "user" : "admin";
       statements.push(
         env.DB.prepare(
           `INSERT INTO store_users (id, store_id, user_id, role, status, created_at)
            VALUES (?, ?, ?, ?, 'active', ?)`,
-        ).bind(generateUlid(), body.store_id, id, storeRole, now),
+        ).bind(generateUlid(), assignment.store_id, id, storeRole, now),
       );
     }
 

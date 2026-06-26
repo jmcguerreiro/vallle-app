@@ -1,4 +1,5 @@
 import { normaliseLocale } from "../../_locales.js";
+import { generateUlid } from "../../_ulid.js";
 import { isValidEmail } from "../../_validation.js";
 
 /**
@@ -50,10 +51,11 @@ export async function onRequestGet(context) {
  * `super_admin` or `user`), and `status` (the account kill-switch). A super_admin
  * can't change their own role or status (self-lockout guard).
  *
- * Store-scoped: an optional `stores` array of `{ store_id, role, status }` updates
- * the role (`admin`/`user`) and membership status (`active`/`inactive`) of the
- * user's *existing* memberships. Unknown store_ids are ignored (no membership is
- * created or removed here).
+ * Store-scoped: an optional `stores` array of `{ store_id, role }` is the full
+ * desired set of memberships (same multiselect model as user creation). Stores
+ * not already linked are inserted (status `active`), existing ones have their
+ * role updated, and memberships absent from the list are removed. Existing
+ * membership status is left untouched on kept rows.
  * @param {Object} context - Cloudflare Pages Function context
  * @returns {Promise<Response>}
  */
@@ -135,20 +137,63 @@ export async function onRequestPut(context) {
     const locale = normaliseLocale(body.locale);
     const now = new Date().toISOString();
 
-    // Build the store-membership updates. Only valid role/status values are
-    // written, and only for memberships the user already has (the WHERE clause
-    // on user_id + store_id makes an unknown store_id a no-op).
-    const membershipUpdates = [];
-    if (Array.isArray(body.stores)) {
-      for (const s of body.stores) {
-        if (!s?.store_id) continue;
-        const storeRole = s.role === "admin" ? "admin" : "user";
-        const storeStatus = s.status === "inactive" ? "inactive" : "active";
-        membershipUpdates.push(
+    // Reconcile memberships against the submitted list (the same multiselect
+    // model as user creation): the array is the full desired set, so validate
+    // every store exists, then add new links, update kept ones' role, and remove
+    // any that were deselected.
+    const storeAssignments = Array.isArray(body.stores) ? body.stores : [];
+
+    if (storeAssignments.length > 0) {
+      const storeIds = storeAssignments.map((s) => s.store_id);
+      const placeholders = storeIds.map(() => "?").join(", ");
+      const { results: found } = await env.DB.prepare(
+        `SELECT id FROM stores WHERE id IN (${placeholders})`,
+      )
+        .bind(...storeIds)
+        .all();
+      const foundIds = new Set(found.map((r) => r.id));
+      if (storeIds.some((sid) => !foundIds.has(sid))) {
+        return Response.json(
+          { error: { message: "Store not found", code: "STORE_NOT_FOUND" } },
+          { status: 404 },
+        );
+      }
+    }
+
+    const { results: currentMemberships } = await env.DB.prepare(
+      "SELECT store_id FROM store_users WHERE user_id = ?",
+    )
+      .bind(id)
+      .all();
+    const currentStoreIds = new Set(currentMemberships.map((m) => m.store_id));
+    const submittedStoreIds = new Set(storeAssignments.map((s) => s.store_id));
+
+    const membershipStatements = [];
+    for (const assignment of storeAssignments) {
+      // Store role defaults to admin — assigning a user to a store usually means
+      // making them its owner/manager.
+      const storeRole = assignment.role === "user" ? "user" : "admin";
+      if (currentStoreIds.has(assignment.store_id)) {
+        membershipStatements.push(
           env.DB.prepare(
-            `UPDATE store_users SET role = ?, status = ?
-             WHERE user_id = ? AND store_id = ?`,
-          ).bind(storeRole, storeStatus, id, s.store_id),
+            "UPDATE store_users SET role = ? WHERE user_id = ? AND store_id = ?",
+          ).bind(storeRole, id, assignment.store_id),
+        );
+      } else {
+        membershipStatements.push(
+          env.DB.prepare(
+            `INSERT INTO store_users (id, store_id, user_id, role, status, created_at)
+             VALUES (?, ?, ?, ?, 'active', ?)`,
+          ).bind(generateUlid(), assignment.store_id, id, storeRole, now),
+        );
+      }
+    }
+    for (const storeId of currentStoreIds) {
+      if (!submittedStoreIds.has(storeId)) {
+        membershipStatements.push(
+          env.DB.prepare(
+            "DELETE FROM store_users WHERE user_id = ? AND store_id = ?",
+          ).bind(id, storeId),
         );
       }
     }
@@ -165,7 +210,7 @@ export async function onRequestPut(context) {
         now,
         id,
       ),
-      ...membershipUpdates,
+      ...membershipStatements,
     ]);
 
     const updatedUser = await env.DB.prepare(

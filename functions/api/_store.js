@@ -80,6 +80,25 @@ export async function requireStore(request, env, userId) {
   };
 }
 
+/**
+ * Builds a URL-safe slug from arbitrary text. Strips diacritics (so accented
+ * letters map to their base form — "parágrafo" → "paragrafo", not "par-grafo"),
+ * lowercases, collapses any run of non-alphanumerics into a single dash, and
+ * trims leading/trailing dashes. Keep this in sync with the client copy in
+ * `src/utils/slug.js`.
+ * @param {string} value - Raw text (e.g. a company name)
+ * @returns {string}
+ */
+export function slugify(value) {
+  return (value ?? "")
+    .toString()
+    .normalize("NFD")
+    .replaceAll(/\p{Diacritic}/gu, "")
+    .toLowerCase()
+    .replaceAll(/[^a-z0-9]+/g, "-")
+    .replaceAll(/^-+|-+$/g, "");
+}
+
 /** Columns returned when reading a single store record (by id). */
 export const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, default_min_redemption_mode, default_min_redemption_cents, status, created_at FROM stores WHERE id = ?`;
 

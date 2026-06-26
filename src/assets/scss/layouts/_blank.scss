@@ -3,4 +3,7 @@
   flex-direction: column;
   flex: 1;
   min-height: 100vh;
+  // dvh tracks the visible viewport in an iOS standalone PWA, where 100vh
+  // overflows past the home indicator and hides the bottom illustration.
+  min-height: 100dvh;
 }

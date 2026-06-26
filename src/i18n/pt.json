@@ -301,6 +301,7 @@
       },
       "form": {
         "name": "Nome da empresa",
+        "slug": "Slug",
         "category": "Categoria",
         "email": "Email",
         "phone": "Telefone",
@@ -407,6 +408,7 @@
           "country": "País",
           "status": "Estado",
           "defaultVallleExpiryDays": "Expiração de vallles predefinida (dias)",
+          "slug": "Slug de URL",
           "error": {
             "nameRequired": "O nome da empresa é obrigatório.",
             "expiryDaysRequired": "O período de expiração é obrigatório.",
@@ -464,6 +466,8 @@
           "role": "Função",
           "language": "Idioma",
           "company": "Atribuir a empresa",
+          "companies": "Empresas",
+          "companiesPlaceholder": "Selecione as empresas",
           "noCompany": "Sem empresa",
           "accountType": "Tipo de conta",
           "accountType_super_admin": "Super admin da plataforma",

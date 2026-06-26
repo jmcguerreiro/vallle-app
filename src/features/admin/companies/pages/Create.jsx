@@ -10,12 +10,15 @@ import Form from "@/components/forms/Form";
 import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
+import MinRedemptionFields from "@/components/forms/MinRedemptionFields";
 import Select from "@/components/forms/Select";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
+import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { adminCompanyPath } from "@/constants/routes";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
+import { slugify } from "@/utils/slug";
 
 /**
  * Component: AdminCompanyCreate
@@ -35,8 +38,15 @@ const AdminCompanyCreate = () => {
     register,
     handleSubmit,
     control,
+    watch,
     formState: { errors },
-  } = useForm();
+  } = useForm({
+    defaultValues: {
+      country: "PT",
+      default_vallle_expiry_days: 365,
+      default_min_redemption_mode: MIN_REDEMPTION_MODES.NONE,
+    },
+  });
 
   // Mutations
   const createCompany = useMutation({
@@ -67,12 +77,21 @@ const AdminCompanyCreate = () => {
     value: key,
     label: t(`constants.companyCategories.${key}`),
   }));
+  const countryOptions = [{ value: "PT", label: t("constants.countries.PT") }];
+  const slugPreview = slugify(watch("name"));
 
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      createCompany.mutate(values);
+      const { minRedemptionAmount, ...rest } = values;
+      createCompany.mutate({
+        ...rest,
+        default_min_redemption_cents:
+          values.default_min_redemption_mode === MIN_REDEMPTION_MODES.CUSTOM
+            ? Math.round(Number.parseFloat(minRedemptionAmount) * 100)
+            : 0,
+      });
     },
     [createCompany],
   );
@@ -94,6 +113,18 @@ const AdminCompanyCreate = () => {
           register={register}
           required={t("features.admin.companies.form.error.nameRequired")}
         />
+        <div className="c-form__field">
+          <label className="c-form__field-label" htmlFor="slug-preview">
+            {t("features.admin.companies.form.slug")}
+          </label>
+          <input
+            className="c-form__field-input c-form__field-input--readonly"
+            id="slug-preview"
+            readOnly
+            tabIndex={-1}
+            value={slugPreview}
+          />
+        </div>
         <Select
           control={control}
           error={errors.category}
@@ -122,6 +153,74 @@ const AdminCompanyCreate = () => {
           label={t("features.admin.companies.form.vatId")}
           name="vat_id"
           register={register}
+        />
+        <Input
+          autoComplete="off"
+          error={errors.address1}
+          label={t("features.admin.companies.form.address1")}
+          name="address1"
+          register={register}
+        />
+        <Input
+          autoComplete="off"
+          error={errors.address2}
+          label={t("features.admin.companies.form.address2")}
+          name="address2"
+          register={register}
+        />
+        <Input
+          autoComplete="off"
+          error={errors.city}
+          label={t("features.admin.companies.form.city")}
+          name="city"
+          register={register}
+        />
+        <Input
+          autoComplete="off"
+          error={errors.postal_code}
+          label={t("features.admin.companies.form.postalCode")}
+          name="postal_code"
+          register={register}
+        />
+        <Input
+          autoComplete="off"
+          error={errors.region}
+          label={t("features.admin.companies.form.region")}
+          name="region"
+          register={register}
+        />
+        <Select
+          control={control}
+          error={errors.country}
+          label={t("features.admin.companies.form.country")}
+          name="country"
+          options={countryOptions}
+          placeholder={t("features.admin.companies.form.country")}
+        />
+        <Input
+          error={errors.default_vallle_expiry_days}
+          label={t("features.admin.companies.form.defaultVallleExpiryDays")}
+          name="default_vallle_expiry_days"
+          register={register}
+          required={t("features.admin.companies.form.error.expiryDaysRequired")}
+          type="number"
+          validate={{
+            range: (v) => {
+              const n = Number.parseInt(v, 10);
+              return (
+                (n >= 1 && n <= 1825) ||
+                t("features.admin.companies.form.error.expiryDaysRange")
+              );
+            },
+          }}
+        />
+        <MinRedemptionFields
+          amountName="minRedemptionAmount"
+          control={control}
+          errors={errors}
+          modeName="default_min_redemption_mode"
+          register={register}
+          watch={watch}
         />
       </FormFields>
       <FormActions>
