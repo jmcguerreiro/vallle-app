@@ -80,6 +80,10 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  // dvh tracks the visible viewport in an iOS standalone PWA; 100vh on the root
+  // overflows past the home indicator, so the whole document scrolls and the
+  // scrollbar runs past the notch. Keep this in sync with .l-blank.
+  min-height: 100dvh;
 }
 
 .app__loading {
@@ -161,6 +165,7 @@ strong {
   align-items: center;
   justify-content: center;
   min-height: 100vh;
+  min-height: 100dvh;
   font-size: 1.125rem;
   color: var(--color-text-muted);
 }
