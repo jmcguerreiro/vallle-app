@@ -1,9 +1,12 @@
 import { buildLikePattern, parseListQuery } from "../../_list.js";
 import {
   STORE_SELECT,
+  coerceFoundingMember,
+  normalizePlanRenewsAt,
   slugify,
   validateStoreExpiryDays,
   validateStoreMinRedemption,
+  validateStorePlan,
 } from "../../_store.js";
 import { generateUlid } from "../../_ulid.js";
 
@@ -38,7 +41,8 @@ export async function onRequestGet(context) {
         "category",
         "vallle_count",
         "total_revenue",
-        "total_commission",
+        "plan",
+        "total_unpaid",
         "updated_at",
       ]),
       defaultSort: "name",
@@ -46,6 +50,7 @@ export async function onRequestGet(context) {
     });
     const status = url.searchParams.get("status") || "all";
     const category = url.searchParams.get("category") || "all";
+    const payment = url.searchParams.get("payment") || "all";
 
     const where = [];
     const params = [];
@@ -65,26 +70,22 @@ export async function onRequestGet(context) {
       params.push(category);
     }
 
+    if (payment === "unpaid") where.push("total_unpaid > 0");
+    if (payment === "paid") where.push("total_unpaid = 0");
+
     const whereSql = where.length > 0 ? `WHERE ${where.join(" AND ")}` : "";
 
     // Aggregate per store first; search/filter/sort/pagination apply to the
     // summary so aggregate columns are sortable like any other.
     const summarySql = `
       WITH summary AS (
-        SELECT s.id, s.name, s.category, s.status, s.created_at, s.updated_at,
+        SELECT s.id, s.name, s.category, s.status, s.plan, s.plan_renews_at,
+               s.created_at, s.updated_at,
                COUNT(v.id) AS vallle_count,
                COALESCE(SUM(v.amount), 0) AS total_revenue,
-               COALESCE(cs.total_commission, 0) AS total_commission,
-               COALESCE(cs.unpaid_commission, 0) AS unpaid_commission
+               COALESCE((SELECT SUM(amount) FROM subscription_periods WHERE store_id = s.id AND paid_at IS NULL), 0) AS total_unpaid
         FROM stores s
         LEFT JOIN vallles v ON v.store_id = s.id
-        LEFT JOIN (
-          SELECT store_id,
-                 SUM(amount) AS total_commission,
-                 SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END) AS unpaid_commission
-          FROM commissions
-          GROUP BY store_id
-        ) cs ON cs.store_id = s.id
         GROUP BY s.id
       )`;
 
@@ -144,6 +145,9 @@ export async function onRequestPost(context) {
   const expiryError = validateStoreExpiryDays(body.default_vallle_expiry_days);
   if (expiryError) return expiryError;
 
+  const planError = validateStorePlan(body.plan);
+  if (planError) return planError;
+
   const minRedemptionError = validateStoreMinRedemption(body);
   if (minRedemptionError) return minRedemptionError;
 
@@ -171,6 +175,18 @@ export async function onRequestPost(context) {
           ? Number.parseInt(body.default_min_redemption_cents, 10)
           : 0,
       );
+    }
+    if (body.plan !== undefined) {
+      settings.push("plan");
+      settingsValues.push(body.plan);
+    }
+    if (body.plan_renews_at !== undefined) {
+      settings.push("plan_renews_at");
+      settingsValues.push(normalizePlanRenewsAt(body.plan_renews_at));
+    }
+    if (body.is_founding_member !== undefined) {
+      settings.push("is_founding_member");
+      settingsValues.push(coerceFoundingMember(body.is_founding_member));
     }
 
     const fields = [

@@ -1,6 +1,10 @@
 name = "vallle-app"
 compatibility_date = "2026-03-17"
-pages_build_output_dir = "dist"
+# NOTE: pages_build_output_dir intentionally omitted. With it set, wrangler 4's
+# `pages dev` infers a static directory and rejects the `-- vite` proxy command
+# in the dev script ("directory OR proxy command, not both"). The build output
+# dir for deploys is configured in the Cloudflare Pages dashboard (or pass it
+# explicitly: `wrangler pages deploy dist`).
 
 [[d1_databases]]
 binding = "DB"

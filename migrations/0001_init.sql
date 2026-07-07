@@ -1,4 +1,4 @@
--- Vallle · D1 schema v6
+-- Vallle · D1 schema v7
 -- Run with: wrangler d1 execute vallle-db --remote --file=./0001_init.sql
 -- All monetary INTEGER columns store cents (e.g. 5000 = €50.00)
 
@@ -43,6 +43,13 @@ CREATE TABLE IF NOT EXISTS stores (
   -- column is only meaningful when the mode is 'custom'.
   default_min_redemption_mode  TEXT    NOT NULL DEFAULT 'none' CHECK (default_min_redemption_mode IN ('none', 'full', 'custom')),
   default_min_redemption_cents INTEGER NOT NULL DEFAULT 0,
+  -- Subscription plan (flat annual fee, tiered by vallles sold/year). The tier
+  -- is set at renewal from the trailing-year count, never auto-bumped mid-year.
+  -- 'custom' = bespoke (1000+/yr). plan_renews_at is the next renewal date.
+  -- is_founding_member flags early adopters (first year free).
+  plan                       TEXT NOT NULL DEFAULT 'starter' CHECK (plan IN ('starter', 'growth', 'pro', 'custom')),
+  plan_renews_at             TEXT,
+  is_founding_member         INTEGER NOT NULL DEFAULT 0,
   created_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   updated_at                 TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
@@ -107,18 +114,25 @@ CREATE TABLE IF NOT EXISTS redemptions (
 CREATE INDEX IF NOT EXISTS idx_redemptions_store   ON redemptions(store_id);
 CREATE INDEX IF NOT EXISTS idx_redemptions_vallle ON redemptions(vallle_id);
 
--- ─── Commissions ────────────────────────────────────────────────
-CREATE TABLE IF NOT EXISTS commissions (
-  id         TEXT PRIMARY KEY,
-  store_id   TEXT NOT NULL REFERENCES stores(id),
-  vallle_id TEXT NOT NULL REFERENCES vallles(id),
-  amount     INTEGER NOT NULL,
-  paid_at    TEXT,
-  created_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+-- ─── Subscription periods ───────────────────────────────────────
+-- One row per store per billing year: the annual subscription charge, with
+-- paid_at tracking (mirrors the old manual "mark as paid" flow). vallles_sold
+-- snapshots the count that set the tier for the period; amount is the net
+-- (ex-VAT) annual price in cents (0 for a founding-member's free first year).
+CREATE TABLE IF NOT EXISTS subscription_periods (
+  id           TEXT PRIMARY KEY,
+  store_id     TEXT NOT NULL REFERENCES stores(id),
+  plan         TEXT NOT NULL CHECK (plan IN ('starter', 'growth', 'pro', 'custom')),
+  period_start TEXT NOT NULL,
+  period_end   TEXT NOT NULL,
+  amount       INTEGER NOT NULL,
+  vallles_sold INTEGER NOT NULL DEFAULT 0,
+  paid_at      TEXT,
+  created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
-CREATE INDEX IF NOT EXISTS idx_commissions_store  ON commissions(store_id);
-CREATE INDEX IF NOT EXISTS idx_commissions_unpaid ON commissions(store_id) WHERE paid_at IS NULL;
+CREATE INDEX IF NOT EXISTS idx_subscription_periods_store  ON subscription_periods(store_id);
+CREATE INDEX IF NOT EXISTS idx_subscription_periods_unpaid ON subscription_periods(store_id) WHERE paid_at IS NULL;
 
 -- ─── Password reset tokens ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS password_reset_tokens (

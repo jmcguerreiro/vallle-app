@@ -11,6 +11,7 @@
  *   vallle creation; `inactive` removes access entirely.
  */
 
+import { PLAN_IDS } from "./_plans.js";
 import { validateMinRedemption } from "./vallles/_validation.js";
 
 /**
@@ -100,7 +101,7 @@ export function slugify(value) {
 }
 
 /** Columns returned when reading a single store record (by id). */
-export const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, default_min_redemption_mode, default_min_redemption_cents, status, created_at FROM stores WHERE id = ?`;
+export const STORE_SELECT = `SELECT id, name, slug, category, email, vat_id, phone, address1, address2, city, postal_code, region, country, default_vallle_expiry_days, default_min_redemption_mode, default_min_redemption_cents, plan, plan_renews_at, is_founding_member, status, created_at FROM stores WHERE id = ?`;
 
 /** Free-text store fields a client may edit. `status` and expiry are handled separately. */
 const STORE_EDITABLE_FIELDS = [
@@ -178,19 +179,65 @@ export function validateStoreStatus(value) {
 }
 
 /**
+ * Validates the optional `plan` field against the allowed plan ids. Returns a
+ * 400 `Response` when present-but-invalid, or `null` when absent or valid. Call
+ * before `buildStoreUpdate({ allowPlan: true })`.
+ * @param {unknown} value - Raw `body.plan`
+ * @returns {Response|null}
+ */
+export function validateStorePlan(value) {
+  if (value === undefined) return null;
+  if (!PLAN_IDS.includes(value)) {
+    return Response.json(
+      { error: { message: "Invalid plan", code: "VALIDATION_FAILED" } },
+      { status: 400 },
+    );
+  }
+  return null;
+}
+
+/**
+ * Normalises a `plan_renews_at` value: empty/null → `null`; a date-only string
+ * from a form (`YYYY-MM-DD`) → a full ISO timestamp; anything else is passed
+ * through. Shared by store create and update so they store the same shape.
+ * @param {unknown} value
+ * @returns {string|null}
+ */
+export function normalizePlanRenewsAt(value) {
+  if (value === "" || value === null || value === undefined) return null;
+  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00Z`;
+  return value;
+}
+
+/**
+ * Coerces an `is_founding_member` value (boolean, `1`, or `"1"`) to `0`/`1`.
+ * @param {unknown} value
+ * @returns {number}
+ */
+export function coerceFoundingMember(value) {
+  return value === true || value === 1 || value === "1" ? 1 : 0;
+}
+
+/**
  * Builds the `SET ...` clause and bound values for a store UPDATE from a request
  * body. This is a partial update: only fields actually present in the body are
  * written, so an omitted field is left unchanged (an explicit `""` still clears
- * it). Optionally includes `status` (admin only) and `default_vallle_expiry_days`
- * when present. Validate `status` with `validateStoreStatus`, expiry with
+ * it). Optionally includes `status` (admin only), the subscription plan fields
+ * (`plan`/`plan_renews_at`/`is_founding_member`, admin only), and
+ * `default_vallle_expiry_days` when present. Validate `status` with
+ * `validateStoreStatus`, `plan` with `validateStorePlan`, expiry with
  * `validateStoreExpiryDays`, and the minimum-redemption default with
  * `validateStoreMinRedemption` before calling.
  * @param {Object} body - Parsed request body
  * @param {Object} [options]
  * @param {boolean} [options.allowStatus=false] - Whether `status` may be updated
+ * @param {boolean} [options.allowPlan=false] - Whether the plan fields may be updated
  * @returns {{ sets: string, values: Array }}
  */
-export function buildStoreUpdate(body, { allowStatus = false } = {}) {
+export function buildStoreUpdate(
+  body,
+  { allowStatus = false, allowPlan = false } = {},
+) {
   const columns = [];
   const values = [];
 
@@ -204,6 +251,23 @@ export function buildStoreUpdate(body, { allowStatus = false } = {}) {
   if (allowStatus && body.status !== undefined) {
     columns.push("status");
     values.push(body.status);
+  }
+
+  // Subscription plan fields — admin only. Set by the super_admin at renewal;
+  // not editable by store admins (the store self-edit endpoint omits allowPlan).
+  if (allowPlan) {
+    if (body.plan !== undefined) {
+      columns.push("plan");
+      values.push(body.plan);
+    }
+    if (body.plan_renews_at !== undefined) {
+      columns.push("plan_renews_at");
+      values.push(normalizePlanRenewsAt(body.plan_renews_at));
+    }
+    if (body.is_founding_member !== undefined) {
+      columns.push("is_founding_member");
+      values.push(coerceFoundingMember(body.is_founding_member));
+    }
   }
 
   if (body.default_vallle_expiry_days !== undefined) {

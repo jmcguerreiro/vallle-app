@@ -233,7 +233,8 @@ src/
 │   │   │   ├── View.jsx     ← modal
 │   │   │   └── Edit.jsx     ← modal
 │   │   └── utils.js         ← feature-specific utils
-│   └── commissions/
+│   └── admin/
+│       └── companies/       ← super-admin company CRUD; plan & billing live in the detail (View.jsx)
 ├── components/
 │   ├── Modal.jsx            ← standalone state-driven modal (native <dialog>)
 │   ├── Drawer.jsx           ← standalone state-driven drawer (Vaul); same props as Modal
@@ -291,7 +292,7 @@ Roles are split into two scopes:
 
 - **Account/platform** (`users.role`): only `super_admin` (you — platform owner) is meaningful; everyone else is a plain account. `users.status` is an account-level kill-switch. Gate platform-only routes with `RoleGuard allowedRoles={["super_admin"]}` (it reads `users.role`).
 - **Store-scoped** (`store_users.role` = `admin`/`user`, `store_users.status` = `active`/`inactive`): the authority for what a user can do _within the active store_. The same account can be an admin in one store and a plain or inactive member in another. Membership status is access only (`inactive` = no access to that store). Gate store-admin routes with `StoreAdminRoute` (reads `useAuth().isAdmin`, which is `super_admin || activeStore.role === "admin"`), not `RoleGuard`. On the API, `requireStore` returns `{ storeId, storeRole, storeStatus }` and 403s when the membership or the store is inactive; `functions/api/company/users/_middleware.js` gates on the store admin role resolved from `X-Store-Id`.
-- **Store suspension** is separate, and a **store-level** state on `stores.status` (`active`/`suspended`/`inactive`), set only by the super_admin (e.g. unpaid commissions). A `suspended` store stays readable but can't emit new vallles (`POST /api/vallles` → `STORE_SUSPENDED`); `inactive` removes access entirely. Frontend reads it via `useAuth().isStoreSuspended` (store status only).
+- **Store suspension** is separate, and a **store-level** state on `stores.status` (`active`/`suspended`/`inactive`), set only by the super_admin (e.g. unpaid subscription). A `suspended` store stays readable but can't emit new vallles (`POST /api/vallles` → `STORE_SUSPENDED`); `inactive` removes access entirely. Frontend reads it via `useAuth().isStoreSuspended` (store status only).
 
 **Example:**
 
@@ -299,10 +300,10 @@ Roles are split into two scopes:
 <Route
   element={
     <RoleGuard allowedRoles={["super_admin"]}>
-      <Commissions />
+      <AdminCompaniesIndex />
     </RoleGuard>
   }
-  path="commissions"
+  path="admin/companies"
 />
 ```
 
@@ -429,7 +430,6 @@ Cross-domain invalidations are fine when warranted — e.g. creating a vallle in
 | Company users               | `['company', 'users']`            |
 | Admin: users                | `['admin', 'users']`              |
 | Admin: companies            | `['admin', 'companies']`          |
-| Admin: commissions          | `['admin', 'commissions']`        |
 
 When adding a new resource, follow the pattern: namespace first (e.g. `'admin'`), then the resource name, then any parameters as a plain object.
 

@@ -14,6 +14,7 @@ import Select from "@/components/forms/Select";
 import Loader from "@/components/Loader";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
 import { COMPANY_STATUSES } from "@/constants/company-statuses";
+import { PLAN_IDS } from "@/constants/plans";
 import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
@@ -95,6 +96,14 @@ const AdminCompanyEdit = () => {
       label: t("features.admin.companies.list.inactive"),
     },
   ];
+  const planOptions = PLAN_IDS.map((planId) => ({
+    value: planId,
+    label: t(`constants.plans.${planId}`),
+  }));
+  const foundingOptions = [
+    { value: "1", label: t("features.admin.companies.form.foundingMemberYes") },
+    { value: "0", label: t("features.admin.companies.form.foundingMemberNo") },
+  ];
 
   // Handlers
   const onSubmit = useCallback(
@@ -147,6 +156,11 @@ const AdminCompanyEdit = () => {
         region: store.region,
         country: store.country,
         status: store.status,
+        plan: store.plan,
+        plan_renews_at: store.plan_renews_at
+          ? store.plan_renews_at.slice(0, 10)
+          : "",
+        is_founding_member: String(store.is_founding_member ?? 0),
         default_vallle_expiry_days: store.default_vallle_expiry_days,
         default_min_redemption_mode: store.default_min_redemption_mode,
         minRedemptionAmount: store.default_min_redemption_cents
@@ -303,6 +317,30 @@ const AdminCompanyEdit = () => {
           name="status"
           options={statusOptions}
           placeholder={t("features.admin.companies.form.status")}
+        />
+        <Select
+          control={control}
+          error={errors.plan}
+          label={t("features.admin.companies.form.plan")}
+          name="plan"
+          options={planOptions}
+          placeholder={t("features.admin.companies.form.plan")}
+        />
+        <Input
+          error={errors.plan_renews_at}
+          hint={t("features.admin.companies.form.planRenewsAtHint")}
+          label={t("features.admin.companies.form.planRenewsAt")}
+          name="plan_renews_at"
+          register={register}
+          type="date"
+        />
+        <Select
+          control={control}
+          error={errors.is_founding_member}
+          label={t("features.admin.companies.form.isFoundingMember")}
+          name="is_founding_member"
+          options={foundingOptions}
+          placeholder={t("features.admin.companies.form.isFoundingMember")}
         />
       </FormFields>
     </Form>

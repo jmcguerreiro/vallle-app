@@ -40,8 +40,9 @@ const MONTH_LABELS = [
 
 /**
  * Component: AdminDashboardIndex
- * Super admin home page. Shows platform-level stats (companies, vallle amount,
- * commission revenue) and a yearly line chart of vallles vs commissions broken down by month.
+ * Super admin home page. Shows platform-level stats (companies, vallle sales,
+ * subscription revenue) and a yearly line chart of vallle sales vs subscription
+ * revenue broken down by month.
  * @component
  * @returns {JSX.Element}
  */
@@ -77,7 +78,7 @@ const AdminDashboardIndex = () => {
       ...d,
       label: MONTH_LABELS[Number.parseInt(d.month.split("-")[1], 10) - 1],
       vallle_amount: d.vallle_amount / 100,
-      commission_amount: d.commission_amount / 100,
+      subscription_revenue: d.subscription_revenue / 100,
     }));
   }, [data]);
 
@@ -137,8 +138,8 @@ const AdminDashboardIndex = () => {
           value={formatCurrency(data.totalVallleAmount)}
         />
         <Stat
-          label={t("features.adminDashboard.stats.commission")}
-          value={formatCurrency(data.totalCommission)}
+          label={t("features.adminDashboard.stats.revenue")}
+          value={formatCurrency(data.totalSubscriptionRevenue)}
         />
       </div>
 
@@ -182,8 +183,8 @@ const AdminDashboardIndex = () => {
                 type="monotone"
               />
               <Line
-                dataKey="commission_amount"
-                name={t("features.adminDashboard.chart.commissions")}
+                dataKey="subscription_revenue"
+                name={t("features.adminDashboard.chart.revenue")}
                 stroke="#7A9B76"
                 strokeWidth={1.5}
                 type="monotone"

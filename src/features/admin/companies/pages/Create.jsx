@@ -13,6 +13,7 @@ import Input from "@/components/forms/Input";
 import MinRedemptionFields from "@/components/forms/MinRedemptionFields";
 import Select from "@/components/forms/Select";
 import { COMPANY_CATEGORIES } from "@/constants/company-categories";
+import { PLAN_IDS } from "@/constants/plans";
 import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { adminCompanyPath } from "@/constants/routes";
 import { useModal } from "@/hooks/useModal";
@@ -45,6 +46,8 @@ const AdminCompanyCreate = () => {
       country: "PT",
       default_vallle_expiry_days: 365,
       default_min_redemption_mode: MIN_REDEMPTION_MODES.NONE,
+      plan: "starter",
+      is_founding_member: "0",
     },
   });
 
@@ -78,6 +81,14 @@ const AdminCompanyCreate = () => {
     label: t(`constants.companyCategories.${key}`),
   }));
   const countryOptions = [{ value: "PT", label: t("constants.countries.PT") }];
+  const planOptions = PLAN_IDS.map((planId) => ({
+    value: planId,
+    label: t(`constants.plans.${planId}`),
+  }));
+  const foundingOptions = [
+    { value: "1", label: t("features.admin.companies.form.foundingMemberYes") },
+    { value: "0", label: t("features.admin.companies.form.foundingMemberNo") },
+  ];
   const slugPreview = slugify(watch("name"));
 
   // Handlers
@@ -221,6 +232,30 @@ const AdminCompanyCreate = () => {
           modeName="default_min_redemption_mode"
           register={register}
           watch={watch}
+        />
+        <Select
+          control={control}
+          error={errors.plan}
+          label={t("features.admin.companies.form.plan")}
+          name="plan"
+          options={planOptions}
+          placeholder={t("features.admin.companies.form.plan")}
+        />
+        <Input
+          error={errors.plan_renews_at}
+          hint={t("features.admin.companies.form.planRenewsAtHint")}
+          label={t("features.admin.companies.form.planRenewsAt")}
+          name="plan_renews_at"
+          register={register}
+          type="date"
+        />
+        <Select
+          control={control}
+          error={errors.is_founding_member}
+          label={t("features.admin.companies.form.isFoundingMember")}
+          name="is_founding_member"
+          options={foundingOptions}
+          placeholder={t("features.admin.companies.form.isFoundingMember")}
         />
       </FormFields>
       <FormActions>

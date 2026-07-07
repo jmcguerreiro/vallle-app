@@ -4,7 +4,7 @@
 
 Vallle is a vallle platform for local businesses. Stores sell branded physical postcards as gift vallles. Customers buy them in-store, write a personal message, and give them to someone. The recipient redeems the vallle at the store, partially or fully.
 
-Vallle earns 5% commission on every vallle created (min €0.50), collected directly from the store.
+Vallle earns a flat **annual subscription fee per store**, tiered by how many vallles the store sells per year. Physical fulfilment (welcome pack, reprints, custom designs) is billed separately as one-off, cost-plus charges.
 
 ### How it works
 
@@ -17,16 +17,25 @@ Vallle earns 5% commission on every vallle created (min €0.50), collected dire
 
 ### Revenue model
 
-- 5% of every vallle created
-- Minimum commission: €0.50
-- No maximum — the rate is flat
-- Collected monthly from stores — you select which commissions to mark as paid
+Flat **annual subscription per store**, billed annually, tiered by the number of vallles the store **sells (issues) per year**. Prices are net (ex-VAT — B2B clients reclaim it; quote "+ IVA").
 
-### Onboarding
+| Tier    | Vallles sold / yr | Price (net)              |
+| ------- | ----------------- | ------------------------ |
+| Starter | up to ~50         | €4.99/mo (billed yearly) |
+| Growth  | ~50–300           | €12.99/mo                |
+| Pro     | ~300–1,000        | €29.99/mo                |
+| Custom  | 1,000+            | talk to us               |
+
+- **Metric is count, not euro-volume** — physical fulfilment cost scales with card count, and count is simpler to reason about. Trade-off: a high-ticket seller pays the same as a low-ticket one at equal volume.
+- **Tier assigned at renewal** — measure the past year's count, set the coming year's tier. Never bump mid-year (avoids threshold cliffs / gaming).
+- **Founding members** get the first year free (subscription only, not physical), concentrated per launch area for directory density (~20–30 per pilot town).
+- Replaces the old 5% commission model (see decision log, 2026-06-29).
+
+### Onboarding & physical fulfilment
 
 - Invite-only: you onboard each store manually
-- €50 setup fee includes 50 branded postcards + account setup
-- Postcard restocks at cost-plus (~€20–25 for 50)
+- Welcome pack at signup includes branded postcards + account setup
+- Physical fulfilment is a **separate one-off, cost-plus line** — reprints, restocks (~€20–25 for 50), and custom designs. Never bundled into the subscription, never given away free (real COGS).
 
 ---
 
@@ -69,8 +78,10 @@ vallle-app/
 │       │   └── users/
 │       │       ├── index.js      GET list, POST create (admin only)
 │       │       └── [id].js       GET/PUT /api/company/users/:id (admin only)
-│       └── commissions/
-│           └── index.js
+│       └── admin/
+│           ├── companies/         GET list (+ outstanding), GET/PUT [id] (+ subscription detail)
+│           └── subscriptions/
+│               └── periods/[id].js  PATCH mark a billing period paid
 ├── src/                      ← React + Vite (feature-based structure)
 │   ├── features/
 │   │   ├── auth/
@@ -83,8 +94,8 @@ vallle-app/
 │   │   │   ├── CreateVallle.jsx
 │   │   │   ├── RedeemVallle.jsx
 │   │   │   └── VallleList.jsx
-│   │   └── commissions/
-│   │       └── Commissions.jsx
+│   │   └── admin/
+│   │       └── companies/   ← plan/billing live in the company detail (View.jsx)
 │   ├── components/
 │   │   └── forms/
 │   │       ├── Form.jsx
@@ -115,7 +126,7 @@ D1 is SQLite at the edge. All monetary values stored as integers in cents (e.g. 
 
 IDs are ULIDs (sortable, time-based, shorter than UUIDs). Dates are ISO 8601 text strings (SQLite has no native datetime type).
 
-#### Schema (v6) — 7 tables
+#### Schema (v7) — 7 tables
 
 ```
 users                   Who logs in (account-level: super_admin platform flag + active/inactive kill-switch)
@@ -123,13 +134,13 @@ stores                  Local businesses
 store_users             Many-to-many membership + store-scoped role & status (admin/user, active/inactive access)
 vallles                The core entity — created by stores, redeemed by recipients
 redemptions             Each partial or full use of a vallle
-commissions             One row per vallle created — your 5% cut, with paid_at tracking
+subscription_periods    One row per store per billing year — the annual fee, with paid_at tracking
 password_reset_tokens   Time-limited tokens for password reset flow
 ```
 
 **users** — `id`, `name`, `email` (unique), `password` (hashed), `role` (account-level — only `super_admin` is meaningful platform-wide; everyone else is `user`), `status` (account kill-switch `active`/`inactive`), `avatar` (default `paper-bag-head`), `locale` (`pt`/`en`, default `pt`), `created_at`, `updated_at`
 
-**stores** — `id`, `name`, `slug` (unique), `category`, `email`, `vat_id`, `phone`, `address1`, `address2`, `city`, `postal_code`, `region`, `country` (default PT), `default_vallle_expiry_days` (default 365), `default_min_redemption_mode` (`none`/`full`/`custom`, default `none`), `default_min_redemption_cents` (default 0; only meaningful when mode is `custom`), `status`, `created_at`, `updated_at`
+**stores** — `id`, `name`, `slug` (unique), `category`, `email`, `vat_id`, `phone`, `address1`, `address2`, `city`, `postal_code`, `region`, `country` (default PT), `default_vallle_expiry_days` (default 365), `default_min_redemption_mode` (`none`/`full`/`custom`, default `none`), `default_min_redemption_cents` (default 0; only meaningful when mode is `custom`), `plan` (`starter`/`growth`/`pro`/`custom`, default `starter`), `plan_renews_at` (ISO date, nullable), `is_founding_member` (0/1), `status`, `created_at`, `updated_at`
 
 **store_users** — `id`, `store_id`, `user_id`, `role` (store-scoped `admin`/`user`), `status` (store-scoped `active`/`inactive` — whether the user can access that store; default `active`), `created_at`. Unique constraint on (store_id, user_id). A user can be an admin in one store and a plain or inactive member in another — this is the source of truth for what a user can do within a store. (`suspended` is a store-level state on `stores.status`, not a membership one.)
 
@@ -137,7 +148,7 @@ password_reset_tokens   Time-limited tokens for password reset flow
 
 **redemptions** — `id`, `store_id` (denormalised for fast queries), `vallle_id`, `redeemed_by` (user), `description`, `amount`, `balance_after` (snapshot), `created_at`
 
-**commissions** — `id`, `store_id` (denormalised), `vallle_id`, `amount`, `paid_at` (null = unpaid), `created_at`. Partial index on unpaid rows.
+**subscription_periods** — `id`, `store_id`, `plan`, `period_start`, `period_end`, `amount` (net cents; `monthly × 12`, `0` for a founding member's free first year), `vallles_sold` (count snapshot that set the tier), `paid_at` (null = unpaid), `created_at`. Partial index on unpaid rows.
 
 **password_reset_tokens** — `id`, `user_id`, `token_hash` (SHA-256 of the raw token), `expires_at`, `used_at` (null = unused), `created_at`. Indexed on `token_hash` for fast lookup and `user_id` for invalidation. `ON DELETE CASCADE` on user_id.
 
@@ -149,9 +160,9 @@ Separate `password_reset_tokens` table. Raw token sent in email link, only SHA-2
 
 6 alphanumeric characters, **stored raw** and **displayed grouped as `XXX-XXX`** (e.g. stored `XTUT6Q`, shown `XTU-T6Q`). The hyphen is purely presentational (`formatVallleCode` in `features/vallles/utils.js`): codes are stored and looked up without it, so it never participates in identity and there's no "typed with/without the dash" mismatch. Uses a 31-character alphabet excluding ambiguous characters (0/O, 1/I/L) to avoid handwriting confusion. Codes are **unique per store** (`UNIQUE(store_id, code)`), not globally — each store gets the full 31^6 ≈ 887M space to itself. On create, the insert retries with a fresh code if it hits a same-store collision (up to 5 attempts). Lookups are always store-scoped (`code` + `X-Store-Id`), so the same code can exist in two different stores.
 
-#### Commission collection
+#### Subscription billing
 
-No formal invoicing system. Each commission row has a `paid_at` field. To collect: view unpaid commissions for a store, select the ones covered by the payment, mark as paid. Supports partial collection naturally.
+Stores pay a flat annual subscription, tiered by vallles sold/year (see **Revenue model**). No automated payment processor yet: each `subscription_periods` row carries a `paid_at` field. Billing lives inside **Admin → Companies** (there is no separate Subscriptions page): the companies list has an **Outstanding** column + unpaid/paid filter (the collection worklist), and each company's detail view has a **Subscription** accordion showing the plan, trailing-year vallle count, **suggested tier** for renewal, and the billing-period history where the super_admin marks a due period paid (`PATCH /api/admin/subscriptions/periods/:id`). Plan/renewal/founding-member are edited on the company Create/Edit form. The tier is assigned at renewal, never auto-bumped mid-year. (The old 5% commission model — `commissions` table, `/api/commissions`, and the admin Commissions screens — was removed on 2026-06-29; the standalone Subscriptions page was merged into Companies the same day.)
 
 #### Expiry
 
@@ -185,7 +196,7 @@ npm install -D wrangler
 mkdir -p functions/api/auth
 mkdir -p functions/api/stores
 mkdir -p functions/api/vallles
-mkdir -p functions/api/commissions
+mkdir -p functions/api/admin
 mkdir -p migrations
 mkdir -p src/components src/pages src/hooks src/lib
 ```
@@ -219,7 +230,7 @@ npx wrangler d1 execute vallle-db --remote --file=./migrations/0001_init.sql
 
 # Verify
 npx wrangler d1 execute vallle-db --remote --command="SELECT name FROM sqlite_master WHERE type='table' ORDER BY name"
-# Should show: commissions, redemptions, store_users, stores, users, vallles
+# Should show: password_reset_tokens, redemptions, store_users, stores, subscription_periods, users, vallles
 ```
 
 > ⚠️ **Never run `migrations/0002_seed.sql` with `--remote`.** It contains demo
@@ -417,3 +428,5 @@ npx wrangler pages deploy dist --project-name=vallle-app
 | 2026-06-26 | Admin user edit mirrors create's company multiselect | `features/admin/users/pages/Edit.jsx` now uses the same companies `MultiSelect` + per-company role `Select` as Create (replacing the prior per-membership card/fieldset list with active/inactive status selectors). The submitted `stores` array is the **full desired membership set**: `PUT /api/admin/users/:id` reconciles it against current rows — inserts new memberships (status `active`), updates kept ones' role only (existing status untouched), and **deletes any deselected company's membership** (uses `generateUlid` for new rows, one `IN` existence check up front). Consequence: removing a company from the multiselect now removes that membership entirely, and the per-store active/inactive status toggle is no longer editable from this screen. Account-level fields (name, email, account type, account status, language) are unchanged, including the self-lockout guard. |
 | 2026-06-26 | TAN Nimbus webfont wired; karl-regular dropped | Added the `@font-face` for `"TAN - NIMBUS"` (`$font-family-two`, already referenced but previously unloaded) in `scss/global/_fonts.scss` and deleted the unused `karl-regular` woff/woff2 files. Also fixed the iOS standalone-PWA viewport: `.l-blank` (`_blank.scss`) now uses `min-height: 100dvh` (with `100vh` fallback) so the bottom auth illustration isn't pushed below the home indicator until scroll. |
 | 2026-06-26 | Favicon set modernised + dynamic tab title | Replaced the lone `favicon.svg` link with the current minimal cross-device set in `index.html`: `favicon.svg` (modern browsers), `favicon.ico` (legacy fallback), `apple-touch-icon.png` (180×180, iOS home screen), a `theme-color` meta (terracotta `#C4653A`), and a new `public/manifest.webmanifest` (Android/PWA install) referencing `icon-192.png`, `icon-512.png`, and `icon-512-maskable.png` with the brand linen background. The placeholder `<title>vallle-app</title>` became `Vallle`. Per-route titles via `src/hooks/usePageTitle.js` (`document.title = "{title} · Vallle"`; an empty/falsy title is a **no-op** so it never resets or clobbers). The rule: **a page that sets a layout header gets its tab title for free** — `MainProvider` (`contexts/main.jsx`) calls `usePageTitle(header.title)`, so the title tracks the same string every header page already passes to `useMain().setHeader({ title })` (no per-page wiring, no duplicate i18n keys). **Header-less pages set their own title** by calling `usePageTitle` directly: the four auth screens (`features/auth/pages/*` — Login/ForgotPassword/ResetPassword/SelectStore, which use BlankLayout and have no header bar) and the user **Dashboard** (`features/dashboard/pages/Index.jsx`, which renders its own in-page header and deliberately sets no layout header). The no-op-on-empty behaviour is what makes the two writers coexist: on a header-less route `header.title` is `""` so `MainProvider` leaves the title alone and the page's own `usePageTitle` wins regardless of effect order. Auth-page titles are i18n'd as `features.{login,forgotPassword,resetPassword,selectStore}.pageTitle` (added to `en.json`/`pt.json`, PT formal) and are tab-only — not shown on screen; the dashboard reuses `nav.dashboard`. Modals don't touch the title (they use the separate `useModal()` header), so the tab reflects the page behind the modal. Existing `public/_headers` CSP already covers the manifest + icons (no header change). |
+| 2026-06-29 | Pricing pivot: 5% commission → flat tiered annual subscription | Commission on low-value vallles is uneconomic to collect (5% of two €20 vallles = €2 — not worth invoicing); the pain was collection frequency, not the model. New model: flat annual fee per store, billed annually, tiered by **vallles sold/year** (Starter €4.99 / Growth €12.99 / Pro €29.99 per month billed yearly, net of VAT; Custom above 1,000/yr). Count chosen over euro-volume because physical-fulfilment COGS scales with card count and count is simpler. Tier set at renewal (no mid-year cliffs). Physical fulfilment billed separately, cost-plus. Founding members get year one free, concentrated per launch area for directory density. Rationale: the directory + app + fulfilment is a membership-style product, which is flat-fee by nature. Implementation: drop `commissions` table/API/admin screens; add a per-store plan + a "vallles sold this period" view. |
+| 2026-06-29 | Subscriptions page merged into Admin → Companies | The standalone `/admin/subscriptions` list+detail duplicated the companies list/detail (plan, outstanding balance). Removed the page, its route/nav item, and the `/api/admin/subscriptions` list + `[storeId]` endpoints. Billing now lives in **Companies**: the list gained an **Outstanding** column + unpaid/paid filter (collection worklist) via a `total_unpaid` subquery; the company detail (`GET /api/admin/companies/:id`) now returns a `subscription` object (billing summary, trailing-year vallle count, suggested renewal tier, billing-period history) rendered in a **Subscription accordion** with mark-as-paid. Plan/renewal/founding-member are edited on the company Create/Edit form. Kept `PATCH /api/admin/subscriptions/periods/:id` for marking a period paid. Rationale: for a single-operator admin the separate page was redundant — one place per company is simpler. |

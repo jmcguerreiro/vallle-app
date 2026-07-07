@@ -14,7 +14,6 @@ import { useAuth } from "@/hooks/useAuth";
 import {
   IconBuilding,
   IconChart,
-  IconHandCoins,
   IconHouseHeart,
   IconMailbox,
   IconSettings,
@@ -58,11 +57,6 @@ const Navigation = () => {
               to: ROUTES.ADMIN_USERS,
               label: t("nav.adminUsers"),
               icon: IconUsers,
-            },
-            {
-              to: ROUTES.ADMIN_COMMISSIONS,
-              label: t("nav.adminCommissions"),
-              icon: IconHandCoins,
             },
           ]
         : [

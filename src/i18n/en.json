@@ -98,13 +98,13 @@
       "stats": {
         "clients": "Companies",
         "vallleAmount": "Total vallle amount",
-        "commission": "Total commissions"
+        "revenue": "Subscription revenue"
       },
       "chart": {
         "title": "Monthly overview",
-        "subtitle": "Vallles issued and commissions earned, month by month.",
+        "subtitle": "Vallles issued and subscription revenue, month by month.",
         "vallles": "Vallles",
-        "commissions": "Commissions"
+        "revenue": "Subscriptions"
       }
     },
     "vallles": {
@@ -383,8 +383,8 @@
           "email": "Email",
           "vallles": "Vallles",
           "revenue": "Revenue",
-          "commission": "Commission",
-          "commissionStatus": "Commissions",
+          "plan": "Plan",
+          "outstanding": "Outstanding",
           "status": "Status",
           "createdAt": "Created",
           "updatedAt": "Last updated",
@@ -408,6 +408,12 @@
           "country": "Country",
           "status": "Status",
           "defaultVallleExpiryDays": "Default vallle expiry (days)",
+          "plan": "Plan",
+          "planRenewsAt": "Plan renewal",
+          "planRenewsAtHint": "Date the plan renews and the tier is reassessed.",
+          "isFoundingMember": "Founding member",
+          "foundingMemberYes": "Yes",
+          "foundingMemberNo": "No",
           "slug": "URL slug",
           "error": {
             "nameRequired": "Company name is required.",
@@ -430,8 +436,9 @@
           "edit": "Edit",
           "vallles": "Vallles issued",
           "totalSales": "Total sales",
-          "totalCommission": "Total commission",
-          "unpaidCommission": "Outstanding",
+          "plan": "Plan",
+          "outstanding": "Outstanding",
+          "subscription": "Subscription",
           "users": "Users",
           "usersEmpty": "No users belong to this company yet."
         },
@@ -518,35 +525,47 @@
           "emailTaken": "This email is already in use."
         }
       },
-      "commissions": {
-        "heading": "Commissions",
-        "description": "Track commissions earned across all companies.",
-        "companyDetailDescription": "Monthly commission breakdown.",
+      "subscriptions": {
+        "heading": "Subscriptions",
+        "description": "Track each company's plan and outstanding subscription balance.",
+        "companyDetailDescription": "Plan, usage, and billing history.",
         "company": "Company",
-        "vallle": "Vallle",
-        "buyer": "Buyer",
-        "vallleSales": "Vallle sales",
-        "vallleValue": "Vallle value",
-        "totalCommission": "Commission",
+        "plan": "Plan",
+        "valllesPeriod": "Vallles (this year)",
+        "valllesSold": "Vallles sold",
+        "suggestedPlan": "Suggested",
+        "renewsAt": "Renews",
+        "currentPlan": "Current plan",
+        "founding": "Founding",
+        "totalBilled": "Total billed",
         "totalPaid": "Paid",
         "outstanding": "Outstanding",
-        "lastPaid": "Last paid",
-        "month": "Month",
-        "commissions": "Commissions",
+        "period": "Period",
         "amount": "Amount",
         "status": "Status",
         "paid": "Paid",
         "unpaid": "Unpaid",
         "markPaid": "Mark as paid",
-        "markPaidSuccess": "Month marked as paid!",
-        "noMonths": "No commissions yet.",
+        "markPaidSuccess": "Subscription marked as paid!",
+        "markPaidConfirm": {
+          "title": "Mark subscription as paid?",
+          "message": "This records the subscription period as paid. You can't undo this."
+        },
+        "noPeriods": "No billing periods yet.",
         "error": {
-          "generic": "Could not load commissions."
+          "generic": "Could not load subscriptions.",
+          "markPaid": "Could not mark the subscription as paid."
         }
       }
     }
   },
   "constants": {
+    "plans": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "pro": "Pro",
+      "custom": "Custom"
+    },
     "companyCategories": {
       "restaurant": "Restaurant",
       "cafe": "Café",
@@ -580,7 +599,6 @@
     "admin": "Admin",
     "adminCompanies": "Companies",
     "adminUsers": "Users",
-    "adminCommissions": "Commissions",
     "switchStore": "Switch store",
     "adminBadge": "Administrator",
     "switchStoreModal": {

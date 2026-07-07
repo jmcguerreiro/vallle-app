@@ -1,8 +1,10 @@
+import { planForVallleCount } from "../../_plans.js";
 import {
   STORE_SELECT,
   buildStoreUpdate,
   validateStoreExpiryDays,
   validateStoreMinRedemption,
+  validateStorePlan,
   validateStoreStatus,
 } from "../../_store.js";
 
@@ -25,22 +27,46 @@ export async function onRequestGet(context) {
       );
     }
 
-    const [vallleStats, commissionStats] = await env.DB.batch([
-      env.DB.prepare(
-        `SELECT COUNT(*) AS vallle_count,
-                COALESCE(SUM(amount), 0) AS total_vallle_amount
-         FROM vallles WHERE store_id = ?`,
-      ).bind(id),
-      env.DB.prepare(
-        `SELECT COALESCE(SUM(amount), 0) AS total_commission,
-                COALESCE(SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END), 0) AS unpaid_commission
-         FROM commissions WHERE store_id = ?`,
-      ).bind(id),
-    ]);
+    // "This period" = trailing 365 days (matches the subscription tier metric).
+    const periodStart = new Date(Date.now() - 365 * 86_400_000).toISOString();
+
+    const [vallleStats, subSummary, valllesPeriodRow, periodsResult] =
+      await env.DB.batch([
+        env.DB.prepare(
+          `SELECT COUNT(*) AS vallle_count,
+                  COALESCE(SUM(amount), 0) AS total_vallle_amount
+           FROM vallles WHERE store_id = ?`,
+        ).bind(id),
+        env.DB.prepare(
+          `SELECT COALESCE(SUM(amount), 0) AS total_billed,
+                  COALESCE(SUM(CASE WHEN paid_at IS NOT NULL THEN amount ELSE 0 END), 0) AS total_paid,
+                  COALESCE(SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END), 0) AS total_unpaid
+           FROM subscription_periods WHERE store_id = ?`,
+        ).bind(id),
+        env.DB.prepare(
+          "SELECT COUNT(*) AS vallles_period FROM vallles WHERE store_id = ? AND created_at >= ?",
+        ).bind(id, periodStart),
+        env.DB.prepare(
+          `SELECT id, plan, period_start, period_end, amount, vallles_sold, paid_at, created_at
+           FROM subscription_periods WHERE store_id = ?
+           ORDER BY period_start DESC`,
+        ).bind(id),
+      ]);
+
+    const summary = subSummary.results[0];
+    const valllesPeriod = valllesPeriodRow.results[0].vallles_period;
 
     const stats = {
       ...vallleStats.results[0],
-      ...commissionStats.results[0],
+      total_subscription: summary.total_billed,
+      unpaid_subscription: summary.total_unpaid,
+    };
+
+    const subscription = {
+      summary,
+      vallles_period: valllesPeriod,
+      suggested_plan: planForVallleCount(valllesPeriod),
+      periods: periodsResult.results,
     };
 
     // role/status are store-scoped (store_users) — this is the store's view of
@@ -54,7 +80,7 @@ export async function onRequestGet(context) {
       .bind(id)
       .all();
 
-    return Response.json({ data: { store, stats, users } });
+    return Response.json({ data: { store, stats, subscription, users } });
   } catch (error) {
     const err = new Error("Admin: Failed to get company");
     err.code = "DB_READ_FAILED";
@@ -113,10 +139,16 @@ export async function onRequestPut(context) {
     const statusError = validateStoreStatus(body.status);
     if (statusError) return statusError;
 
+    const planError = validateStorePlan(body.plan);
+    if (planError) return planError;
+
     const minRedemptionError = validateStoreMinRedemption(body);
     if (minRedemptionError) return minRedemptionError;
 
-    const { sets, values } = buildStoreUpdate(body, { allowStatus: true });
+    const { sets, values } = buildStoreUpdate(body, {
+      allowStatus: true,
+      allowPlan: true,
+    });
     const now = new Date().toISOString();
 
     await env.DB.prepare(

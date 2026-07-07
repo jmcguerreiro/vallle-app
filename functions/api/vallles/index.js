@@ -219,8 +219,6 @@ export async function onRequestPost(context) {
   const expiryDate = new Date(expires_at);
   const now = new Date().toISOString();
   const vallleId = generateUlid();
-  const commissionId = generateUlid();
-  const commissionAmount = Math.max(50, Math.round(amount * 0.05));
 
   // Codes are only unique per store, so a generated code can collide with an
   // existing one. Retry with a fresh code when the UNIQUE(store_id, code)
@@ -244,11 +242,11 @@ export async function onRequestPost(context) {
     };
 
     try {
-      await env.DB.batch([
-        env.DB.prepare(
-          `INSERT INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, min_redemption_mode, min_redemption_cents, updated_at)
+      await env.DB.prepare(
+        `INSERT INTO vallles (id, store_id, created_by, code, amount, balance, buyer, status, created_at, expires_at, min_redemption_mode, min_redemption_cents, updated_at)
          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
-        ).bind(
+      )
+        .bind(
           vallle.id,
           vallle.store_id,
           vallle.created_by,
@@ -262,12 +260,8 @@ export async function onRequestPost(context) {
           vallle.min_redemption_mode,
           vallle.min_redemption_cents,
           vallle.updated_at,
-        ),
-        env.DB.prepare(
-          `INSERT INTO commissions (id, store_id, vallle_id, amount, created_at)
-         VALUES (?, ?, ?, ?, ?)`,
-        ).bind(commissionId, storeId, vallleId, commissionAmount, now),
-      ]);
+        )
+        .run();
 
       return Response.json({ data: vallle }, { status: 201 });
     } catch (error) {

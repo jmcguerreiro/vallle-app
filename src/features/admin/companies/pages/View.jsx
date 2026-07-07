@@ -1,18 +1,22 @@
-import { useCallback, useEffect } from "react";
+import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { useQuery } from "@tanstack/react-query";
+import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
 import Accordion from "@/components/Accordion";
 import Badge from "@/components/Badge";
+import Button from "@/components/Button";
 import DefinitionList from "@/components/DefinitionList";
 import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Stat from "@/components/Stat";
+import Table from "@/components/Table";
 import { adminCompanyEditPath, adminUserPath } from "@/constants/routes";
+import { useConfirm } from "@/hooks/useConfirm";
 import { useModal } from "@/hooks/useModal";
-import { get } from "@/services/api";
+import { useToast } from "@/hooks/useToast";
+import { get, patch } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
 import { formatDate } from "@/utils/dates";
 
@@ -34,7 +38,9 @@ const USER_STATUS_VARIANTS = {
 
 /**
  * Component: AdminCompanyView
- * Displays all details for a single company, including commission stats and users.
+ * Displays all details for a single company: headline stats, company details,
+ * a subscription accordion (plan, usage, billing periods with mark-as-paid),
+ * and the company's users.
  * @component
  * @returns {JSX.Element}
  */
@@ -45,6 +51,9 @@ const AdminCompanyView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setHeader } = useModal();
+  const { confirm } = useConfirm();
+  const { addToast } = useToast();
+  const queryClient = useQueryClient();
 
   // Queries
   const {
@@ -56,13 +65,94 @@ const AdminCompanyView = () => {
     queryFn: ({ signal }) => get(`/api/admin/companies/${id}`, { signal }),
   });
 
-  // Derived State
+  // Mutations
+  const markPaid = useMutation({
+    mutationFn: (periodId) =>
+      patch(`/api/admin/subscriptions/periods/${periodId}`, {}),
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["admin", "companies"] });
+      addToast(t("features.admin.subscriptions.markPaidSuccess"), "success");
+    },
+    onError: () => {
+      addToast(t("features.admin.subscriptions.error.markPaid"), "error");
+    },
+  });
 
   // Handlers
   const handleEdit = useCallback(() => {
     const backgroundLocation = location.state?.backgroundLocation || location;
     navigate(adminCompanyEditPath(id), { state: { backgroundLocation } });
   }, [id, navigate, location]);
+
+  const handleMarkPaid = useCallback(
+    async (periodId) => {
+      const confirmed = await confirm({
+        title: t("features.admin.subscriptions.markPaidConfirm.title"),
+        message: t("features.admin.subscriptions.markPaidConfirm.message"),
+        confirmLabel: t("features.admin.subscriptions.markPaid"),
+      });
+      if (!confirmed) return;
+      markPaid.mutate(periodId);
+    },
+    [confirm, t, markPaid],
+  );
+
+  // Derived State
+  const periodColumns = useMemo(
+    () => [
+      {
+        key: "period",
+        header: t("features.admin.subscriptions.period"),
+        render: (period) =>
+          `${formatDate(period.period_start)} – ${formatDate(period.period_end)}`,
+      },
+      {
+        key: "plan",
+        header: t("features.admin.subscriptions.plan"),
+        render: (period) => t(`constants.plans.${period.plan}`),
+      },
+      {
+        key: "vallles_sold",
+        header: t("features.admin.subscriptions.valllesSold"),
+      },
+      {
+        key: "amount",
+        header: t("features.admin.subscriptions.amount"),
+        align: "right",
+        render: (period) => formatCurrency(period.amount),
+      },
+      {
+        key: "status",
+        header: t("features.admin.subscriptions.status"),
+        render: (period) =>
+          period.paid_at ? (
+            <Badge variant="success">
+              {t("features.admin.subscriptions.paid")}
+            </Badge>
+          ) : (
+            <Badge variant="warning">
+              {t("features.admin.subscriptions.unpaid")}
+            </Badge>
+          ),
+      },
+      {
+        key: "action",
+        header: "",
+        align: "right",
+        render: (period) =>
+          period.paid_at ? null : (
+            <Button
+              disabled={markPaid.isPending}
+              onClick={() => handleMarkPaid(period.id)}
+              type="button"
+            >
+              {t("features.admin.subscriptions.markPaid")}
+            </Button>
+          ),
+      },
+    ],
+    [t, handleMarkPaid, markPaid.isPending],
+  );
 
   // Effects
   useEffect(() => {
@@ -97,7 +187,7 @@ const AdminCompanyView = () => {
     );
   }
 
-  const { store, stats, users } = response.data;
+  const { store, stats, subscription, users } = response.data;
 
   const details = [
     {
@@ -132,6 +222,27 @@ const AdminCompanyView = () => {
     },
   ];
 
+  const subscriptionDetails = [
+    {
+      label: t("features.admin.subscriptions.renewsAt"),
+      value: store.plan_renews_at ? formatDate(store.plan_renews_at) : "—",
+    },
+    {
+      label: t("features.admin.subscriptions.valllesPeriod"),
+      value: subscription.vallles_period,
+    },
+    {
+      label: t("features.admin.subscriptions.suggestedPlan"),
+      value: t(`constants.plans.${subscription.suggested_plan}`),
+    },
+    {
+      label: t("features.admin.companies.form.isFoundingMember"),
+      value: store.is_founding_member
+        ? t("features.admin.companies.form.foundingMemberYes")
+        : t("features.admin.companies.form.foundingMemberNo"),
+    },
+  ];
+
   return (
     <div className="c-admin-company-view">
       <div className="c-admin-stats-grid c-admin-stats-grid--2">
@@ -144,16 +255,40 @@ const AdminCompanyView = () => {
           value={formatCurrency(stats.total_vallle_amount)}
         />
         <Stat
-          label={t("features.admin.companies.view.totalCommission")}
-          value={formatCurrency(stats.total_commission)}
+          label={t("features.admin.companies.view.plan")}
+          value={t(`constants.plans.${store.plan}`)}
         />
         <Stat
-          label={t("features.admin.companies.view.unpaidCommission")}
-          value={formatCurrency(stats.unpaid_commission)}
+          label={t("features.admin.companies.view.outstanding")}
+          value={formatCurrency(stats.unpaid_subscription)}
         />
       </div>
 
       <DefinitionList className="c-admin-detail-list" items={details} />
+
+      <div className="c-admin-subscriptions-detail">
+        <Accordion title={t("features.admin.companies.view.subscription")}>
+          <DefinitionList
+            className="c-admin-detail-list"
+            items={subscriptionDetails}
+          />
+          {subscription.periods.length === 0 ? (
+            <p className="c-admin-subscriptions-detail__empty">
+              {t("features.admin.subscriptions.noPeriods")}
+            </p>
+          ) : (
+            <Table
+              className="c-admin-subscriptions-detail__table"
+              columns={periodColumns}
+              data={subscription.periods}
+              getRowClassName={(period) =>
+                period.paid_at ? "c-admin-subscriptions-detail__row--paid" : ""
+              }
+              getRowKey={(period) => period.id}
+            />
+          )}
+        </Accordion>
+      </div>
 
       <div className="c-admin-company-users">
         <Accordion title={t("features.admin.companies.view.users")}>

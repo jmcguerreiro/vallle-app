@@ -18,9 +18,6 @@ import { ConfirmProvider } from "@/contexts/confirm";
 import { MainProvider } from "@/contexts/main";
 import { ModalProvider } from "@/contexts/modal";
 import { ToastProvider } from "@/contexts/toast";
-import AdminCommissionsIndex from "@/features/admin/commissions/pages/Index";
-import AdminCommissionsMonthView from "@/features/admin/commissions/pages/MonthView";
-import AdminCommissionsView from "@/features/admin/commissions/pages/View";
 import AdminCompanyCreate from "@/features/admin/companies/pages/Create";
 import AdminCompanyEdit from "@/features/admin/companies/pages/Edit";
 import AdminCompaniesIndex from "@/features/admin/companies/pages/Index";
@@ -96,8 +93,6 @@ const MODAL_ROUTE_PATHS = [
   ROUTES.ADMIN_USERS_MODAL_CREATE,
   ROUTES.ADMIN_USERS_MODAL_VIEW,
   ROUTES.ADMIN_USERS_MODAL_EDIT,
-  ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL,
-  ROUTES.ADMIN_COMMISSIONS_MODAL_MONTH,
 ];
 
 /**
@@ -189,14 +184,6 @@ const AppRoutes = () => {
               </AdminRoute>
             }
             path={ROUTES.ADMIN_USERS}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminCommissionsIndex />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_COMMISSIONS}
           />
         </Route>
       </Routes>
@@ -347,26 +334,6 @@ const AppRoutes = () => {
                   </AdminRoute>
                 }
                 path={ROUTES.ADMIN_USERS_MODAL_EDIT}
-              />
-              <Route
-                element={
-                  <AdminRoute>
-                    <RouteModal>
-                      <AdminCommissionsView />
-                    </RouteModal>
-                  </AdminRoute>
-                }
-                path={ROUTES.ADMIN_COMMISSIONS_MODAL_DETAIL}
-              />
-              <Route
-                element={
-                  <AdminRoute>
-                    <RouteModal>
-                      <AdminCommissionsMonthView />
-                    </RouteModal>
-                  </AdminRoute>
-                }
-                path={ROUTES.ADMIN_COMMISSIONS_MODAL_MONTH}
               />
             </Routes>
           </AuthGuard>

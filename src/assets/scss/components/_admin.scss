@@ -85,7 +85,7 @@
   color: var(--color-text-muted);
 }
 
-/* ─── Admin commission amounts ─────────────────────────────────── */
+/* ─── Admin subscription amounts ───────────────────────────────── */
 
 .c-admin-amount--unpaid {
   color: #b07d3a;
@@ -96,23 +96,23 @@
   color: var(--color-text-muted);
 }
 
-/* ─── Admin commission detail table ───────────────────────────── */
+/* ─── Admin subscription detail table ─────────────────────────── */
 
-.c-admin-commissions-detail {
+.c-admin-subscriptions-detail {
   min-width: 0;
 }
 
-.c-admin-commissions-detail__empty {
+.c-admin-subscriptions-detail__empty {
   color: var(--color-text-muted);
   font-size: 0.9375rem;
   padding: var(--space-xl) 0;
   text-align: center;
 }
 
-.c-admin-commissions-detail__table {
+.c-admin-subscriptions-detail__table {
   margin-top: var(--space-lg);
 }
 
-.c-admin-commissions-detail__row--paid {
+.c-admin-subscriptions-detail__row--paid {
   opacity: 0.6;
 }

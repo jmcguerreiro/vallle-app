@@ -98,13 +98,13 @@
       "stats": {
         "clients": "Empresas",
         "vallleAmount": "Total em vallles",
-        "commission": "Total de comissões"
+        "revenue": "Receita de subscrições"
       },
       "chart": {
         "title": "Visão mensal",
-        "subtitle": "Vallles emitidos e comissões ganhas, mês a mês.",
+        "subtitle": "Vallles emitidos e receita de subscrições, mês a mês.",
         "vallles": "Vallles",
-        "commissions": "Comissões"
+        "revenue": "Subscrições"
       }
     },
     "vallles": {
@@ -383,8 +383,8 @@
           "email": "Email",
           "vallles": "Vallles",
           "revenue": "Receita",
-          "commission": "Comissão",
-          "commissionStatus": "Comissões",
+          "plan": "Plano",
+          "outstanding": "Por pagar",
           "status": "Estado",
           "createdAt": "Criado em",
           "updatedAt": "Última atualização",
@@ -408,6 +408,12 @@
           "country": "País",
           "status": "Estado",
           "defaultVallleExpiryDays": "Expiração de vallles predefinida (dias)",
+          "plan": "Plano",
+          "planRenewsAt": "Renovação do plano",
+          "planRenewsAtHint": "Data em que o plano renova e o nível é reavaliado.",
+          "isFoundingMember": "Membro fundador",
+          "foundingMemberYes": "Sim",
+          "foundingMemberNo": "Não",
           "slug": "Slug de URL",
           "error": {
             "nameRequired": "O nome da empresa é obrigatório.",
@@ -430,8 +436,9 @@
           "edit": "Editar",
           "vallles": "Vallles emitidos",
           "totalSales": "Total de vendas",
-          "totalCommission": "Total de comissões",
-          "unpaidCommission": "Por pagar",
+          "plan": "Plano",
+          "outstanding": "Por pagar",
+          "subscription": "Subscrição",
           "users": "Utilizadores",
           "usersEmpty": "Esta empresa ainda não tem utilizadores."
         },
@@ -518,35 +525,47 @@
           "emailTaken": "Este email já está a ser utilizado."
         }
       },
-      "commissions": {
-        "heading": "Comissões",
-        "description": "Acompanhe as comissões geradas por todas as empresas.",
-        "companyDetailDescription": "Detalhamento mensal de comissões.",
+      "subscriptions": {
+        "heading": "Subscrições",
+        "description": "Acompanhe o plano e o saldo de subscrição em dívida de cada empresa.",
+        "companyDetailDescription": "Plano, utilização e histórico de faturação.",
         "company": "Empresa",
-        "vallle": "Vallle",
-        "buyer": "Comprador",
-        "vallleSales": "Vendas de vallles",
-        "vallleValue": "Valor do vallle",
-        "totalCommission": "Comissão",
+        "plan": "Plano",
+        "valllesPeriod": "Vallles (este ano)",
+        "valllesSold": "Vallles vendidos",
+        "suggestedPlan": "Sugerido",
+        "renewsAt": "Renova em",
+        "currentPlan": "Plano atual",
+        "founding": "Fundador",
+        "totalBilled": "Total faturado",
         "totalPaid": "Pago",
         "outstanding": "Por pagar",
-        "lastPaid": "Último pagamento",
-        "month": "Mês",
-        "commissions": "Comissões",
+        "period": "Período",
         "amount": "Valor",
         "status": "Estado",
         "paid": "Pago",
         "unpaid": "Por pagar",
         "markPaid": "Marcar como pago",
-        "markPaidSuccess": "Mês marcado como pago!",
-        "noMonths": "Sem comissões.",
+        "markPaidSuccess": "Subscrição marcada como paga!",
+        "markPaidConfirm": {
+          "title": "Marcar subscrição como paga?",
+          "message": "Isto regista o período de subscrição como pago. Não é possível anular."
+        },
+        "noPeriods": "Ainda não existem períodos de faturação.",
         "error": {
-          "generic": "Não foi possível carregar as comissões."
+          "generic": "Não foi possível carregar as subscrições.",
+          "markPaid": "Não foi possível marcar a subscrição como paga."
         }
       }
     }
   },
   "constants": {
+    "plans": {
+      "starter": "Starter",
+      "growth": "Growth",
+      "pro": "Pro",
+      "custom": "Personalizado"
+    },
     "companyCategories": {
       "restaurant": "Restaurante",
       "cafe": "Café",
@@ -580,7 +599,6 @@
     "admin": "Admin",
     "adminCompanies": "Empresas",
     "adminUsers": "Utilizadores",
-    "adminCommissions": "Comissões",
     "switchStore": "Trocar de loja",
     "adminBadge": "Administrador",
     "switchStoreModal": {

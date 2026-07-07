@@ -67,7 +67,7 @@ VALUES (
 );
 
 -- ─── Stores ─────────────────────────────────────────────────────
-INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, default_min_redemption_mode, default_min_redemption_cents, status, created_at, updated_at)
+INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, default_min_redemption_mode, default_min_redemption_cents, plan, plan_renews_at, is_founding_member, status, created_at, updated_at)
 VALUES (
   '01JA0000000000000000000010',
   'Café Flor',
@@ -82,12 +82,15 @@ VALUES (
   'PT',
   'custom',
   1000,
+  'growth',
+  '2027-03-17T10:00:00Z',
+  1,
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
 );
 
-INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, default_min_redemption_mode, default_min_redemption_cents, status, created_at, updated_at)
+INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, default_min_redemption_mode, default_min_redemption_cents, plan, plan_renews_at, is_founding_member, status, created_at, updated_at)
 VALUES (
   '01JA0000000000000000000011',
   'Padaria São Jorge',
@@ -102,12 +105,15 @@ VALUES (
   'PT',
   'full',
   0,
+  'starter',
+  '2027-03-17T10:00:00Z',
+  0,
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
 );
 
-INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, status, created_at, updated_at)
+INSERT OR IGNORE INTO stores (id, name, slug, category, email, phone, address1, city, postal_code, region, country, plan, plan_renews_at, is_founding_member, status, created_at, updated_at)
 VALUES (
   '01JA0000000000000000000012',
   'Vinhos do Monte',
@@ -120,6 +126,9 @@ VALUES (
   '7000-651',
   'Alentejo',
   'PT',
+  'starter',
+  '2027-03-17T10:00:00Z',
+  0,
   'active',
   '2026-03-17T10:00:00Z',
   '2026-03-17T10:00:00Z'
@@ -231,45 +240,45 @@ VALUES (
   '2026-03-14T18:00:00Z'
 );
 
--- ─── Commissions ────────────────────────────────────────────────
--- 5% of each vallle created (min €0.50)
+-- ─── Subscription periods ───────────────────────────────────────
+-- Flat annual fee per store, tiered by vallles sold/year. amount is net cents
+-- (monthly × 12); 0 for a founding-member's free first year. paid_at NULL = due.
 
--- Café Flor €25 vallle → 5% = €1.25
-INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
+-- Café Flor: Growth plan, founding member → first year free (paid, €0)
+INSERT OR IGNORE INTO subscription_periods (id, store_id, plan, period_start, period_end, amount, vallles_sold, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000050',
   '01JA0000000000000000000010',
-  '01JA0000000000000000000030',
-  125, NULL,
-  '2026-03-15T14:00:00Z'
+  'growth',
+  '2026-03-17T10:00:00Z',
+  '2027-03-17T10:00:00Z',
+  0, 2,
+  '2026-03-17T10:00:00Z',
+  '2026-03-17T10:00:00Z'
 );
 
--- Café Flor €50 vallle → 5% = €2.50
-INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
+-- Padaria São Jorge: Starter plan, first year billed, unpaid (€59.88 net)
+INSERT OR IGNORE INTO subscription_periods (id, store_id, plan, period_start, period_end, amount, vallles_sold, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000051',
-  '01JA0000000000000000000010',
-  '01JA0000000000000000000031',
-  250, '2026-03-13T10:00:00Z',
-  '2026-03-10T11:00:00Z'
+  '01JA0000000000000000000011',
+  'starter',
+  '2026-03-17T10:00:00Z',
+  '2027-03-17T10:00:00Z',
+  5988, 1,
+  NULL,
+  '2026-03-17T10:00:00Z'
 );
 
--- Padaria São Jorge €15 vallle → 5% = €0.75
-INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
+-- Vinhos do Monte: Starter plan, paid (€59.88 net)
+INSERT OR IGNORE INTO subscription_periods (id, store_id, plan, period_start, period_end, amount, vallles_sold, paid_at, created_at)
 VALUES (
   '01JA0000000000000000000052',
-  '01JA0000000000000000000011',
-  '01JA0000000000000000000032',
-  75, NULL,
-  '2026-03-16T09:00:00Z'
-);
-
--- Vinhos do Monte €40 vallle → 5% = €2.00
-INSERT OR IGNORE INTO commissions (id, store_id, vallle_id, amount, paid_at, created_at)
-VALUES (
-  '01JA0000000000000000000053',
   '01JA0000000000000000000012',
-  '01JA0000000000000000000033',
-  200, NULL,
-  '2026-03-01T15:00:00Z'
+  'starter',
+  '2026-03-17T10:00:00Z',
+  '2027-03-17T10:00:00Z',
+  5988, 1,
+  '2026-04-01T10:00:00Z',
+  '2026-03-17T10:00:00Z'
 );

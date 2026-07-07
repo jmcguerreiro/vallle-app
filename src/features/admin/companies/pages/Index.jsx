@@ -28,14 +28,6 @@ const STATUS_VARIANTS = {
 };
 
 /**
- * Maps commission payment states to Badge variants.
- */
-const COMMISSION_VARIANTS = {
-  paid: "success",
-  unpaid: "warning",
-};
-
-/**
  * Component: AdminCompaniesIndex
  * Lists all companies (stores) for the super admin. Each row links to the
  * company view modal. Pagination, search, sorting, and the status/category
@@ -57,6 +49,7 @@ const AdminCompaniesIndex = () => {
   // State
   const [statusFilter, setStatusFilter] = useState(FILTER_ALL);
   const [categoryFilter, setCategoryFilter] = useState(FILTER_ALL);
+  const [paymentFilter, setPaymentFilter] = useState(FILTER_ALL);
   const [pageIndex, setPageIndex] = useState(0);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState({ id: "name", desc: false });
@@ -75,6 +68,7 @@ const AdminCompaniesIndex = () => {
         pageSize: PAGE_SIZE,
         status: statusFilter,
         category: categoryFilter,
+        payment: paymentFilter,
         search,
         sort: sort.id,
         order: sort.desc ? "desc" : "asc",
@@ -89,6 +83,7 @@ const AdminCompaniesIndex = () => {
       });
       if (statusFilter !== FILTER_ALL) params.set("status", statusFilter);
       if (categoryFilter !== FILTER_ALL) params.set("category", categoryFilter);
+      if (paymentFilter !== FILTER_ALL) params.set("payment", paymentFilter);
       if (search) params.set("search", search);
       return get(`/api/admin/companies?${params.toString()}`, { signal });
     },
@@ -125,23 +120,27 @@ const AdminCompaniesIndex = () => {
         meta: { hideOnMobile: true },
       },
       {
-        accessorKey: "total_commission",
-        header: t("features.admin.companies.list.commission"),
-        cell: ({ getValue }) => formatCurrency(getValue()),
+        accessorKey: "plan",
+        header: t("features.admin.companies.list.plan"),
+        cell: ({ getValue }) => <Badge>{t(`constants.plans.${getValue()}`)}</Badge>,
         meta: { hideOnMobile: true },
       },
       {
-        accessorKey: "unpaid_commission",
-        header: t("features.admin.companies.list.commissionStatus"),
-        enableSorting: false,
+        accessorKey: "total_unpaid",
+        header: t("features.admin.companies.list.outstanding"),
         cell: ({ getValue }) => {
-          const status = getValue() > 0 ? "unpaid" : "paid";
+          const amount = getValue();
           return (
-            <Badge variant={COMMISSION_VARIANTS[status]}>
-              {t(`features.admin.companies.list.${status}`)}
-            </Badge>
+            <span
+              className={
+                amount > 0 ? "c-admin-amount--unpaid" : "c-admin-amount--paid"
+              }
+            >
+              {formatCurrency(amount)}
+            </span>
           );
         },
+        meta: { hideOnMobile: true },
       },
       {
         accessorKey: "status",
@@ -189,6 +188,11 @@ const AdminCompaniesIndex = () => {
 
   const handleCategoryFilter = useCallback((event) => {
     setCategoryFilter(event.target.value);
+    setPageIndex(0);
+  }, []);
+
+  const handlePaymentFilter = useCallback((event) => {
+    setPaymentFilter(event.target.value);
     setPageIndex(0);
   }, []);
 
@@ -274,6 +278,16 @@ const AdminCompaniesIndex = () => {
           })),
         ]}
         value={categoryFilter}
+      />
+      <FilterSelect
+        ariaLabel={t("common.filters.allStatuses")}
+        onChange={handlePaymentFilter}
+        options={[
+          { value: FILTER_ALL, label: t("common.filters.allStatuses") },
+          { value: "unpaid", label: t("features.admin.companies.list.unpaid") },
+          { value: "paid", label: t("features.admin.companies.list.paid") },
+        ]}
+        value={paymentFilter}
       />
     </>
   );
