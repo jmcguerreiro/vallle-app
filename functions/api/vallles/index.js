@@ -232,7 +232,7 @@ export async function onRequestPost(context) {
       code: generateVallleCode(),
       amount,
       balance: amount,
-      buyer: buyer || null,
+      buyer: buyer || "",
       status: "active",
       created_at: now,
       expires_at: expiryDate.toISOString(),

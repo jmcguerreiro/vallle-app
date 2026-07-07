@@ -12,6 +12,7 @@ Vallle is a vallle platform for local businesses built with React + Vite on Clou
 - **API:** Cloudflare Pages Functions (`functions/api/`)
 - **Database:** Cloudflare D1 (SQLite at the edge)
 - **Hosting:** Cloudflare Pages (frontend + API in one deployment)
+- **Tests:** Vitest via `@cloudflare/vitest-pool-workers` (see §13)
 
 ## 1. Error Handling
 
@@ -464,3 +465,13 @@ Use the Vallle brand palette in all UI work:
 - **Default exports** for components, named exports for utilities.
 - **Keep files small** — if a component exceeds ~150 lines, consider splitting.
 - **No console.log in production code** — use structured error handling instead.
+
+## 13. Testing
+
+API tests live in `test/` and run with `npm test` (Vitest + `@cloudflare/vitest-pool-workers`): they execute inside workerd with a real local D1, so no DB or crypto mocks. Config in `vitest.config.js` (applies `0001_init.sql`, never the seed; defines a test `JWT_SECRET`).
+
+- **Test through the middleware chain**: use `runRoute([middleware.onRequest, handler.onRequestX], request, params)` from `test/_helpers.js` so auth + store guards are exercised, not bypassed.
+- **Seed fixtures per test** with the `seed*` helpers; isolated storage rolls writes back automatically — never rely on data from another test.
+- **Build requests with `buildRequest`** — it signs a real session JWT and sets `X-Store-Id`.
+- **What to test**: money arithmetic, expiry/status guards, auth/role/store-scoping, validation boundaries. When adding or changing an API route with business rules, add or update its tests in the same session.
+- **Not (yet) in scope**: UI component tests and Playwright E2E — deferred until the product stabilises.

@@ -67,8 +67,9 @@ export default [
       // Unicorn: Allow null values (useful for intentional emptiness vs undefined)
       "unicorn/no-null": "off",
 
-      // Imports: Ensure all imports can be resolved
-      "import/no-unresolved": "error",
+      // Imports: Ensure all imports can be resolved. The `cloudflare:` prefix
+      // covers workerd virtual modules (`cloudflare:test` in the test suite).
+      "import/no-unresolved": ["error", { ignore: ["^cloudflare:"] }],
       // Imports: Enforce consistent import order with React first
       "import/order": [
         "warn",
