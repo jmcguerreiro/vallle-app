@@ -557,6 +557,82 @@
           "generic": "Não foi possível carregar as subscrições.",
           "markPaid": "Não foi possível marcar a subscrição como paga."
         }
+      },
+      "orders": {
+        "heading": "Encomendas",
+        "description": "Acompanhe os packs de boas-vindas e as reposições de cada empresa.",
+        "list": {
+          "company": "Empresa",
+          "type": "Tipo",
+          "amount": "Valor",
+          "payment": "Pagamento",
+          "status": "Estado",
+          "requestedAt": "Pedida em",
+          "allTypes": "Todos os tipos",
+          "paid": "Paga",
+          "toInvoice": "Por faturar",
+          "awaitingPayment": "Aguarda pagamento",
+          "included": "Incluída"
+        },
+        "form": {
+          "company": "Empresa",
+          "companyPlaceholder": "Selecione uma empresa",
+          "type": "Tipo",
+          "status": "Estado",
+          "amount": "Preço (€)",
+          "amountHint": "Preço líquido desta encomenda. Deixe vazio quando está incluída (p. ex. o pack de boas-vindas).",
+          "requestedAt": "Pedida em",
+          "invoicedAt": "Fatura enviada em",
+          "invoicedAtHint": "Quando a fatura foi enviada. Deixe vazio se ainda não foi enviada.",
+          "notes": "Notas",
+          "notesHint": "O que valer a pena recordar — como foi pedida, referências de pagamento, instruções especiais.",
+          "error": {
+            "companyRequired": "Selecione uma empresa.",
+            "requestedAtRequired": "A data do pedido é obrigatória.",
+            "itemsRequired": "Adicione pelo menos um artigo à encomenda.",
+            "quantityInvalid": "A quantidade deve ser um número positivo.",
+            "amountInvalid": "O preço deve ser um valor positivo."
+          }
+        },
+        "create": {
+          "heading": "Adicionar encomenda",
+          "description": "Registe uma encomenda pedida por uma empresa.",
+          "submit": "Criar encomenda",
+          "success": "Encomenda criada com sucesso!",
+          "error": {
+            "generic": "Não foi possível criar a encomenda."
+          }
+        },
+        "view": {
+          "heading": "Detalhes da encomenda",
+          "description": "Veja o que foi encomendado e acompanhe o estado.",
+          "edit": "Editar",
+          "item": "Artigo",
+          "quantity": "Quantidade",
+          "invoicedAt": "Fatura enviada em",
+          "paidAt": "Paga em"
+        },
+        "edit": {
+          "heading": "Editar encomenda",
+          "description": "Atualize os detalhes e o estado desta encomenda.",
+          "submit": "Guardar alterações",
+          "success": "Encomenda atualizada com sucesso!",
+          "error": {
+            "generic": "Não foi possível atualizar a encomenda."
+          }
+        },
+        "markPaid": "Marcar como paga",
+        "markPaidSuccess": "Encomenda marcada como paga!",
+        "markInvoiced": "Marcar como faturada",
+        "markInvoicedSuccess": "Fatura registada — aguarda pagamento.",
+        "markPaidConfirm": {
+          "title": "Marcar encomenda como paga?",
+          "message": "Isto regista a encomenda como paga. Não é possível anular."
+        },
+        "error": {
+          "markPaid": "Não foi possível marcar a encomenda como paga.",
+          "markInvoiced": "Não foi possível marcar a encomenda como faturada."
+        }
       }
     }
   },
@@ -581,6 +657,23 @@
     },
     "countries": {
       "PT": "Portugal"
+    },
+    "orderTypes": {
+      "welcome_pack": "Pack de boas-vindas",
+      "refill": "Reposição"
+    },
+    "orderStatuses": {
+      "requested": "Pedida",
+      "preparing": "Em preparação",
+      "shipped": "Enviada",
+      "delivered": "Entregue",
+      "cancelled": "Cancelada"
+    },
+    "orderItems": {
+      "cards": "Postais",
+      "envelopes": "Envelopes",
+      "box": "Caixa",
+      "pen": "Caneta"
     }
   },
   "validation": {
@@ -600,6 +693,7 @@
     "admin": "Admin",
     "adminCompanies": "Empresas",
     "adminUsers": "Utilizadores",
+    "adminOrders": "Encomendas",
     "switchStore": "Trocar de loja",
     "adminBadge": "Administrador",
     "switchStoreModal": {

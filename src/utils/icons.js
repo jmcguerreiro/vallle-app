@@ -24,6 +24,7 @@ export {
   MailMinus as IconMailMinus,
   MailPlus as IconMailPlus,
   MailSearch as IconMailSearch,
+  Package as IconPackage,
   Pencil as IconPencil,
   Plus as IconPlus,
   Receipt as IconReceipt,

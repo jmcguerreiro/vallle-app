@@ -102,9 +102,7 @@ const CompanyUserList = () => {
         accessorKey: "role",
         header: t("features.company.users.list.role"),
         enableSorting: false,
-        cell: ({ getValue }) => (
-          <Badge>{t(`roles.${getValue()}`)}</Badge>
-        ),
+        cell: ({ getValue }) => <Badge>{t(`roles.${getValue()}`)}</Badge>,
       },
       {
         accessorKey: "status",

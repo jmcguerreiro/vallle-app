@@ -16,6 +16,7 @@ import {
   IconChart,
   IconHouseHeart,
   IconMailbox,
+  IconPackage,
   IconSettings,
   IconUsers,
 } from "@/utils/icons";
@@ -57,6 +58,11 @@ const Navigation = () => {
               to: ROUTES.ADMIN_USERS,
               label: t("nav.adminUsers"),
               icon: IconUsers,
+            },
+            {
+              to: ROUTES.ADMIN_ORDERS,
+              label: t("nav.adminOrders"),
+              icon: IconPackage,
             },
           ]
         : [

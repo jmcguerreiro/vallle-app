@@ -236,7 +236,11 @@ export async function verifyPassword(password, storedHash) {
     [salt, expectedHash] = parts;
   }
 
-  const actualHash = await deriveHashHex(password, hexToBytes(salt), iterations);
+  const actualHash = await deriveHashHex(
+    password,
+    hexToBytes(salt),
+    iterations,
+  );
   return timingSafeEqualHex(actualHash, expectedHash);
 }
 

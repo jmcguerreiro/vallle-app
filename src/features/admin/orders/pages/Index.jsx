@@ -9,33 +9,26 @@ import Datatable from "@/components/Datatable";
 import EmptyState from "@/components/EmptyState";
 import FilterSelect from "@/components/forms/FilterSelect";
 import Loader from "@/components/Loader";
-import { COMPANY_CATEGORIES } from "@/constants/company-categories";
-import { COMPANY_STATUSES } from "@/constants/company-statuses";
-import { ROUTES, adminCompanyPath } from "@/constants/routes";
+import { ORDER_STATUSES, ORDER_TYPES } from "@/constants/orders";
+import { ROUTES, adminOrderPath } from "@/constants/routes";
 import { useMain } from "@/hooks/useMain";
 import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
-import { formatDateTime } from "@/utils/dates";
+import { formatDate } from "@/utils/dates";
 import { IconPlus } from "@/utils/icons";
 
-/**
- * Maps company status values to Badge variants. Statuses without a
- * mapping render with the neutral base style.
- */
-const STATUS_VARIANTS = {
-  active: "success",
-  suspended: "warning",
-};
+import OrderPaymentBadge from "../components/OrderPaymentBadge";
+import { ORDER_STATUS_VARIANTS } from "../utils";
 
 /**
- * Component: AdminCompaniesIndex
- * Lists all companies (stores) for the super admin. Each row links to the
- * company view modal. Pagination, search, sorting, and the status/category
- * filters are server-side.
+ * Component: AdminOrdersIndex
+ * Lists all fulfilment orders (welcome packs and refills) for the super
+ * admin. Each row links to the order view modal. Pagination, search (store
+ * name), sorting, and the status/type/payment filters are server-side.
  * @component
  * @returns {JSX.Element}
  */
-const AdminCompaniesIndex = () => {
+const AdminOrdersIndex = () => {
   // Constants
   const FILTER_ALL = "all";
   const PAGE_SIZE = 20;
@@ -48,11 +41,11 @@ const AdminCompaniesIndex = () => {
 
   // State
   const [statusFilter, setStatusFilter] = useState(FILTER_ALL);
-  const [categoryFilter, setCategoryFilter] = useState(FILTER_ALL);
+  const [typeFilter, setTypeFilter] = useState(FILTER_ALL);
   const [paymentFilter, setPaymentFilter] = useState(FILTER_ALL);
   const [pageIndex, setPageIndex] = useState(0);
   const [search, setSearch] = useState("");
-  const [sort, setSort] = useState({ id: "name", desc: false });
+  const [sort, setSort] = useState({ id: "requested_at", desc: true });
 
   // Queries
   const {
@@ -62,12 +55,12 @@ const AdminCompaniesIndex = () => {
   } = useQuery({
     queryKey: [
       "admin",
-      "companies",
+      "orders",
       {
         page: pageIndex,
         pageSize: PAGE_SIZE,
         status: statusFilter,
-        category: categoryFilter,
+        type: typeFilter,
         payment: paymentFilter,
         search,
         sort: sort.id,
@@ -82,10 +75,10 @@ const AdminCompaniesIndex = () => {
         order: sort.desc ? "desc" : "asc",
       });
       if (statusFilter !== FILTER_ALL) params.set("status", statusFilter);
-      if (categoryFilter !== FILTER_ALL) params.set("category", categoryFilter);
+      if (typeFilter !== FILTER_ALL) params.set("type", typeFilter);
       if (paymentFilter !== FILTER_ALL) params.set("payment", paymentFilter);
       if (search) params.set("search", search);
-      return get(`/api/admin/companies?${params.toString()}`, { signal });
+      return get(`/api/admin/orders?${params.toString()}`, { signal });
     },
     placeholderData: keepPreviousData,
   });
@@ -93,74 +86,50 @@ const AdminCompaniesIndex = () => {
   const totalCount = response?.meta?.total ?? 0;
 
   // Derived State
-  const companies = useMemo(() => response?.data ?? [], [response]);
+  const orders = useMemo(() => response?.data ?? [], [response]);
 
   const columns = useMemo(
     () => [
       {
-        accessorKey: "name",
-        header: t("features.admin.companies.list.name"),
+        accessorKey: "store_name",
+        header: t("features.admin.orders.list.company"),
         meta: { tdClassName: "c-datatable__td--text-highlight" },
       },
       {
-        accessorKey: "category",
-        header: t("features.admin.companies.list.category"),
-        cell: ({ getValue }) => getValue() || "—",
+        accessorKey: "type",
+        header: t("features.admin.orders.list.type"),
+        cell: ({ getValue }) => t(`constants.orderTypes.${getValue()}`),
         meta: { hideOnMobile: true },
       },
       {
-        accessorKey: "vallle_count",
-        header: t("features.admin.companies.list.vallles"),
-        meta: { hideOnMobile: true },
-      },
-      {
-        accessorKey: "total_revenue",
-        header: t("features.admin.companies.list.revenue"),
+        accessorKey: "amount",
+        header: t("features.admin.orders.list.amount"),
         cell: ({ getValue }) => formatCurrency(getValue()),
         meta: { hideOnMobile: true },
       },
       {
-        accessorKey: "plan",
-        header: t("features.admin.companies.list.plan"),
-        cell: ({ getValue }) => (
-          <Badge>{t(`constants.plans.${getValue()}`)}</Badge>
-        ),
-        meta: { hideOnMobile: true },
-      },
-      {
-        accessorKey: "total_unpaid",
-        header: t("features.admin.companies.list.outstanding"),
-        cell: ({ getValue }) => {
-          const amount = getValue();
-          return (
-            <span
-              className={
-                amount > 0 ? "c-admin-amount--unpaid" : "c-admin-amount--paid"
-              }
-            >
-              {formatCurrency(amount)}
-            </span>
-          );
-        },
+        accessorKey: "paid_at",
+        header: t("features.admin.orders.list.payment"),
+        enableSorting: false,
+        cell: ({ row }) => <OrderPaymentBadge order={row.original} />,
         meta: { hideOnMobile: true },
       },
       {
         accessorKey: "status",
-        header: t("features.admin.companies.list.status"),
-        enableSorting: false,
+        header: t("features.admin.orders.list.status"),
         cell: ({ getValue }) => {
           const status = getValue();
           return (
-            <Badge variant={STATUS_VARIANTS[status]}>
-              {t(`features.admin.companies.list.${status}`)}
+            <Badge variant={ORDER_STATUS_VARIANTS[status]}>
+              {t(`constants.orderStatuses.${status}`)}
             </Badge>
           );
         },
       },
       {
-        accessorKey: "updated_at",
-        header: t("features.admin.companies.list.updatedAt"),
-        cell: ({ getValue }) => formatDateTime(getValue()),
+        accessorKey: "requested_at",
+        header: t("features.admin.orders.list.requestedAt"),
+        cell: ({ getValue }) => formatDate(getValue()),
         meta: { hideOnMobile: true },
       },
     ],
@@ -170,7 +139,7 @@ const AdminCompaniesIndex = () => {
   // Handlers
   const handleRowClick = useCallback(
     (row) => {
-      navigate(adminCompanyPath(row.id), {
+      navigate(adminOrderPath(row.id), {
         state: { backgroundLocation: location },
       });
     },
@@ -178,7 +147,7 @@ const AdminCompaniesIndex = () => {
   );
 
   const handleCreate = useCallback(() => {
-    navigate(ROUTES.ADMIN_COMPANIES_MODAL_CREATE, {
+    navigate(ROUTES.ADMIN_ORDERS_MODAL_CREATE, {
       state: { backgroundLocation: location },
     });
   }, [navigate, location]);
@@ -188,8 +157,8 @@ const AdminCompaniesIndex = () => {
     setPageIndex(0);
   }, []);
 
-  const handleCategoryFilter = useCallback((event) => {
-    setCategoryFilter(event.target.value);
+  const handleTypeFilter = useCallback((event) => {
+    setTypeFilter(event.target.value);
     setPageIndex(0);
   }, []);
 
@@ -215,8 +184,8 @@ const AdminCompaniesIndex = () => {
   // Effects
   useEffect(() => {
     setHeader({
-      title: t("features.admin.companies.heading"),
-      description: t("features.admin.companies.description"),
+      title: t("features.admin.orders.heading"),
+      description: t("features.admin.orders.description"),
       image: "companies",
     });
     return () => setHeader();
@@ -225,8 +194,8 @@ const AdminCompaniesIndex = () => {
   // Render
   if (isPending) {
     return (
-      <div className="p-admin-companies">
-        <div className="p-admin-companies__loading">
+      <div className="p-admin-orders">
+        <div className="p-admin-orders__loading">
           <Loader />
         </div>
       </div>
@@ -235,8 +204,8 @@ const AdminCompaniesIndex = () => {
 
   if (isError) {
     return (
-      <div className="p-admin-companies">
-        <div className="p-admin-companies__error">
+      <div className="p-admin-orders">
+        <div className="p-admin-orders__error">
           <EmptyState
             description={t("common.error")}
             hideImageOnMobile
@@ -247,47 +216,49 @@ const AdminCompaniesIndex = () => {
     );
   }
 
-  const companyFilters = (
+  const orderFilters = (
     <>
       <FilterSelect
         ariaLabel={t("common.filters.allStatuses")}
         onChange={handleStatusFilter}
         options={[
           { value: FILTER_ALL, label: t("common.filters.allStatuses") },
-          {
-            value: COMPANY_STATUSES.ACTIVE,
-            label: t("features.admin.companies.list.active"),
-          },
-          {
-            value: COMPANY_STATUSES.SUSPENDED,
-            label: t("features.admin.companies.list.suspended"),
-          },
-          {
-            value: COMPANY_STATUSES.INACTIVE,
-            label: t("features.admin.companies.list.inactive"),
-          },
+          ...Object.values(ORDER_STATUSES).map((status) => ({
+            value: status,
+            label: t(`constants.orderStatuses.${status}`),
+          })),
         ]}
         value={statusFilter}
       />
       <FilterSelect
-        ariaLabel={t("common.filters.allCategories")}
-        onChange={handleCategoryFilter}
+        ariaLabel={t("features.admin.orders.list.allTypes")}
+        onChange={handleTypeFilter}
         options={[
-          { value: FILTER_ALL, label: t("common.filters.allCategories") },
-          ...COMPANY_CATEGORIES.map((key) => ({
-            value: key,
-            label: t(`constants.companyCategories.${key}`),
+          {
+            value: FILTER_ALL,
+            label: t("features.admin.orders.list.allTypes"),
+          },
+          ...Object.values(ORDER_TYPES).map((type) => ({
+            value: type,
+            label: t(`constants.orderTypes.${type}`),
           })),
         ]}
-        value={categoryFilter}
+        value={typeFilter}
       />
       <FilterSelect
         ariaLabel={t("common.filters.allStatuses")}
         onChange={handlePaymentFilter}
         options={[
           { value: FILTER_ALL, label: t("common.filters.allStatuses") },
-          { value: "unpaid", label: t("features.admin.companies.list.unpaid") },
-          { value: "paid", label: t("features.admin.companies.list.paid") },
+          {
+            value: "pending",
+            label: t("features.admin.orders.list.toInvoice"),
+          },
+          {
+            value: "invoiced",
+            label: t("features.admin.orders.list.awaitingPayment"),
+          },
+          { value: "paid", label: t("features.admin.orders.list.paid") },
         ]}
         value={paymentFilter}
       />
@@ -296,19 +267,19 @@ const AdminCompaniesIndex = () => {
 
   const actions = [
     {
-      label: t("features.admin.companies.create.heading"),
+      label: t("features.admin.orders.create.heading"),
       icon: IconPlus,
       onClick: handleCreate,
     },
   ];
 
   return (
-    <div className="p-admin-companies">
+    <div className="p-admin-orders">
       <Datatable
         actions={actions}
         columns={columns}
-        data={companies}
-        filters={companyFilters}
+        data={orders}
+        filters={orderFilters}
         onRowClick={handleRowClick}
         pageSize={PAGE_SIZE}
         serverPagination={{
@@ -330,4 +301,4 @@ const AdminCompaniesIndex = () => {
   );
 };
 
-export default AdminCompaniesIndex;
+export default AdminOrdersIndex;

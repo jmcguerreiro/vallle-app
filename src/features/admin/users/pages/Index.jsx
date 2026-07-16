@@ -105,9 +105,7 @@ const AdminUsersIndex = () => {
         accessorKey: "role",
         header: t("features.admin.users.list.role"),
         enableSorting: false,
-        cell: ({ getValue }) => (
-          <Badge>{t(`roles.${getValue()}`)}</Badge>
-        ),
+        cell: ({ getValue }) => <Badge>{t(`roles.${getValue()}`)}</Badge>,
       },
       {
         id: "stores",

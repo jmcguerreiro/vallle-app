@@ -162,6 +162,62 @@ export async function seedVallle(storeId, userId, overrides = {}) {
 }
 
 /**
+ * Inserts a fulfilment order (with items) and returns its id.
+ * Defaults: refill, requested, €25.00, unpaid, 50 cards.
+ * @param {string} storeId
+ * @param {Object} [overrides] - Column overrides (type, status, amount, paid_at, ...)
+ * @param {Array<{ item: string, quantity: number }>} [items]
+ * @returns {Promise<string>}
+ */
+export async function seedOrder(
+  storeId,
+  overrides = {},
+  items = [{ item: "cards", quantity: 50 }],
+) {
+  const id = generateUlid();
+  const order = {
+    id,
+    type: "refill",
+    status: "requested",
+    amount: 2500,
+    invoiced_at: null,
+    paid_at: null,
+    notes: "",
+    requested_at: NOW,
+    ...overrides,
+  };
+
+  await env.DB.prepare(
+    `INSERT INTO orders (id, store_id, type, status, amount, invoiced_at, paid_at, notes, requested_at, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      order.id,
+      storeId,
+      order.type,
+      order.status,
+      order.amount,
+      order.invoiced_at,
+      order.paid_at,
+      order.notes,
+      order.requested_at,
+      NOW,
+      NOW,
+    )
+    .run();
+
+  for (const entry of items) {
+    await env.DB.prepare(
+      "INSERT INTO order_items (id, order_id, item, quantity) VALUES (?, ?, ?, ?)",
+    )
+      .bind(generateUlid(), id, entry.item, entry.quantity)
+      .run();
+  }
+
+  return id;
+}
+
+/**
  * Creates a user + store + active membership in one call.
  * @param {Object} [options]
  * @param {Object} [options.user] - seedUser overrides

@@ -37,6 +37,10 @@ export const ROUTES = {
   ADMIN_USERS_MODAL_CREATE: "/admin/users/create",
   ADMIN_USERS_MODAL_VIEW: "/admin/users/:id",
   ADMIN_USERS_MODAL_EDIT: "/admin/users/:id/edit",
+  ADMIN_ORDERS: "/admin/orders",
+  ADMIN_ORDERS_MODAL_CREATE: "/admin/orders/create",
+  ADMIN_ORDERS_MODAL_VIEW: "/admin/orders/:id",
+  ADMIN_ORDERS_MODAL_EDIT: "/admin/orders/:id/edit",
 };
 
 /**
@@ -93,6 +97,20 @@ export const adminUserPath = (id) => `/admin/users/${id}`;
  * @returns {string}
  */
 export const adminUserEditPath = (id) => `/admin/users/${id}/edit`;
+
+/**
+ * Builds a full admin order view path for navigation.
+ * @param {string} id - Order ID
+ * @returns {string}
+ */
+export const adminOrderPath = (id) => `/admin/orders/${id}`;
+
+/**
+ * Builds a full admin order edit path for navigation.
+ * @param {string} id - Order ID
+ * @returns {string}
+ */
+export const adminOrderEditPath = (id) => `/admin/orders/${id}/edit`;
 
 /**
  * Builds a full settings user create path for navigation.

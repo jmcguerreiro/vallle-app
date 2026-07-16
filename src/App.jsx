@@ -23,6 +23,10 @@ import AdminCompanyEdit from "@/features/admin/companies/pages/Edit";
 import AdminCompaniesIndex from "@/features/admin/companies/pages/Index";
 import AdminCompanyView from "@/features/admin/companies/pages/View";
 import AdminDashboard from "@/features/admin/dashboard/pages/Index";
+import AdminOrderCreate from "@/features/admin/orders/pages/Create";
+import AdminOrderEdit from "@/features/admin/orders/pages/Edit";
+import AdminOrdersIndex from "@/features/admin/orders/pages/Index";
+import AdminOrderView from "@/features/admin/orders/pages/View";
 import AdminUserCreate from "@/features/admin/users/pages/Create";
 import AdminUserEdit from "@/features/admin/users/pages/Edit";
 import AdminUsersIndex from "@/features/admin/users/pages/Index";
@@ -93,6 +97,9 @@ const MODAL_ROUTE_PATHS = [
   ROUTES.ADMIN_USERS_MODAL_CREATE,
   ROUTES.ADMIN_USERS_MODAL_VIEW,
   ROUTES.ADMIN_USERS_MODAL_EDIT,
+  ROUTES.ADMIN_ORDERS_MODAL_CREATE,
+  ROUTES.ADMIN_ORDERS_MODAL_VIEW,
+  ROUTES.ADMIN_ORDERS_MODAL_EDIT,
 ];
 
 /**
@@ -184,6 +191,14 @@ const AppRoutes = () => {
               </AdminRoute>
             }
             path={ROUTES.ADMIN_USERS}
+          />
+          <Route
+            element={
+              <AdminRoute>
+                <AdminOrdersIndex />
+              </AdminRoute>
+            }
+            path={ROUTES.ADMIN_ORDERS}
           />
         </Route>
       </Routes>
@@ -334,6 +349,36 @@ const AppRoutes = () => {
                   </AdminRoute>
                 }
                 path={ROUTES.ADMIN_USERS_MODAL_EDIT}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminOrderCreate />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_ORDERS_MODAL_CREATE}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminOrderView />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_ORDERS_MODAL_VIEW}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminOrderEdit />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_ORDERS_MODAL_EDIT}
               />
             </Routes>
           </AuthGuard>

@@ -11,6 +11,7 @@
  *   vallle creation; `inactive` removes access entirely.
  */
 
+import { normalizeDateInput } from "./_dates.js";
 import { PLAN_IDS } from "./_plans.js";
 import { validateMinRedemption } from "./vallles/_validation.js";
 
@@ -197,16 +198,13 @@ export function validateStorePlan(value) {
 }
 
 /**
- * Normalises a `plan_renews_at` value: empty/null → `null`; a date-only string
- * from a form (`YYYY-MM-DD`) → a full ISO timestamp; anything else is passed
- * through. Shared by store create and update so they store the same shape.
+ * Normalises a `plan_renews_at` value. Shared by store create and update so
+ * they store the same shape. See `normalizeDateInput` in `_dates.js`.
  * @param {unknown} value
  * @returns {string|null}
  */
 export function normalizePlanRenewsAt(value) {
-  if (value === "" || value === null || value === undefined) return null;
-  if (/^\d{4}-\d{2}-\d{2}$/.test(value)) return `${value}T00:00:00Z`;
-  return value;
+  return normalizeDateInput(value);
 }
 
 /**

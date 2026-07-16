@@ -1,0 +1,4 @@
+# Prettier rewrites Sass parenthesised math like `(12 / $root-rem) * 1rem`
+# into a trailing-comma list `(12 / $root-rem,) * 1rem`, which Sass reads as
+# an (invalid) list * number operation and the build fails. Hand-format SCSS.
+*.scss

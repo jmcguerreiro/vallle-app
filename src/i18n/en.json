@@ -557,6 +557,82 @@
           "generic": "Could not load subscriptions.",
           "markPaid": "Could not mark the subscription as paid."
         }
+      },
+      "orders": {
+        "heading": "Orders",
+        "description": "Track welcome packs and refill orders for every company.",
+        "list": {
+          "company": "Company",
+          "type": "Type",
+          "amount": "Amount",
+          "payment": "Payment",
+          "status": "Status",
+          "requestedAt": "Requested",
+          "allTypes": "All types",
+          "paid": "Paid",
+          "toInvoice": "To invoice",
+          "awaitingPayment": "Awaiting payment",
+          "included": "Included"
+        },
+        "form": {
+          "company": "Company",
+          "companyPlaceholder": "Select a company",
+          "type": "Type",
+          "status": "Status",
+          "amount": "Price (€)",
+          "amountHint": "Net price for this order. Leave empty when it's included (e.g. the welcome pack).",
+          "requestedAt": "Requested on",
+          "invoicedAt": "Invoice sent on",
+          "invoicedAtHint": "When the invoice went out. Leave empty if it hasn't been sent yet.",
+          "notes": "Notes",
+          "notesHint": "Anything worth remembering — how it was requested, payment references, special instructions.",
+          "error": {
+            "companyRequired": "Select a company.",
+            "requestedAtRequired": "The request date is required.",
+            "itemsRequired": "Add at least one item to the order.",
+            "quantityInvalid": "Quantity must be a positive number.",
+            "amountInvalid": "Price must be a positive amount."
+          }
+        },
+        "create": {
+          "heading": "Add order",
+          "description": "Record an order requested by a company.",
+          "submit": "Create order",
+          "success": "Order created successfully!",
+          "error": {
+            "generic": "Could not create the order."
+          }
+        },
+        "view": {
+          "heading": "Order details",
+          "description": "See what was ordered and track its status.",
+          "edit": "Edit",
+          "item": "Item",
+          "quantity": "Quantity",
+          "invoicedAt": "Invoice sent on",
+          "paidAt": "Paid on"
+        },
+        "edit": {
+          "heading": "Edit order",
+          "description": "Update this order's details and status.",
+          "submit": "Save changes",
+          "success": "Order updated successfully!",
+          "error": {
+            "generic": "Could not update the order."
+          }
+        },
+        "markPaid": "Mark as paid",
+        "markPaidSuccess": "Order marked as paid!",
+        "markInvoiced": "Mark as invoiced",
+        "markInvoicedSuccess": "Invoice recorded — awaiting payment.",
+        "markPaidConfirm": {
+          "title": "Mark order as paid?",
+          "message": "This records the order as paid. You can't undo this."
+        },
+        "error": {
+          "markPaid": "Could not mark the order as paid.",
+          "markInvoiced": "Could not mark the order as invoiced."
+        }
       }
     }
   },
@@ -581,6 +657,23 @@
     },
     "countries": {
       "PT": "Portugal"
+    },
+    "orderTypes": {
+      "welcome_pack": "Welcome pack",
+      "refill": "Refill"
+    },
+    "orderStatuses": {
+      "requested": "Requested",
+      "preparing": "Preparing",
+      "shipped": "Shipped",
+      "delivered": "Delivered",
+      "cancelled": "Cancelled"
+    },
+    "orderItems": {
+      "cards": "Postcards",
+      "envelopes": "Envelopes",
+      "box": "Box",
+      "pen": "Pen"
     }
   },
   "validation": {
@@ -600,6 +693,7 @@
     "admin": "Admin",
     "adminCompanies": "Companies",
     "adminUsers": "Users",
+    "adminOrders": "Orders",
     "switchStore": "Switch store",
     "adminBadge": "Administrator",
     "switchStoreModal": {

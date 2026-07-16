@@ -22,7 +22,15 @@
     {
       "name": "vallle-site",
       "runtimeExecutable": "hugo",
-      "runtimeArgs": ["server", "-s", "/Users/joaoguerreiro/Developer/vallle-site", "--port", "1313", "--bind", "127.0.0.1"],
+      "runtimeArgs": [
+        "server",
+        "-s",
+        "/Users/joaoguerreiro/Developer/vallle-site",
+        "--port",
+        "1313",
+        "--bind",
+        "127.0.0.1"
+      ],
       "port": 1313
     }
   ],

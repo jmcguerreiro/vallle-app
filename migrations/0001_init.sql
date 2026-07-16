@@ -1,4 +1,4 @@
--- Vallle · D1 schema v8
+-- Vallle · D1 schema v9
 -- Run with: wrangler d1 execute vallle-db --remote --file=./0001_init.sql
 -- All monetary INTEGER columns store cents (e.g. 5000 = €50.00)
 
@@ -133,6 +133,46 @@ CREATE TABLE IF NOT EXISTS subscription_periods (
 
 CREATE INDEX IF NOT EXISTS idx_subscription_periods_store  ON subscription_periods(store_id);
 CREATE INDEX IF NOT EXISTS idx_subscription_periods_unpaid ON subscription_periods(store_id) WHERE paid_at IS NULL;
+
+-- ─── Orders ─────────────────────────────────────────────────────
+-- Physical fulfilment orders: the welcome pack at signup and later refills
+-- (cards, envelopes, ...). Stores currently request these by email/phone and
+-- the super_admin records them; the table is store-scoped so a client-facing
+-- ordering flow can reuse it later. amount is the net one-off price in cents
+-- (0 = included, e.g. the welcome pack). Payment record: invoiced_at (when
+-- the invoice was sent) + paid_at (mirrors subscription_periods) — the
+-- payment state is derived: no invoiced_at = still to invoice, invoiced_at
+-- only = awaiting payment, paid_at = settled.
+CREATE TABLE IF NOT EXISTS orders (
+  id           TEXT PRIMARY KEY,
+  store_id     TEXT NOT NULL REFERENCES stores(id),
+  type         TEXT NOT NULL DEFAULT 'refill' CHECK (type IN ('welcome_pack', 'refill')),
+  status       TEXT NOT NULL DEFAULT 'requested' CHECK (status IN ('requested', 'preparing', 'shipped', 'delivered', 'cancelled')),
+  amount       INTEGER NOT NULL DEFAULT 0,
+  invoiced_at  TEXT,
+  paid_at      TEXT,
+  notes        TEXT NOT NULL DEFAULT '',
+  -- When the store asked for it (orders arrive by email/phone and may be
+  -- recorded later, so this is editable and distinct from created_at).
+  requested_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+);
+
+CREATE INDEX IF NOT EXISTS idx_orders_store  ON orders(store_id);
+CREATE INDEX IF NOT EXISTS idx_orders_status ON orders(status);
+
+-- ─── Order items ────────────────────────────────────────────────
+-- What's inside an order. item is validated in app code against the catalogue
+-- (cards, envelopes, box, pen) so adding a product doesn't need a migration.
+CREATE TABLE IF NOT EXISTS order_items (
+  id       TEXT PRIMARY KEY,
+  order_id TEXT NOT NULL REFERENCES orders(id) ON DELETE CASCADE,
+  item     TEXT NOT NULL,
+  quantity INTEGER NOT NULL CHECK (quantity > 0)
+);
+
+CREATE INDEX IF NOT EXISTS idx_order_items_order ON order_items(order_id);
 
 -- ─── Password reset tokens ────────────────────────────────────
 CREATE TABLE IF NOT EXISTS password_reset_tokens (
