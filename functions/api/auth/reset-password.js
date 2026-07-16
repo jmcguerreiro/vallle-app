@@ -3,11 +3,20 @@
  * Validates the reset token and updates the user's password.
  */
 
+import { enforceRateLimit, RATE_LIMITS } from "../_rate-limit.js";
 import { isStrongPassword } from "../_validation.js";
 import { hashPassword, sha256Hex } from "./_helpers.js";
 
 export const onRequestPost = async (context) => {
   const { env, request } = context;
+
+  // Throttle per client IP to blunt reset-token guessing.
+  const limited = await enforceRateLimit(
+    env,
+    request,
+    RATE_LIMITS.RESET_PASSWORD,
+  );
+  if (limited) return limited;
 
   try {
     const { token, password } = await request.json();

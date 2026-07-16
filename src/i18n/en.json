@@ -31,6 +31,7 @@
           "invalidEmail": "Please enter a valid email.",
           "passwordRequired": "Please enter your password.",
           "invalidCredentials": "Invalid email or password.",
+          "tooManyAttempts": "Too many attempts. Please wait a few minutes and try again.",
           "generic": "Could not sign in. Please try again."
         }
       }

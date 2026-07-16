@@ -4,6 +4,7 @@
  * Always returns 200 regardless of whether the email exists (prevents enumeration).
  */
 
+import { enforceRateLimit, RATE_LIMITS } from "../_rate-limit.js";
 import { generateUlid } from "../_ulid.js";
 import { sendEmail } from "./_email";
 import { resetPasswordEmail } from "./_email-templates.js";
@@ -24,6 +25,14 @@ const generateResetToken = async () => {
 
 export const onRequestPost = async (context) => {
   const { env, request } = context;
+
+  // Throttle per client IP to prevent reset-email flooding.
+  const limited = await enforceRateLimit(
+    env,
+    request,
+    RATE_LIMITS.FORGOT_PASSWORD,
+  );
+  if (limited) return limited;
 
   try {
     const { email } = await request.json();

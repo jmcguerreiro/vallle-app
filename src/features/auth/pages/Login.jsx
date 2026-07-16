@@ -52,6 +52,8 @@ const Login = () => {
       } catch (error) {
         if (error.code === "AUTH_INVALID_CREDENTIALS") {
           setServerError(t("features.login.form.error.invalidCredentials"));
+        } else if (error.code === "RATE_LIMITED") {
+          setServerError(t("features.login.form.error.tooManyAttempts"));
         } else {
           setServerError(t("features.login.form.error.generic"));
         }

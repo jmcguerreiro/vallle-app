@@ -31,6 +31,7 @@
           "invalidEmail": "Introduza um email válido.",
           "passwordRequired": "Introduza a sua palavra-passe.",
           "invalidCredentials": "Email ou palavra-passe incorretos.",
+          "tooManyAttempts": "Demasiadas tentativas. Aguarde alguns minutos e tente novamente.",
           "generic": "Não foi possível iniciar sessão. Tente novamente."
         }
       }

@@ -1,3 +1,4 @@
+import { enforceRateLimit, RATE_LIMITS } from "../_rate-limit.js";
 import { authCookie, signJwt, verifyPassword } from "./_helpers.js";
 
 /**
@@ -16,6 +17,10 @@ const DUMMY_PASSWORD_HASH =
  */
 export async function onRequestPost(context) {
   const { env, request } = context;
+
+  // Throttle brute force before doing any work (per client IP).
+  const limited = await enforceRateLimit(env, request, RATE_LIMITS.LOGIN);
+  if (limited) return limited;
 
   let body;
   try {

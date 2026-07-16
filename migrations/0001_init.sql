@@ -1,4 +1,4 @@
--- Vallle · D1 schema v7
+-- Vallle · D1 schema v8
 -- Run with: wrangler d1 execute vallle-db --remote --file=./0001_init.sql
 -- All monetary INTEGER columns store cents (e.g. 5000 = €50.00)
 
@@ -146,3 +146,14 @@ CREATE TABLE IF NOT EXISTS password_reset_tokens (
 
 CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_hash ON password_reset_tokens(token_hash);
 CREATE INDEX IF NOT EXISTS idx_password_reset_tokens_user ON password_reset_tokens(user_id);
+
+-- ─── Auth rate limits ───────────────────────────────────────────
+-- Fixed-window counters for the unauthenticated auth endpoints (login, forgot-
+-- password, reset-password), keyed by "<endpoint>:<client-ip>". Written on every
+-- attempt; a bucket's window resets once window_start falls outside the endpoint's
+-- window. Backs the brute-force / abuse throttle in functions/api/_rate-limit.js.
+CREATE TABLE IF NOT EXISTS auth_rate_limits (
+  bucket       TEXT PRIMARY KEY,
+  count        INTEGER NOT NULL,
+  window_start TEXT NOT NULL
+);
