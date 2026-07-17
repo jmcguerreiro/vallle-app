@@ -235,7 +235,9 @@ src/
 │   │   │   └── Edit.jsx     ← modal
 │   │   └── utils.js         ← feature-specific utils
 │   └── admin/
-│       └── companies/       ← super-admin company CRUD; plan & billing live in the detail (View.jsx)
+│       ├── companies/       ← super-admin company CRUD; the detail modal is the hub for subscription + orders
+│       ├── subscriptions/   ← billing ledger modals (manage/renew/edit — opened from the company modal)
+│       └── orders/          ← fulfilment order modals (manage/create/view/edit — opened from the company modal)
 ├── components/
 │   ├── Modal.jsx            ← standalone state-driven modal (native <dialog>)
 │   ├── Drawer.jsx           ← standalone state-driven drawer (Vaul); same props as Modal

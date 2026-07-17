@@ -11,7 +11,8 @@
     "filters": {
       "allStatuses": "Todos os estados",
       "allCategories": "Todas as categorias",
-      "allRoles": "Todas as funções"
+      "allRoles": "Todas as funções",
+      "allPayments": "Todos os pagamentos"
     },
     "pagination": {
       "previous": "Anterior",
@@ -411,7 +412,7 @@
           "defaultVallleExpiryDays": "Expiração de vallles predefinida (dias)",
           "plan": "Plano",
           "planRenewsAt": "Renovação do plano",
-          "planRenewsAtHint": "Data em que o plano renova e o nível é reavaliado.",
+          "planRenewsAtHint": "Sincronizada automaticamente com o último período de subscrição — edite apenas para substituir.",
           "isFoundingMember": "Membro fundador",
           "foundingMemberYes": "Sim",
           "foundingMemberNo": "Não",
@@ -441,7 +442,10 @@
           "outstanding": "Por pagar",
           "subscription": "Subscrição",
           "users": "Utilizadores",
-          "usersEmpty": "Esta empresa ainda não tem utilizadores."
+          "usersEmpty": "Esta empresa ainda não tem utilizadores.",
+          "orders": "Encomendas",
+          "ordersAllGood": "Tudo em ordem — nada por enviar e nenhum pagamento por cobrar.",
+          "manageOrders": "Gerir encomendas"
         },
         "edit": {
           "heading": "Editar empresa",
@@ -527,20 +531,8 @@
         }
       },
       "subscriptions": {
-        "heading": "Subscrições",
-        "description": "Acompanhe o plano e o saldo de subscrição em dívida de cada empresa.",
-        "companyDetailDescription": "Plano, utilização e histórico de faturação.",
-        "company": "Empresa",
         "plan": "Plano",
-        "valllesPeriod": "Vallles (este ano)",
-        "valllesSold": "Vallles vendidos",
-        "suggestedPlan": "Sugerido",
         "renewsAt": "Renova em",
-        "currentPlan": "Plano atual",
-        "founding": "Fundador",
-        "totalBilled": "Total faturado",
-        "totalPaid": "Pago",
-        "outstanding": "Por pagar",
         "period": "Período",
         "amount": "Valor",
         "status": "Estado",
@@ -550,17 +542,73 @@
         "markPaidSuccess": "Subscrição marcada como paga!",
         "markPaidConfirm": {
           "title": "Marcar subscrição como paga?",
-          "message": "Isto regista o período de subscrição como pago. Não é possível anular."
+          "message": "Isto regista o período de subscrição como pago hoje. Pode ajustar a data mais tarde ao editar o período."
         },
         "noPeriods": "Ainda não existem períodos de faturação.",
         "error": {
-          "generic": "Não foi possível carregar as subscrições.",
           "markPaid": "Não foi possível marcar a subscrição como paga."
+        },
+        "periodEdit": {
+          "heading": "Editar período de subscrição",
+          "description": "Ajuste as datas, o plano, o valor, a data de pagamento ou as notas.",
+          "submit": "Guardar alterações",
+          "success": "Período de subscrição atualizado!",
+          "delete": "Eliminar período",
+          "deleteSuccess": "Período de subscrição eliminado.",
+          "deleteConfirm": {
+            "title": "Eliminar este período?",
+            "message": "Isto remove o período do histórico de faturação. Não é possível anular."
+          },
+          "error": {
+            "generic": "Não foi possível atualizar o período de subscrição.",
+            "delete": "Não foi possível eliminar o período de subscrição."
+          }
+        },
+        "form": {
+          "company": "Empresa",
+          "plan": "Plano",
+          "periodStart": "Começa em",
+          "periodStartHint": "Pré-preenchido com o fim do período anterior — mantenha-o assim, a menos que o aniversário tenha mesmo de mudar.",
+          "periodStartFirstHint": "O primeiro ano de faturação da empresa — mova-a apenas se a data de adesão tiver sido mal registada.",
+          "periodStartLockedHint": "Ancorada ao fim do período anterior — só o início do primeiro ano pode mudar.",
+          "periodEnd": "Termina em",
+          "periodEndHint": "Pré-preenchido com um ano após o início — ajuste apenas se este período for mesmo mais curto ou mais longo.",
+          "amount": "Preço (€)",
+          "amountHint": "O preço anual, sem IVA. 0 para um ano gratuito (p. ex. um membro fundador).",
+          "paidAt": "Pago em",
+          "paidAtHint": "Já foi pago? Indique a data. Deixe vazio para marcar como pago mais tarde.",
+          "paidAtEditHint": "Quando foi realmente pago. Limpe para voltar a marcar o período como por pagar.",
+          "notes": "Notas",
+          "notesHint": "O que valer a pena recordar — como foi pago, descontos aplicados, acordos feitos.",
+          "error": {
+            "periodStartRequired": "A data de início é obrigatória.",
+            "periodEndRequired": "A data de fim é obrigatória.",
+            "periodEndAfterStart": "O fim tem de ser depois do início.",
+            "amountRequired": "O preço é obrigatório.",
+            "amountInvalid": "O preço tem de ser zero ou mais.",
+            "planRequired": "Selecione um plano."
+          }
+        },
+        "currentPeriod": "Período atual",
+        "manageSubscription": "Gerir subscrição",
+        "manage": {
+          "heading": "Gerir subscrição",
+          "edit": "Editar",
+          "history": "Períodos anteriores",
+          "historyEmpty": "Ainda não existem períodos anteriores — este é o primeiro ano de faturação da empresa.",
+          "renew": "Renovar subscrição"
+        },
+        "renew": {
+          "heading": "Renovar subscrição",
+          "submit": "Renovar",
+          "success": "Subscrição renovada!",
+          "planHint": "O plano sugerido é {{plan}} — a empresa vendeu {{count}} vallles no último ano.",
+          "error": {
+            "generic": "Não foi possível renovar a subscrição."
+          }
         }
       },
       "orders": {
-        "heading": "Encomendas",
-        "description": "Acompanhe os packs de boas-vindas e as reposições de cada empresa.",
         "list": {
           "company": "Empresa",
           "type": "Tipo",
@@ -568,10 +616,9 @@
           "payment": "Pagamento",
           "status": "Estado",
           "requestedAt": "Pedida em",
-          "allTypes": "Todos os tipos",
           "paid": "Paga",
-          "toInvoice": "Por faturar",
-          "awaitingPayment": "Aguarda pagamento",
+          "to_invoice": "Por faturar",
+          "awaiting_payment": "Aguarda pagamento",
           "included": "Incluída"
         },
         "form": {
@@ -620,6 +667,11 @@
           "error": {
             "generic": "Não foi possível atualizar a encomenda."
           }
+        },
+        "manage": {
+          "heading": "Encomendas",
+          "empty": "Ainda não existem encomendas.",
+          "addNew": "Adicionar encomenda"
         },
         "markPaid": "Marcar como paga",
         "markPaidSuccess": "Encomenda marcada como paga!",
@@ -693,7 +745,6 @@
     "admin": "Admin",
     "adminCompanies": "Empresas",
     "adminUsers": "Utilizadores",
-    "adminOrders": "Encomendas",
     "switchStore": "Trocar de loja",
     "adminBadge": "Administrador",
     "switchStoreModal": {

@@ -7,14 +7,9 @@
 const MAX_AMOUNT_CENTS = 5_000_000; // €50,000
 const MAX_EXPIRY_YEARS = 5;
 
-const MIN_REDEMPTION_MODES = new Set(["none", "full", "custom"]);
+import { validationError } from "../_validation.js";
 
-function validationError(message) {
-  return Response.json(
-    { error: { message, code: "VALIDATION_FAILED" } },
-    { status: 400 },
-  );
-}
+const MIN_REDEMPTION_MODES = new Set(["none", "full", "custom"]);
 
 /**
  * Amount must be a positive integer number of cents, up to €50,000.

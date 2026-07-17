@@ -1,4 +1,4 @@
--- Vallle · D1 schema v9
+-- Vallle · D1 schema v10
 -- Run with: wrangler d1 execute vallle-db --remote --file=./0001_init.sql
 -- All monetary INTEGER columns store cents (e.g. 5000 = €50.00)
 
@@ -116,7 +116,10 @@ CREATE INDEX IF NOT EXISTS idx_redemptions_vallle ON redemptions(vallle_id);
 
 -- ─── Subscription periods ───────────────────────────────────────
 -- One row per store per billing year: the annual subscription charge, with
--- paid_at tracking (mirrors the old manual "mark as paid" flow). vallles_sold
+-- paid_at tracking (mirrors the old manual "mark as paid" flow). The period
+-- history doubles as the subscription log: created_at = when the renewal was
+-- recorded, paid_at = when it was paid, period_start/end = what it covers,
+-- notes = free-form context ("paid by transfer", discounts, ...). vallles_sold
 -- snapshots the count that set the tier for the period; amount is the net
 -- (ex-VAT) annual price in cents (0 for a founding-member's free first year).
 CREATE TABLE IF NOT EXISTS subscription_periods (
@@ -128,7 +131,9 @@ CREATE TABLE IF NOT EXISTS subscription_periods (
   amount       INTEGER NOT NULL,
   vallles_sold INTEGER NOT NULL DEFAULT 0,
   paid_at      TEXT,
-  created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+  notes        TEXT NOT NULL DEFAULT '',
+  created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
 );
 
 CREATE INDEX IF NOT EXISTS idx_subscription_periods_store  ON subscription_periods(store_id);
@@ -156,7 +161,11 @@ CREATE TABLE IF NOT EXISTS orders (
   -- recorded later, so this is editable and distinct from created_at).
   requested_at TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
   created_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
-  updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now'))
+  updated_at   TEXT NOT NULL DEFAULT (strftime('%Y-%m-%dT%H:%M:%SZ', 'now')),
+  -- Payment is sequential: an order can't be paid before it was invoiced.
+  -- Enforced here so any future writer inherits the rule (the API also
+  -- guards it with friendly 4xx errors).
+  CHECK (paid_at IS NULL OR invoiced_at IS NOT NULL)
 );
 
 CREATE INDEX IF NOT EXISTS idx_orders_store  ON orders(store_id);

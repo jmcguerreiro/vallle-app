@@ -23,7 +23,7 @@ import { useConfirm } from "@/hooks/useConfirm";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, post } from "@/services/api";
-import { formatCurrency } from "@/utils/currency";
+import { eurosToCents, formatCurrency } from "@/utils/currency";
 
 const STATUS_VARIANTS = {
   active: "success",
@@ -142,7 +142,7 @@ const VallleRedeem = () => {
   const onSubmit = useCallback(
     async (values) => {
       setServerError(null);
-      const amountCents = Math.round(Number.parseFloat(values.amount) * 100);
+      const amountCents = eurosToCents(values.amount);
 
       // The minimum is advisory: warn (but allow) below-minimum redemptions,
       // unless the cashier is redeeming the entire remaining balance.
@@ -255,7 +255,7 @@ const VallleRedeem = () => {
                 Number.parseFloat(v) > 0 ||
                 t("features.vallles.create.error.amountPositive"),
               max: (v) =>
-                Math.round(Number.parseFloat(v) * 100) <= vallle.balance ||
+                eurosToCents(v) <= vallle.balance ||
                 t("features.vallles.redeem.error.insufficientBalance"),
             }}
           />

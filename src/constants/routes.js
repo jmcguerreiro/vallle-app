@@ -33,11 +33,15 @@ export const ROUTES = {
   ADMIN_COMPANIES_MODAL_CREATE: "/admin/companies/create",
   ADMIN_COMPANIES_MODAL_VIEW: "/admin/companies/:id",
   ADMIN_COMPANIES_MODAL_EDIT: "/admin/companies/:id/edit",
+  ADMIN_COMPANIES_MODAL_SUBSCRIPTION: "/admin/companies/:id/subscription",
+  ADMIN_COMPANIES_MODAL_SUBSCRIPTION_RENEW:
+    "/admin/companies/:id/subscription/renew",
+  ADMIN_COMPANIES_MODAL_ORDERS: "/admin/companies/:id/orders",
+  ADMIN_SUBSCRIPTIONS_MODAL_EDIT: "/admin/subscriptions/:id/edit",
   ADMIN_USERS: "/admin/users",
   ADMIN_USERS_MODAL_CREATE: "/admin/users/create",
   ADMIN_USERS_MODAL_VIEW: "/admin/users/:id",
   ADMIN_USERS_MODAL_EDIT: "/admin/users/:id/edit",
-  ADMIN_ORDERS: "/admin/orders",
   ADMIN_ORDERS_MODAL_CREATE: "/admin/orders/create",
   ADMIN_ORDERS_MODAL_VIEW: "/admin/orders/:id",
   ADMIN_ORDERS_MODAL_EDIT: "/admin/orders/:id/edit",
@@ -83,6 +87,37 @@ export const adminCompanyPath = (id) => `/admin/companies/${id}`;
  * @returns {string}
  */
 export const adminCompanyEditPath = (id) => `/admin/companies/${id}/edit`;
+
+/**
+ * Builds a full admin company subscription (manage) path for navigation.
+ * @param {string} id - Store/company ID
+ * @returns {string}
+ */
+export const adminCompanySubscriptionPath = (id) =>
+  `/admin/companies/${id}/subscription`;
+
+/**
+ * Builds a full admin company subscription renew path for navigation.
+ * @param {string} id - Store/company ID
+ * @returns {string}
+ */
+export const adminCompanySubscriptionRenewPath = (id) =>
+  `/admin/companies/${id}/subscription/renew`;
+
+/**
+ * Builds a full admin company orders (manage) path for navigation.
+ * @param {string} id - Store/company ID
+ * @returns {string}
+ */
+export const adminCompanyOrdersPath = (id) => `/admin/companies/${id}/orders`;
+
+/**
+ * Builds a full admin subscription-period edit path for navigation.
+ * @param {string} id - Subscription period ID
+ * @returns {string}
+ */
+export const adminSubscriptionEditPath = (id) =>
+  `/admin/subscriptions/${id}/edit`;
 
 /**
  * Builds a full admin user view path for navigation.

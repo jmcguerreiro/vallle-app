@@ -1,4 +1,5 @@
 import { planForVallleCount } from "../../_plans.js";
+import { derivePaymentState } from "../orders/_helpers.js";
 import {
   STORE_SELECT,
   buildStoreUpdate,
@@ -30,28 +31,38 @@ export async function onRequestGet(context) {
     // "This period" = trailing 365 days (matches the subscription tier metric).
     const periodStart = new Date(Date.now() - 365 * 86_400_000).toISOString();
 
-    const [vallleStats, subSummary, valllesPeriodRow, periodsResult] =
-      await env.DB.batch([
-        env.DB.prepare(
-          `SELECT COUNT(*) AS vallle_count,
-                  COALESCE(SUM(amount), 0) AS total_vallle_amount
-           FROM vallles WHERE store_id = ?`,
-        ).bind(id),
-        env.DB.prepare(
-          `SELECT COALESCE(SUM(amount), 0) AS total_billed,
-                  COALESCE(SUM(CASE WHEN paid_at IS NOT NULL THEN amount ELSE 0 END), 0) AS total_paid,
-                  COALESCE(SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END), 0) AS total_unpaid
-           FROM subscription_periods WHERE store_id = ?`,
-        ).bind(id),
-        env.DB.prepare(
-          "SELECT COUNT(*) AS vallles_period FROM vallles WHERE store_id = ? AND created_at >= ?",
-        ).bind(id, periodStart),
-        env.DB.prepare(
-          `SELECT id, plan, period_start, period_end, amount, vallles_sold, paid_at, created_at
-           FROM subscription_periods WHERE store_id = ?
-           ORDER BY period_start DESC`,
-        ).bind(id),
-      ]);
+    const [
+      vallleStats,
+      subSummary,
+      valllesPeriodRow,
+      periodsResult,
+      ordersResult,
+    ] = await env.DB.batch([
+      env.DB.prepare(
+        `SELECT COUNT(*) AS vallle_count,
+                COALESCE(SUM(amount), 0) AS total_vallle_amount
+         FROM vallles WHERE store_id = ?`,
+      ).bind(id),
+      env.DB.prepare(
+        `SELECT COALESCE(SUM(amount), 0) AS total_billed,
+                COALESCE(SUM(CASE WHEN paid_at IS NOT NULL THEN amount ELSE 0 END), 0) AS total_paid,
+                COALESCE(SUM(CASE WHEN paid_at IS NULL THEN amount ELSE 0 END), 0) AS total_unpaid
+         FROM subscription_periods WHERE store_id = ?`,
+      ).bind(id),
+      env.DB.prepare(
+        "SELECT COUNT(*) AS vallles_period FROM vallles WHERE store_id = ? AND created_at >= ?",
+      ).bind(id, periodStart),
+      env.DB.prepare(
+        `SELECT id, plan, period_start, period_end, amount, vallles_sold, paid_at, notes, created_at
+         FROM subscription_periods WHERE store_id = ?
+         ORDER BY period_start DESC`,
+      ).bind(id),
+      env.DB.prepare(
+        `SELECT id, type, status, amount, invoiced_at, paid_at, requested_at
+         FROM orders WHERE store_id = ?
+         ORDER BY requested_at DESC`,
+      ).bind(id),
+    ]);
 
     const summary = subSummary.results[0];
     const valllesPeriod = valllesPeriodRow.results[0].vallles_period;
@@ -80,7 +91,22 @@ export async function onRequestGet(context) {
       .bind(id)
       .all();
 
-    return Response.json({ data: { store, stats, subscription, users } });
+    // payment_state is derived, never stored — same field the order routes
+    // return, so clients don't re-derive it.
+    const orders = ordersResult.results.map((order) => ({
+      ...order,
+      payment_state: derivePaymentState(order),
+    }));
+
+    return Response.json({
+      data: {
+        store,
+        stats,
+        subscription,
+        orders,
+        users,
+      },
+    });
   } catch (error) {
     const err = new Error("Admin: Failed to get company");
     err.code = "DB_READ_FAILED";

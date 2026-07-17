@@ -4,6 +4,18 @@
  */
 
 /**
+ * Builds the standard 400 validation-failure Response.
+ * @param {string} message - Human-readable reason
+ * @returns {Response}
+ */
+export function validationError(message) {
+  return Response.json(
+    { error: { message, code: "VALIDATION_FAILED" } },
+    { status: 400 },
+  );
+}
+
+/**
  * Validates an email address against a basic shape check (something@something.tld).
  * @param {string} email
  * @returns {boolean}

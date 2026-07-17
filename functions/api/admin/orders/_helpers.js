@@ -5,6 +5,7 @@
  */
 
 import { generateUlid } from "../../_ulid.js";
+import { validationError } from "../../_validation.js";
 
 export { normalizeDateInput } from "../../_dates.js";
 
@@ -23,15 +24,20 @@ export const ORDER_STATUSES = new Set([
 export const ORDER_ITEMS = new Set(["cards", "envelopes", "box", "pen"]);
 
 /**
- * Builds a 400 validation Response.
- * @param {string} message
- * @returns {Response}
+ * Derives an order's payment state from its payment record. The state is
+ * never stored — it follows from the amount and the two timestamps — and this
+ * is the single source of truth: it is returned as `payment_state` on every
+ * order payload (and doubles as the list `payment` filter values), so clients
+ * never re-derive it. The sequence (no paid before invoiced) is enforced by
+ * the PATCH guard and the orders table CHECK.
+ * @param {Object} order - Order with `amount`, `invoiced_at`, `paid_at`
+ * @returns {"included"|"to_invoice"|"awaiting_payment"|"paid"}
  */
-function validationError(message) {
-  return Response.json(
-    { error: { message, code: "VALIDATION_FAILED" } },
-    { status: 400 },
-  );
+export function derivePaymentState(order) {
+  if (order.amount === 0) return "included";
+  if (order.paid_at) return "paid";
+  if (order.invoiced_at) return "awaiting_payment";
+  return "to_invoice";
 }
 
 /**
@@ -139,5 +145,9 @@ export async function getOrderDetail(env, id) {
   const order = orderResult.results[0];
   if (!order) return null;
 
-  return { ...order, items: itemsResult.results };
+  return {
+    ...order,
+    payment_state: derivePaymentState(order),
+    items: itemsResult.results,
+  };
 }

@@ -11,7 +11,8 @@
     "filters": {
       "allStatuses": "All statuses",
       "allCategories": "All categories",
-      "allRoles": "All roles"
+      "allRoles": "All roles",
+      "allPayments": "All payments"
     },
     "pagination": {
       "previous": "Previous",
@@ -411,7 +412,7 @@
           "defaultVallleExpiryDays": "Default vallle expiry (days)",
           "plan": "Plan",
           "planRenewsAt": "Plan renewal",
-          "planRenewsAtHint": "Date the plan renews and the tier is reassessed.",
+          "planRenewsAtHint": "Kept in sync automatically with the latest subscription period — edit only to override.",
           "isFoundingMember": "Founding member",
           "foundingMemberYes": "Yes",
           "foundingMemberNo": "No",
@@ -441,7 +442,10 @@
           "outstanding": "Outstanding",
           "subscription": "Subscription",
           "users": "Users",
-          "usersEmpty": "No users belong to this company yet."
+          "usersEmpty": "No users belong to this company yet.",
+          "orders": "Orders",
+          "ordersAllGood": "All good — nothing to fulfil and no payments to chase.",
+          "manageOrders": "Manage orders"
         },
         "edit": {
           "heading": "Edit company",
@@ -527,20 +531,8 @@
         }
       },
       "subscriptions": {
-        "heading": "Subscriptions",
-        "description": "Track each company's plan and outstanding subscription balance.",
-        "companyDetailDescription": "Plan, usage, and billing history.",
-        "company": "Company",
         "plan": "Plan",
-        "valllesPeriod": "Vallles (this year)",
-        "valllesSold": "Vallles sold",
-        "suggestedPlan": "Suggested",
         "renewsAt": "Renews",
-        "currentPlan": "Current plan",
-        "founding": "Founding",
-        "totalBilled": "Total billed",
-        "totalPaid": "Paid",
-        "outstanding": "Outstanding",
         "period": "Period",
         "amount": "Amount",
         "status": "Status",
@@ -550,17 +542,73 @@
         "markPaidSuccess": "Subscription marked as paid!",
         "markPaidConfirm": {
           "title": "Mark subscription as paid?",
-          "message": "This records the subscription period as paid. You can't undo this."
+          "message": "This records the subscription period as paid today. You can adjust the date later by editing the period."
         },
         "noPeriods": "No billing periods yet.",
         "error": {
-          "generic": "Could not load subscriptions.",
           "markPaid": "Could not mark the subscription as paid."
+        },
+        "periodEdit": {
+          "heading": "Edit subscription period",
+          "description": "Adjust the dates, plan, amount, payment date, or notes.",
+          "submit": "Save changes",
+          "success": "Subscription period updated!",
+          "delete": "Delete period",
+          "deleteSuccess": "Subscription period deleted.",
+          "deleteConfirm": {
+            "title": "Delete this period?",
+            "message": "This removes the period from the billing history. You can't undo this."
+          },
+          "error": {
+            "generic": "Could not update the subscription period.",
+            "delete": "Could not delete the subscription period."
+          }
+        },
+        "form": {
+          "company": "Company",
+          "plan": "Plan",
+          "periodStart": "Starts on",
+          "periodStartHint": "Pre-filled with the end of the previous period — keep it there unless the anniversary really has to move.",
+          "periodStartFirstHint": "The company's first billing year — move it only if the signup date was recorded wrong.",
+          "periodStartLockedHint": "Anchored to the end of the previous period — only the first year's start can move.",
+          "periodEnd": "Ends on",
+          "periodEndHint": "Pre-filled with one year after the start — adjust it only if this period really is shorter or longer.",
+          "amount": "Price (€)",
+          "amountHint": "The annual price, net of VAT. 0 for a free year (e.g. a founding member).",
+          "paidAt": "Paid on",
+          "paidAtHint": "Already paid? Set the date. Leave empty to mark it as paid later.",
+          "paidAtEditHint": "When it was actually paid. Clear it to set the period back to unpaid.",
+          "notes": "Notes",
+          "notesHint": "Anything worth remembering — how it was paid, discounts applied, agreements made.",
+          "error": {
+            "periodStartRequired": "The start date is required.",
+            "periodEndRequired": "The end date is required.",
+            "periodEndAfterStart": "The end must be after the start.",
+            "amountRequired": "The price is required.",
+            "amountInvalid": "Price must be zero or more.",
+            "planRequired": "Select a plan."
+          }
+        },
+        "currentPeriod": "Current period",
+        "manageSubscription": "Manage subscription",
+        "manage": {
+          "heading": "Manage subscription",
+          "edit": "Edit",
+          "history": "Past periods",
+          "historyEmpty": "No past periods yet — this is the company's first billing year.",
+          "renew": "Renew subscription"
+        },
+        "renew": {
+          "heading": "Renew subscription",
+          "submit": "Renew",
+          "success": "Subscription renewed!",
+          "planHint": "The suggested plan is {{plan}} — the company sold {{count}} vallles in the last year.",
+          "error": {
+            "generic": "Could not renew the subscription."
+          }
         }
       },
       "orders": {
-        "heading": "Orders",
-        "description": "Track welcome packs and refill orders for every company.",
         "list": {
           "company": "Company",
           "type": "Type",
@@ -568,10 +616,9 @@
           "payment": "Payment",
           "status": "Status",
           "requestedAt": "Requested",
-          "allTypes": "All types",
           "paid": "Paid",
-          "toInvoice": "To invoice",
-          "awaitingPayment": "Awaiting payment",
+          "to_invoice": "To invoice",
+          "awaiting_payment": "Awaiting payment",
           "included": "Included"
         },
         "form": {
@@ -620,6 +667,11 @@
           "error": {
             "generic": "Could not update the order."
           }
+        },
+        "manage": {
+          "heading": "Orders",
+          "empty": "No orders yet.",
+          "addNew": "Add order"
         },
         "markPaid": "Mark as paid",
         "markPaidSuccess": "Order marked as paid!",
@@ -693,7 +745,6 @@
     "admin": "Admin",
     "adminCompanies": "Companies",
     "adminUsers": "Users",
-    "adminOrders": "Orders",
     "switchStore": "Switch store",
     "adminBadge": "Administrator",
     "switchStoreModal": {

@@ -19,6 +19,7 @@ import { adminCompanyPath } from "@/constants/routes";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
+import { eurosToCents } from "@/utils/currency";
 import { slugify } from "@/utils/slug";
 
 /**
@@ -100,7 +101,7 @@ const AdminCompanyCreate = () => {
         ...rest,
         default_min_redemption_cents:
           values.default_min_redemption_mode === MIN_REDEMPTION_MODES.CUSTOM
-            ? Math.round(Number.parseFloat(minRedemptionAmount) * 100)
+            ? eurosToCents(minRedemptionAmount)
             : 0,
       });
     },

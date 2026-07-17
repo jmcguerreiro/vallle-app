@@ -89,3 +89,13 @@ export const put = (path, body, { signal } = {}) =>
  */
 export const patch = (path, body, { signal } = {}) =>
   api(path, { method: "PATCH", body, signal });
+
+/**
+ * DELETE helper (`delete` is a reserved word).
+ * @param {string} path
+ * @param {Object} [options]
+ * @param {AbortSignal} [options.signal]
+ * @returns {Promise<Object>}
+ */
+export const del = (path, { signal } = {}) =>
+  api(path, { method: "DELETE", signal });

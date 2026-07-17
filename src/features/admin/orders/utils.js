@@ -23,26 +23,14 @@ export const ORDER_STATUS_VARIANTS = {
 };
 
 /**
- * Derived payment states. Values double as the i18n key suffix under
- * `features.admin.orders.list.*`.
+ * Payment states as derived and returned by the API (`payment_state` on every
+ * order — see `derivePaymentState` in `functions/api/admin/orders/_helpers.js`).
+ * Values double as the list `payment` filter params and as the i18n key
+ * suffix under `features.admin.orders.list.*`.
  */
 export const ORDER_PAYMENT_STATES = {
   INCLUDED: "included",
-  TO_INVOICE: "toInvoice",
-  AWAITING_PAYMENT: "awaitingPayment",
+  TO_INVOICE: "to_invoice",
+  AWAITING_PAYMENT: "awaiting_payment",
   PAID: "paid",
 };
-
-/**
- * Derives an order's payment state from its payment record. The state is
- * never stored — it follows from the amount and the two timestamps, and the
- * sequence is enforced by the API (no paid before invoiced).
- * @param {Object} order - Order with `amount`, `invoiced_at`, `paid_at`
- * @returns {string} One of ORDER_PAYMENT_STATES
- */
-export function derivePaymentState(order) {
-  if (order.amount === 0) return ORDER_PAYMENT_STATES.INCLUDED;
-  if (order.paid_at) return ORDER_PAYMENT_STATES.PAID;
-  if (order.invoiced_at) return ORDER_PAYMENT_STATES.AWAITING_PAYMENT;
-  return ORDER_PAYMENT_STATES.TO_INVOICE;
-}

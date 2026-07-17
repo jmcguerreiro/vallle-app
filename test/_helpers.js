@@ -218,6 +218,49 @@ export async function seedOrder(
 }
 
 /**
+ * Inserts a subscription period and returns its id.
+ * Defaults: starter, 2025 calendar year, €59.88, unpaid.
+ * @param {string} storeId
+ * @param {Object} [overrides] - Column overrides (plan, period_start, paid_at, ...)
+ * @returns {Promise<string>}
+ */
+export async function seedPeriod(storeId, overrides = {}) {
+  const id = generateUlid();
+  const period = {
+    id,
+    plan: "starter",
+    period_start: "2025-01-01T00:00:00Z",
+    period_end: "2026-01-01T00:00:00Z",
+    amount: 5988,
+    vallles_sold: 0,
+    paid_at: null,
+    notes: "",
+    ...overrides,
+  };
+
+  await env.DB.prepare(
+    `INSERT INTO subscription_periods (id, store_id, plan, period_start, period_end, amount, vallles_sold, paid_at, notes, created_at, updated_at)
+     VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)`,
+  )
+    .bind(
+      period.id,
+      storeId,
+      period.plan,
+      period.period_start,
+      period.period_end,
+      period.amount,
+      period.vallles_sold,
+      period.paid_at,
+      period.notes,
+      NOW,
+      NOW,
+    )
+    .run();
+
+  return id;
+}
+
+/**
  * Creates a user + store + active membership in one call.
  * @param {Object} [options]
  * @param {Object} [options.user] - seedUser overrides

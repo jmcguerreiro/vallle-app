@@ -15,6 +15,7 @@ import { ORDER_ITEMS, ORDER_STATUSES, ORDER_TYPES } from "@/constants/orders";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
+import { centsToEuros, eurosToCents } from "@/utils/currency";
 
 import { buildOrderItems } from "../utils";
 
@@ -56,6 +57,8 @@ const AdminOrderEdit = () => {
     mutationFn: (payload) => put(`/api/admin/orders/${id}`, payload),
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      // The company detail carries the order list shown in its modals.
+      queryClient.invalidateQueries({ queryKey: ["admin", "companies"] });
       addToast(t("features.admin.orders.edit.success"), "success");
       navigate(-1);
     },
@@ -99,9 +102,7 @@ const AdminOrderEdit = () => {
         type: values.type,
         status: values.status,
         items,
-        amount: values.amount
-          ? Math.round(Number.parseFloat(values.amount) * 100)
-          : 0,
+        amount: values.amount ? eurosToCents(values.amount) : 0,
         notes: values.notes,
         requested_at: values.requested_at,
         invoiced_at: values.invoiced_at,
@@ -140,7 +141,7 @@ const AdminOrderEdit = () => {
         type: order.type,
         status: order.status,
         quantities,
-        amount: order.amount ? (order.amount / 100).toFixed(2) : "",
+        amount: order.amount ? centsToEuros(order.amount) : "",
         requested_at: order.requested_at ? order.requested_at.slice(0, 10) : "",
         invoiced_at: order.invoiced_at ? order.invoiced_at.slice(0, 10) : "",
         notes: order.notes,
@@ -210,9 +211,9 @@ const AdminOrderEdit = () => {
             register={register}
             type="number"
             validate={{
-              nonNegative: (v) =>
+              positive: (v) =>
                 !v ||
-                Number.parseInt(v, 10) >= 0 ||
+                Number.parseInt(v, 10) > 0 ||
                 t("features.admin.orders.form.error.quantityInvalid"),
             }}
           />

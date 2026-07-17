@@ -105,7 +105,14 @@ const AdminCompaniesIndex = () => {
       {
         accessorKey: "category",
         header: t("features.admin.companies.list.category"),
-        cell: ({ getValue }) => getValue() || "—",
+        // defaultValue guards legacy free-text categories (pre-constants
+        // data) from rendering as a raw translation path.
+        cell: ({ getValue }) =>
+          getValue()
+            ? t(`constants.companyCategories.${getValue()}`, {
+                defaultValue: getValue(),
+              })
+            : "—",
         meta: { hideOnMobile: true },
       },
       {
@@ -282,10 +289,10 @@ const AdminCompaniesIndex = () => {
         value={categoryFilter}
       />
       <FilterSelect
-        ariaLabel={t("common.filters.allStatuses")}
+        ariaLabel={t("common.filters.allPayments")}
         onChange={handlePaymentFilter}
         options={[
-          { value: FILTER_ALL, label: t("common.filters.allStatuses") },
+          { value: FILTER_ALL, label: t("common.filters.allPayments") },
           { value: "unpaid", label: t("features.admin.companies.list.unpaid") },
           { value: "paid", label: t("features.admin.companies.list.paid") },
         ]}

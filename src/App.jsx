@@ -25,8 +25,11 @@ import AdminCompanyView from "@/features/admin/companies/pages/View";
 import AdminDashboard from "@/features/admin/dashboard/pages/Index";
 import AdminOrderCreate from "@/features/admin/orders/pages/Create";
 import AdminOrderEdit from "@/features/admin/orders/pages/Edit";
-import AdminOrdersIndex from "@/features/admin/orders/pages/Index";
+import AdminOrdersManage from "@/features/admin/orders/pages/Manage";
 import AdminOrderView from "@/features/admin/orders/pages/View";
+import AdminSubscriptionEdit from "@/features/admin/subscriptions/pages/Edit";
+import AdminSubscriptionManage from "@/features/admin/subscriptions/pages/Manage";
+import AdminSubscriptionRenew from "@/features/admin/subscriptions/pages/Renew";
 import AdminUserCreate from "@/features/admin/users/pages/Create";
 import AdminUserEdit from "@/features/admin/users/pages/Edit";
 import AdminUsersIndex from "@/features/admin/users/pages/Index";
@@ -94,6 +97,10 @@ const MODAL_ROUTE_PATHS = [
   ROUTES.ADMIN_COMPANIES_MODAL_CREATE,
   ROUTES.ADMIN_COMPANIES_MODAL_VIEW,
   ROUTES.ADMIN_COMPANIES_MODAL_EDIT,
+  ROUTES.ADMIN_COMPANIES_MODAL_SUBSCRIPTION,
+  ROUTES.ADMIN_COMPANIES_MODAL_SUBSCRIPTION_RENEW,
+  ROUTES.ADMIN_COMPANIES_MODAL_ORDERS,
+  ROUTES.ADMIN_SUBSCRIPTIONS_MODAL_EDIT,
   ROUTES.ADMIN_USERS_MODAL_CREATE,
   ROUTES.ADMIN_USERS_MODAL_VIEW,
   ROUTES.ADMIN_USERS_MODAL_EDIT,
@@ -191,14 +198,6 @@ const AppRoutes = () => {
               </AdminRoute>
             }
             path={ROUTES.ADMIN_USERS}
-          />
-          <Route
-            element={
-              <AdminRoute>
-                <AdminOrdersIndex />
-              </AdminRoute>
-            }
-            path={ROUTES.ADMIN_ORDERS}
           />
         </Route>
       </Routes>
@@ -319,6 +318,46 @@ const AppRoutes = () => {
                   </AdminRoute>
                 }
                 path={ROUTES.ADMIN_COMPANIES_MODAL_EDIT}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminSubscriptionManage />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMPANIES_MODAL_SUBSCRIPTION}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminSubscriptionRenew />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMPANIES_MODAL_SUBSCRIPTION_RENEW}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminOrdersManage />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_COMPANIES_MODAL_ORDERS}
+              />
+              <Route
+                element={
+                  <AdminRoute>
+                    <RouteModal>
+                      <AdminSubscriptionEdit />
+                    </RouteModal>
+                  </AdminRoute>
+                }
+                path={ROUTES.ADMIN_SUBSCRIPTIONS_MODAL_EDIT}
               />
               <Route
                 element={

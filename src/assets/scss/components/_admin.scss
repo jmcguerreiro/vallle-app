@@ -109,8 +109,74 @@
   text-align: center;
 }
 
+.c-admin-subscriptions-detail__actions {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: var(--space-lg);
+
+  // Full-width manage/renew/add buttons (company overview + manage modals).
+  &--block {
+    justify-content: stretch;
+
+    .c-button-fill {
+      flex: 1;
+    }
+  }
+}
+
+.c-admin-subscriptions-detail__section-title {
+  font-family: var(--font-display);
+  font-size: 1.0625rem;
+  font-weight: 400;
+  margin: var(--space-xl) 0 var(--space-sm);
+
+  &:first-child {
+    margin-top: 0;
+  }
+}
+
 .c-admin-subscriptions-detail__table {
   margin-top: var(--space-lg);
+
+  // Tighter cells below md so the period table (dates + amount + status +
+  // icon actions) fits the drawer without panning the whole modal body.
+  .c-table__th,
+  .c-table__td {
+    padding-left: $spacing-1;
+    padding-right: $spacing-1;
+
+    @include screen(md) {
+      padding-left: $spacing-3;
+      padding-right: $spacing-3;
+    }
+
+    &:first-child {
+      padding-left: 0;
+    }
+
+    &:last-child {
+      padding-right: 0;
+    }
+  }
+}
+
+.c-admin-subscriptions-detail__paid {
+  align-items: flex-start;
+  display: flex;
+  flex-direction: column;
+  gap: var(--space-xs);
+}
+
+.c-admin-subscriptions-detail__paid-date {
+  color: var(--color-text-muted);
+  font-size: 0.8125rem;
+}
+
+.c-admin-subscriptions-detail__row-actions {
+  align-items: center;
+  display: flex;
+  gap: var(--space-xs);
+  justify-content: flex-end;
 }
 
 .c-admin-subscriptions-detail__row--paid {

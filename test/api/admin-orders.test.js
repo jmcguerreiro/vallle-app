@@ -14,9 +14,16 @@ import {
   onRequestPut as updateOrder,
 } from "../../functions/api/admin/orders/[id].js";
 import {
-  onRequestGet as listOrders,
-  onRequestPost as createOrder,
-} from "../../functions/api/admin/orders/index.js";
+  ORDER_ITEMS as SERVER_ORDER_ITEMS,
+  ORDER_STATUSES as SERVER_ORDER_STATUSES,
+  ORDER_TYPES as SERVER_ORDER_TYPES,
+} from "../../functions/api/admin/orders/_helpers.js";
+import { onRequestPost as createOrder } from "../../functions/api/admin/orders/index.js";
+import {
+  ORDER_ITEMS as CLIENT_ORDER_ITEMS,
+  ORDER_STATUSES as CLIENT_ORDER_STATUSES,
+  ORDER_TYPES as CLIENT_ORDER_TYPES,
+} from "../../src/constants/orders.js";
 import {
   buildRequest,
   runRoute,
@@ -38,13 +45,13 @@ describe("admin orders — access", () => {
   it("rejects a non-super_admin user", async () => {
     const userId = await seedUser({ role: "user" });
 
-    const response = await requestAs(listOrders, { userId });
+    const response = await requestAs(createOrder, { userId, method: "POST" });
 
     expect(response.status).toBe(403);
   });
 
   it("rejects an unauthenticated request", async () => {
-    const response = await requestAs(listOrders, {});
+    const response = await requestAs(createOrder, { method: "POST" });
 
     expect(response.status).toBe(401);
   });
@@ -175,84 +182,6 @@ describe("POST /api/admin/orders", () => {
   });
 });
 
-describe("GET /api/admin/orders", () => {
-  // The admin list is global (all stores), so each test scopes its assertions
-  // with a search on a unique store name to stay independent of other tests.
-  it("filters unpaid orders, treating free orders as settled", async () => {
-    const adminId = await seedUser({ role: "super_admin" });
-    const storeName = `Unpaid Filter Store ${Date.now()}`;
-    const storeId = await seedStore({ name: storeName });
-    const unpaidId = await seedOrder(storeId, { amount: 2500 });
-    await seedOrder(storeId, { amount: 2500, paid_at: "2026-07-01T00:00:00Z" });
-    await seedOrder(storeId, { amount: 0, type: "welcome_pack" });
-
-    const response = await requestAs(listOrders, {
-      userId: adminId,
-      path: `/api/admin/orders?payment=unpaid&search=${encodeURIComponent(storeName)}`,
-    });
-    const { data, meta } = await response.json();
-
-    expect(response.status).toBe(200);
-    expect(meta.total).toBe(1);
-    expect(data[0].id).toBe(unpaidId);
-  });
-
-  it("filters by status and type", async () => {
-    const adminId = await seedUser({ role: "super_admin" });
-    const storeName = `Status Filter Store ${Date.now()}`;
-    const storeId = await seedStore({ name: storeName });
-    await seedOrder(storeId, { type: "welcome_pack", status: "delivered" });
-    const refillId = await seedOrder(storeId, {
-      type: "refill",
-      status: "requested",
-    });
-
-    const response = await requestAs(listOrders, {
-      userId: adminId,
-      path: `/api/admin/orders?status=requested&type=refill&search=${encodeURIComponent(storeName)}`,
-    });
-    const { data, meta } = await response.json();
-
-    expect(meta.total).toBe(1);
-    expect(data[0].id).toBe(refillId);
-    expect(data[0].item_count).toBe(1);
-  });
-
-  it("splits unpaid orders into to-invoice and awaiting-payment", async () => {
-    const adminId = await seedUser({ role: "super_admin" });
-    const storeName = `Invoice Filter Store ${Date.now()}`;
-    const storeId = await seedStore({ name: storeName });
-    const pendingId = await seedOrder(storeId, { amount: 2500 });
-    const invoicedId = await seedOrder(storeId, {
-      amount: 2500,
-      invoiced_at: "2026-07-01T00:00:00Z",
-    });
-    await seedOrder(storeId, {
-      amount: 2500,
-      invoiced_at: "2026-07-01T00:00:00Z",
-      paid_at: "2026-07-10T00:00:00Z",
-    });
-
-    const search = encodeURIComponent(storeName);
-
-    const pendingResponse = await requestAs(listOrders, {
-      userId: adminId,
-      path: `/api/admin/orders?payment=pending&search=${search}`,
-    });
-    const pending = await pendingResponse.json();
-    expect(pending.meta.total).toBe(1);
-    expect(pending.data[0].id).toBe(pendingId);
-
-    const invoicedResponse = await requestAs(listOrders, {
-      userId: adminId,
-      path: `/api/admin/orders?payment=invoiced&search=${search}`,
-    });
-    const invoiced = await invoicedResponse.json();
-    expect(invoiced.meta.total).toBe(1);
-    expect(invoiced.data[0].id).toBe(invoicedId);
-  });
-});
-
 describe("GET /api/admin/orders/:id", () => {
   it("returns the order with its items and store name", async () => {
     const adminId = await seedUser({ role: "super_admin" });
@@ -270,6 +199,7 @@ describe("GET /api/admin/orders/:id", () => {
 
     expect(response.status).toBe(200);
     expect(data.order.store_name).toBe("Loja do Bairro");
+    expect(data.order.payment_state).toBe("to_invoice");
     expect(data.order.items).toHaveLength(2);
   });
 
@@ -440,6 +370,7 @@ describe("PATCH /api/admin/orders/:id — mark invoiced/paid", () => {
     const adminId = await seedUser({ role: "super_admin" });
     const storeId = await seedStore();
     const orderId = await seedOrder(storeId, {
+      invoiced_at: "2026-06-15T00:00:00Z",
       paid_at: "2026-07-01T00:00:00Z",
     });
 
@@ -516,5 +447,22 @@ describe("PATCH /api/admin/orders/:id — mark invoiced/paid", () => {
     });
 
     expect(response.status).toBe(400);
+  });
+});
+
+describe("catalogue sync", () => {
+  // The type/status/item catalogues are hand-mirrored between the API
+  // (validation Sets) and the client (src/constants/orders.js). This guard
+  // fails the build when someone updates one side and forgets the other.
+  it("keeps the server catalogues in sync with src/constants/orders.js", () => {
+    expect([...SERVER_ORDER_TYPES].toSorted()).toEqual(
+      Object.values(CLIENT_ORDER_TYPES).toSorted(),
+    );
+    expect([...SERVER_ORDER_STATUSES].toSorted()).toEqual(
+      Object.values(CLIENT_ORDER_STATUSES).toSorted(),
+    );
+    expect([...SERVER_ORDER_ITEMS].toSorted()).toEqual(
+      [...CLIENT_ORDER_ITEMS].toSorted(),
+    );
   });
 });

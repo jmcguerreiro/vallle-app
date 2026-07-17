@@ -19,7 +19,7 @@ import { formatVallleCode, isVallleExpired } from "@/features/vallles/utils";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
-import { formatCurrency } from "@/utils/currency";
+import { centsToEuros, eurosToCents, formatCurrency } from "@/utils/currency";
 
 const STATUS_VARIANTS = {
   active: "success",
@@ -133,7 +133,7 @@ const VallleEdit = () => {
         min_redemption_mode: values.minRedemptionMode,
         min_redemption_cents:
           values.minRedemptionMode === MIN_REDEMPTION_MODES.CUSTOM
-            ? Math.round(Number.parseFloat(values.minRedemptionAmount) * 100)
+            ? eurosToCents(values.minRedemptionAmount)
             : 0,
       });
     },
@@ -159,7 +159,7 @@ const VallleEdit = () => {
         expires_at: vallle.expires_at ? vallle.expires_at.slice(0, 10) : "",
         minRedemptionMode: vallle.min_redemption_mode,
         minRedemptionAmount: vallle.min_redemption_cents
-          ? (vallle.min_redemption_cents / 100).toFixed(2)
+          ? centsToEuros(vallle.min_redemption_cents)
           : "",
       });
     }

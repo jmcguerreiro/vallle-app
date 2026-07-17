@@ -2,7 +2,7 @@ import { useCallback, useEffect, useMemo } from "react";
 import { useTranslation } from "react-i18next";
 import { Link, useLocation, useNavigate, useParams } from "react-router-dom";
 
-import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
+import { useQuery } from "@tanstack/react-query";
 
 import Accordion from "@/components/Accordion";
 import Badge from "@/components/Badge";
@@ -12,13 +12,26 @@ import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Stat from "@/components/Stat";
 import Table from "@/components/Table";
-import { adminCompanyEditPath, adminUserPath } from "@/constants/routes";
-import { useConfirm } from "@/hooks/useConfirm";
+import { ORDER_STATUSES } from "@/constants/orders";
+import {
+  adminCompanyEditPath,
+  adminCompanyOrdersPath,
+  adminCompanySubscriptionPath,
+  adminOrderPath,
+  adminUserPath,
+} from "@/constants/routes";
 import { useModal } from "@/hooks/useModal";
-import { useToast } from "@/hooks/useToast";
-import { get, patch } from "@/services/api";
+import { get } from "@/services/api";
 import { formatCurrency } from "@/utils/currency";
 import { formatDate } from "@/utils/dates";
+import { IconReceiptText, IconPackage } from "@/utils/icons";
+
+import OrderPaymentBadge from "../../orders/components/OrderPaymentBadge";
+import {
+  ORDER_PAYMENT_STATES,
+  ORDER_STATUS_VARIANTS,
+} from "../../orders/utils";
+import PeriodStatusBadge from "../../subscriptions/components/PeriodStatusBadge";
 
 /**
  * Maps company status values to Badge variants. Statuses without a
@@ -30,6 +43,19 @@ const STATUS_VARIANTS = {
 };
 
 /**
+ * Whether an order still needs attention: anything not delivered yet, or
+ * delivered but with money still to invoice or chase. Cancelled orders are
+ * never pending.
+ * @param {Object} order - Order with `status` and `payment_state`
+ * @returns {boolean}
+ */
+const isPendingOrder = (order) =>
+  order.status !== ORDER_STATUSES.CANCELLED &&
+  (order.status !== ORDER_STATUSES.DELIVERED ||
+    order.payment_state === ORDER_PAYMENT_STATES.TO_INVOICE ||
+    order.payment_state === ORDER_PAYMENT_STATES.AWAITING_PAYMENT);
+
+/**
  * Maps user status values to Badge variants (used in the company's user list).
  */
 const USER_STATUS_VARIANTS = {
@@ -38,9 +64,10 @@ const USER_STATUS_VARIANTS = {
 
 /**
  * Component: AdminCompanyView
- * Displays all details for a single company: headline stats, company details,
- * a subscription accordion (plan, usage, billing periods with mark-as-paid),
- * and the company's users.
+ * Displays a single company at a glance: headline stats, company details, a
+ * subscription summary (the current period) and a pending-orders worklist —
+ * each with a full-width "manage" button into its company-scoped modal — and
+ * the company's users.
  * @component
  * @returns {JSX.Element}
  */
@@ -51,9 +78,6 @@ const AdminCompanyView = () => {
   const navigate = useNavigate();
   const location = useLocation();
   const { setHeader } = useModal();
-  const { confirm } = useConfirm();
-  const { addToast } = useToast();
-  const queryClient = useQueryClient();
 
   // Queries
   const {
@@ -65,93 +89,71 @@ const AdminCompanyView = () => {
     queryFn: ({ signal }) => get(`/api/admin/companies/${id}`, { signal }),
   });
 
-  // Mutations
-  const markPaid = useMutation({
-    mutationFn: (periodId) =>
-      patch(`/api/admin/subscriptions/periods/${periodId}`, {}),
-    onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ["admin", "companies"] });
-      addToast(t("features.admin.subscriptions.markPaidSuccess"), "success");
-    },
-    onError: () => {
-      addToast(t("features.admin.subscriptions.error.markPaid"), "error");
-    },
-  });
-
   // Handlers
   const handleEdit = useCallback(() => {
     const backgroundLocation = location.state?.backgroundLocation || location;
     navigate(adminCompanyEditPath(id), { state: { backgroundLocation } });
   }, [id, navigate, location]);
 
-  const handleMarkPaid = useCallback(
-    async (periodId) => {
-      const confirmed = await confirm({
-        title: t("features.admin.subscriptions.markPaidConfirm.title"),
-        message: t("features.admin.subscriptions.markPaidConfirm.message"),
-        confirmLabel: t("features.admin.subscriptions.markPaid"),
-      });
-      if (!confirmed) return;
-      markPaid.mutate(periodId);
+  // "Manage" buttons open the company-scoped subscription/orders modals on
+  // top of the same background page.
+  const handleManageSubscription = useCallback(() => {
+    const backgroundLocation = location.state?.backgroundLocation || location;
+    navigate(adminCompanySubscriptionPath(id), {
+      state: { backgroundLocation },
+    });
+  }, [id, navigate, location]);
+
+  const handleManageOrders = useCallback(() => {
+    const backgroundLocation = location.state?.backgroundLocation || location;
+    navigate(adminCompanyOrdersPath(id), { state: { backgroundLocation } });
+  }, [id, navigate, location]);
+
+  const handleOrderClick = useCallback(
+    (order) => {
+      const backgroundLocation = location.state?.backgroundLocation || location;
+      navigate(adminOrderPath(order.id), { state: { backgroundLocation } });
     },
-    [confirm, t, markPaid],
+    [navigate, location],
   );
 
   // Derived State
-  const periodColumns = useMemo(
+  const orderColumns = useMemo(
     () => [
       {
-        key: "period",
-        header: t("features.admin.subscriptions.period"),
-        render: (period) =>
-          `${formatDate(period.period_start)} – ${formatDate(period.period_end)}`,
+        key: "requested_at",
+        header: t("features.admin.orders.list.requestedAt"),
+        render: (order) => formatDate(order.requested_at),
       },
       {
-        key: "plan",
-        header: t("features.admin.subscriptions.plan"),
-        render: (period) => t(`constants.plans.${period.plan}`),
-      },
-      {
-        key: "vallles_sold",
-        header: t("features.admin.subscriptions.valllesSold"),
+        key: "type",
+        header: t("features.admin.orders.list.type"),
+        render: (order) => t(`constants.orderTypes.${order.type}`),
+        hideOnMobile: true,
       },
       {
         key: "amount",
-        header: t("features.admin.subscriptions.amount"),
+        header: t("features.admin.orders.list.amount"),
         align: "right",
-        render: (period) => formatCurrency(period.amount),
+        render: (order) => formatCurrency(order.amount),
+      },
+      {
+        key: "payment",
+        header: t("features.admin.orders.list.payment"),
+        render: (order) => <OrderPaymentBadge order={order} />,
+        hideOnMobile: true,
       },
       {
         key: "status",
-        header: t("features.admin.subscriptions.status"),
-        render: (period) =>
-          period.paid_at ? (
-            <Badge variant="success">
-              {t("features.admin.subscriptions.paid")}
-            </Badge>
-          ) : (
-            <Badge variant="warning">
-              {t("features.admin.subscriptions.unpaid")}
-            </Badge>
-          ),
-      },
-      {
-        key: "action",
-        header: "",
-        align: "right",
-        render: (period) =>
-          period.paid_at ? null : (
-            <Button
-              disabled={markPaid.isPending}
-              onClick={() => handleMarkPaid(period.id)}
-              type="button"
-            >
-              {t("features.admin.subscriptions.markPaid")}
-            </Button>
-          ),
+        header: t("features.admin.orders.list.status"),
+        render: (order) => (
+          <Badge variant={ORDER_STATUS_VARIANTS[order.status]}>
+            {t(`constants.orderStatuses.${order.status}`)}
+          </Badge>
+        ),
       },
     ],
-    [t, handleMarkPaid, markPaid.isPending],
+    [t],
   );
 
   // Effects
@@ -187,13 +189,24 @@ const AdminCompanyView = () => {
     );
   }
 
-  const { store, stats, subscription, users } = response.data;
+  const { store, stats, subscription, orders, users } = response.data;
+
+  // Periods come sorted by period_start DESC — [0] is the latest.
+  const currentPeriod = subscription.periods[0];
+
+  // The accordion is a worklist, not a log — only orders that still need
+  // fulfilling or paying. The full history lives in the manage-orders modal.
+  const pendingOrders = orders.filter((order) => isPendingOrder(order));
 
   const details = [
     {
       label: t("features.admin.companies.form.category"),
+      // defaultValue guards legacy free-text categories (pre-constants data)
+      // from rendering as a raw translation path.
       value: store.category
-        ? t(`constants.companyCategories.${store.category}`)
+        ? t(`constants.companyCategories.${store.category}`, {
+            defaultValue: store.category,
+          })
         : "—",
     },
     {
@@ -224,16 +237,26 @@ const AdminCompanyView = () => {
 
   const subscriptionDetails = [
     {
+      label: t("features.admin.subscriptions.currentPeriod"),
+      value: currentPeriod
+        ? `${formatDate(currentPeriod.period_start)} – ${formatDate(currentPeriod.period_end)}`
+        : t("features.admin.subscriptions.noPeriods"),
+    },
+    ...(currentPeriod
+      ? [
+          {
+            label: t("features.admin.subscriptions.status"),
+            value: <PeriodStatusBadge period={currentPeriod} />,
+          },
+          {
+            label: t("features.admin.subscriptions.amount"),
+            value: formatCurrency(currentPeriod.amount),
+          },
+        ]
+      : []),
+    {
       label: t("features.admin.subscriptions.renewsAt"),
       value: store.plan_renews_at ? formatDate(store.plan_renews_at) : "—",
-    },
-    {
-      label: t("features.admin.subscriptions.valllesPeriod"),
-      value: subscription.vallles_period,
-    },
-    {
-      label: t("features.admin.subscriptions.suggestedPlan"),
-      value: t(`constants.plans.${subscription.suggested_plan}`),
     },
     {
       label: t("features.admin.companies.form.isFoundingMember"),
@@ -272,21 +295,42 @@ const AdminCompanyView = () => {
             className="c-admin-detail-list"
             items={subscriptionDetails}
           />
-          {subscription.periods.length === 0 ? (
+          <div className="c-admin-subscriptions-detail__actions c-admin-subscriptions-detail__actions--block">
+            <Button
+              display="block"
+              icon={IconReceiptText}
+              onClick={handleManageSubscription}
+            >
+              {t("features.admin.subscriptions.manageSubscription")}
+            </Button>
+          </div>
+        </Accordion>
+      </div>
+
+      <div className="c-admin-subscriptions-detail">
+        <Accordion title={t("features.admin.companies.view.orders")}>
+          {pendingOrders.length === 0 ? (
             <p className="c-admin-subscriptions-detail__empty">
-              {t("features.admin.subscriptions.noPeriods")}
+              {t("features.admin.companies.view.ordersAllGood")}
             </p>
           ) : (
             <Table
               className="c-admin-subscriptions-detail__table"
-              columns={periodColumns}
-              data={subscription.periods}
-              getRowClassName={(period) =>
-                period.paid_at ? "c-admin-subscriptions-detail__row--paid" : ""
-              }
-              getRowKey={(period) => period.id}
+              columns={orderColumns}
+              data={pendingOrders}
+              getRowKey={(order) => order.id}
+              onRowClick={handleOrderClick}
             />
           )}
+          <div className="c-admin-subscriptions-detail__actions c-admin-subscriptions-detail__actions--block">
+            <Button
+              display="block"
+              icon={IconPackage}
+              onClick={handleManageOrders}
+            >
+              {t("features.admin.companies.view.manageOrders")}
+            </Button>
+          </div>
         </Accordion>
       </div>
 

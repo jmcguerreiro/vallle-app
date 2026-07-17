@@ -19,6 +19,7 @@ import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
+import { centsToEuros, eurosToCents } from "@/utils/currency";
 
 /**
  * Component: AdminCompanyEdit
@@ -114,7 +115,7 @@ const AdminCompanyEdit = () => {
         ...rest,
         default_min_redemption_cents:
           values.default_min_redemption_mode === MIN_REDEMPTION_MODES.CUSTOM
-            ? Math.round(Number.parseFloat(minRedemptionAmount) * 100)
+            ? eurosToCents(minRedemptionAmount)
             : 0,
       });
     },
@@ -164,7 +165,7 @@ const AdminCompanyEdit = () => {
         default_vallle_expiry_days: store.default_vallle_expiry_days,
         default_min_redemption_mode: store.default_min_redemption_mode,
         minRedemptionAmount: store.default_min_redemption_cents
-          ? (store.default_min_redemption_cents / 100).toFixed(2)
+          ? centsToEuros(store.default_min_redemption_cents)
           : "",
       });
     }

@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
 import { useTranslation } from "react-i18next";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
@@ -16,13 +16,15 @@ import { adminOrderPath } from "@/constants/routes";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { get, post } from "@/services/api";
+import { eurosToCents } from "@/utils/currency";
 
 import { buildOrderItems } from "../utils";
 
 /**
  * Component: AdminOrderCreate
  * Form for recording a fulfilment order (welcome pack or refill) requested
- * by a store via email/phone. Super admin only.
+ * by a store via email/phone. A `?store=` query param pre-selects the
+ * company (used by the company orders modal's add button). Super admin only.
  * @component
  * @returns {JSX.Element}
  */
@@ -31,6 +33,7 @@ const AdminOrderCreate = () => {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const location = useLocation();
+  const [searchParams] = useSearchParams();
   const { setHeader } = useModal();
   const queryClient = useQueryClient();
   const { addToast } = useToast();
@@ -41,6 +44,7 @@ const AdminOrderCreate = () => {
     formState: { errors },
   } = useForm({
     defaultValues: {
+      store_id: searchParams.get("store") ?? "",
       type: ORDER_TYPES.REFILL,
       requested_at: new Date().toISOString().slice(0, 10),
       quantities: {},
@@ -60,6 +64,8 @@ const AdminOrderCreate = () => {
     mutationFn: (payload) => post("/api/admin/orders", payload),
     onSuccess: ({ data: { order } }) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      // The company detail carries the order list shown in its modals.
+      queryClient.invalidateQueries({ queryKey: ["admin", "companies"] });
       addToast(t("features.admin.orders.create.success"), "success");
       const backgroundLocation = location.state?.backgroundLocation || location;
       navigate(adminOrderPath(order.id), {
@@ -101,9 +107,7 @@ const AdminOrderCreate = () => {
         store_id: values.store_id,
         type: values.type,
         items,
-        amount: values.amount
-          ? Math.round(Number.parseFloat(values.amount) * 100)
-          : 0,
+        amount: values.amount ? eurosToCents(values.amount) : 0,
         notes: values.notes,
         requested_at: values.requested_at,
       });
@@ -149,9 +153,9 @@ const AdminOrderCreate = () => {
             register={register}
             type="number"
             validate={{
-              nonNegative: (v) =>
+              positive: (v) =>
                 !v ||
-                Number.parseInt(v, 10) >= 0 ||
+                Number.parseInt(v, 10) > 0 ||
                 t("features.admin.orders.form.error.quantityInvalid"),
             }}
           />

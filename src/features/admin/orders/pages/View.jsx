@@ -18,11 +18,7 @@ import { formatCurrency } from "@/utils/currency";
 import { formatDate } from "@/utils/dates";
 
 import OrderPaymentBadge from "../components/OrderPaymentBadge";
-import {
-  ORDER_PAYMENT_STATES,
-  ORDER_STATUS_VARIANTS,
-  derivePaymentState,
-} from "../utils";
+import { ORDER_PAYMENT_STATES, ORDER_STATUS_VARIANTS } from "../utils";
 
 /**
  * Component: AdminOrderView
@@ -57,6 +53,8 @@ const AdminOrderView = () => {
     mutationFn: (mark) => patch(`/api/admin/orders/${id}`, { mark }),
     onSuccess: (_, mark) => {
       queryClient.invalidateQueries({ queryKey: ["admin", "orders"] });
+      // The company detail carries the order list shown in its modals.
+      queryClient.invalidateQueries({ queryKey: ["admin", "companies"] });
       addToast(
         mark === "paid"
           ? t("features.admin.orders.markPaidSuccess")
@@ -118,8 +116,7 @@ const AdminOrderView = () => {
 
   // Effects
   useEffect(() => {
-    const order = response?.data?.order;
-    const paymentState = order && derivePaymentState(order);
+    const paymentState = response?.data?.order?.payment_state;
 
     const actions = [];
     // Payment is sequential — an order can't be paid before it was invoiced,

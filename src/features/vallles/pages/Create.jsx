@@ -14,6 +14,7 @@ import { useConfetti } from "@/hooks/useConfetti";
 import { useModal } from "@/hooks/useModal";
 import { useToast } from "@/hooks/useToast";
 import { post } from "@/services/api";
+import { eurosToCents } from "@/utils/currency";
 
 /**
  * Component: VallleCreate
@@ -101,7 +102,7 @@ const VallleCreate = () => {
     (values) => {
       setServerError(null);
       createVallle.mutate({
-        amount: Math.round(Number.parseFloat(values.amount) * 100),
+        amount: eurosToCents(values.amount),
         buyer: values.buyer?.trim() || null,
         expires_at: expiryDate.toISOString(),
       });

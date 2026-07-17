@@ -18,6 +18,7 @@ import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { useAuth } from "@/hooks/useAuth";
 import { useToast } from "@/hooks/useToast";
 import { get, put } from "@/services/api";
+import { centsToEuros, eurosToCents } from "@/utils/currency";
 
 /**
  * Component: CompanyEdit
@@ -79,7 +80,7 @@ const CompanyEdit = () => {
         default_min_redemption_mode: values.minRedemptionMode,
         default_min_redemption_cents:
           values.minRedemptionMode === MIN_REDEMPTION_MODES.CUSTOM
-            ? Math.round(Number.parseFloat(values.minRedemptionAmount) * 100)
+            ? eurosToCents(values.minRedemptionAmount)
             : 0,
       }),
     onSuccess: (response) => {
@@ -130,7 +131,7 @@ const CompanyEdit = () => {
         defaultVallleExpiryDays: response.data.store.default_vallle_expiry_days,
         minRedemptionMode: response.data.store.default_min_redemption_mode,
         minRedemptionAmount: response.data.store.default_min_redemption_cents
-          ? (response.data.store.default_min_redemption_cents / 100).toFixed(2)
+          ? centsToEuros(response.data.store.default_min_redemption_cents)
           : "",
       });
     }
