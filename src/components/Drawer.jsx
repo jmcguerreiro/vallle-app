@@ -40,6 +40,24 @@ const Drawer = ({
     [onClose],
   );
 
+  // A native <dialog> opened with showModal() (e.g. the Confirm prompt) sits in
+  // the browser's top layer, outside the drawer's DOM — Vaul would treat any
+  // interaction with it (clicks, Escape) as an outside interaction and dismiss
+  // the drawer underneath. While such a dialog is open, veto the dismissal.
+  const handleInteractOutside = useCallback((event) => {
+    if (document.querySelector("dialog:modal")) event.preventDefault();
+  }, []);
+
+  const handleEscapeKeyDown = useCallback((event) => {
+    const dialog = document.querySelector("dialog:modal");
+    if (!dialog) return;
+    // preventDefault stops the drawer's dismissal but also the dialog's own
+    // Escape handling — close it ourselves so Escape still dismisses only the
+    // topmost layer.
+    event.preventDefault();
+    dialog.close();
+  }, []);
+
   // Render
   return (
     <VaulDrawer.Root
@@ -53,6 +71,8 @@ const Drawer = ({
           aria-describedby={undefined}
           aria-label={title || "Dialog"}
           className="c-drawer"
+          onEscapeKeyDown={handleEscapeKeyDown}
+          onInteractOutside={handleInteractOutside}
         >
           <VaulDrawer.Handle className="c-drawer__handle" />
           {title || description ? (

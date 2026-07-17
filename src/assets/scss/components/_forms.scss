@@ -67,6 +67,11 @@
   &--textarea {
     resize: vertical;
   }
+
+  // iOS Safari centres date values by default
+  &::-webkit-date-and-time-value {
+    text-align: left;
+  }
 }
 
 .c-form__field-label {

@@ -8,6 +8,24 @@
       "port": 8788
     },
     {
+      "name": "dev-preview",
+      "runtimeExecutable": "npx",
+      "runtimeArgs": [
+        "wrangler",
+        "pages",
+        "dev",
+        "--port",
+        "8790",
+        "--persist-to",
+        ".wrangler/preview-state",
+        "--",
+        "vite",
+        "--port",
+        "5199"
+      ],
+      "port": 8790
+    },
+    {
       "name": "vite",
       "runtimeExecutable": "node",
       "runtimeArgs": ["node_modules/.bin/vite", "--port", "5173"],

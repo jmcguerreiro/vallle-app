@@ -26,7 +26,7 @@
 }
 
 .c-select__menu {
-  background: $color-white;
+  background: $color-linen;
   border: solid 1px $color-parchment;
   border-radius: $border-radius-lg;
   margin-top: $spacing-1;
@@ -40,11 +40,11 @@
   transition: background $transition-normal;
 
   &--is-focused {
-    background: $color-linen;
+    background: $color-sand;
   }
 
   &--is-selected {
-    background: $color-linen;
+    background: $color-sand;
     color: $text-color-highlight;
   }
 }
