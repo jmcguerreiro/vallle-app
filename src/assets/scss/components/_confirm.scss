@@ -6,6 +6,10 @@
   max-height: 90dvh;
   max-width: $screen-xs;
   padding: $spacing-6;
+  // While a Vaul drawer is open it sets pointer-events: none on the body,
+  // which this dialog inherits despite rendering in the top layer above the
+  // drawer — restore interactivity so the prompt stays clickable.
+  pointer-events: auto;
   width: 100%;
 }
 
