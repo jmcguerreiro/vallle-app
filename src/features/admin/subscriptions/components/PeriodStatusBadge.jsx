@@ -1,12 +1,12 @@
 import { useTranslation } from "react-i18next";
 
 import Badge from "@/components/Badge";
-import { formatDate } from "@/utils/dates";
 
 /**
  * Component: PeriodStatusBadge
- * Paid/unpaid badge for a subscription period, with the payment date under
- * the badge when paid.
+ * Paid/unpaid badge for a subscription period. Maps `paid_at` to the badge
+ * variant and label — the payment date, when needed, is surfaced by the
+ * caller (e.g. a dedicated "Paid on" field), never inside the badge.
  * @component
  * @param {Object} props
  * @param {Object} props.period - Subscription period with `paid_at`
@@ -17,21 +17,10 @@ const PeriodStatusBadge = ({ period }) => {
   const { t } = useTranslation();
 
   // Render
-  if (!period.paid_at) {
-    return (
-      <Badge variant="warning">
-        {t("features.admin.subscriptions.unpaid")}
-      </Badge>
-    );
-  }
-
-  return (
-    <div className="c-admin-subscriptions-detail__paid">
-      <Badge variant="success">{t("features.admin.subscriptions.paid")}</Badge>
-      <span className="c-admin-subscriptions-detail__paid-date">
-        {formatDate(period.paid_at)}
-      </span>
-    </div>
+  return period.paid_at ? (
+    <Badge variant="success">{t("features.admin.subscriptions.paid")}</Badge>
+  ) : (
+    <Badge variant="warning">{t("features.admin.subscriptions.unpaid")}</Badge>
   );
 };
 

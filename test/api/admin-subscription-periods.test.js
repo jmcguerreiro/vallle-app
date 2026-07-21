@@ -111,7 +111,8 @@ describe("POST /api/admin/subscriptions/periods", () => {
     const inWindow = await requestAs(createPeriod, {
       userId: adminId,
       method: "POST",
-      body: { ...VALID_BODY, store_id: storeId },
+      // Paid so the second period below (a renewal) clears the unpaid guard.
+      body: { ...VALID_BODY, store_id: storeId, paid_at: "2026-02-20" },
     });
     const { data: inData } = await inWindow.json();
     expect(inData.period.vallles_sold).toBe(2);
@@ -183,6 +184,44 @@ describe("POST /api/admin/subscriptions/periods", () => {
     });
 
     expect(response.status).toBe(404);
+  });
+
+  it("409s when renewing while the latest period is unpaid", async () => {
+    const adminId = await seedUser({ role: "super_admin" });
+    const storeId = await seedStore();
+    await seedPeriod(storeId, {
+      period_start: "2025-03-01T00:00:00Z",
+      period_end: "2026-03-01T00:00:00Z",
+      paid_at: null,
+    });
+
+    const response = await requestAs(createPeriod, {
+      userId: adminId,
+      method: "POST",
+      body: { ...VALID_BODY, store_id: storeId },
+    });
+
+    expect(response.status).toBe(409);
+    const { error } = await response.json();
+    expect(error.code).toBe("SUBSCRIPTION_UNPAID");
+  });
+
+  it("allows renewing once the latest period is paid", async () => {
+    const adminId = await seedUser({ role: "super_admin" });
+    const storeId = await seedStore();
+    await seedPeriod(storeId, {
+      period_start: "2025-03-01T00:00:00Z",
+      period_end: "2026-03-01T00:00:00Z",
+      paid_at: "2025-03-05T00:00:00Z",
+    });
+
+    const response = await requestAs(createPeriod, {
+      userId: adminId,
+      method: "POST",
+      body: { ...VALID_BODY, store_id: storeId },
+    });
+
+    expect(response.status).toBe(201);
   });
 });
 

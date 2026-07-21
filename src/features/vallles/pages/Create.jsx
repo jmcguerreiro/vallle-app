@@ -5,7 +5,6 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import Button from "@/components/Button";
 import { MIN_REDEMPTION_MODES } from "@/constants/redemption";
 import { ROUTES, valllePath } from "@/constants/routes";
 import { formatMinRedemption } from "@/features/vallles/utils";
@@ -107,7 +106,7 @@ const VallleCreate = () => {
         expires_at: expiryDate.toISOString(),
       });
     },
-    [createVallle, expiryDate],
+    [createVallle.mutate, expiryDate],
   );
 
   // Effects
@@ -116,9 +115,28 @@ const VallleCreate = () => {
   }, [isStoreSuspended, navigate]);
 
   useEffect(() => {
-    setHeader({ title, description });
+    setHeader({
+      title,
+      description,
+      actions: [
+        {
+          label: t("features.vallles.create.submit"),
+          onClick: handleSubmit(onSubmit),
+          skin: "primary",
+          isProcessing: createVallle.isPending,
+        },
+      ],
+    });
     return () => setHeader();
-  }, [title, description, setHeader]);
+  }, [
+    title,
+    description,
+    setHeader,
+    t,
+    handleSubmit,
+    onSubmit,
+    createVallle.isPending,
+  ]);
 
   // Render
   return (
@@ -189,16 +207,6 @@ const VallleCreate = () => {
       </div>
 
       {serverError && <div className="c-form__error">{serverError}</div>}
-
-      <div className="p-vallle-create__actions">
-        <Button
-          display="block"
-          isProcessing={createVallle.isPending}
-          type="submit"
-        >
-          {t("features.vallles.create.submit")}
-        </Button>
-      </div>
     </form>
   );
 };

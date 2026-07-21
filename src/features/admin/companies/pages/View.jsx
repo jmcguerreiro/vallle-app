@@ -248,6 +248,14 @@ const AdminCompanyView = () => {
             label: t("features.admin.subscriptions.status"),
             value: <PeriodStatusBadge period={currentPeriod} />,
           },
+          ...(currentPeriod.paid_at
+            ? [
+                {
+                  label: t("features.admin.subscriptions.paidOn"),
+                  value: formatDate(currentPeriod.paid_at),
+                },
+              ]
+            : []),
           {
             label: t("features.admin.subscriptions.amount"),
             value: formatCurrency(currentPeriod.amount),

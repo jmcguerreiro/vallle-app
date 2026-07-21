@@ -537,6 +537,7 @@
         "amount": "Amount",
         "status": "Status",
         "paid": "Paid",
+        "paidOn": "Paid on",
         "unpaid": "Unpaid",
         "markPaid": "Mark as paid",
         "markPaidSuccess": "Subscription marked as paid!",

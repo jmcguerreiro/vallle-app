@@ -537,6 +537,7 @@
         "amount": "Valor",
         "status": "Estado",
         "paid": "Pago",
+        "paidOn": "Pago a",
         "unpaid": "Por pagar",
         "markPaid": "Marcar como pago",
         "markPaidSuccess": "Subscrição marcada como paga!",
@@ -751,7 +752,7 @@
       "heading": "Trocar de loja",
       "description": "Selecione a loja com que pretende trabalhar."
     },
-    "logout": "Sair",
+    "logout": "Terminar Sessão",
     "mainMenu": "Menu principal",
     "help": "Ajuda",
     "home": "Início",

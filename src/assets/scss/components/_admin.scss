@@ -160,18 +160,6 @@
   }
 }
 
-.c-admin-subscriptions-detail__paid {
-  align-items: flex-start;
-  display: flex;
-  flex-direction: column;
-  gap: var(--space-xs);
-}
-
-.c-admin-subscriptions-detail__paid-date {
-  color: var(--color-text-muted);
-  font-size: 0.8125rem;
-}
-
 .c-admin-subscriptions-detail__row-actions {
   align-items: center;
   display: flex;

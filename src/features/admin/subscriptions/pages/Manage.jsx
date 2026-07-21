@@ -4,7 +4,7 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import Button from "@/components/Button";
+import Accordion from "@/components/Accordion";
 import DefinitionList from "@/components/DefinitionList";
 import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
@@ -147,6 +147,15 @@ const AdminSubscriptionManage = () => {
         isProcessing: markPaid.isPending,
       });
     }
+    // Renewal is blocked while the current period is unpaid — it must be paid
+    // (or edited) first, mirroring the API guard.
+    if (!currentPeriod || currentPeriod.paid_at) {
+      actions.push({
+        label: t("features.admin.subscriptions.manage.renew"),
+        icon: IconRotateCcw,
+        onClick: handleRenew,
+      });
+    }
     if (currentPeriod) {
       actions.push({
         label: t("features.admin.subscriptions.manage.edit"),
@@ -166,6 +175,7 @@ const AdminSubscriptionManage = () => {
     response,
     handleMarkPaid,
     handlePeriodClick,
+    handleRenew,
     markPaid.isPending,
   ]);
 
@@ -212,6 +222,14 @@ const AdminSubscriptionManage = () => {
           label: t("features.admin.subscriptions.status"),
           value: <PeriodStatusBadge period={currentPeriod} />,
         },
+        ...(currentPeriod.paid_at
+          ? [
+              {
+                label: t("features.admin.subscriptions.paidOn"),
+                value: formatDate(currentPeriod.paid_at),
+              },
+            ]
+          : []),
       ]
     : [];
 
@@ -219,40 +237,31 @@ const AdminSubscriptionManage = () => {
     <div className="c-admin-subscriptions-detail">
       {currentPeriod ? (
         <>
-          <h3 className="c-admin-subscriptions-detail__section-title">
-            {t("features.admin.subscriptions.currentPeriod")}
-          </h3>
           <DefinitionList
             className="c-admin-detail-list"
             items={currentDetails}
           />
-          <h3 className="c-admin-subscriptions-detail__section-title">
-            {t("features.admin.subscriptions.manage.history")}
-          </h3>
-          {pastPeriods.length === 0 ? (
-            <p className="c-admin-subscriptions-detail__empty">
-              {t("features.admin.subscriptions.manage.historyEmpty")}
-            </p>
-          ) : (
-            <Table
-              className="c-admin-subscriptions-detail__table"
-              columns={historyColumns}
-              data={pastPeriods}
-              getRowKey={(period) => period.id}
-              onRowClick={handlePeriodClick}
-            />
-          )}
+          <Accordion title={t("features.admin.subscriptions.manage.history")}>
+            {pastPeriods.length === 0 ? (
+              <p className="c-admin-subscriptions-detail__empty">
+                {t("features.admin.subscriptions.manage.historyEmpty")}
+              </p>
+            ) : (
+              <Table
+                className="c-admin-subscriptions-detail__table"
+                columns={historyColumns}
+                data={pastPeriods}
+                getRowKey={(period) => period.id}
+                onRowClick={handlePeriodClick}
+              />
+            )}
+          </Accordion>
         </>
       ) : (
         <p className="c-admin-subscriptions-detail__empty">
           {t("features.admin.subscriptions.noPeriods")}
         </p>
       )}
-      <div className="c-admin-subscriptions-detail__actions c-admin-subscriptions-detail__actions--block">
-        <Button display="block" icon={IconRotateCcw} onClick={handleRenew}>
-          {t("features.admin.subscriptions.manage.renew")}
-        </Button>
-      </div>
     </div>
   );
 };

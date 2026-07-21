@@ -5,9 +5,7 @@ import { useLocation, useNavigate, useSearchParams } from "react-router-dom";
 
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
 
-import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
-import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import Select from "@/components/forms/Select";
@@ -117,9 +115,28 @@ const AdminOrderCreate = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title, description });
+    setHeader({
+      title,
+      description,
+      actions: [
+        {
+          label: t("features.admin.orders.create.submit"),
+          onClick: handleSubmit(onSubmit),
+          skin: "primary",
+          isProcessing: createOrder.isPending,
+        },
+      ],
+    });
     return () => setHeader();
-  }, [title, description, setHeader]);
+  }, [
+    title,
+    description,
+    setHeader,
+    t,
+    handleSubmit,
+    onSubmit,
+    createOrder.isPending,
+  ]);
 
   // Render
   return (
@@ -193,14 +210,6 @@ const AdminOrderCreate = () => {
           register={register}
         />
       </FormFields>
-      <FormActions>
-        <Button isProcessing={createOrder.isPending} type="submit">
-          {t("features.admin.orders.create.submit")}
-        </Button>
-        <Button onClick={() => navigate(-1)} skin="ghost">
-          {t("common.cancel")}
-        </Button>
-      </FormActions>
     </Form>
   );
 };

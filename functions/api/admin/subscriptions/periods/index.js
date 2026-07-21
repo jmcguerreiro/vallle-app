@@ -82,6 +82,27 @@ export async function onRequestPost(context) {
       );
     }
 
+    // A store can only renew once its latest period is settled — an unpaid
+    // period must be paid first, so the ledger never stacks unpaid years. The
+    // first period (no prior rows) is always allowed.
+    const latestPeriod = await env.DB.prepare(
+      `SELECT paid_at FROM subscription_periods
+       WHERE store_id = ? ORDER BY period_start DESC LIMIT 1`,
+    )
+      .bind(body.store_id)
+      .first();
+    if (latestPeriod && !latestPeriod.paid_at) {
+      return Response.json(
+        {
+          error: {
+            message: "The current period must be paid before renewing",
+            code: "SUBSCRIPTION_UNPAID",
+          },
+        },
+        { status: 409 },
+      );
+    }
+
     // Snapshot of the trailing-year count at the period start — the number
     // that set the tier. Zero for a brand-new store's first period.
     const trailingStart = new Date(

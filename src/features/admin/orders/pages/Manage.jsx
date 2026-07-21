@@ -5,7 +5,6 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { useQuery } from "@tanstack/react-query";
 
 import Badge from "@/components/Badge";
-import Button from "@/components/Button";
 import EmptyState from "@/components/EmptyState";
 import Loader from "@/components/Loader";
 import Table from "@/components/Table";
@@ -107,9 +106,16 @@ const AdminOrdersManage = () => {
     setHeader({
       title: t("features.admin.orders.manage.heading"),
       description: response?.data?.store.name ?? "",
+      actions: [
+        {
+          label: t("features.admin.orders.manage.addNew"),
+          icon: IconPlus,
+          onClick: handleAdd,
+        },
+      ],
     });
     return () => setHeader();
-  }, [setHeader, t, response]);
+  }, [setHeader, t, response, handleAdd]);
 
   // Render
   if (isPending) {
@@ -149,11 +155,6 @@ const AdminOrdersManage = () => {
           onRowClick={handleOrderClick}
         />
       )}
-      <div className="c-admin-subscriptions-detail__actions c-admin-subscriptions-detail__actions--block">
-        <Button display="block" icon={IconPlus} onClick={handleAdd}>
-          {t("features.admin.orders.manage.addNew")}
-        </Button>
-      </div>
     </div>
   );
 };

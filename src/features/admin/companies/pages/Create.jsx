@@ -5,9 +5,7 @@ import { useLocation, useNavigate } from "react-router-dom";
 
 import { useMutation, useQueryClient } from "@tanstack/react-query";
 
-import Button from "@/components/Button";
 import Form from "@/components/forms/Form";
-import FormActions from "@/components/forms/FormActions";
 import FormFields from "@/components/forms/FormFields";
 import Input from "@/components/forms/Input";
 import MinRedemptionFields from "@/components/forms/MinRedemptionFields";
@@ -110,9 +108,28 @@ const AdminCompanyCreate = () => {
 
   // Effects
   useEffect(() => {
-    setHeader({ title, description });
+    setHeader({
+      title,
+      description,
+      actions: [
+        {
+          label: t("features.admin.companies.create.submit"),
+          onClick: handleSubmit(onSubmit),
+          skin: "primary",
+          isProcessing: createCompany.isPending,
+        },
+      ],
+    });
     return () => setHeader();
-  }, [title, description, setHeader]);
+  }, [
+    title,
+    description,
+    setHeader,
+    t,
+    handleSubmit,
+    onSubmit,
+    createCompany.isPending,
+  ]);
 
   // Render
   return (
@@ -259,14 +276,6 @@ const AdminCompanyCreate = () => {
           placeholder={t("features.admin.companies.form.isFoundingMember")}
         />
       </FormFields>
-      <FormActions>
-        <Button isProcessing={createCompany.isPending} type="submit">
-          {t("features.admin.companies.create.submit")}
-        </Button>
-        <Button onClick={() => navigate(-1)} skin="ghost">
-          {t("common.cancel")}
-        </Button>
-      </FormActions>
     </Form>
   );
 };
