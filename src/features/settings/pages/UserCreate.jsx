@@ -85,13 +85,17 @@ const CompanyUserCreate = () => {
     },
   ];
 
+  // Depend on the stable mutate fn, not the mutation result object (a fresh
+  // reference each render).
+  const { mutate: create } = createUser;
+
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      createUser.mutate(values);
+      create(values);
     },
-    [createUser],
+    [create],
   );
 
   // Effects

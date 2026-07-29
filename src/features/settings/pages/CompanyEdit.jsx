@@ -104,13 +104,17 @@ const CompanyEdit = () => {
   // State
   const [serverError, setServerError] = useState("");
 
+  // Depend on the stable mutate fn, not the mutation result object (a fresh
+  // reference each render).
+  const { mutate: save } = saveCompany;
+
   // Handlers
   const handleSave = useCallback(
     (values) => {
       setServerError("");
-      saveCompany.mutate(values);
+      save(values);
     },
-    [saveCompany],
+    [save],
   );
 
   // Effects

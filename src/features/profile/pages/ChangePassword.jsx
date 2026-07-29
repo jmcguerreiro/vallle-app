@@ -60,13 +60,17 @@ const ChangePassword = () => {
   const description = t("features.profile.password.description");
   const passwordRules = useMemo(() => validatePassword(t), [t]);
 
+  // Depend on the stable mutate fn, not the mutation result object (a fresh
+  // reference each render).
+  const { mutate: save } = changePassword;
+
   // Handlers
   const handleSave = useCallback(
     (values) => {
       setServerError("");
-      changePassword.mutate(values);
+      save(values);
     },
-    [changePassword],
+    [save],
   );
 
   // Effects

@@ -96,17 +96,22 @@ const VallleCreate = () => {
     },
   });
 
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: create } = createVallle;
+
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
-      createVallle.mutate({
+      create({
         amount: eurosToCents(values.amount),
         buyer: values.buyer?.trim() || null,
         expires_at: expiryDate.toISOString(),
       });
     },
-    [createVallle.mutate, expiryDate],
+    [create, expiryDate],
   );
 
   // Effects

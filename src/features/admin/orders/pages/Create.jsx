@@ -90,6 +90,11 @@ const AdminOrderCreate = () => {
     label: t(`constants.orderTypes.${type}`),
   }));
 
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: create } = createOrder;
+
   // Handlers
   const onSubmit = useCallback(
     (values) => {
@@ -101,7 +106,7 @@ const AdminOrderCreate = () => {
         return;
       }
 
-      createOrder.mutate({
+      create({
         store_id: values.store_id,
         type: values.type,
         items,
@@ -110,7 +115,7 @@ const AdminOrderCreate = () => {
         requested_at: values.requested_at,
       });
     },
-    [createOrder, setServerError, t],
+    [create, setServerError, t],
   );
 
   // Effects

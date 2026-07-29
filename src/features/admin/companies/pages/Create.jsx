@@ -90,12 +90,17 @@ const AdminCompanyCreate = () => {
   ];
   const slugPreview = slugify(watch("name"));
 
+  // The mutation result object is a fresh reference every render; only the
+  // stable mutate function may be a hook dependency, otherwise the header
+  // effect (setHeader → context update → re-render) loops forever.
+  const { mutate: create } = createCompany;
+
   // Handlers
   const onSubmit = useCallback(
     (values) => {
       setServerError(null);
       const { minRedemptionAmount, ...rest } = values;
-      createCompany.mutate({
+      create({
         ...rest,
         default_min_redemption_cents:
           values.default_min_redemption_mode === MIN_REDEMPTION_MODES.CUSTOM
@@ -103,7 +108,7 @@ const AdminCompanyCreate = () => {
             : 0,
       });
     },
-    [createCompany],
+    [create],
   );
 
   // Effects

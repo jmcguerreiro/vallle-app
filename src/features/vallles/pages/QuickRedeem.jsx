@@ -78,9 +78,13 @@ const QuickRedeem = () => {
     setCode(raw);
   }, []);
 
+  // Depend on the stable mutate fn, not the mutation result object (a fresh
+  // reference each render).
+  const { mutate: lookup } = lookupVallle;
+
   const handleLookup = useCallback(() => {
-    lookupVallle.mutate(code);
-  }, [code, lookupVallle]);
+    lookup(code);
+  }, [code, lookup]);
 
   const handleTryAgain = useCallback(() => {
     setLookupResult(null);

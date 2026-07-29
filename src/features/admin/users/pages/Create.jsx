@@ -98,6 +98,10 @@ const AdminUserCreate = () => {
   const companyOptions = companies.map((c) => ({ value: c.id, label: c.name }));
   const selectedStoreIds = watch("store_ids");
 
+  // Depend on the stable mutate fn, not the mutation result object (a fresh
+  // reference each render).
+  const { mutate: create } = createUser;
+
   // Handlers
   const onSubmit = useCallback(
     (values) => {
@@ -109,7 +113,7 @@ const AdminUserCreate = () => {
             ? STORE_ROLES.USER
             : STORE_ROLES.ADMIN,
       }));
-      createUser.mutate({
+      create({
         name: values.name,
         email: values.email,
         password: values.password,
@@ -118,7 +122,7 @@ const AdminUserCreate = () => {
         stores,
       });
     },
-    [createUser],
+    [create],
   );
 
   // Effects
